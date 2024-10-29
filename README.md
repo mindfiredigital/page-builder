@@ -1,6 +1,3 @@
-Here’s a `README.md` file that provides a structured overview of the page builder project. This includes instructions for setup, usage, and details on the folder structure and project features.
-
-```markdown
 # Page Builder
 
 An open-source, lightweight page builder component designed for creating static web pages with a drag-and-drop interface. This component library generates HTML output and supports customization options. Built with TypeScript and vanilla JavaScript for performance, it includes modular components, responsive previews, and data handling for layout storage and retrieval.
@@ -14,16 +11,14 @@ An open-source, lightweight page builder component designed for creating static 
 - **Output HTML**: Export the final HTML layout for use in static web pages or other applications.
 
 ## Project Structure
-```
 
-project-root/
+page-builder/
 ├── src/
 │ ├── components/ # Folder for modular, reusable components
 │ │ ├── TextComponent.ts # Text component module
 │ │ ├── ImageComponent.ts # Image component module
 │ │ ├── ButtonComponent.ts # Button component module
 │ │ ├── HeaderComponent.ts # Header component module
-│ │ ├── ContainerComponent.ts # Container component module for grouping
 │ │ └── index.ts # Export all components for easy imports
 │ │
 │ ├── canvas/ # Main canvas and drag-and-drop handling
@@ -55,21 +50,21 @@ project-root/
 │ ├── index.ts # Main entry point for the application
 │ └── types.d.ts # Global type definitions for custom types
 │
-├── dist/ # Compiled files
+├── dist/ # Compiled files  
+│
 ├── .gitignore # Git ignore file
 ├── package.json # NPM configuration
 ├── README.md # Project documentation
 └── tsconfig.json # TypeScript configuration file
 
-````
-
 ## Installation
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/lakinmindfire/page-builder.git
    cd page-builder
-````
+   ```
 
 2. **Install Dependencies**:
 
