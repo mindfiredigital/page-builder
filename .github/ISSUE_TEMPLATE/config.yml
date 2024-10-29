@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Page Builder
+    url: https://github.com/lakinmindfire/page-builder
+    about: An open-source, lightweight page builder component designed for creating static web pages with a drag-and-drop interface.

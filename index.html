@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Builder</title>
+    <link rel="stylesheet" href="src/styles/main.css" />
+  </head>
+  <body>
+    <header>
+      <nav id="preview-navbar">
+        <button id="preview-desktop" class="preview-btn">Desktop</button>
+        <button id="preview-tablet" class="preview-btn">Tablet</button>
+        <button id="preview-mobile" class="preview-btn">Mobile</button>
+        <button id="save-btn">Save Layout</button>
+        <button id="export-html-btn">Export HTML</button>
+      </nav>
+    </header>
+    <div id="app">
+      <div id="sidebar">
+        <h3>Components</h3>
+        <div class="draggable" id="button" draggable="true">
+          Button Component
+        </div>
+        <div class="draggable" id="header" draggable="true">
+          Header Component
+        </div>
+        <div class="draggable" id="image" draggable="true">Image Component</div>
+        <div class="draggable" id="text" draggable="true">Text Component</div>
+        <div id="container" class="draggable" draggable="true">Container</div>
+    </div>
+        <div id="canvas" class="canvas"></div>
+    </div>
+
+    <!-- Bundle JavaScript -->
+    <script type="module" src="dist/index.js"></script>
+  </body>
+</html>
