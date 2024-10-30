@@ -26,6 +26,9 @@ export class Canvas {
   onDrop(event) {
     var _a;
     event.preventDefault();
+    if (event.target.classList.contains('container-component')) {
+      return; // Exit if the drop is inside a container
+    }
     const componentType =
       (_a = event.dataTransfer) === null || _a === void 0
         ? void 0

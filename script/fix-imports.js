@@ -12,10 +12,10 @@ function addJsExtensions(dir) {
       addJsExtensions(filePath);
     } else if (filePath.endsWith('.js')) {
       let content = fs.readFileSync(filePath, 'utf8');
-      content = content.replace(/(from\s+["']\..+?)["']/g, '$1.js"');
+      content = content.replace(/(from\s+["']\..+?)["']/g, "$1.js'");
       fs.writeFileSync(filePath, content, 'utf8');
     }
   });
 }
 
-addJsExtensions(path.join(__dirname, 'dist'));
+addJsExtensions(path.join('dist'));

@@ -12,7 +12,6 @@ export class ContainerComponent {
   }
 
   create(): HTMLElement {
-    this.element.innerHTML = 'Drop items here';
     return this.element;
   }
 

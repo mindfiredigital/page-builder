@@ -42,6 +42,11 @@ export class Canvas {
 
   onDrop(event: DragEvent) {
     event.preventDefault();
+    if (
+      (event.target as HTMLElement).classList.contains('container-component')
+    ) {
+      return; // Exit if the drop is inside a container
+    }
     const componentType = event.dataTransfer?.getData('component-type');
     console.log(`Dropped component type: ${componentType}`);
     if (componentType) {
