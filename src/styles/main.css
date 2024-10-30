@@ -56,7 +56,7 @@ html {
 /* Canvas Area */
 
 #canvas {
-    margin-top: 2px;
+  margin-top: 2px;
   flex: 1;
   width: 100%;
   height: 538px;
@@ -67,7 +67,9 @@ html {
   flex-direction: column;
   overflow-y: auto;
   overflow-x: auto;
-  transition: width 400ms ease-in-out,height 400ms ease-in-out;
+  transition:
+    width 400ms ease-in-out,
+    height 400ms ease-in-out;
 }
 
 #sidebar h3 {
@@ -193,22 +195,30 @@ button:hover {
 
 /* Focused style for better visibility when editing */
 .editable-component:focus {
-  outline: 2px solid #3498db;
+  outline: 1px solid #3498db;
   border-color: #3498db;
 }
-
+/* Styles for focused/hovered components */
+.editable-component.hover-active {
+    outline: 1px solid #3498db;
+  }
+  
+  .editable-component.focus-active {
+    outline: 1px solid green;
+  }
+  
+  /* Ensures child containers are styled separately */
+  .container-component .editable-component {
+    position: relative;
+  }
+  
 /* Container Component */
 .container-component {
-    min-height: 100px;
-    padding: 10px;
-    margin: 5px;
-    background-color: #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  min-height: 100px;
+  padding: 10px;
+  margin: 5px;
+  border: 0.5px dashed #ccc;
+  display: flex;
+  flex-direction: column;
 }
 
-.container-component:hover {
-    background-color: #e0e0e0;
-}

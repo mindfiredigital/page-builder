@@ -3,4 +3,7 @@ export declare class ContainerComponent {
   constructor();
   create(): HTMLElement;
   private onDrop;
+  private onHover;
+  private onFocus;
+  private onBlur;
 }
