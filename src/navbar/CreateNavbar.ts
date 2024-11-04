@@ -9,6 +9,8 @@ export function createNavbar() {
     mobile: '/dist/icons/mobile.png',
     save: '/dist/icons/file.png',
     export: '/dist/icons/code.png',
+    view: '/dist/icons/view.png',
+    edit: '/dist/icons/pencil.png',
   };
 
   // Array of button data with only titles
@@ -19,8 +21,10 @@ export function createNavbar() {
   ];
 
   const rightButtons = [
+    { id: 'view-btn', icon: icons.view, title: 'View' },
     { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
     { id: 'export-html-btn', icon: icons.export, title: 'Export HTML' },
+    { id: 'edit-btn', icon: icons.edit, title: 'Edit' },
   ];
 
   const leftContainer = document.createElement('div');
