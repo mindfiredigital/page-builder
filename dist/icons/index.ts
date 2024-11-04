@@ -3,3 +3,8 @@ export { default as HeaderIcon } from './header.png';
 export { default as ImageIcon } from './image.png';
 export { default as TextIcon } from './text.png';
 export { default as ContainerIcon } from './square.png';
+export { default as DesktopIcon } from './computer.png';
+export { default as TabletIcon } from './tablet.png';
+export { default as MobileIcon } from './mobile.png';
+export { default as SaveIcon } from './file.png';
+export { default as ExportIcon } from './code.png';

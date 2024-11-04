@@ -20,14 +20,13 @@ html {
 }
 
 .preview-btn {
-  color: #ecf0f1; /* Light grey text */
-  background-color: #95a5a6; /* Grey button background */
   border: none;
-  padding: 8px 12px;
-  margin: 0 5px;
+  padding: 8px;
   cursor: pointer;
   border-radius: 4px;
-  font-size: 16px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
 }
 
 .preview-btn:hover {
@@ -159,23 +158,6 @@ html {
   margin-right: auto;
 }
 
-/* Buttons */
-button {
-  padding: 10px 20px;
-  margin: 10px 5px;
-  background-color: #3498db; /* Blue button background */
-  color: #fff; /* White text */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #2980b9; /* Darker blue on hover */
-}
-
 /* Utility Classes */
 .hidden {
   display: none;
@@ -226,3 +208,9 @@ button:hover {
   height: 32px; /* Maintain aspect ratio */
   object-fit: contain;
 }
+
+.nav-icon {
+    width: 32px; /* Adjust icon size */
+    height: 32px; /* Maintain aspect ratio */
+    object-fit: contain; /* Maintain aspect ratio */
+  }

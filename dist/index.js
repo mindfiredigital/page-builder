@@ -1,6 +1,7 @@
 import { Canvas } from './canvas/Canvas.js';
 import { Sidebar } from './sidebar/ConfigSidebar.js';
 import { createSidebar } from './sidebar/CreateSidebar.js';
+import { createNavbar } from './navbar/CreateNavbar.js';
 import { HTMLGenerator } from './services/HTMLGenerator.js';
 import { JSONStorage } from './services/JSONStorage.js';
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
   createSidebar();
   canvas.init();
   sidebar.init();
+  const header = document.createElement('header');
+  header.appendChild(createNavbar());
+  document.body.insertBefore(header, document.getElementById('app'));
   // Additional event listeners for exporting or saving
   (_a = document.getElementById('save-btn')) === null || _a === void 0
     ? void 0
