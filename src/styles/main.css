@@ -12,10 +12,10 @@ html {
 
 /* Navbar for preview buttons */
 #preview-navbar {
-  width: 100%;
   background-color: #7f8c8d; /* Dark grey background */
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
 }
 
@@ -25,8 +25,6 @@ html {
   cursor: pointer;
   border-radius: 4px;
   background-color: transparent;
-  display: flex;
-  align-items: center;
 }
 
 .preview-btn:hover {
@@ -66,7 +64,9 @@ html {
   flex-direction: column;
   overflow-y: auto;
   overflow-x: auto;
-  transition: width 400ms ease-in-out, height 400ms ease-in-out;
+  transition:
+    width 400ms ease-in-out,
+    height 400ms ease-in-out;
 }
 
 #sidebar h3 {
@@ -204,13 +204,29 @@ html {
 
 /* Draggable Icons */
 .draggable img {
-  width: 32px;  /* Icon size */
+  width: 32px; /* Icon size */
   height: 32px; /* Maintain aspect ratio */
   object-fit: contain;
 }
 
 .nav-icon {
-    width: 32px; /* Adjust icon size */
-    height: 32px; /* Maintain aspect ratio */
-    object-fit: contain; /* Maintain aspect ratio */
-  }
+  width: 32px; /* Adjust icon size */
+  height: 32px; /* Maintain aspect ratio */
+  object-fit: contain; /* Maintain aspect ratio */
+}
+
+.left-buttons,
+.right-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.center-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ecf0f1;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}

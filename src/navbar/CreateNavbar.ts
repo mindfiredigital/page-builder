@@ -12,29 +12,60 @@ export function createNavbar() {
   };
 
   // Array of button data with only titles
-  const buttons = [
+  const leftButtons = [
     { id: 'preview-desktop', icon: icons.desktop, title: 'Preview in Desktop' },
     { id: 'preview-tablet', icon: icons.tablet, title: 'Preview in Tablet' },
     { id: 'preview-mobile', icon: icons.mobile, title: 'Preview in Mobile' },
+  ];
+
+  const rightButtons = [
     { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
     { id: 'export-html-btn', icon: icons.export, title: 'Export HTML' },
   ];
 
-  // Create buttons
-  buttons.forEach(({ id, icon, title }) => {
+  const leftContainer = document.createElement('div');
+  leftContainer.classList.add('left-buttons');
+
+  leftButtons.forEach(({ id, icon, title }) => {
     const button = document.createElement('button');
     button.id = id;
     button.classList.add('preview-btn');
-    button.title = title; // Set the title for tooltip
+    button.title = title;
 
     const img = document.createElement('img');
-    img.src = icon; // Use the icon path
-    img.alt = `${title}`; // Use title for alt text
+    img.src = icon;
+    img.alt = `${title}`;
     img.classList.add('nav-icon');
 
     button.appendChild(img);
-    navbar.appendChild(button);
+    leftContainer.appendChild(button);
   });
 
-  return navbar; // Return the constructed navbar
+  const centerText = document.createElement('div');
+  centerText.classList.add('center-text');
+  centerText.textContent = 'Page Builder';
+
+  const rightContainer = document.createElement('div');
+  rightContainer.classList.add('right-buttons');
+
+  rightButtons.forEach(({ id, icon, title }) => {
+    const button = document.createElement('button');
+    button.id = id;
+    button.classList.add('preview-btn');
+    button.title = title;
+
+    const img = document.createElement('img');
+    img.src = icon;
+    img.alt = `${title}`;
+    img.classList.add('nav-icon');
+
+    button.appendChild(img);
+    rightContainer.appendChild(button);
+  });
+
+  navbar.appendChild(leftContainer);
+  navbar.appendChild(centerText);
+  navbar.appendChild(rightContainer);
+
+  return navbar;
 }
