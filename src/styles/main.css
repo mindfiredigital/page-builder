@@ -6,21 +6,22 @@ html {
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
-  background-color: #f4f4f9;
+  background-color: #f4f4f9ab; /* Light grey background */
   overflow: hidden;
 }
+
 /* Navbar for preview buttons */
 #preview-navbar {
   width: 100%;
-  background-color: #2c3e50;
+  background-color: #7f8c8d; /* Dark grey background */
   display: flex;
   justify-content: center;
   padding: 10px;
 }
 
 .preview-btn {
-  color: #ecf0f1;
-  background-color: #34495e;
+  color: #ecf0f1; /* Light grey text */
+  background-color: #95a5a6; /* Grey button background */
   border: none;
   padding: 8px 12px;
   margin: 0 5px;
@@ -30,7 +31,7 @@ html {
 }
 
 .preview-btn:hover {
-  background-color: #3b5998;
+  background-color: #bdc3c7; /* Lighter grey on hover */
 }
 
 /* App Container */
@@ -39,49 +40,45 @@ html {
   width: 100%;
   height: calc(100vh - 50px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #c9c6c6;
+  background-color: #ffffff0a; /* White background */
   border: 1px solid #ddd;
 }
 
 /* Sidebar (Left) */
 #sidebar {
-  width: 200px;
-  background-color: #2c3e50;
-  color: #ecf0f1;
+  width: 100px;
+  background-color: #7f8c8d; /* Dark grey */
+  color: #ecf0f1; /* Light grey text */
   padding: 15px;
   overflow-y: auto;
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Canvas Area */
-
 #canvas {
   margin-top: 2px;
   flex: 1;
   width: 100%;
   height: 538px;
-  background-color: #ffffff;
+  background-color: #ffffff; /* White background */
   padding: 15px;
   border: 1px solid #070707;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   overflow-x: auto;
-  transition:
-    width 400ms ease-in-out,
-    height 400ms ease-in-out;
+  transition: width 400ms ease-in-out, height 400ms ease-in-out;
 }
 
 #sidebar h3 {
   text-align: center;
   font-size: 1.2em;
   margin-bottom: 15px;
+  color: #ecf0f1; /* Light grey */
 }
 
 /* Draggable Items */
 .draggable {
-  background-color: #34495e;
-  color: #ecf0f1;
   padding: 12px;
   margin-bottom: 10px;
   text-align: center;
@@ -91,7 +88,7 @@ html {
 }
 
 .draggable:hover {
-  background-color: #3b5998;
+  background-color: #bdc3c7; /* Lighter grey on hover */
 }
 
 .draggable:active {
@@ -103,7 +100,7 @@ html {
 .component {
   padding: 15px;
   border: 1px solid #ddd;
-  background-color: #f9f9f9;
+  background-color: #f9f9f9; /* Light grey */
   border-radius: 5px;
   cursor: pointer;
   position: relative;
@@ -116,13 +113,13 @@ html {
 
 .text-component {
   font-size: 16px;
-  color: #333;
+  color: #333; /* Dark text for readability */
 }
 
 .button-component {
   padding: 10px 20px;
-  background-color: #3498db;
-  color: #ffffff;
+  background-color: #3498db; /* Blue button background */
+  color: #ffffff; /* White text */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -130,13 +127,13 @@ html {
 }
 
 .button-component:hover {
-  background-color: #2980b9;
+  background-color: #2980b9; /* Darker blue on hover */
 }
 
 .header-component {
   font-size: 24px;
   font-weight: bold;
-  color: #333;
+  color: #333; /* Dark text */
   margin: 10px 0;
 }
 
@@ -166,8 +163,8 @@ html {
 button {
   padding: 10px 20px;
   margin: 10px 5px;
-  background-color: #3498db;
-  color: #fff;
+  background-color: #3498db; /* Blue button background */
+  color: #fff; /* White text */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -176,7 +173,7 @@ button {
 }
 
 button:hover {
-  background-color: #2980b9;
+  background-color: #2980b9; /* Darker blue on hover */
 }
 
 /* Utility Classes */
@@ -198,27 +195,34 @@ button:hover {
   outline: 1px solid #3498db;
   border-color: #3498db;
 }
+
 /* Styles for focused/hovered components */
 .editable-component.hover-active {
-    outline: 1px solid #3498db;
-  }
-  
-  .editable-component.focus-active {
-    outline: 1px solid green;
-  }
-  
-  /* Ensures child containers are styled separately */
-  .container-component .editable-component {
-    position: relative;
-  }
-  
+  outline: 1px solid #3498db;
+}
+
+.editable-component.focus-active {
+  outline: 1px solid green;
+}
+
+/* Ensures child containers are styled separately */
+.container-component .editable-component {
+  position: relative;
+}
+
 /* Container Component */
 .container-component {
   min-height: 100px;
   padding: 10px;
   margin: 5px;
-  border: 0.5px dashed #ccc;
+  border: 0.5px dashed #ccc; /* Light grey dashed border */
   display: flex;
   flex-direction: column;
 }
 
+/* Draggable Icons */
+.draggable img {
+  width: 32px;  /* Icon size */
+  height: 32px; /* Maintain aspect ratio */
+  object-fit: contain;
+}

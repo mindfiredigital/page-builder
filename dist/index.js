@@ -1,5 +1,6 @@
 import { Canvas } from './canvas/Canvas.js';
 import { Sidebar } from './sidebar/ConfigSidebar.js';
+import { createSidebar } from './sidebar/CreateSidebar.js';
 import { HTMLGenerator } from './services/HTMLGenerator.js';
 import { JSONStorage } from './services/JSONStorage.js';
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebar = new Sidebar(canvas);
   const htmlGenerator = new HTMLGenerator(canvas);
   const jsonStorage = new JSONStorage();
+  createSidebar();
   canvas.init();
   sidebar.init();
   // Additional event listeners for exporting or saving

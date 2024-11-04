@@ -39,4 +39,4 @@ declare global {
   type DevicePreviewMode = 'desktop' | 'tablet' | 'mobile';
 }
 
-export {}; // This ensures the file is treated as a module
+export {};
