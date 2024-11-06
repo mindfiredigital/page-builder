@@ -11,8 +11,8 @@ export class Canvas {
   private components: HTMLElement[] = [];
   private canvasElement: HTMLElement;
   private sidebarElement: HTMLElement;
+  private componentCounters: { [key: string]: number } = {};
 
-  // Map of component types to their creation functions
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
     {
       button: () => new ButtonComponent().create('Click Me'),
@@ -45,37 +45,51 @@ export class Canvas {
     if (
       (event.target as HTMLElement).classList.contains('container-component')
     ) {
-      return; // Exit if the drop is inside a container
+      return;
     }
     const componentType = event.dataTransfer?.getData('component-type');
     console.log(`Dropped component type: ${componentType}`);
     if (componentType) {
-      const component = Canvas.createComponent(componentType); // Static method call
+      const component = Canvas.createComponent(componentType);
       if (component) {
+        // Add unique class name
+        const uniqueClass = this.generateUniqueClass(componentType);
+        component.classList.add(uniqueClass);
+
+        // Create label for showing class name on hover
+        const label = document.createElement('span');
+        label.className = 'component-label';
+        label.textContent = uniqueClass;
+        component.appendChild(label);
+
         this.components.push(component);
         this.canvasElement.appendChild(component);
       }
     }
   }
 
-  // Static method to create components, allowing it to be used by ContainerComponent as well
   static createComponent(type: string): HTMLElement | null {
     const componentFactoryFunction = Canvas.componentFactory[type];
-
     if (!componentFactoryFunction) {
       console.warn(`Unknown component type: ${type}`);
       return null;
     }
 
     const element = componentFactoryFunction();
-
     if (element) {
-      // Make the element editable and focusable
       element.classList.add('editable-component');
       element.setAttribute('contenteditable', 'true');
     }
 
     return element;
+  }
+
+  generateUniqueClass(type: string): string {
+    if (!this.componentCounters[type]) {
+      this.componentCounters[type] = 0;
+    }
+    this.componentCounters[type] += 1;
+    return `${type}${this.componentCounters[type]}`;
   }
 
   exportLayout() {

@@ -9,6 +9,7 @@ import {
 export class Canvas {
   constructor() {
     this.components = [];
+    this.componentCounters = {};
     this.canvasElement = document.getElementById('canvas');
     this.sidebarElement = document.getElementById('sidebar');
     this.canvasElement.addEventListener('drop', this.onDrop.bind(this));
@@ -27,7 +28,7 @@ export class Canvas {
     var _a;
     event.preventDefault();
     if (event.target.classList.contains('container-component')) {
-      return; // Exit if the drop is inside a container
+      return;
     }
     const componentType =
       (_a = event.dataTransfer) === null || _a === void 0
@@ -35,14 +36,21 @@ export class Canvas {
         : _a.getData('component-type');
     console.log(`Dropped component type: ${componentType}`);
     if (componentType) {
-      const component = Canvas.createComponent(componentType); // Static method call
+      const component = Canvas.createComponent(componentType);
       if (component) {
+        // Add unique class name
+        const uniqueClass = this.generateUniqueClass(componentType);
+        component.classList.add(uniqueClass);
+        // Create label for showing class name on hover
+        const label = document.createElement('span');
+        label.className = 'component-label';
+        label.textContent = uniqueClass;
+        component.appendChild(label);
         this.components.push(component);
         this.canvasElement.appendChild(component);
       }
     }
   }
-  // Static method to create components, allowing it to be used by ContainerComponent as well
   static createComponent(type) {
     const componentFactoryFunction = Canvas.componentFactory[type];
     if (!componentFactoryFunction) {
@@ -51,11 +59,17 @@ export class Canvas {
     }
     const element = componentFactoryFunction();
     if (element) {
-      // Make the element editable and focusable
       element.classList.add('editable-component');
       element.setAttribute('contenteditable', 'true');
     }
     return element;
+  }
+  generateUniqueClass(type) {
+    if (!this.componentCounters[type]) {
+      this.componentCounters[type] = 0;
+    }
+    this.componentCounters[type] += 1;
+    return `${type}${this.componentCounters[type]}`;
   }
   exportLayout() {
     return this.components.map(component => {
@@ -66,7 +80,6 @@ export class Canvas {
     });
   }
 }
-// Map of component types to their creation functions
 Canvas.componentFactory = {
   button: () => new ButtonComponent().create('Click Me'),
   header: () => new HeaderComponent().create(1, 'Editable Header'),

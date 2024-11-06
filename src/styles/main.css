@@ -37,7 +37,7 @@ html {
   width: 100%;
   height: calc(100vh - 50px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff0a; /* White background */ 
+  background-color: #ffffff0a; /* White background */
 }
 
 /* Sidebar (Left) */
@@ -169,6 +169,7 @@ html {
   margin: 5px;
   border-radius: 4px;
   cursor: text;
+  position: relative;
 }
 
 /* Focused style for better visibility when editing */
@@ -228,4 +229,20 @@ html {
   flex-grow: 1;
   display: flex;
   justify-content: center;
+}
+
+.component-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  display: none;
+}
+
+.editable-component:hover .component-label {
+  display: block;
 }
