@@ -37,7 +37,7 @@ An open-source, lightweight page builder component designed for creating static 
    npm start
    ```
 
-   This command will start a local server with `lite-server` and open the project in your default browser.
+   This command will start a local server with `lite-server` and open the project in your default browser at http://localhost:3000/.
 
 ## Usage
 
@@ -66,14 +66,14 @@ An open-source, lightweight page builder component designed for creating static 
 Contributions are welcome! Please submit a pull request or open an issue if you have ideas for improvements or new features.
 
 1. Fork the repository
-2. Create a new branch for your feature:
+2. Create a new branch from `dev` branch for your feature:
    ```bash
-   git checkout -b feature-name
+   git checkout -b feature/feature-name
    ```
 3. Commit your changes and push to the branch:
    ```bash
-   git commit -m "Add new feature"
-   git push origin feature-name
+   git commit -m "feat: Add new feature"
+   git push origin feature/feature-name
    ```
 4. Submit a pull request for review.
 
