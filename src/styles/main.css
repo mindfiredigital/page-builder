@@ -6,7 +6,7 @@ html {
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
-  background-color: #f4f4f9ab; /* Light grey background */
+  background-color: #f4f4f9ab;
   overflow: hidden;
 }
 
