@@ -8,3 +8,5 @@ export { default as TabletIcon } from './tablet.png';
 export { default as MobileIcon } from './mobile.png';
 export { default as SaveIcon } from './file.png';
 export { default as ExportIcon } from './code.png';
+export { default as UndoIcon } from './undo.png';
+export { default as RedoIcon } from './redo.png';

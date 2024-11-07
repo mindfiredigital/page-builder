@@ -6,12 +6,14 @@ import {
   TextComponent,
   ContainerComponent,
 } from '../components/index';
+import { HistoryManager } from '../services/HistoryManager';
 
 export class Canvas {
   private components: HTMLElement[] = [];
   private canvasElement: HTMLElement;
   private sidebarElement: HTMLElement;
   private componentCounters: { [key: string]: number } = {};
+  public historyManager: HistoryManager; //accessible outside the Canvas class.
 
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
     {
@@ -30,6 +32,37 @@ export class Canvas {
     this.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
+
+    // Initialize the HistoryManager with this canvas
+    this.historyManager = new HistoryManager(this);
+  }
+
+  // Get the current state of the canvas (for undo/redo purposes)
+  getState() {
+    return this.components.map(component => {
+      const baseType = component.classList[0]
+        .split(/\d/)[0]
+        .replace('-component', ''); //Removing the number and suffix
+      return {
+        type: baseType, // Store only the base type
+        content: component.innerHTML,
+      };
+    });
+  }
+
+  // Restore the state of the canvas (for undo/redo purposes)
+  restoreState(state: any) {
+    this.canvasElement.innerHTML = '';
+    this.components = [];
+
+    state.forEach((componentData: any) => {
+      const component = Canvas.createComponent(componentData.type); // Only pass the base type
+      if (component) {
+        component.innerHTML = componentData.content;
+        this.canvasElement.appendChild(component);
+        this.components.push(component);
+      }
+    });
   }
 
   init() {
@@ -64,6 +97,9 @@ export class Canvas {
 
         this.components.push(component);
         this.canvasElement.appendChild(component);
+
+        //On adding new component to the canvas it captures the current state.
+        this.historyManager.captureState();
       }
     }
   }
