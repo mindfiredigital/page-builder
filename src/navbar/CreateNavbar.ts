@@ -11,6 +11,8 @@ export function createNavbar() {
     export: '/dist/icons/code.png',
     view: '/dist/icons/view.png',
     edit: '/dist/icons/pencil.png',
+    undo: '/dist/icons/undo.png',
+    redo: '/dist/icons/redo.png',
   };
 
   // Array of button data with only titles
@@ -18,6 +20,8 @@ export function createNavbar() {
     { id: 'preview-desktop', icon: icons.desktop, title: 'Preview in Desktop' },
     { id: 'preview-tablet', icon: icons.tablet, title: 'Preview in Tablet' },
     { id: 'preview-mobile', icon: icons.mobile, title: 'Preview in Mobile' },
+    { id: 'undo-btn', icon: icons.undo, title: 'Undo button' },
+    { id: 'redo-btn', icon: icons.redo, title: 'Redo button' },
   ];
 
   const rightButtons = [

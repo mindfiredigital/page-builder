@@ -44,4 +44,14 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.classList.remove('preview-desktop', 'preview-tablet');
     canvas.classList.add('preview-mobile');
   });
+
+  //Functionality for undo button
+  document.getElementById('undo-btn')?.addEventListener('click', () => {
+    canvas.historyManager.undo();
+  });
+
+  //Functionality for redo button
+  document.getElementById('redo-btn')?.addEventListener('click', () => {
+    canvas.historyManager.redo();
+  });
 });

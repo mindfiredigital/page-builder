@@ -5,7 +5,7 @@ import { createNavbar } from './navbar/CreateNavbar.js';
 import { HTMLGenerator } from './services/HTMLGenerator.js';
 import { JSONStorage } from './services/JSONStorage.js';
 document.addEventListener('DOMContentLoaded', () => {
-  var _a, _b, _c, _d, _e;
+  var _a, _b, _c, _d, _e, _f, _g;
   const canvas = new Canvas();
   const sidebar = new Sidebar(canvas);
   const htmlGenerator = new HTMLGenerator(canvas);
@@ -49,5 +49,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById('canvas');
         canvas.classList.remove('preview-desktop', 'preview-tablet');
         canvas.classList.add('preview-mobile');
+      });
+  //Functionality for undo button
+  (_f = document.getElementById('undo-btn')) === null || _f === void 0
+    ? void 0
+    : _f.addEventListener('click', () => {
+        canvas.historyManager.undo();
+      });
+  //Functionality for redo button
+  (_g = document.getElementById('redo-btn')) === null || _g === void 0
+    ? void 0
+    : _g.addEventListener('click', () => {
+        canvas.historyManager.redo();
       });
 });
