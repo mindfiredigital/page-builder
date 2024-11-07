@@ -55,13 +55,13 @@ We follow the conventional commit message format to ensure consistent and meanin
 
 ### How to Write Commit Messages
 
-- Start the commit message with the type, followed by a colon and a space (e.g., `feat: Add new rule`).
+- Start the commit message with the type, followed by a colon and a space (e.g., `feat: Add new feature`).
 - Provide a concise and descriptive commit message.
 - If the commit addresses an issue or feature request, include the issue number in the message (e.g., `fix: Resolve issue #123`).
 
 ### Example Commit Messages
 
-- feat: Add new rule for variable naming
+- feat: Add new feature
 - fix: Correct issue #456 with class name validation
 - docs: Update usage instructions in README
 - chore: Upgrade dependencies to latest versions
