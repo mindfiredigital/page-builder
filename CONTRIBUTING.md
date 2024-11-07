@@ -92,6 +92,6 @@ Please ensure your contributions adhere to the project's [Code of Conduct](./COD
 
 If you have questions or need assistance, feel free to create an issue or directly contact the maintainers.
 
-Thank you for your interest in contributing to ESLint Plugin Hub! We appreciate your efforts in making this project better.
+Thank you for your interest in contributing to Page builder! We appreciate your efforts in making this project better.
 
 Happy contributing!
