@@ -37,13 +37,18 @@ export class HistoryManager {
    */
   undo() {
     if (this.undoStack.length > 1) {
-      console.log(this.undoStack);
-      const currentState = this.undoStack.pop(); // Save the current state to redo stack
+      // Pop the current state and push it to the redo stack
+      const currentState = this.undoStack.pop();
       this.redoStack.push(currentState);
+      // Restore the last state remaining in the undoStack
       const previousState = this.undoStack[this.undoStack.length - 1];
-      if (previousState) {
-        this.canvas.restoreState(previousState);
-      }
+      this.canvas.restoreState(previousState);
+    } else if (this.undoStack.length === 1) {
+      // Clear the canvas for the last undo action
+      const initialState = this.undoStack.pop();
+      this.redoStack.push(initialState);
+      // Clear the canvas
+      this.canvas.restoreState([]);
     } else {
       console.warn('No more actions to undo');
     }
