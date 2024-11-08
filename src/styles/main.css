@@ -138,6 +138,13 @@ html {
 .image-component {
   max-width: 100%;
   border-radius: 5px;
+  position: relative; /* Allow absolute positioned label to sit within */
+  display: flex;
+  justify-content: center;
+  resize: both;
+  overflow: hidden;
+  min-width: 150px; /* Ensure the image has a minimum size */
+  min-height: 150px; /* Ensure the image has a minimum size */
 }
 
 /* Responsive Preview Modes */
@@ -174,17 +181,19 @@ html {
 
 /* Focused style for better visibility when editing */
 .editable-component:focus {
-  outline: 1px solid #3498db;
-  border-color: #3498db;
+  outline: 2px solid #3498db;
 }
 
+.editable-component:hover {
+    outline: 1px solid #3498db; /* Blue border on hover */
+  }
 /* Styles for focused/hovered components */
 .editable-component.hover-active {
   outline: 1px solid #3498db;
 }
 
 .editable-component.focus-active {
-  outline: 1px solid green;
+  outline: 2px solid #3498db;
 }
 
 /* Ensures child containers are styled separately */
@@ -241,8 +250,13 @@ html {
   padding: 2px 4px;
   border-radius: 3px;
   display: none;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .editable-component:hover .component-label {
   display: block;
 }
+.image-component:hover .component-label {
+    display: block;
+  }
