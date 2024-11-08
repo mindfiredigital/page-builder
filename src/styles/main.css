@@ -262,7 +262,7 @@ html {
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: rgba(0, 0, 0, 0.253);
+    background-color: transparent;
     color: white;
     border: none;
     padding: 5px;
@@ -270,12 +270,18 @@ html {
     cursor: pointer;
     font-size: 18px;
     display: none; /* Initially hidden */
+    opacity: 0.5;
     z-index: 10;
+    transition: opacity 200ms ease;
   }
   
   /* Show the pencil button when hovering over the image component */
   .image-component:hover .upload-btn {
     display: block;
+  }
+  .upload-btn:hover{
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.253);
   }
   
   
