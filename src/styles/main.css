@@ -143,8 +143,8 @@ html {
   justify-content: center;
   resize: both;
   overflow: hidden;
-  min-width: 150px; /* Ensure the image has a minimum size */
-  min-height: 150px; /* Ensure the image has a minimum size */
+  width: 300px;
+  height: 300px;
 }
 
 /* Responsive Preview Modes */

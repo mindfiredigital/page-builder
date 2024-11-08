@@ -25,8 +25,7 @@ export class ImageComponent {
     element.alt = 'Image Component';
     element.style.width = '100%';
     element.style.height = '100%';
-    element.style.objectFit = 'cover';
-
+    element.style.objectFit = 'contain';
     // Append the file input, pencil button, and image to the container
     container.appendChild(fileInput);
     container.appendChild(pencilButton);
