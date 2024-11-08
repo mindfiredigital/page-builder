@@ -15,7 +15,7 @@ export class HistoryManager {
    * Limits the undo stack size to a maximum of 20 entries.
    */
   captureState() {
-    const state = this.canvas.getState();
+    const state = Canvas.getState();
     // Check if the state is not empty and not identical to the last captured state
     if (state.length > 0) {
       // Compare the current state with the last state in the undoStack
@@ -52,14 +52,14 @@ export class HistoryManager {
 
       // Restore the last state remaining in the undoStack
       const previousState = this.undoStack[this.undoStack.length - 1];
-      this.canvas.restoreState(previousState);
+      Canvas.restoreState(previousState);
     } else if (this.undoStack.length === 1) {
       // Clear the canvas for the last undo action
       const initialState = this.undoStack.pop();
       this.redoStack.push(initialState);
 
       // Clear the canvas
-      this.canvas.restoreState([]);
+      Canvas.restoreState([]);
     } else {
       console.warn('No more actions to undo');
     }
@@ -74,7 +74,7 @@ export class HistoryManager {
     if (this.redoStack.length > 0) {
       const nextState = this.redoStack.pop();
       this.undoStack.push(nextState); // Save current state for future undo
-      this.canvas.restoreState(nextState);
+      Canvas.restoreState(nextState);
     } else {
       console.warn('No more actions to redo');
     }

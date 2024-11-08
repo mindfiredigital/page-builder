@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const htmlGenerator = new HTMLGenerator(canvas);
   const jsonStorage = new JSONStorage();
   createSidebar();
-  canvas.init();
+  Canvas.init();
   sidebar.init();
   const header = document.createElement('header');
   header.appendChild(createNavbar());
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   (_a = document.getElementById('save-btn')) === null || _a === void 0
     ? void 0
     : _a.addEventListener('click', () => {
-        const layoutJSON = canvas.getState();
+        const layoutJSON = Canvas.getState();
         jsonStorage.save(layoutJSON);
       });
   (_b = document.getElementById('export-html-btn')) === null || _b === void 0
@@ -54,12 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
   (_f = document.getElementById('undo-btn')) === null || _f === void 0
     ? void 0
     : _f.addEventListener('click', () => {
-        canvas.historyManager.undo();
+        Canvas.historyManager.undo();
       });
   //Functionality for redo button
   (_g = document.getElementById('redo-btn')) === null || _g === void 0
     ? void 0
     : _g.addEventListener('click', () => {
-        canvas.historyManager.redo();
+        Canvas.historyManager.redo();
       });
 });

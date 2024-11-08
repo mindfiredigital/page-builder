@@ -3,7 +3,8 @@ export declare class ContainerComponent {
   constructor();
   create(): HTMLElement;
   private onDrop;
+  private showLabel;
+  private hideLabel;
   private onHover;
-  private onFocus;
   private onBlur;
 }

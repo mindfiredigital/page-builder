@@ -177,6 +177,7 @@ html {
   border-radius: 4px;
   cursor: text;
   position: relative;
+  pointer-events: auto;
 }
 
 /* Focused style for better visibility when editing */
@@ -185,20 +186,12 @@ html {
 }
 
 .editable-component:hover {
-    outline: 1px solid #3498db; /* Blue border on hover */
-  }
-/* Styles for focused/hovered components */
-.editable-component.hover-active {
-  outline: 1px solid #3498db;
-}
-
-.editable-component.focus-active {
-  outline: 2px solid #3498db;
+  outline: 1px solid #3498db; /* Blue border on hover */
 }
 
 /* Ensures child containers are styled separately */
 .container-component .editable-component {
-  position: relative;
+  pointer-events: auto;
 }
 
 /* Container Component */
@@ -209,6 +202,8 @@ html {
   border: 0.5px dashed #ccc; /* Light grey dashed border */
   display: flex;
   flex-direction: column;
+  position: relative;
+  pointer-events: auto;
 }
 
 /* Draggable Icons */
@@ -259,29 +254,27 @@ html {
 }
 /* Pencil button styling */
 .upload-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: transparent;
-    color: white;
-    border: none;
-    padding: 5px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 18px;
-    display: none; /* Initially hidden */
-    opacity: 0.5;
-    z-index: 10;
-    transition: opacity 200ms ease;
-  }
-  
-  /* Show the pencil button when hovering over the image component */
-  .image-component:hover .upload-btn {
-    display: block;
-  }
-  .upload-btn:hover{
-    opacity: 1;
-    background-color: rgba(0, 0, 0, 0.253);
-  }
-  
-  
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: none; /* Initially hidden */
+  opacity: 0.5;
+  z-index: 10;
+  transition: opacity 200ms ease;
+}
+
+/* Show the pencil button when hovering over the image component */
+.image-component:hover .upload-btn {
+  display: block;
+}
+.upload-btn:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.253);
+}

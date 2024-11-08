@@ -1,23 +1,21 @@
 import { HistoryManager } from '../services/HistoryManager';
 export declare class Canvas {
-  private components;
-  private canvasElement;
-  private sidebarElement;
-  private componentCounters;
-  historyManager: HistoryManager;
-  private jsonStorage;
+  private static components;
+  private static canvasElement;
+  private static sidebarElement;
+  static historyManager: HistoryManager;
+  private static jsonStorage;
   private static componentFactory;
-  constructor();
-  getState(): {
+  static init(): void;
+  static getState(): {
     type: string;
     content: string;
   }[];
-  restoreState(state: any): void;
-  init(): void;
-  onDrop(event: DragEvent): void;
+  static restoreState(state: any): void;
+  static onDrop(event: DragEvent): void;
   static createComponent(type: string): HTMLElement | null;
-  generateUniqueClass(type: string): string;
-  exportLayout(): {
+  static generateUniqueClass(type: string): string;
+  static exportLayout(): {
     type: string;
     content: string;
   }[];

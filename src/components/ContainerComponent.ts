@@ -8,15 +8,13 @@ export class ContainerComponent {
     this.element.classList.add('container-component');
     this.element.setAttribute('draggable', 'true');
 
-    // Add drag event listeners
+    // Add drag and drop event listeners
     this.element.addEventListener('dragover', event => event.preventDefault());
     this.element.addEventListener('drop', this.onDrop.bind(this));
 
-    // Add hover and focus event listeners
-    this.element.addEventListener('mouseover', this.onHover.bind(this));
-    this.element.addEventListener('focus', this.onFocus.bind(this));
+    // Add hover effects for the container itself only
+    this.element.addEventListener('mouseenter', this.onHover.bind(this));
     this.element.addEventListener('mouseleave', this.onBlur.bind(this));
-    this.element.addEventListener('blur', this.onBlur.bind(this));
   }
 
   create(): HTMLElement {
@@ -28,37 +26,61 @@ export class ContainerComponent {
     event.stopPropagation();
 
     const componentType = event.dataTransfer?.getData('component-type');
-    console.log(`Dropped inside container, component type: ${componentType}`);
-
     if (componentType) {
       const component = Canvas.createComponent(componentType);
       if (component) {
-        // Attach hover/focus styles to child components
-        component.classList.add('editable-component');
-        component.addEventListener('mouseover', this.onHover.bind(this));
-        component.addEventListener('focus', this.onFocus.bind(this));
-        component.addEventListener('mouseleave', this.onBlur.bind(this));
-        component.addEventListener('blur', this.onBlur.bind(this));
+        // Add unique label to each component
+        const uniqueClass = Canvas.generateUniqueClass(componentType);
+        component.classList.add(uniqueClass);
+
+        const label = document.createElement('span');
+        label.className = 'component-label';
+        label.textContent = uniqueClass;
+        label.style.display = 'none'; // Hide label by default
+        component.appendChild(label);
+
+        // Add individual hover/focus event listeners to the child component
+        component.addEventListener('mouseenter', e =>
+          this.showLabel(e, component)
+        );
+        component.addEventListener('mouseleave', e =>
+          this.hideLabel(e, component)
+        );
 
         this.element.appendChild(component);
       }
     }
   }
 
+  private showLabel(event: MouseEvent, component: HTMLElement) {
+    event.stopPropagation(); // Prevent event from reaching the container
+    const label = component.querySelector('.component-label') as HTMLElement;
+    if (label) {
+      label.style.display = 'block'; // Show label on component hover
+    }
+    component.classList.add('hover-active'); // Add hover style to the component
+  }
+
+  private hideLabel(event: MouseEvent, component: HTMLElement) {
+    event.stopPropagation(); // Prevent event from reaching the container
+    const label = component.querySelector('.component-label') as HTMLElement;
+    if (label) {
+      label.style.display = 'none'; // Hide label on component leave
+    }
+    component.classList.remove('hover-active'); // Remove hover style from component
+  }
+
   private onHover(event: MouseEvent) {
-    event.stopPropagation(); // Prevent hover effect from propagating up
-    (event.currentTarget as HTMLElement).classList.add('hover-active');
+    if (event.target === this.element) {
+      // Only add hover style if directly on the container
+      this.element.classList.add('hover-active');
+    }
   }
 
-  private onFocus(event: FocusEvent) {
-    event.stopPropagation(); // Prevent focus effect from propagating up
-    (event.currentTarget as HTMLElement).classList.add('focus-active');
-  }
-
-  private onBlur(event: Event) {
-    (event.currentTarget as HTMLElement).classList.remove(
-      'hover-active',
-      'focus-active'
-    );
+  private onBlur(event: MouseEvent) {
+    if (event.target === this.element) {
+      // Only remove hover style if directly on the container
+      this.element.classList.remove('hover-active');
+    }
   }
 }

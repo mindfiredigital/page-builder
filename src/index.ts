@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const htmlGenerator = new HTMLGenerator(canvas);
   const jsonStorage = new JSONStorage();
   createSidebar();
-  canvas.init();
+  Canvas.init();
   sidebar.init();
   const header = document.createElement('header');
   header.appendChild(createNavbar());
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Additional event listeners for exporting or saving
   document.getElementById('save-btn')?.addEventListener('click', () => {
-    const layoutJSON = canvas.getState();
+    const layoutJSON = Canvas.getState();
     jsonStorage.save(layoutJSON);
   });
 
@@ -47,11 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //Functionality for undo button
   document.getElementById('undo-btn')?.addEventListener('click', () => {
-    canvas.historyManager.undo();
+    Canvas.historyManager.undo();
   });
 
   //Functionality for redo button
   document.getElementById('redo-btn')?.addEventListener('click', () => {
-    canvas.historyManager.redo();
+    Canvas.historyManager.redo();
   });
 });
