@@ -12,7 +12,7 @@ export class Canvas {
   private components: HTMLElement[] = [];
   private canvasElement: HTMLElement;
   private sidebarElement: HTMLElement;
-  private componentCounters: { [key: string]: number } = {};
+  private static componentCounters: { [key: string]: number } = {};
   public historyManager: HistoryManager; //accessible outside the Canvas class.
 
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
@@ -86,7 +86,7 @@ export class Canvas {
       const component = Canvas.createComponent(componentType);
       if (component) {
         // Add unique class name
-        const uniqueClass = this.generateUniqueClass(componentType);
+        const uniqueClass = Canvas.generateUniqueClass(componentType);
         component.classList.add(uniqueClass);
 
         // Create label for showing class name on hover
@@ -125,7 +125,7 @@ export class Canvas {
     return element;
   }
 
-  generateUniqueClass(type: string): string {
+  static generateUniqueClass(type: string): string {
     if (!this.componentCounters[type]) {
       this.componentCounters[type] = 0;
     }

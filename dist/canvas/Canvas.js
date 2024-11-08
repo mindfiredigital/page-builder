@@ -10,7 +10,6 @@ import { HistoryManager } from '../services/HistoryManager.js';
 export class Canvas {
   constructor() {
     this.components = [];
-    this.componentCounters = {};
     this.canvasElement = document.getElementById('canvas');
     this.sidebarElement = document.getElementById('sidebar');
     this.canvasElement.addEventListener('drop', this.onDrop.bind(this));
@@ -67,7 +66,7 @@ export class Canvas {
       const component = Canvas.createComponent(componentType);
       if (component) {
         // Add unique class name
-        const uniqueClass = this.generateUniqueClass(componentType);
+        const uniqueClass = Canvas.generateUniqueClass(componentType);
         component.classList.add(uniqueClass);
         // Create label for showing class name on hover
         const label = document.createElement('span');
@@ -99,7 +98,7 @@ export class Canvas {
     }
     return element;
   }
-  generateUniqueClass(type) {
+  static generateUniqueClass(type) {
     if (!this.componentCounters[type]) {
       this.componentCounters[type] = 0;
     }
@@ -115,6 +114,7 @@ export class Canvas {
     });
   }
 }
+Canvas.componentCounters = {};
 Canvas.componentFactory = {
   button: () => new ButtonComponent().create('Click Me'),
   header: () => new HeaderComponent().create(1, 'Editable Header'),

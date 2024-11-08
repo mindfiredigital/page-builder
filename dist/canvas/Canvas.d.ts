@@ -3,7 +3,7 @@ export declare class Canvas {
   private components;
   private canvasElement;
   private sidebarElement;
-  private componentCounters;
+  private static componentCounters;
   historyManager: HistoryManager;
   private static componentFactory;
   constructor();
@@ -15,7 +15,7 @@ export declare class Canvas {
   init(): void;
   onDrop(event: DragEvent): void;
   static createComponent(type: string): HTMLElement | null;
-  generateUniqueClass(type: string): string;
+  static generateUniqueClass(type: string): string;
   exportLayout(): {
     type: string;
     content: string;
