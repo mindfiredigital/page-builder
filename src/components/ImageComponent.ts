@@ -4,11 +4,20 @@ export class ImageComponent {
     const container = document.createElement('div');
     container.classList.add('image-component');
 
-    // Create the file input for uploading an image
+    // Create the file input for uploading an image (hidden by default)
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', event => this.handleFileChange(event));
+    fileInput.style.display = 'none'; // Hide the file input
+    fileInput.addEventListener('change', event =>
+      this.handleFileChange(event, container)
+    );
+
+    // Create the pencil icon button (visible on hover)
+    const pencilButton = document.createElement('button');
+    pencilButton.classList.add('upload-btn');
+    pencilButton.innerHTML = '🖊️'; // Pencil icon
+    pencilButton.addEventListener('click', () => fileInput.click()); // Trigger file input on click
 
     // Create the image element
     const element = document.createElement('img');
@@ -18,14 +27,15 @@ export class ImageComponent {
     element.style.height = '100%';
     element.style.objectFit = 'cover';
 
-    // Append the file input and image to the container
+    // Append the file input, pencil button, and image to the container
     container.appendChild(fileInput);
+    container.appendChild(pencilButton);
     container.appendChild(element);
 
     return container;
   }
 
-  private handleFileChange(event: Event): void {
+  private handleFileChange(event: Event, container: HTMLElement): void {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files ? fileInput.files[0] : null;
 
@@ -33,10 +43,10 @@ export class ImageComponent {
       // Create an object URL for the uploaded file
       const objectURL = URL.createObjectURL(file);
 
-      // Find the image element and update its src to the uploaded image
-      const imageElement = fileInput.nextElementSibling as HTMLImageElement;
+      // Find the image element by querying the container
+      const imageElement = container.querySelector('img');
       if (imageElement) {
-        imageElement.src = objectURL;
+        imageElement.src = objectURL; // Update the image source to the uploaded image
       }
     }
   }

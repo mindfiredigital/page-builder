@@ -257,6 +257,25 @@ html {
 .editable-component:hover .component-label {
   display: block;
 }
-.image-component:hover .component-label {
+/* Pencil button styling */
+.upload-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.253);
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: none; /* Initially hidden */
+    z-index: 10;
+  }
+  
+  /* Show the pencil button when hovering over the image component */
+  .image-component:hover .upload-btn {
     display: block;
   }
+  
+  
