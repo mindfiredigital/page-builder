@@ -5,6 +5,7 @@ export declare class Canvas {
   private sidebarElement;
   private componentCounters;
   historyManager: HistoryManager;
+  private jsonStorage;
   private static componentFactory;
   constructor();
   getState(): {

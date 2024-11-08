@@ -7,6 +7,7 @@ import {
   ContainerComponent,
 } from '../components/index';
 import { HistoryManager } from '../services/HistoryManager';
+import { JSONStorage } from '../services/JSONStorage';
 
 export class Canvas {
   private components: HTMLElement[] = [];
@@ -14,6 +15,7 @@ export class Canvas {
   private sidebarElement: HTMLElement;
   private componentCounters: { [key: string]: number } = {};
   public historyManager: HistoryManager; //accessible outside the Canvas class.
+  private jsonStorage: JSONStorage;
 
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
     {
@@ -35,6 +37,7 @@ export class Canvas {
 
     // Initialize the HistoryManager with this canvas
     this.historyManager = new HistoryManager(this);
+    this.jsonStorage = new JSONStorage();
   }
 
   // Get the current state of the canvas (for undo/redo purposes)
@@ -71,6 +74,12 @@ export class Canvas {
       this.sidebarElement
     );
     dragDropManager.enable();
+
+    // Load existing layout from local storage and render, if any
+    const savedState = this.jsonStorage.load();
+    if (savedState) {
+      this.restoreState(savedState);
+    }
   }
 
   onDrop(event: DragEvent) {
@@ -126,13 +135,21 @@ export class Canvas {
   }
 
   generateUniqueClass(type: string): string {
-    if (!this.componentCounters[type]) {
-      this.componentCounters[type] = 0;
-    }
-    this.componentCounters[type] += 1;
-    return `${type}${this.componentCounters[type]}`;
+    // Get all components of the given type on the canvas, including those loaded from storage
+    const existingClasses = this.components.map(
+      component => component.className.split(' ')[0]
+    );
+
+    // Filter for components of the same type (e.g., 'button', 'header') and count them
+    const existingCount = existingClasses.filter(className =>
+      className.startsWith(type)
+    ).length;
+
+    // Generate the next unique class based on the count
+    return `${type}${existingCount + 1}`;
   }
 
+  //Unused for now, remove it later
   exportLayout() {
     return this.components.map(component => {
       return {
