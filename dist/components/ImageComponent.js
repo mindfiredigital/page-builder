@@ -1,5 +1,5 @@
 export class ImageComponent {
-  create(src = 'https://via.placeholder.com/150') {
+  create(src = 'https://via.placeholder.com/300') {
     // Create a container for the image and label
     const container = document.createElement('div');
     container.classList.add('image-component');

@@ -114,7 +114,12 @@ export class Canvas {
     const element = componentFactoryFunction();
     if (element) {
       element.classList.add('editable-component');
-      element.setAttribute('contenteditable', 'true');
+      // Conditionally set contenteditable attribute
+      if (type === 'image') {
+        element.setAttribute('contenteditable', 'false'); // Image should not be editable
+      } else {
+        element.setAttribute('contenteditable', 'true'); // Other components are editable
+      }
     }
 
     return element;
