@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Additional event listeners for exporting or saving
   document.getElementById('save-btn')?.addEventListener('click', () => {
-    const layoutJSON = canvas.exportLayout();
+    const layoutJSON = canvas.getState();
     jsonStorage.save(layoutJSON);
   });
 

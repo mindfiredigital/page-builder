@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   (_a = document.getElementById('save-btn')) === null || _a === void 0
     ? void 0
     : _a.addEventListener('click', () => {
-        const layoutJSON = canvas.exportLayout();
+        const layoutJSON = canvas.getState();
         jsonStorage.save(layoutJSON);
       });
   (_b = document.getElementById('export-html-btn')) === null || _b === void 0
