@@ -4,6 +4,7 @@ import { createSidebar } from './sidebar/CreateSidebar';
 import { createNavbar } from './navbar/CreateNavbar';
 import { HTMLGenerator } from './services/HTMLGenerator';
 import { JSONStorage } from './services/JSONStorage';
+import { showDialogBox, showNotification } from './utils/utilityFunctions';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = new Canvas();
@@ -20,21 +21,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Additional event listeners for exporting or saving
   document.getElementById('save-btn')?.addEventListener('click', () => {
     const layoutJSON = Canvas.getState();
+    showNotification('Saving progress...');
     jsonStorage.save(layoutJSON);
   });
   document.getElementById('reset-btn')?.addEventListener('click', () => {
-    // Prompt the user for confirmation
-    const confirmReset = window.confirm(
-      'Are you sure you want to reset the layout?'
+    // Show the dialog with a custom message
+    showDialogBox(
+      'Are you sure you want to reset the layout?', // Message
+      () => {
+        // Action if the user confirms (clicks 'Yes')
+        jsonStorage.remove();
+        Canvas.clearCanvas();
+        showNotification('The saved layout has been successfully reset.');
+      },
+      () => {
+        // Action if the user cancels (clicks 'No')
+        console.log('Layout reset canceled.');
+      }
     );
-
-    if (confirmReset) {
-      // If confirmed, remove the saved layout from storage
-      jsonStorage.remove();
-      Canvas.clearCanvas();
-      // Show a success message
-      alert('The saved layout has been successfully reset.');
-    }
   });
 
   document.getElementById('export-html-btn')?.addEventListener('click', () => {
