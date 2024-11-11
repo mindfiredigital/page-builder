@@ -237,7 +237,7 @@ html {
 
 .component-label {
   position: absolute;
-  top: -20px;
+  top: 1px;
   left: 0;
   background: rgba(0, 0, 0, 0.7);
   color: white;
