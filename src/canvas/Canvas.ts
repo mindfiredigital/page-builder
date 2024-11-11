@@ -59,15 +59,16 @@ export class Canvas {
     Canvas.historyManager.captureState(); // Capture cleared state for undo functionality if needed
   }
 
-  // Get the current state of the canvas (for undo/redo purposes)
+  // Get current state of the canvas for undo/redo
   static getState() {
     return Canvas.components.map(component => {
       const baseType = component.classList[0]
         .split(/\d/)[0]
-        .replace('-component', ''); //Removing the number and suffix
+        .replace('-component', '');
       return {
-        type: baseType, // Store only the base type
+        type: baseType,
         content: component.innerHTML,
+        position: { x: component.offsetLeft, y: component.offsetTop },
       };
     });
   }
@@ -78,9 +79,12 @@ export class Canvas {
     Canvas.components = [];
 
     state.forEach((componentData: any) => {
-      const component = Canvas.createComponent(componentData.type); // Only pass the base type
+      const component = Canvas.createComponent(componentData.type);
       if (component) {
         component.innerHTML = componentData.content;
+        component.style.left = `${componentData.position.x}px`;
+        component.style.top = `${componentData.position.y}px`;
+        Canvas.addDraggableListeners(component);
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
       }
@@ -104,6 +108,11 @@ export class Canvas {
         const uniqueClass = Canvas.generateUniqueClass(componentType);
         component.classList.add(uniqueClass);
 
+        component.style.position = 'absolute';
+
+        // Set component's initial position based on the drop location
+        component.style.left = `${event.offsetX}px`;
+        component.style.top = `${event.offsetY}px`;
         // Create label for showing class name on hover
         const label = document.createElement('span');
         label.className = 'component-label';
@@ -112,6 +121,7 @@ export class Canvas {
 
         Canvas.components.push(component);
         Canvas.canvasElement.appendChild(component);
+        Canvas.addDraggableListeners(component); // Add drag functionality
 
         //On adding new component to the canvas it captures the current state.
         Canvas.historyManager.captureState();
@@ -155,6 +165,27 @@ export class Canvas {
     return `${type}${existingCount + 1}`;
   }
 
+  // Enable drag functionality for components on canvas
+  static addDraggableListeners(element: HTMLElement) {
+    element.setAttribute('draggable', 'true');
+    let offsetX = 0,
+      offsetY = 0;
+
+    element.addEventListener('dragstart', (event: DragEvent) => {
+      if (event.dataTransfer) {
+        offsetX = event.offsetX;
+        offsetY = event.offsetY;
+        event.dataTransfer.effectAllowed = 'move';
+      }
+    });
+
+    element.addEventListener('dragend', (event: DragEvent) => {
+      event.preventDefault();
+      element.style.left = `${event.pageX - offsetX}px`;
+      element.style.top = `${event.pageY - offsetY}px`;
+      Canvas.historyManager.captureState(); // Capture state after repositioning
+    });
+  }
   // Unused for now, remove it later
   static exportLayout() {
     return Canvas.components.map(component => {
