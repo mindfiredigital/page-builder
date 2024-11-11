@@ -278,3 +278,70 @@ html {
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.253);
 }
+
+/* Notification styling */
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4caf50; /* Green */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.notification.visible {
+  opacity: 1;
+}
+
+.notification.hidden {
+  opacity: 0;
+}
+
+/* Styling for dialog box */
+.dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog.hidden {
+  display: none;
+}
+
+.dialog-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+.dialog-btn {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#dialog-yes {
+  background-color: #e74c3c;
+  color: white;
+}
+
+#dialog-no {
+  background-color: #95a5a6;
+  color: white;
+}
