@@ -5,7 +5,7 @@ import { createNavbar } from './navbar/CreateNavbar.js';
 import { HTMLGenerator } from './services/HTMLGenerator.js';
 import { JSONStorage } from './services/JSONStorage.js';
 document.addEventListener('DOMContentLoaded', () => {
-  var _a, _b, _c, _d, _e, _f, _g;
+  var _a, _b, _c, _d, _e, _f, _g, _h;
   const canvas = new Canvas();
   const sidebar = new Sidebar(canvas);
   const htmlGenerator = new HTMLGenerator(canvas);
@@ -23,43 +23,58 @@ document.addEventListener('DOMContentLoaded', () => {
         const layoutJSON = Canvas.getState();
         jsonStorage.save(layoutJSON);
       });
-  (_b = document.getElementById('export-html-btn')) === null || _b === void 0
+  (_b = document.getElementById('reset-btn')) === null || _b === void 0
     ? void 0
     : _b.addEventListener('click', () => {
+        // Prompt the user for confirmation
+        const confirmReset = window.confirm(
+          'Are you sure you want to reset the layout?'
+        );
+        if (confirmReset) {
+          // If confirmed, remove the saved layout from storage
+          jsonStorage.remove();
+          Canvas.clearCanvas();
+          // Show a success message
+          alert('The saved layout has been successfully reset.');
+        }
+      });
+  (_c = document.getElementById('export-html-btn')) === null || _c === void 0
+    ? void 0
+    : _c.addEventListener('click', () => {
         const html = htmlGenerator.generateHTML();
         console.log('Generated HTML:', html);
       });
-  (_c = document.getElementById('preview-desktop')) === null || _c === void 0
+  (_d = document.getElementById('preview-desktop')) === null || _d === void 0
     ? void 0
-    : _c.addEventListener('click', () => {
+    : _d.addEventListener('click', () => {
         const canvas = document.getElementById('canvas');
         canvas.classList.remove('preview-tablet', 'preview-mobile');
         canvas.classList.add('preview-desktop');
       });
-  (_d = document.getElementById('preview-tablet')) === null || _d === void 0
+  (_e = document.getElementById('preview-tablet')) === null || _e === void 0
     ? void 0
-    : _d.addEventListener('click', () => {
+    : _e.addEventListener('click', () => {
         const canvas = document.getElementById('canvas');
         canvas.classList.remove('preview-desktop', 'preview-mobile');
         canvas.classList.add('preview-tablet');
       });
-  (_e = document.getElementById('preview-mobile')) === null || _e === void 0
+  (_f = document.getElementById('preview-mobile')) === null || _f === void 0
     ? void 0
-    : _e.addEventListener('click', () => {
+    : _f.addEventListener('click', () => {
         const canvas = document.getElementById('canvas');
         canvas.classList.remove('preview-desktop', 'preview-tablet');
         canvas.classList.add('preview-mobile');
       });
   //Functionality for undo button
-  (_f = document.getElementById('undo-btn')) === null || _f === void 0
+  (_g = document.getElementById('undo-btn')) === null || _g === void 0
     ? void 0
-    : _f.addEventListener('click', () => {
+    : _g.addEventListener('click', () => {
         Canvas.historyManager.undo();
       });
   //Functionality for redo button
-  (_g = document.getElementById('redo-btn')) === null || _g === void 0
+  (_h = document.getElementById('redo-btn')) === null || _h === void 0
     ? void 0
-    : _g.addEventListener('click', () => {
+    : _h.addEventListener('click', () => {
         Canvas.historyManager.redo();
       });
 });

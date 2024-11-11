@@ -6,4 +6,7 @@ export class JSONStorage {
     const data = localStorage.getItem('pageLayout');
     return data ? JSON.parse(data) : null;
   }
+  remove() {
+    localStorage.removeItem('pageLayout');
+  }
 }

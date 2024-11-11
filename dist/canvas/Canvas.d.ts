@@ -7,6 +7,7 @@ export declare class Canvas {
   private static jsonStorage;
   private static componentFactory;
   static init(): void;
+  static clearCanvas(): void;
   static getState(): {
     type: string;
     content: string;

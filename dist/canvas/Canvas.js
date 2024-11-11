@@ -30,6 +30,12 @@ export class Canvas {
       Canvas.restoreState(savedState);
     }
   }
+  // Method to clear the canvas and remove all components
+  static clearCanvas() {
+    Canvas.canvasElement.innerHTML = '';
+    Canvas.components = [];
+    Canvas.historyManager.captureState(); // Capture cleared state for undo functionality if needed
+  }
   // Get the current state of the canvas (for undo/redo purposes)
   static getState() {
     return Canvas.components.map(component => {

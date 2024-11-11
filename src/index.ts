@@ -22,6 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const layoutJSON = Canvas.getState();
     jsonStorage.save(layoutJSON);
   });
+  document.getElementById('reset-btn')?.addEventListener('click', () => {
+    // Prompt the user for confirmation
+    const confirmReset = window.confirm(
+      'Are you sure you want to reset the layout?'
+    );
+
+    if (confirmReset) {
+      // If confirmed, remove the saved layout from storage
+      jsonStorage.remove();
+      Canvas.clearCanvas();
+      // Show a success message
+      alert('The saved layout has been successfully reset.');
+    }
+  });
 
   document.getElementById('export-html-btn')?.addEventListener('click', () => {
     const html = htmlGenerator.generateHTML();
