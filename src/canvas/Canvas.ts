@@ -8,14 +8,25 @@ import {
 } from '../components/index';
 import { HistoryManager } from '../services/HistoryManager';
 import { JSONStorage } from '../services/JSONStorage';
+import { ComponentControlsManager } from './ComponentControls';
 
 export class Canvas {
   private static components: HTMLElement[] = [];
   private static canvasElement: HTMLElement;
   private static sidebarElement: HTMLElement;
+  private static controlsManager: ComponentControlsManager;
 
   public static historyManager: HistoryManager; //accessible outside the Canvas class.
   private static jsonStorage: JSONStorage;
+
+  // Add getters and setters for components to make it accessible outside the canvas class
+  public static getComponents(): HTMLElement[] {
+    return Canvas.components;
+  }
+
+  public static setComponents(components: HTMLElement[]): void {
+    Canvas.components = components;
+  }
 
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
     {
@@ -35,9 +46,10 @@ export class Canvas {
       event.preventDefault()
     );
 
-    // Initialize the HistoryManager with this canvas
+    // Initialize the HistoryManager with this canvas, jsonStorage and ComponentControlsManager
     Canvas.historyManager = new HistoryManager(Canvas.canvasElement); // Pass the canvas element here
     Canvas.jsonStorage = new JSONStorage();
+    Canvas.controlsManager = new ComponentControlsManager(Canvas);
 
     const dragDropManager = new DragDropManager(
       Canvas.canvasElement,
@@ -145,6 +157,8 @@ export class Canvas {
       } else {
         element.setAttribute('contenteditable', 'true'); // Other components are editable
       }
+      //Add control for each component
+      Canvas.controlsManager.addControlButtons(element);
     }
 
     return element;

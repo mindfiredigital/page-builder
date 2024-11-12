@@ -3,8 +3,11 @@ export declare class Canvas {
   private static components;
   private static canvasElement;
   private static sidebarElement;
+  private static controlsManager;
   static historyManager: HistoryManager;
   private static jsonStorage;
+  static getComponents(): HTMLElement[];
+  static setComponents(components: HTMLElement[]): void;
   private static componentFactory;
   static init(): void;
   static clearCanvas(): void;
