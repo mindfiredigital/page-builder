@@ -4,10 +4,6 @@ export class HeaderComponent {
     element.innerText = text;
     element.classList.add('header-component');
 
-    // Optional styling
-    element.style.margin = '20px 0';
-    element.style.fontWeight = 'bold';
-
     return element;
   }
 }
