@@ -345,3 +345,26 @@ html {
   background-color: #95a5a6;
   color: white;
 }
+
+/* Control panel that appears on hover */
+.component-controls {
+  display: none;
+  position: absolute;
+  top: 1px;
+  right:1px;
+  align-items: center;
+  z-index: 10;
+  cursor: pointer; 
+}
+.delete-icon {
+  width: 16px;
+  height: 16px;    
+  vertical-align: middle;  /* Center-align if needed */
+  cursor: pointer;
+}
+
+/* Show controls on component hover */
+.editable-component:hover .component-controls {
+  display: flex;
+  gap: 2px;
+}

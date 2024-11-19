@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Additional event listeners for exporting or saving
   document.getElementById('save-btn')?.addEventListener('click', () => {
     const layoutJSON = Canvas.getState();
-    showNotification('Saving progress...');
     jsonStorage.save(layoutJSON);
+    showNotification('Saving progress...');
   });
   document.getElementById('reset-btn')?.addEventListener('click', () => {
     // Show the dialog with a custom message

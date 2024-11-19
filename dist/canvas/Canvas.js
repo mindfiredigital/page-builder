@@ -8,7 +8,15 @@ import {
 } from '../components/index.js';
 import { HistoryManager } from '../services/HistoryManager.js';
 import { JSONStorage } from '../services/JSONStorage.js';
+import { ComponentControlsManager } from './ComponentControls.js';
 export class Canvas {
+  // Add getters and setters for components to make it accessible outside the canvas class
+  static getComponents() {
+    return Canvas.components;
+  }
+  static setComponents(components) {
+    Canvas.components = components;
+  }
   static init() {
     Canvas.canvasElement = document.getElementById('canvas');
     Canvas.sidebarElement = document.getElementById('sidebar');
@@ -16,9 +24,10 @@ export class Canvas {
     Canvas.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
-    // Initialize the HistoryManager with this canvas
+    // Initialize the HistoryManager with this canvas, jsonStorage and ComponentControlsManager
     Canvas.historyManager = new HistoryManager(Canvas.canvasElement); // Pass the canvas element here
     Canvas.jsonStorage = new JSONStorage();
+    Canvas.controlsManager = new ComponentControlsManager(Canvas);
     const dragDropManager = new DragDropManager(
       Canvas.canvasElement,
       Canvas.sidebarElement
@@ -114,6 +123,8 @@ export class Canvas {
       } else {
         element.setAttribute('contenteditable', 'true'); // Other components are editable
       }
+      //Add control for each component
+      Canvas.controlsManager.addControlButtons(element);
     }
     return element;
   }

@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ? void 0
     : _a.addEventListener('click', () => {
         const layoutJSON = Canvas.getState();
-        showNotification('Saving progress...');
         jsonStorage.save(layoutJSON);
+        showNotification('Saving progress...');
       });
   (_b = document.getElementById('reset-btn')) === null || _b === void 0
     ? void 0
