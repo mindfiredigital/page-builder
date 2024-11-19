@@ -22,7 +22,11 @@ export declare class Canvas {
   static restoreState(state: any): void;
   static onDrop(event: DragEvent): void;
   static createComponent(type: string): HTMLElement | null;
-  static generateUniqueClass(type: string): string;
+  static generateUniqueClass(
+    type: string,
+    isContainerComponent?: boolean,
+    containerClass?: string | null
+  ): string;
   static addDraggableListeners(element: HTMLElement): void;
   static exportLayout(): {
     type: string;

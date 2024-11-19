@@ -145,7 +145,13 @@ export class ContainerComponent {
     const component = Canvas.createComponent(componentType);
     if (!component) return;
 
-    const uniqueClass = Canvas.generateUniqueClass(componentType);
+    //Getting class name of the container, since unique name is stored at position 2
+    const containerClass = this.element.classList[2];
+    const uniqueClass = Canvas.generateUniqueClass(
+      componentType,
+      true,
+      containerClass
+    );
     component.classList.add(uniqueClass);
 
     const label = document.createElement('span');
