@@ -165,9 +165,9 @@ export class Canvas {
     return `${type}${existingCount + 1}`;
   }
 
-  // Enable drag functionality for components on canvas
   static addDraggableListeners(element: HTMLElement) {
     element.setAttribute('draggable', 'true');
+    element.style.cursor = 'grab';
     let offsetX = 0,
       offsetY = 0;
 
@@ -176,13 +176,28 @@ export class Canvas {
         offsetX = event.offsetX;
         offsetY = event.offsetY;
         event.dataTransfer.effectAllowed = 'move';
+        element.style.cursor = 'grabbing';
       }
     });
 
     element.addEventListener('dragend', (event: DragEvent) => {
       event.preventDefault();
-      element.style.left = `${event.pageX - offsetX}px`;
-      element.style.top = `${event.pageY - offsetY}px`;
+      const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+      let newX = event.pageX - offsetX;
+      let newY = event.pageY - offsetY;
+
+      // Ensure the component stays within canvas boundaries
+      if (newX < 0) newX = 0;
+      if (newY < 0) newY = 0;
+      if (newX + element.offsetWidth > canvasRect.width)
+        newX = canvasRect.width - element.offsetWidth;
+      if (newY + element.offsetHeight > canvasRect.height)
+        newY = canvasRect.height - element.offsetHeight;
+
+      element.style.left = `${newX}px`;
+      element.style.top = `${newY}px`;
+      element.style.cursor = 'grab'; // Reset cursor to 'grab' after dragging ends
+
       Canvas.historyManager.captureState(); // Capture state after repositioning
     });
   }
