@@ -128,17 +128,50 @@ export class Canvas {
     }
     return element;
   }
-  static generateUniqueClass(type) {
-    // Get all components of the given type on the canvas, including those loaded from storage
-    const existingClasses = Canvas.components.map(
-      component => component.className.split(' ')[0]
-    );
-    // Filter for components of the same type (e.g., 'button', 'header') and count them
-    const existingCount = existingClasses.filter(className =>
-      className.startsWith(type)
-    ).length;
-    // Generate the next unique class based on the count
-    return `${type}${existingCount + 1}`;
+  static generateUniqueClass(
+    type,
+    isContainerComponent = false,
+    containerClass = null
+  ) {
+    if (isContainerComponent && containerClass) {
+      // Handle container components
+      const containerElement = Canvas.components.find(component =>
+        component.classList.contains(containerClass)
+      );
+      if (!containerElement) {
+        console.warn(`Container with ID ${containerClass} not found.`);
+        return `${containerClass}-${type}1`;
+      }
+      const containerComponents = Array.from(containerElement.children);
+      const typePattern = new RegExp(`${containerClass}-${type}(\\d+)`);
+      // Find the highest existing number for this type in the container
+      let maxNumber = 0;
+      containerComponents.forEach(component => {
+        component.classList.forEach(className => {
+          const match = className.match(typePattern);
+          if (match) {
+            const number = parseInt(match[1]);
+            maxNumber = Math.max(maxNumber, number);
+          }
+        });
+      });
+      return `${containerClass}-${type}${maxNumber + 1}`;
+    } else {
+      // Handle regular components
+      const typePattern = new RegExp(`${type}(\\d+)`);
+      let maxNumber = 0;
+      // Find the highest existing number for this type across all components
+      Canvas.components.forEach(component => {
+        component.classList.forEach(className => {
+          const match = className.match(typePattern);
+          if (match) {
+            const number = parseInt(match[1]);
+            maxNumber = Math.max(maxNumber, number);
+          }
+        });
+      });
+      return `${type}${maxNumber + 1}`;
+    }
   }
   static addDraggableListeners(element) {
     element.setAttribute('draggable', 'true');
