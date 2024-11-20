@@ -14,10 +14,6 @@ export declare class Canvas {
   static getState(): {
     type: string;
     content: string;
-    position: {
-      x: number;
-      y: number;
-    };
   }[];
   static restoreState(state: any): void;
   static onDrop(event: DragEvent): void;
@@ -27,7 +23,6 @@ export declare class Canvas {
     isContainerComponent?: boolean,
     containerClass?: string | null
   ): string;
-  static addDraggableListeners(element: HTMLElement): void;
   static exportLayout(): {
     type: string;
     content: string;

@@ -351,15 +351,15 @@ html {
   display: none;
   position: absolute;
   top: 1px;
-  right:1px;
+  right: 1px;
   align-items: center;
   z-index: 10;
-  cursor: pointer; 
+  cursor: pointer;
 }
 .delete-icon {
   width: 16px;
-  height: 16px;    
-  vertical-align: middle;  /* Center-align if needed */
+  height: 16px;
+  vertical-align: middle; /* Center-align if needed */
   cursor: pointer;
 }
 
