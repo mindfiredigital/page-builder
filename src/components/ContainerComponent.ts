@@ -200,8 +200,6 @@ export class ContainerComponent {
     const style = document.createElement('style');
     style.textContent = `
       .container-component {
-        background: white;
-        position: absolute;
         min-width: 100px;
         min-height: 100px;
       }
