@@ -11,6 +11,12 @@ export declare class Canvas {
   private static componentFactory;
   static init(): void;
   static clearCanvas(): void;
+  /**
+   * Generates the current state of the canvas for undo/redo purposes.
+   * Maps each component into a structured object containing:
+   * Type, content, position, dimensions, style, and classes.
+   * @returns The array of component objects.
+   */
   static getState(): {
     type: string;
     content: string;
@@ -18,7 +24,27 @@ export declare class Canvas {
       x: number;
       y: number;
     };
+    dimensions: {
+      width: number;
+      height: number;
+    };
+    style: {
+      position: string;
+      left: string;
+      top: string;
+      width: string;
+      height: string;
+    };
+    classes: string[];
   }[];
+  /**
+   * Restores the canvas to a previous state.
+   * This functions helps for undoing and redoing purpose
+   * Clears the canvas. Iterates through the state and recreates components using createComponent().
+   * Then restores their position, content, styles, and classes.
+   * Re-adds them to the canvasElement and components array.
+   * Note: we might need to extend or move it to separate file when there is management of css for each component in future
+   */
   static restoreState(state: any): void;
   static onDrop(event: DragEvent): void;
   static createComponent(type: string): HTMLElement | null;
@@ -27,6 +53,17 @@ export declare class Canvas {
     isContainerComponent?: boolean,
     containerClass?: string | null
   ): string;
+  /**
+   * Adds drag-and-drop behavior to a component.
+   * Makes the component draggable (draggable="true").
+   * On dragstart:
+   * -Captures initial positions and dimensions.
+   * -Locks dimensions to prevent resizing during the drag.
+   * On dragend:
+   * -Calculates new positions based on the drag delta.
+   * -Ensures the component stays within canvas boundaries then Resets dimensions and captures the new state.
+   *
+   */
   static addDraggableListeners(element: HTMLElement): void;
   static exportLayout(): {
     type: string;
