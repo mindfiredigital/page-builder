@@ -46,6 +46,9 @@ export class Canvas {
       event.preventDefault()
     );
 
+    // Set canvas to relative positioning
+    Canvas.canvasElement.style.position = 'relative';
+
     // Initialize the HistoryManager with this canvas, jsonStorage and ComponentControlsManager
     Canvas.historyManager = new HistoryManager(Canvas.canvasElement); // Pass the canvas element here
     Canvas.jsonStorage = new JSONStorage();
@@ -71,7 +74,12 @@ export class Canvas {
     Canvas.historyManager.captureState(); // Capture cleared state for undo functionality if needed
   }
 
-  // Get current state of the canvas for undo/redo
+  /**
+   * Generates the current state of the canvas for undo/redo purposes.
+   * Maps each component into a structured object containing:
+   * Type, content, position, dimensions, style, and classes.
+   * @returns The array of component objects.
+   */
   static getState() {
     return Canvas.components.map(component => {
       const baseType = component.classList[0]
@@ -80,12 +88,37 @@ export class Canvas {
       return {
         type: baseType,
         content: component.innerHTML,
-        position: { x: component.offsetLeft, y: component.offsetTop },
+        position: {
+          x: component.offsetLeft,
+          y: component.offsetTop,
+        },
+        // Capture dimensions explicitly
+        dimensions: {
+          width: component.offsetWidth,
+          height: component.offsetHeight,
+        },
+        // Capture all relevant styles to preserve appearance
+        style: {
+          position: component.style.position,
+          left: component.style.left,
+          top: component.style.top,
+          width: component.style.width,
+          height: component.style.height,
+        },
+        // Capture class names to preserve styling
+        classes: Array.from(component.classList),
       };
     });
   }
 
-  // Restore the state of the canvas (for undo/redo purposes)
+  /**
+   * Restores the canvas to a previous state.
+   * This functions helps for undoing and redoing purpose
+   * Clears the canvas. Iterates through the state and recreates components using createComponent().
+   * Then restores their position, content, styles, and classes.
+   * Re-adds them to the canvasElement and components array.
+   * Note: we might need to extend or move it to separate file when there is management of css for each component in future
+   */
   static restoreState(state: any) {
     Canvas.canvasElement.innerHTML = '';
     Canvas.components = [];
@@ -93,9 +126,27 @@ export class Canvas {
     state.forEach((componentData: any) => {
       const component = Canvas.createComponent(componentData.type);
       if (component) {
+        // Restore full content
         component.innerHTML = componentData.content;
-        component.style.left = `${componentData.position.x}px`;
-        component.style.top = `${componentData.position.y}px`;
+
+        // Restore styles and positioning
+        component.style.position = componentData.style.position;
+        component.style.left = componentData.style.left;
+        component.style.top = componentData.style.top;
+
+        // Explicitly set width and height if defined
+        if (componentData.style.width) {
+          component.style.width = componentData.style.width;
+        }
+        if (componentData.style.height) {
+          component.style.height = componentData.style.height;
+        }
+
+        // Restore original classes
+        componentData.classes.forEach((cls: string) => {
+          component.classList.add(cls);
+        });
+
         Canvas.addDraggableListeners(component);
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
@@ -218,16 +269,40 @@ export class Canvas {
     }
   }
 
+  /**
+   * Adds drag-and-drop behavior to a component.
+   * Makes the component draggable (draggable="true").
+   * On dragstart:
+   * -Captures initial positions and dimensions.
+   * -Locks dimensions to prevent resizing during the drag.
+   * On dragend:
+   * -Calculates new positions based on the drag delta.
+   * -Ensures the component stays within canvas boundaries then Resets dimensions and captures the new state.
+   *
+   */
   static addDraggableListeners(element: HTMLElement) {
     element.setAttribute('draggable', 'true');
     element.style.cursor = 'grab';
-    let offsetX = 0,
-      offsetY = 0;
+
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let elementStartX = 0;
+    let elementStartY = 0;
 
     element.addEventListener('dragstart', (event: DragEvent) => {
       if (event.dataTransfer) {
-        offsetX = event.offsetX;
-        offsetY = event.offsetY;
+        // Capture starting positions
+        const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+        const rect = element.getBoundingClientRect();
+
+        // Capture starting coordinates
+        dragStartX = event.clientX;
+        dragStartY = event.clientY;
+
+        // Current element position relative to canvas
+        elementStartX = rect.left - canvasRect.left;
+        elementStartY = rect.top - canvasRect.top;
+
         event.dataTransfer.effectAllowed = 'move';
         element.style.cursor = 'grabbing';
       }
@@ -235,25 +310,35 @@ export class Canvas {
 
     element.addEventListener('dragend', (event: DragEvent) => {
       event.preventDefault();
-      const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-      let newX = event.pageX - offsetX;
-      let newY = event.pageY - offsetY;
+      // const canvasRect = Canvas.canvasElement.getBoundingClientRect();
 
-      // Ensure the component stays within canvas boundaries
-      if (newX < 0) newX = 0;
-      if (newY < 0) newY = 0;
-      if (newX + element.offsetWidth > canvasRect.width)
-        newX = canvasRect.width - element.offsetWidth;
-      if (newY + element.offsetHeight > canvasRect.height)
-        newY = canvasRect.height - element.offsetHeight;
+      // Calculate movement delta
+      const deltaX = event.clientX - dragStartX;
+      const deltaY = event.clientY - dragStartY;
 
+      // Calculate new position
+      let newX = elementStartX + deltaX;
+      let newY = elementStartY + deltaY;
+
+      // Constrain within canvas boundaries
+      const maxX = Canvas.canvasElement.offsetWidth - element.offsetWidth;
+      const maxY = Canvas.canvasElement.offsetHeight - element.offsetHeight;
+
+      newX = Math.max(0, Math.min(newX, maxX));
+      newY = Math.max(0, Math.min(newY, maxY));
+
+      // Set new position
       element.style.left = `${newX}px`;
       element.style.top = `${newY}px`;
-      element.style.cursor = 'grab'; // Reset cursor to 'grab' after dragging ends
 
-      Canvas.historyManager.captureState(); // Capture state after repositioning
+      // Reset cursor
+      element.style.cursor = 'grab';
+
+      // Capture the state after dragging
+      Canvas.historyManager.captureState();
     });
   }
+
   // Unused for now, remove it later
   static exportLayout() {
     return Canvas.components.map(component => {
