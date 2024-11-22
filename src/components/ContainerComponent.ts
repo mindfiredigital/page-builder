@@ -248,4 +248,30 @@ export class ContainerComponent {
   public create(): HTMLElement {
     return this.element;
   }
+
+  public static restoreResizer(element: HTMLElement): void {
+    // Create new resizers container
+    const resizersDiv = document.createElement('div');
+    resizersDiv.classList.add('resizers');
+
+    // Create temporary container instance to bind event listeners
+    const container = new ContainerComponent();
+    container.element = element;
+    container.resizers = resizersDiv;
+
+    //Adding resize handles for temporary
+    container.addResizeHandles();
+
+    // Remove any existing resizers
+    const oldResizers = element.querySelector('.resizers');
+    if (oldResizers) {
+      oldResizers.remove();
+    }
+
+    // Add new resizers
+    element.appendChild(resizersDiv);
+
+    // Reattach container event listeners
+    container.initializeEventListeners();
+  }
 }

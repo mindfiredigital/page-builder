@@ -43,7 +43,7 @@ export declare class Canvas {
    * Clears the canvas. Iterates through the state and recreates components using createComponent().
    * Then restores their position, content, styles, and classes.
    * Re-adds them to the canvasElement and components array.
-   * Note: we might need to extend or move it to separate file when there is management of css for each component in future
+   * Dynamic functionalities also re-applied (e.g resize container, delete a component etc).
    */
   static restoreState(state: any): void;
   static onDrop(event: DragEvent): void;

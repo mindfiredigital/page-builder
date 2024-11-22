@@ -125,7 +125,7 @@ export class Canvas {
    * Clears the canvas. Iterates through the state and recreates components using createComponent().
    * Then restores their position, content, styles, and classes.
    * Re-adds them to the canvasElement and components array.
-   * Note: we might need to extend or move it to separate file when there is management of css for each component in future
+   * Dynamic functionalities also re-applied (e.g resize container, delete a component etc).
    */
   static restoreState(state: any) {
     Canvas.canvasElement.innerHTML = '';
@@ -138,24 +138,23 @@ export class Canvas {
         component.innerHTML = componentData.content;
 
         // Restore styles and positioning
-        component.style.position = componentData.style.position;
-        component.style.left = componentData.style.left;
-        component.style.top = componentData.style.top;
-
-        // Explicitly set width and height if defined
-        if (componentData.style.width) {
-          component.style.width = componentData.style.width;
-        }
-        if (componentData.style.height) {
-          component.style.height = componentData.style.height;
-        }
+        Object.assign(component.style, componentData.style);
 
         // Restore original classes
+        component.className = ''; // Clear existing classes
         componentData.classes.forEach((cls: string) => {
           component.classList.add(cls);
         });
 
+        // Reapply event listeners and controls
+        Canvas.controlsManager.addControlButtons(component);
         Canvas.addDraggableListeners(component);
+        // If it's a container, restore resizer functionality
+        if (component.classList.contains('container-component')) {
+          ContainerComponent.restoreResizer(component);
+        }
+
+        // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
       }
