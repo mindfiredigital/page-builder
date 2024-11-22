@@ -70,6 +70,13 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
+    // Convert the background color to hex format
+    const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
+    // Set the color input to the component's background color in hex format
+    const colorInput = document.getElementById('color');
+    if (colorInput) {
+      colorInput.value = colorHex; // Set to valid hex color value
+    }
     // Add event listeners for live updates
     this.addListeners(component);
   }
@@ -77,6 +84,17 @@ export class CustomizationSidebar {
     if (this.sidebarElement) {
       this.sidebarElement.style.display = 'none';
     }
+  }
+  static rgbToHex(rgb) {
+    const result = rgb.match(
+      /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/
+    );
+    if (!result) return rgb; // If the format is not matched, return the original string
+    const r = parseInt(result[1], 10);
+    const g = parseInt(result[2], 10);
+    const b = parseInt(result[3], 10);
+    // Ensure it's in the correct hex format
+    return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
   }
   static createControl(label, id, type, value, attributes = {}) {
     const wrapper = document.createElement('div');
