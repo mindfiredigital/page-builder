@@ -172,11 +172,15 @@ export class Canvas {
 
     const componentType = event.dataTransfer?.getData('component-type');
     console.log(`Dropped component type: ${componentType}`);
+
     if (componentType) {
       const component = Canvas.createComponent(componentType);
       if (component) {
         // Add unique class name
         const uniqueClass = Canvas.generateUniqueClass(componentType);
+        if (componentType === 'image') {
+          component.setAttribute('id', uniqueClass); // Explicitly set the ID
+        }
         component.id = uniqueClass;
         component.classList.add(uniqueClass);
 
