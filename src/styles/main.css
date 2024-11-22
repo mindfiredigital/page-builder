@@ -374,3 +374,106 @@ html {
   display: flex;
   gap: 2px;
 }
+
+/* Control wrapper styling */
+.control-wrapper {
+  margin-bottom: 16px;
+}
+
+.control-wrapper label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Input fields styling */
+.control-wrapper input[type="range"] {
+  width: 100%;
+}
+
+.control-wrapper input[type="number"] {
+  width: calc(100% - 50px);
+  padding: 4px 8px;
+  font-size: 14px;
+  margin-right: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.control-wrapper input[type="color"] {
+  width: 100%;
+  height: 36px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+/* Select dropdown styling */
+.control-wrapper select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  appearance: none;
+}
+
+/* Increment/Decrement Buttons for Number Inputs */
+.control-wrapper .step-buttons {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.control-wrapper .step-buttons button {
+  width: 40px;
+  height: 20px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  padding: 0;
+  line-height: 20px;
+  user-select: none;
+}
+
+.control-wrapper .step-buttons button:hover {
+  background-color: #e7e7e7;
+}
+
+.control-wrapper .step-buttons button:active {
+  background-color: #ddd;
+}
+
+/* General Styling */
+#customization h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+#customization hr {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+#customization button {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#customization button:hover {
+  background-color: #0056b3;
+}

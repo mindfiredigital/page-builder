@@ -18,12 +18,12 @@ export class CustomizationSidebar {
     this.controlsContainer.innerHTML = '';
     // Dynamically create controls
     const styles = getComputedStyle(component);
-    this.createControl('Width', 'width', 'range', component.offsetWidth, {
-      min: 50,
+    this.createControl('Width', 'width', 'number', component.offsetWidth, {
+      min: 0,
       max: 1000,
     });
-    this.createControl('Height', 'height', 'range', component.offsetHeight, {
-      min: 50,
+    this.createControl('Height', 'height', 'number', component.offsetHeight, {
+      min: 0,
       max: 1000,
     });
     this.createControl('Color', 'color', 'color', styles.backgroundColor);
