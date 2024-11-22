@@ -67,7 +67,7 @@ html {
 #customization {
   display: none;
   right: 0;
-  width: 170px;
+  width: 180px;
   background-color: #fff;
   box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.5);
   z-index: 1000;
@@ -455,16 +455,19 @@ html {
   background-color: #ddd;
 }
 
-/* General Styling */
-#customization h3 {
-  font-size: 18px;
-  margin-bottom: 16px;
-  color: #333;
+#component-name {
+  background-color: #f5f5f5; /* Light background color */
+  padding: 3px; /* Add some padding for spacing */
+  margin-bottom: 20px; /* Add space below the box */
+  border: 2px solid #ddd; /* Light border around the box */
+  border-radius: 5px; /* Rounded corners */
+  font-weight: bold; /* Make the text bold */
+  font-size: 12px; /* Adjust font size */
+  color: #333; /* Dark text for readability */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
 }
 
-#customization hr {
-  margin: 16px 0;
-  border: none;
-  border-top: 1px solid #ddd;
+#component-name span {
+  font-size: 12px; /* Slightly smaller text for the component ID */
+  color: #666; /* Lighter color for the component ID */
 }
-

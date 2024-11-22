@@ -18,7 +18,7 @@ export class CustomizationSidebar {
     this.sidebarElement.style.display = 'block';
     this.controlsContainer.innerHTML = '';
     // Set the component name in the header
-    this.componentNameHeader.textContent = `Selected Component: ${componentId}`;
+    this.componentNameHeader.textContent = `Component: ${componentId}`;
     // Dynamically create controls
     const styles = getComputedStyle(component);
     this.createControl('Width', 'width', 'number', component.offsetWidth, {
