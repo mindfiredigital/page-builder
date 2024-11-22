@@ -9,12 +9,14 @@ import {
 import { HistoryManager } from '../services/HistoryManager';
 import { JSONStorage } from '../services/JSONStorage';
 import { ComponentControlsManager } from './ComponentControls';
+import { CustomizationSidebar } from '../sidebar/CustomizationSidebar';
 
 export class Canvas {
   private static components: HTMLElement[] = [];
   private static canvasElement: HTMLElement;
   private static sidebarElement: HTMLElement;
   private static controlsManager: ComponentControlsManager;
+  // Initialize CustomizationSidebar
 
   public static historyManager: HistoryManager; //accessible outside the Canvas class.
   private static jsonStorage: JSONStorage;
@@ -45,7 +47,13 @@ export class Canvas {
     Canvas.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
-
+    Canvas.canvasElement.addEventListener('click', (event: MouseEvent) => {
+      const component = event.target as HTMLElement;
+      console.log('this is component id ', component.id);
+      if (component) {
+        CustomizationSidebar.showSidebar(component.id);
+      }
+    });
     // Set canvas to relative positioning
     Canvas.canvasElement.style.position = 'relative';
 
@@ -169,6 +177,7 @@ export class Canvas {
       if (component) {
         // Add unique class name
         const uniqueClass = Canvas.generateUniqueClass(componentType);
+        component.id = uniqueClass;
         component.classList.add(uniqueClass);
 
         component.style.position = 'absolute';

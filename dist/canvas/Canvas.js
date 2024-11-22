@@ -9,6 +9,7 @@ import {
 import { HistoryManager } from '../services/HistoryManager.js';
 import { JSONStorage } from '../services/JSONStorage.js';
 import { ComponentControlsManager } from './ComponentControls.js';
+import { CustomizationSidebar } from '../sidebar/CustomizationSidebar.js';
 export class Canvas {
   // Add getters and setters for components to make it accessible outside the canvas class
   static getComponents() {
@@ -24,6 +25,13 @@ export class Canvas {
     Canvas.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
+    Canvas.canvasElement.addEventListener('click', event => {
+      const component = event.target;
+      console.log('this is component id ', component.id);
+      if (component) {
+        CustomizationSidebar.showSidebar(component.id);
+      }
+    });
     // Set canvas to relative positioning
     Canvas.canvasElement.style.position = 'relative';
     // Initialize the HistoryManager with this canvas, jsonStorage and ComponentControlsManager
@@ -136,6 +144,7 @@ export class Canvas {
       if (component) {
         // Add unique class name
         const uniqueClass = Canvas.generateUniqueClass(componentType);
+        component.id = uniqueClass;
         component.classList.add(uniqueClass);
         component.style.position = 'absolute';
         // Set component's initial position based on the drop location

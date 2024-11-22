@@ -1,5 +1,6 @@
 import { Canvas } from './canvas/Canvas.js';
 import { Sidebar } from './sidebar/ConfigSidebar.js';
+import { CustomizationSidebar } from './sidebar/CustomizationSidebar.js';
 import { createSidebar } from './sidebar/CreateSidebar.js';
 import { createNavbar } from './navbar/CreateNavbar.js';
 import { HTMLGenerator } from './services/HTMLGenerator.js';
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   createSidebar();
   Canvas.init();
   sidebar.init();
+  CustomizationSidebar.init();
   const header = document.createElement('header');
   header.appendChild(createNavbar());
   document.body.insertBefore(header, document.getElementById('app'));
