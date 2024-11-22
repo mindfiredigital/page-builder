@@ -27,23 +27,35 @@ export class CustomizationSidebar {
     this.createControl('Width', 'width', 'number', component.offsetWidth, {
       min: 0,
       max: 1000,
+      unit: 'px',
     });
     this.createControl('Height', 'height', 'number', component.offsetHeight, {
       min: 0,
       max: 1000,
+      unit: 'px',
     });
     this.createControl('Color', 'color', 'color', styles.backgroundColor);
     this.createControl(
       'Margin',
       'margin',
       'number',
-      parseInt(styles.margin) || 0
+      parseInt(styles.margin) || 0,
+      {
+        min: 0,
+        max: 1000,
+        unit: 'px',
+      }
     );
     this.createControl(
       'Padding',
       'padding',
       'number',
-      parseInt(styles.padding) || 0
+      parseInt(styles.padding) || 0,
+      {
+        min: 0,
+        max: 1000,
+        unit: 'px',
+      }
     );
     this.createSelectControl('Text Alignment', 'alignment', styles.textAlign, [
       'left',
@@ -54,7 +66,12 @@ export class CustomizationSidebar {
       'Font Size',
       'font-size',
       'number',
-      parseInt(styles.fontSize) || 16
+      parseInt(styles.fontSize) || 16,
+      {
+        min: 0,
+        max: 100,
+        unit: 'px',
+      }
     );
 
     // Add event listeners for live updates
@@ -76,17 +93,59 @@ export class CustomizationSidebar {
   ) {
     const wrapper = document.createElement('div');
     wrapper.classList.add('control-wrapper');
-    wrapper.innerHTML = `
-        <label for="${id}">${label}:</label>
-        <input type="${type}" id="${id}" value="${value}">
-      `;
+
+    // Check if the control is a color input or a number input
+    const isColor = type === 'color';
+    const isNumber = type === 'number';
+
+    // Format value for number inputs and add a unit dropdown
+    if (isNumber && attributes.unit) {
+      const unit = attributes.unit;
+      wrapper.innerHTML = `
+                <label for="${id}">${label}:</label>
+                <input type="${type}" id="${id}" value="${value}">
+                <select id="${id}-unit">
+                    <option value="px" ${unit === 'px' ? 'selected' : ''}>px</option>
+                    <option value="rem" ${unit === 'rem' ? 'selected' : ''}>rem</option>
+                    <option value="vh" ${unit === 'vh' ? 'selected' : ''}>vh</option>
+                    <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
+                </select>
+            `;
+    } else {
+      wrapper.innerHTML = `
+            <label for="${id}">${label}:</label>
+            <input type="${type}" id="${id}" value="${value}">
+            ${isColor ? '<span id="color-value" style="font-size: 0.8rem;"></span>' : ''}
+        `;
+    }
+
     const input = wrapper.querySelector('input') as HTMLInputElement;
+    const unitSelect = wrapper.querySelector(
+      `#${id}-unit`
+    ) as HTMLSelectElement;
+    const colorValueSpan = wrapper.querySelector('#color-value') as HTMLElement;
+
     if (input) {
       Object.keys(attributes).forEach(key => {
         input.setAttribute(key, attributes[key].toString());
       });
     }
+
+    // If it's a color input, update the hex code display
+    if (colorValueSpan && isColor) {
+      colorValueSpan.textContent = value as string;
+    }
+
     this.controlsContainer.appendChild(wrapper);
+
+    // Update value dynamically when unit changes
+    if (unitSelect) {
+      unitSelect.addEventListener('change', () => {
+        const unit = unitSelect.value;
+        const currentValue = parseInt(input.value);
+        input.value = `${currentValue}${unit}`;
+      });
+    }
   }
 
   private static createSelectControl(
@@ -104,9 +163,9 @@ export class CustomizationSidebar {
       )
       .join('');
     wrapper.innerHTML = `
-        <label for="${id}">${label}:</label>
-        <select id="${id}">${selectOptions}</select>
-      `;
+            <label for="${id}">${label}:</label>
+            <select id="${id}">${selectOptions}</select>
+        `;
     this.controlsContainer.appendChild(wrapper);
   }
 
@@ -124,25 +183,41 @@ export class CustomizationSidebar {
     if (!controls) return;
 
     controls.width?.addEventListener('input', () => {
-      component.style.width = `${controls.width.value}px`;
+      const unit = (document.getElementById('width-unit') as HTMLSelectElement)
+        .value;
+      component.style.width = `${controls.width.value}${unit}`;
     });
     controls.height?.addEventListener('input', () => {
-      component.style.height = `${controls.height.value}px`;
+      const unit = (document.getElementById('height-unit') as HTMLSelectElement)
+        .value;
+      component.style.height = `${controls.height.value}${unit}`;
     });
     controls.color?.addEventListener('input', () => {
       component.style.backgroundColor = controls.color.value;
+      const colorValueSpan = document.querySelector('#color-value');
+      if (colorValueSpan) {
+        colorValueSpan.textContent = controls.color.value; // Update color hex code display
+      }
     });
     controls.margin?.addEventListener('input', () => {
-      component.style.margin = `${controls.margin.value}px`;
+      const unit = (document.getElementById('margin-unit') as HTMLSelectElement)
+        .value;
+      component.style.margin = `${controls.margin.value}${unit}`;
     });
     controls.padding?.addEventListener('input', () => {
-      component.style.padding = `${controls.padding.value}px`;
+      const unit = (
+        document.getElementById('padding-unit') as HTMLSelectElement
+      ).value;
+      component.style.padding = `${controls.padding.value}${unit}`;
     });
     controls.alignment?.addEventListener('change', () => {
       component.style.textAlign = controls.alignment.value;
     });
     controls.fontSize?.addEventListener('input', () => {
-      component.style.fontSize = `${controls.fontSize.value}px`;
+      const unit = (
+        document.getElementById('font-size-unit') as HTMLSelectElement
+      ).value;
+      component.style.fontSize = `${controls.fontSize.value}${unit}`;
     });
   }
 }
