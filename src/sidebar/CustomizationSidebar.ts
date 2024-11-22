@@ -1,10 +1,12 @@
 export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
   private static controlsContainer: HTMLElement;
+  private static componentNameHeader: HTMLElement;
 
   static init() {
     this.sidebarElement = document.getElementById('customization')!;
     this.controlsContainer = document.getElementById('controls')!;
+    this.componentNameHeader = document.getElementById('component-name')!;
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
       return;
@@ -21,6 +23,9 @@ export class CustomizationSidebar {
 
     this.sidebarElement.style.display = 'block';
     this.controlsContainer.innerHTML = '';
+
+    // Set the component name in the header
+    this.componentNameHeader.textContent = `Selected Component: ${componentId}`;
 
     // Dynamically create controls
     const styles = getComputedStyle(component);
