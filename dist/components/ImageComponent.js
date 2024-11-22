@@ -3,6 +3,10 @@ export class ImageComponent {
     // Create a container for the image and label
     const container = document.createElement('div');
     container.classList.add('image-component');
+    // Generate and assign a unique ID to the container
+    const uniqueContainerId = `image-container-${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2, 10)}`;
     // Create the file input for uploading an image (hidden by default)
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -18,6 +22,8 @@ export class ImageComponent {
     pencilButton.addEventListener('click', () => fileInput.click()); // Trigger file input on click
     // Create the image element
     const element = document.createElement('img');
+    const uniqueImageId = `${uniqueContainerId}-img`; // Generate a related unique ID
+    element.id = uniqueImageId;
     element.src = src;
     element.alt = 'Image Component';
     element.style.width = '100%';

@@ -49,6 +49,7 @@ export class Canvas {
     );
     Canvas.canvasElement.addEventListener('click', (event: MouseEvent) => {
       const component = event.target as HTMLElement;
+      console.log('this is my component,', component);
       console.log('this is component id ', component.id);
       if (component) {
         CustomizationSidebar.showSidebar(component.id);
@@ -178,9 +179,6 @@ export class Canvas {
       if (component) {
         // Add unique class name
         const uniqueClass = Canvas.generateUniqueClass(componentType);
-        if (componentType === 'image') {
-          component.setAttribute('id', uniqueClass); // Explicitly set the ID
-        }
         component.id = uniqueClass;
         component.classList.add(uniqueClass);
 
@@ -217,6 +215,9 @@ export class Canvas {
       element.classList.add('editable-component');
       // Conditionally set contenteditable attribute
       if (type === 'image') {
+        // Add unique ID for all components, including images
+        const uniqueClass = Canvas.generateUniqueClass(type);
+        element.setAttribute('id', uniqueClass);
         element.setAttribute('contenteditable', 'false'); // Image should not be editable
       } else {
         element.setAttribute('contenteditable', 'true'); // Other components are editable
