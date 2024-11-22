@@ -82,7 +82,7 @@ export class CustomizationSidebar {
     const wrapper = document.createElement('div');
     wrapper.classList.add('control-wrapper');
     // Check if the control is a color input or a number input
-    const isColor = type === 'color';
+    //const isColor = type === 'color';
     const isNumber = type === 'number';
     // Format value for number inputs and add a unit dropdown
     if (isNumber && attributes.unit) {
@@ -99,22 +99,46 @@ export class CustomizationSidebar {
             `;
     } else {
       wrapper.innerHTML = `
-            <label for="${id}">${label}:</label>
-            <input type="${type}" id="${id}" value="${value}">
-            ${isColor ? '<span id="color-value" style="font-size: 0.8rem;"></span>' : ''}
-        `;
+        <label for="${id}">${label}:</label>
+        <input type="color" id="${id}" value="${value}">
+        <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${value}">
+      `;
     }
     const input = wrapper.querySelector('input');
     const unitSelect = wrapper.querySelector(`#${id}-unit`);
-    const colorValueSpan = wrapper.querySelector('#color-value');
     if (input) {
       Object.keys(attributes).forEach(key => {
         input.setAttribute(key, attributes[key].toString());
       });
     }
     // If it's a color input, update the hex code display
-    if (colorValueSpan && isColor) {
-      colorValueSpan.textContent = value;
+    const colorinput = wrapper.querySelector('input[type="color"]');
+    const hexInput = wrapper.querySelector('#color-value');
+    if (colorinput) {
+      // Update hex code span when color input changes
+      colorinput.addEventListener('input', () => {
+        if (hexInput) {
+          hexInput.value = colorinput.value; // Update hex code display
+        }
+        // Update component color
+        const colorValueSpan = document.querySelector('#color-value');
+        if (colorValueSpan) {
+          colorValueSpan.textContent = colorinput.value; // Update color hex code display
+        }
+      });
+    }
+    // If it's a hex code input, update the color input when the value changes
+    if (hexInput) {
+      hexInput.addEventListener('input', () => {
+        if (colorinput) {
+          colorinput.value = hexInput.value; // Update color input with the new hex code
+        }
+        // Update component color
+        const colorValueSpan = document.querySelector('#color-value');
+        if (colorValueSpan) {
+          colorValueSpan.textContent = hexInput.value; // Update color hex code display
+        }
+      });
     }
     this.controlsContainer.appendChild(wrapper);
     // Update value dynamically when unit changes

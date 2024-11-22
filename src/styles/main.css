@@ -395,7 +395,7 @@ html {
   color: #333;
 }
 
-.control-wrapper input[type="number"] {
+.control-wrapper input[type='number'] {
   width: 40px;
   padding: 4px 8px;
   font-size: 14px;
@@ -404,7 +404,7 @@ html {
   border-radius: 4px;
 }
 
-.control-wrapper input[type="color"] {
+.control-wrapper input[type='color'] {
   width: 25px;
   height: 25px;
   border: none;
@@ -470,4 +470,10 @@ html {
 #component-name span {
   font-size: 12px; /* Slightly smaller text for the component ID */
   color: #666; /* Lighter color for the component ID */
+}
+#color-value {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.8rem;
+  color: #333;
 }
