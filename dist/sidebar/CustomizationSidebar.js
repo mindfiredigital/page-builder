@@ -3,10 +3,19 @@ export class CustomizationSidebar {
     this.sidebarElement = document.getElementById('customization');
     this.controlsContainer = document.getElementById('controls');
     this.componentNameHeader = document.getElementById('component-name');
+    this.closeButton = document.createElement('button'); // Create close button
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
       return;
     }
+    // Add the close button to the sidebar
+    this.sidebarElement.appendChild(this.closeButton);
+    this.closeButton.textContent = '×'; // Close button symbol
+    this.closeButton.classList.add('close-button');
+    // Add the event listener to hide the sidebar when the close button is clicked
+    this.closeButton.addEventListener('click', () => {
+      this.hideSidebar();
+    });
   }
   static showSidebar(componentId) {
     const component = document.getElementById(componentId);
@@ -100,27 +109,26 @@ export class CustomizationSidebar {
     const wrapper = document.createElement('div');
     wrapper.classList.add('control-wrapper');
     // Check if the control is a color input or a number input
-    //const isColor = type === 'color';
     const isNumber = type === 'number';
     // Format value for number inputs and add a unit dropdown
     if (isNumber && attributes.unit) {
       const unit = attributes.unit;
       wrapper.innerHTML = `
-                <label for="${id}">${label}:</label>
-                <input type="${type}" id="${id}" value="${value}">
-                <select id="${id}-unit">
-                    <option value="px" ${unit === 'px' ? 'selected' : ''}>px</option>
-                    <option value="rem" ${unit === 'rem' ? 'selected' : ''}>rem</option>
-                    <option value="vh" ${unit === 'vh' ? 'selected' : ''}>vh</option>
-                    <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
-                </select>
-            `;
+                  <label for="${id}">${label}:</label>
+                  <input type="${type}" id="${id}" value="${value}">
+                  <select id="${id}-unit">
+                      <option value="px" ${unit === 'px' ? 'selected' : ''}>px</option>
+                      <option value="rem" ${unit === 'rem' ? 'selected' : ''}>rem</option>
+                      <option value="vh" ${unit === 'vh' ? 'selected' : ''}>vh</option>
+                      <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
+                  </select>
+              `;
     } else {
       wrapper.innerHTML = `
-        <label for="${id}">${label}:</label>
-        <input type="color" id="${id}" value="${value}">
-        <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${value}">
-      `;
+          <label for="${id}">${label}:</label>
+          <input type="color" id="${id}" value="${value}">
+          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${value}">
+        `;
     }
     const input = wrapper.querySelector('input');
     const unitSelect = wrapper.querySelector(`#${id}-unit`);
@@ -133,28 +141,16 @@ export class CustomizationSidebar {
     const colorinput = wrapper.querySelector('input[type="color"]');
     const hexInput = wrapper.querySelector('#color-value');
     if (colorinput) {
-      // Update hex code span when color input changes
       colorinput.addEventListener('input', () => {
         if (hexInput) {
           hexInput.value = colorinput.value; // Update hex code display
         }
-        // Update component color
-        const colorValueSpan = document.querySelector('#color-value');
-        if (colorValueSpan) {
-          colorValueSpan.textContent = colorinput.value; // Update color hex code display
-        }
       });
     }
-    // If it's a hex code input, update the color input when the value changes
     if (hexInput) {
       hexInput.addEventListener('input', () => {
         if (colorinput) {
           colorinput.value = hexInput.value; // Update color input with the new hex code
-        }
-        // Update component color
-        const colorValueSpan = document.querySelector('#color-value');
-        if (colorValueSpan) {
-          colorValueSpan.textContent = hexInput.value; // Update color hex code display
         }
       });
     }
@@ -178,9 +174,9 @@ export class CustomizationSidebar {
       )
       .join('');
     wrapper.innerHTML = `
-            <label for="${id}">${label}:</label>
-            <select id="${id}">${selectOptions}</select>
-        `;
+              <label for="${id}">${label}:</label>
+              <select id="${id}">${selectOptions}</select>
+          `;
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {

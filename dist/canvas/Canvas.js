@@ -87,7 +87,6 @@ export class Canvas {
           width: component.style.width,
           height: component.style.height,
         },
-        // Capture class names to preserve styling
         classes: Array.from(component.classList),
       };
     });
