@@ -36,6 +36,7 @@ export declare class Canvas {
       height: string;
     };
     classes: string[];
+    imageSrc: string | null;
   }[];
   /**
    * Restores the canvas to a previous state.
