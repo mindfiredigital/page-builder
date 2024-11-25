@@ -71,6 +71,11 @@ export class Canvas {
       const imageSrc = component.querySelector('img')
         ? component.querySelector('img').src
         : null;
+      // Capture all inline styles
+      const styles = {};
+      Array.from(component.style).forEach(styleName => {
+        styles[styleName] = component.style.getPropertyValue(styleName);
+      });
       return {
         id: component.id,
         type: baseType,
@@ -83,13 +88,7 @@ export class Canvas {
           width: component.offsetWidth,
           height: component.offsetHeight,
         },
-        style: {
-          position: component.style.position,
-          left: component.style.left,
-          top: component.style.top,
-          width: component.style.width,
-          height: component.style.height,
-        },
+        style: styles, // Store all styles dynamically
         classes: Array.from(component.classList),
         imageSrc: imageSrc, // Store the image source if it's an image component
       };
@@ -111,7 +110,7 @@ export class Canvas {
       if (component) {
         // Restore full content
         component.innerHTML = componentData.content;
-        // Restore styles and positioning
+        // Restore styles dynamically
         Object.assign(component.style, componentData.style);
         // Restore original classes
         component.className = ''; // Clear existing classes
@@ -125,8 +124,9 @@ export class Canvas {
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreResizer(component);
         }
+        // If it's an image component, restore image functionality
         if (componentData.type === 'image') {
-          ImageComponent.restoreImageUpload(component, componentData.imageSrc); // Restore image state
+          ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
         // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);

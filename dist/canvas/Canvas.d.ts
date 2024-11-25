@@ -30,11 +30,7 @@ export declare class Canvas {
       height: number;
     };
     style: {
-      position: string;
-      left: string;
-      top: string;
-      width: string;
-      height: string;
+      [key: string]: string;
     };
     classes: string[];
     imageSrc: string | null;

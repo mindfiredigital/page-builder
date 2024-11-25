@@ -100,6 +100,12 @@ export class Canvas {
         ? (component.querySelector('img') as HTMLImageElement).src
         : null;
 
+      // Capture all inline styles
+      const styles: { [key: string]: string } = {};
+      Array.from(component.style).forEach(styleName => {
+        styles[styleName] = component.style.getPropertyValue(styleName);
+      });
+
       return {
         id: component.id,
         type: baseType,
@@ -112,19 +118,12 @@ export class Canvas {
           width: component.offsetWidth,
           height: component.offsetHeight,
         },
-        style: {
-          position: component.style.position,
-          left: component.style.left,
-          top: component.style.top,
-          width: component.style.width,
-          height: component.style.height,
-        },
+        style: styles, // Store all styles dynamically
         classes: Array.from(component.classList),
         imageSrc: imageSrc, // Store the image source if it's an image component
       };
     });
   }
-
   /**
    * Restores the canvas to a previous state.
    * This functions helps for undoing and redoing purpose
@@ -143,7 +142,7 @@ export class Canvas {
         // Restore full content
         component.innerHTML = componentData.content;
 
-        // Restore styles and positioning
+        // Restore styles dynamically
         Object.assign(component.style, componentData.style);
 
         // Restore original classes
@@ -155,12 +154,15 @@ export class Canvas {
         // Reapply event listeners and controls
         Canvas.controlsManager.addControlButtons(component);
         Canvas.addDraggableListeners(component);
+
         // If it's a container, restore resizer functionality
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreResizer(component);
         }
+
+        // If it's an image component, restore image functionality
         if (componentData.type === 'image') {
-          ImageComponent.restoreImageUpload(component, componentData.imageSrc); // Restore image state
+          ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
 
         // Append to the canvas and add to the components array
