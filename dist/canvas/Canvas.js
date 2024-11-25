@@ -72,6 +72,7 @@ export class Canvas {
         ? component.querySelector('img').src
         : null;
       return {
+        id: component.id,
         type: baseType,
         content: component.innerHTML,
         position: {
@@ -177,11 +178,10 @@ export class Canvas {
     const element = componentFactoryFunction();
     if (element) {
       element.classList.add('editable-component');
+      const uniqueClass = Canvas.generateUniqueClass(type);
+      element.setAttribute('id', uniqueClass);
       // Conditionally set contenteditable attribute
       if (type === 'image') {
-        // Add unique ID for all components, including images
-        const uniqueClass = Canvas.generateUniqueClass(type);
-        element.setAttribute('id', uniqueClass);
         element.setAttribute('contenteditable', 'false'); // Image should not be editable
       } else {
         element.setAttribute('contenteditable', 'true'); // Other components are editable

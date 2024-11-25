@@ -18,6 +18,7 @@ export declare class Canvas {
    * @returns The array of component objects.
    */
   static getState(): {
+    id: string;
     type: string;
     content: string;
     position: {
