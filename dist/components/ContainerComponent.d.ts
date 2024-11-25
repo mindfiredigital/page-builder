@@ -22,4 +22,5 @@ export declare class ContainerComponent {
   private onBlur;
   private addStyles;
   create(): HTMLElement;
+  static restoreResizer(element: HTMLElement): void;
 }
