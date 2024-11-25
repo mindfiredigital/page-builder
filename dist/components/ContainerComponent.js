@@ -218,6 +218,11 @@ export class ContainerComponent {
     return this.element;
   }
   static restoreResizer(element) {
+    // Remove any existing resizers
+    const oldResizers = element.querySelector('.resizers');
+    if (oldResizers) {
+      oldResizers.remove();
+    }
     // Create new resizers container
     const resizersDiv = document.createElement('div');
     resizersDiv.classList.add('resizers');
@@ -225,16 +230,9 @@ export class ContainerComponent {
     const container = new ContainerComponent();
     container.element = element;
     container.resizers = resizersDiv;
-    //Adding resize handles for temporary
+    // Add resize handles
     container.addResizeHandles();
-    // Remove any existing resizers
-    const oldResizers = element.querySelector('.resizers');
-    if (oldResizers) {
-      oldResizers.remove();
-    }
-    // Add new resizers
+    // Add new resizers to the element
     element.appendChild(resizersDiv);
-    // Reattach container event listeners
-    container.initializeEventListeners();
   }
 }
