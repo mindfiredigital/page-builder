@@ -67,6 +67,10 @@ export class Canvas {
       const baseType = component.classList[0]
         .split(/\d/)[0]
         .replace('-component', '');
+      // Capture the image src for image components
+      const imageSrc = component.querySelector('img')
+        ? component.querySelector('img').src
+        : null;
       return {
         type: baseType,
         content: component.innerHTML,
@@ -74,12 +78,10 @@ export class Canvas {
           x: component.offsetLeft,
           y: component.offsetTop,
         },
-        // Capture dimensions explicitly
         dimensions: {
           width: component.offsetWidth,
           height: component.offsetHeight,
         },
-        // Capture all relevant styles to preserve appearance
         style: {
           position: component.style.position,
           left: component.style.left,
@@ -88,6 +90,7 @@ export class Canvas {
           height: component.style.height,
         },
         classes: Array.from(component.classList),
+        imageSrc: imageSrc, // Store the image source if it's an image component
       };
     });
   }
@@ -120,6 +123,9 @@ export class Canvas {
         // If it's a container, restore resizer functionality
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreResizer(component);
+        }
+        if (componentData.type === 'image') {
+          ImageComponent.restoreImageUpload(component, componentData.imageSrc); // Restore image state
         }
         // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);

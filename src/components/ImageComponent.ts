@@ -4,16 +4,15 @@ export class ImageComponent {
     const container = document.createElement('div');
     container.classList.add('image-component');
     // Generate and assign a unique ID to the container
-    const uniqueContainerId = `image-container-${Date.now()}-${Math.random()
-      .toString(36)
-      .substring(2, 10)}`;
+    const uniqueContainerId = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+
     // Create the file input for uploading an image (hidden by default)
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.style.display = 'none'; // Hide the file input
     fileInput.addEventListener('change', event =>
-      this.handleFileChange(event, container)
+      ImageComponent.handleFileChange(event, container)
     );
 
     // Create the pencil icon button (visible on hover)
@@ -39,19 +38,49 @@ export class ImageComponent {
     return container;
   }
 
-  private handleFileChange(event: Event, container: HTMLElement): void {
+  static handleFileChange(event: Event, container: HTMLElement): void {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files ? fileInput.files[0] : null;
 
     if (file) {
-      // Create an object URL for the uploaded file
-      const objectURL = URL.createObjectURL(file);
+      const reader = new FileReader();
 
-      // Find the image element by querying the container
-      const imageElement = container.querySelector('img');
-      if (imageElement) {
-        imageElement.src = objectURL; // Update the image source to the uploaded image
-      }
+      // Convert file to Base64 string
+      reader.onload = function () {
+        const base64String = reader.result as string;
+
+        // Find the image element and set its src to the Base64 string
+        const imageElement = container.querySelector('img');
+        if (imageElement) {
+          imageElement.src = base64String;
+        }
+      };
+
+      reader.readAsDataURL(file); // Convert image to Base64
     }
+  }
+
+  // Method to restore the image upload functionality after state is restored
+  static restoreImageUpload(component: HTMLElement, src: string): void {
+    // Recreate the file input for uploading an image (hidden by default)
+    const fileInput = component.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
+    fileInput.addEventListener('change', event =>
+      this.handleFileChange(event, component)
+    );
+
+    // Recreate the pencil icon button
+    const pencilButton = component.querySelector('.upload-btn') as HTMLElement;
+    pencilButton.addEventListener('click', () => fileInput.click()); // Trigger file input on click
+
+    // Recreate the image element
+    const imageElement = component.querySelector('img') as HTMLImageElement;
+    imageElement.src = src; // Restore the image source
+
+    // Reapply the image element styles if necessary
+    imageElement.style.width = '100%';
+    imageElement.style.height = '100%';
+    imageElement.style.objectFit = 'contain';
   }
 }
