@@ -32,15 +32,15 @@ export class HTMLGenerator {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Page Builder</title>
     <style>
-${this.generateCSS()}
+      ${this.generateCSS()}
     </style>
-</head>
-<body id="home">
-<div>
-${bodyContent}
-</div>
-</body>
-</html>`;
+ </head>
+        <body id="home">
+            <div>
+            ${bodyContent}
+            </div>
+        </body>
+      </html>`;
   }
 
   private cleanupElements(element: HTMLElement) {
@@ -150,9 +150,9 @@ ${bodyContent}
 
       if (componentStyles.length > 0) {
         styles.push(`
-${selector} {
-  ${componentStyles.join('\n  ')}
-}`);
+        ${selector} {
+          ${componentStyles.join('\n  ')}
+        }`);
       }
     });
 
