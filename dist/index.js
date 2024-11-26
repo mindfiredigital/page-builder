@@ -48,9 +48,63 @@ document.addEventListener('DOMContentLoaded', () => {
   (_c = document.getElementById('export-html-btn')) === null || _c === void 0
     ? void 0
     : _c.addEventListener('click', () => {
+        const htmlGenerator = new HTMLGenerator(new Canvas());
+        // Generate HTML and CSS
         const html = htmlGenerator.generateHTML();
-        console.log('Generated HTML:', html);
+        const css = htmlGenerator.generateCSS();
+        // Create modal container
+        const modal = document.createElement('div');
+        modal.id = 'export-dialog';
+        modal.classList.add('modal');
+        // Create modal content
+        const modalContent = document.createElement('div');
+        modalContent.classList.add('modal-content');
+        // Create the HTML and CSS sections
+        const htmlSection = document.createElement('div');
+        htmlSection.classList.add('modal-section');
+        const htmlTitle = document.createElement('h2');
+        htmlTitle.textContent = 'HTML';
+        const htmlTextArea = document.createElement('textarea');
+        htmlTextArea.value = html;
+        htmlTextArea.setAttribute('readonly', 'true');
+        htmlSection.appendChild(htmlTitle);
+        htmlSection.appendChild(htmlTextArea);
+        const cssSection = document.createElement('div');
+        cssSection.classList.add('modal-section');
+        const cssTitle = document.createElement('h2');
+        cssTitle.textContent = 'CSS';
+        const cssTextArea = document.createElement('textarea');
+        cssTextArea.value = css;
+        cssTextArea.setAttribute('readonly', 'true');
+        cssSection.appendChild(cssTitle);
+        cssSection.appendChild(cssTextArea);
+        // Append sections to modal content
+        modalContent.appendChild(htmlSection);
+        modalContent.appendChild(cssSection);
+        // Append modal content to modal
+        modal.appendChild(modalContent);
+        // Append modal to body
+        document.body.appendChild(modal);
+        // Show the modal
+        modal.classList.add('show');
+        // Close modal when clicking outside or pressing ESC
+        modal.addEventListener('click', event => {
+          if (event.target === modal) {
+            closeModal(modal);
+          }
+        });
+        document.addEventListener('keydown', event => {
+          if (event.key === 'Escape') {
+            closeModal(modal);
+          }
+        });
       });
+  // Close modal function
+  function closeModal(modal) {
+    modal.classList.remove('show');
+    modal.classList.add('hide');
+    setTimeout(() => modal.remove(), 300); // Remove modal after transition
+  }
   // Functionality for "View" button
   (_d = document.getElementById('view-btn')) === null || _d === void 0
     ? void 0
