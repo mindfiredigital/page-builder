@@ -185,6 +185,8 @@ html {
   cursor: text;
   position: relative;
   pointer-events: auto;
+  overflow: hidden;
+  resize: both;
 }
 
 /* Focused style for better visibility when editing */
