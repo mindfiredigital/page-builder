@@ -47,6 +47,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const html = htmlGenerator.generateHTML();
     console.log('Generated HTML:', html);
   });
+
+  // Functionality for "View" button
+  document.getElementById('view-btn')?.addEventListener('click', () => {
+    const html = htmlGenerator.generateHTML();
+
+    // Create a full-screen modal
+    const fullScreenModal = document.createElement('div');
+    fullScreenModal.id = 'preview-modal';
+    fullScreenModal.style.position = 'fixed';
+    fullScreenModal.style.top = '0';
+    fullScreenModal.style.left = '0';
+    fullScreenModal.style.width = '100%';
+    fullScreenModal.style.height = '100%';
+    fullScreenModal.style.backgroundColor = 'white';
+    fullScreenModal.style.zIndex = '9999';
+    fullScreenModal.style.overflow = 'auto';
+
+    // Insert the generated HTML
+    fullScreenModal.innerHTML = html;
+
+    // Add the modal to the document
+    document.body.appendChild(fullScreenModal);
+
+    // Add event listener for ESC key to close the modal
+    const escKeyListener = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        fullScreenModal.remove();
+        document.removeEventListener('keydown', escKeyListener);
+      }
+    };
+    document.addEventListener('keydown', escKeyListener);
+  });
+
   document.getElementById('preview-desktop')?.addEventListener('click', () => {
     const canvas = document.getElementById('canvas')!;
     canvas.classList.remove('preview-tablet', 'preview-mobile');

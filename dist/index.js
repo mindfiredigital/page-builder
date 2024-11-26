@@ -7,7 +7,7 @@ import { HTMLGenerator } from './services/HTMLGenerator.js';
 import { JSONStorage } from './services/JSONStorage.js';
 import { showDialogBox, showNotification } from './utils/utilityFunctions.js';
 document.addEventListener('DOMContentLoaded', () => {
-  var _a, _b, _c, _d, _e, _f, _g, _h;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _j;
   const canvas = new Canvas();
   const sidebar = new Sidebar(canvas);
   const htmlGenerator = new HTMLGenerator(canvas);
@@ -51,37 +51,66 @@ document.addEventListener('DOMContentLoaded', () => {
         const html = htmlGenerator.generateHTML();
         console.log('Generated HTML:', html);
       });
-  (_d = document.getElementById('preview-desktop')) === null || _d === void 0
+  // Functionality for "View" button
+  (_d = document.getElementById('view-btn')) === null || _d === void 0
     ? void 0
     : _d.addEventListener('click', () => {
+        const html = htmlGenerator.generateHTML();
+        // Create a full-screen modal
+        const fullScreenModal = document.createElement('div');
+        fullScreenModal.id = 'preview-modal';
+        fullScreenModal.style.position = 'fixed';
+        fullScreenModal.style.top = '0';
+        fullScreenModal.style.left = '0';
+        fullScreenModal.style.width = '100%';
+        fullScreenModal.style.height = '100%';
+        fullScreenModal.style.backgroundColor = 'white';
+        fullScreenModal.style.zIndex = '9999';
+        fullScreenModal.style.overflow = 'auto';
+        // Insert the generated HTML
+        fullScreenModal.innerHTML = html;
+        // Add the modal to the document
+        document.body.appendChild(fullScreenModal);
+        // Add event listener for ESC key to close the modal
+        const escKeyListener = event => {
+          if (event.key === 'Escape') {
+            fullScreenModal.remove();
+            document.removeEventListener('keydown', escKeyListener);
+          }
+        };
+        document.addEventListener('keydown', escKeyListener);
+      });
+  (_e = document.getElementById('preview-desktop')) === null || _e === void 0
+    ? void 0
+    : _e.addEventListener('click', () => {
         const canvas = document.getElementById('canvas');
         canvas.classList.remove('preview-tablet', 'preview-mobile');
         canvas.classList.add('preview-desktop');
       });
-  (_e = document.getElementById('preview-tablet')) === null || _e === void 0
+  (_f = document.getElementById('preview-tablet')) === null || _f === void 0
     ? void 0
-    : _e.addEventListener('click', () => {
+    : _f.addEventListener('click', () => {
         const canvas = document.getElementById('canvas');
         canvas.classList.remove('preview-desktop', 'preview-mobile');
         canvas.classList.add('preview-tablet');
       });
-  (_f = document.getElementById('preview-mobile')) === null || _f === void 0
+  (_g = document.getElementById('preview-mobile')) === null || _g === void 0
     ? void 0
-    : _f.addEventListener('click', () => {
+    : _g.addEventListener('click', () => {
         const canvas = document.getElementById('canvas');
         canvas.classList.remove('preview-desktop', 'preview-tablet');
         canvas.classList.add('preview-mobile');
       });
   //Functionality for undo button
-  (_g = document.getElementById('undo-btn')) === null || _g === void 0
+  (_h = document.getElementById('undo-btn')) === null || _h === void 0
     ? void 0
-    : _g.addEventListener('click', () => {
+    : _h.addEventListener('click', () => {
         Canvas.historyManager.undo();
       });
   //Functionality for redo button
-  (_h = document.getElementById('redo-btn')) === null || _h === void 0
+  (_j = document.getElementById('redo-btn')) === null || _j === void 0
     ? void 0
-    : _h.addEventListener('click', () => {
+    : _j.addEventListener('click', () => {
         Canvas.historyManager.redo();
       });
 });
