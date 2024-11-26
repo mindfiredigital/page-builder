@@ -70,12 +70,37 @@ document.addEventListener('DOMContentLoaded', () => {
         // Insert the generated HTML
         fullScreenModal.innerHTML = html;
         // Add the modal to the document
+        // Create a close button
+        const closeButton = document.createElement('button');
+        closeButton.id = 'close-modal-btn';
+        closeButton.textContent = '✕';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '10px';
+        closeButton.style.left = '10px';
+        closeButton.style.backgroundColor = '#f5f5f5';
+        closeButton.style.color = 'black';
+        closeButton.style.border = 'none';
+        closeButton.style.borderRadius = '50%';
+        closeButton.style.width = '30px';
+        closeButton.style.height = '30px';
+        closeButton.style.fontSize = '18px';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.zIndex = '10000';
+        // Append the close button to the modal
+        fullScreenModal.appendChild(closeButton);
+        // Add the modal to the document
         document.body.appendChild(fullScreenModal);
+        // Close modal function
+        const closeModal = () => {
+          fullScreenModal.remove();
+          document.removeEventListener('keydown', escKeyListener);
+        };
+        // Add event listener for close button
+        closeButton.addEventListener('click', closeModal);
         // Add event listener for ESC key to close the modal
         const escKeyListener = event => {
           if (event.key === 'Escape') {
-            fullScreenModal.remove();
-            document.removeEventListener('keydown', escKeyListener);
+            closeModal();
           }
         };
         document.addEventListener('keydown', escKeyListener);
