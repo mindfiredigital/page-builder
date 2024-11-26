@@ -236,4 +236,29 @@ export class ContainerComponent {
     // Add new resizers to the element
     element.appendChild(resizersDiv);
   }
+  static restoreContainer(container) {
+    // Restore resizer functionality
+    ContainerComponent.restoreResizer(container);
+    // Create a temporary instance of ContainerComponent to reuse its methods
+    const containerInstance = new ContainerComponent();
+    containerInstance.element = container;
+    // Reapply controls to child components inside the container
+    const containerChildren = container.querySelectorAll('.editable-component');
+    containerChildren.forEach(child => {
+      // Add control buttons and draggable listeners
+      Canvas.controlsManager.addControlButtons(child);
+      Canvas.addDraggableListeners(child);
+      // Bind the showLabel and hideLabel methods
+      child.addEventListener('mouseenter', event =>
+        containerInstance.showLabel(event, child)
+      );
+      child.addEventListener('mouseleave', event =>
+        containerInstance.hideLabel(event, child)
+      );
+      // If the child is itself a container, restore it recursively
+      if (child.classList.contains('container-component')) {
+        this.restoreContainer(child);
+      }
+    });
+  }
 }

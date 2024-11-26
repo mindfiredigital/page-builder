@@ -117,14 +117,14 @@ export class Canvas {
         componentData.classes.forEach(cls => {
           component.classList.add(cls);
         });
-        // Reapply event listeners and controls
+        // Add control buttons to the component itself
         Canvas.controlsManager.addControlButtons(component);
         Canvas.addDraggableListeners(component);
-        // If it's a container, restore resizer functionality
+        // If it's a container, call restoreContainer
         if (component.classList.contains('container-component')) {
-          ContainerComponent.restoreResizer(component);
+          ContainerComponent.restoreContainer(component);
         }
-        // If it's an image component, restore image functionality
+        // If it's a imageComponent, call restoreImageUpload
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
