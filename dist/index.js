@@ -59,14 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create a full-screen modal
         const fullScreenModal = document.createElement('div');
         fullScreenModal.id = 'preview-modal';
-        fullScreenModal.style.position = 'fixed';
-        fullScreenModal.style.top = '0';
-        fullScreenModal.style.left = '0';
-        fullScreenModal.style.width = '100%';
-        fullScreenModal.style.height = '100%';
-        fullScreenModal.style.backgroundColor = 'white';
-        fullScreenModal.style.zIndex = '9999';
-        fullScreenModal.style.overflow = 'auto';
         // Insert the generated HTML
         fullScreenModal.innerHTML = html;
         // Add the modal to the document
@@ -74,18 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeButton = document.createElement('button');
         closeButton.id = 'close-modal-btn';
         closeButton.textContent = '✕';
-        closeButton.style.position = 'absolute';
-        closeButton.style.top = '10px';
-        closeButton.style.left = '10px';
-        closeButton.style.backgroundColor = '#f5f5f5';
-        closeButton.style.color = 'black';
-        closeButton.style.border = 'none';
-        closeButton.style.borderRadius = '50%';
-        closeButton.style.width = '30px';
-        closeButton.style.height = '30px';
-        closeButton.style.fontSize = '18px';
-        closeButton.style.cursor = 'pointer';
-        closeButton.style.zIndex = '10000';
         // Append the close button to the modal
         fullScreenModal.appendChild(closeButton);
         // Add the modal to the document
