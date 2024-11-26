@@ -26,15 +26,20 @@ export class ComponentControlsManager {
   }
 
   /**
+   * First check if there is already deleteIcon within element
    * Creating delete icon
    * Adding click event for the  delete icon
    */
   private createDeleteIcon(element: HTMLElement): HTMLImageElement {
-    const deleteIcon = document.createElement('img');
-    deleteIcon.src = this.icons.delete;
-    deleteIcon.alt = 'Delete';
-    deleteIcon.classList.add('delete-icon');
-    // click event to the delete icon
+    let deleteIcon = element.querySelector('.delete-icon') as HTMLImageElement;
+    if (!deleteIcon) {
+      deleteIcon = document.createElement('img');
+      deleteIcon.src = this.icons.delete;
+      deleteIcon.alt = 'Delete';
+      deleteIcon.classList.add('delete-icon');
+      element.appendChild(deleteIcon);
+    }
+    // Attach the click event handler
     deleteIcon.onclick = e => {
       e.stopPropagation();
       this.handleDelete(element);

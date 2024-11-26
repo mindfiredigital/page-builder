@@ -1,9 +1,10 @@
 import { HistoryManager } from '../services/HistoryManager';
+import { ComponentControlsManager } from './ComponentControls';
 export declare class Canvas {
   private static components;
   private static canvasElement;
   private static sidebarElement;
-  private static controlsManager;
+  static controlsManager: ComponentControlsManager;
   static historyManager: HistoryManager;
   private static jsonStorage;
   static getComponents(): HTMLElement[];

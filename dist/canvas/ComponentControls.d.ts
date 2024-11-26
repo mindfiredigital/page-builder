@@ -9,6 +9,7 @@ export declare class ComponentControlsManager {
    */
   addControlButtons(element: HTMLElement): void;
   /**
+   * First check if there is already deleteIcon within element
    * Creating delete icon
    * Adding click event for the  delete icon
    */
