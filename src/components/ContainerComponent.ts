@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas';
+import { ImageComponent } from './ImageComponent';
 
 export class ContainerComponent {
   private element: HTMLElement;
@@ -295,6 +296,12 @@ export class ContainerComponent {
       child.addEventListener('mouseleave', (event: MouseEvent) =>
         containerInstance.hideLabel(event, child)
       );
+
+      // If the child is an image component, restore the image upload feature
+      if (child.classList.contains('image-component')) {
+        const imageSrc = child.querySelector('img')?.getAttribute('src') || ''; // Get the saved image source
+        ImageComponent.restoreImageUpload(child, imageSrc);
+      }
 
       // If the child is itself a container, restore it recursively
       if (child.classList.contains('container-component')) {
