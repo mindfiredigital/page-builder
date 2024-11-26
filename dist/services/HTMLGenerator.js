@@ -39,6 +39,8 @@ export class HTMLGenerator {
       'delete-icon',
       'component-label',
       'editable-component',
+      'resizers', // Added resizer-related class
+      'resizer', // Added resizer-related class
     ];
     Array.from(element.children).forEach(child => {
       const childElement = child;
@@ -52,7 +54,7 @@ export class HTMLGenerator {
       });
       // Remove specific child elements
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label'
+        '.component-controls, .delete-icon, .component-label, .resizers, .resizer'
       );
       elementsToRemove.forEach(el => el.remove());
       // Recursively clean up nested elements
@@ -103,6 +105,8 @@ export class HTMLGenerator {
       'component-controls',
       'delete-icon',
       'component-label',
+      'resizers', // Exclude resizer-related class
+      'resizer', // Exclude resizer-related class
     ];
     elements.forEach(component => {
       // Skip excluded elements
@@ -117,10 +121,6 @@ export class HTMLGenerator {
           componentStyles.push(`${prop}: ${value};`);
         }
       });
-      // const inlineStyle = component.getAttribute('style');
-      // if (inlineStyle) {
-      //     componentStyles.push(`/* Inline Style */ ${inlineStyle}`);
-      // }
       const selector = this.generateUniqueSelector(component);
       if (componentStyles.length > 0) {
         styles.push(`
