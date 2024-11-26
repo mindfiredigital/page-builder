@@ -30,7 +30,6 @@ export function createNavbar() {
     { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
     { id: 'reset-btn', icon: icons.reset, title: 'Reset' },
     { id: 'export-html-btn', icon: icons.export, title: 'Export HTML' },
-    { id: 'edit-btn', icon: icons.edit, title: 'Edit' },
   ];
 
   const leftContainer = document.createElement('div');

@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas.js';
+import { ImageComponent } from './ImageComponent.js';
 export class ContainerComponent {
   constructor() {
     this.MINIMUM_SIZE = 20;
@@ -245,6 +246,7 @@ export class ContainerComponent {
     // Reapply controls to child components inside the container
     const containerChildren = container.querySelectorAll('.editable-component');
     containerChildren.forEach(child => {
+      var _a;
       // Add control buttons and draggable listeners
       Canvas.controlsManager.addControlButtons(child);
       Canvas.addDraggableListeners(child);
@@ -255,6 +257,14 @@ export class ContainerComponent {
       child.addEventListener('mouseleave', event =>
         containerInstance.hideLabel(event, child)
       );
+      // If the child is an image component, restore the image upload feature
+      if (child.classList.contains('image-component')) {
+        const imageSrc =
+          ((_a = child.querySelector('img')) === null || _a === void 0
+            ? void 0
+            : _a.getAttribute('src')) || ''; // Get the saved image source
+        ImageComponent.restoreImageUpload(child, imageSrc);
+      }
       // If the child is itself a container, restore it recursively
       if (child.classList.contains('container-component')) {
         this.restoreContainer(child);

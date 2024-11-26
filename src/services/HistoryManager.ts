@@ -16,11 +16,11 @@ export class HistoryManager {
    */
   captureState() {
     const state = Canvas.getState();
-    // Check if the state is not empty and not identical to the last captured state
+
     if (state.length > 0) {
-      // Compare the current state with the last state in the undoStack
       const lastState = this.undoStack[this.undoStack.length - 1];
 
+      // Only capture the state if it's different from the last state
       if (JSON.stringify(state) !== JSON.stringify(lastState)) {
         this.undoStack.push(state);
 
@@ -29,13 +29,11 @@ export class HistoryManager {
           this.undoStack.shift();
         }
 
-        // Clear redo stack as new action is taken
+        // Clear the redo stack as a new action is made
         this.redoStack = [];
-      } else {
-        console.log('State is the same as the last one, not capturing again.');
       }
     } else {
-      console.warn('Attempted to capture an empty state');
+      console.warn('No valid state to capture.');
     }
   }
 
@@ -46,22 +44,19 @@ export class HistoryManager {
    */
   undo() {
     if (this.undoStack.length > 1) {
-      // Pop the current state and push it to the redo stack
       const currentState = this.undoStack.pop();
       this.redoStack.push(currentState);
 
-      // Restore the last state remaining in the undoStack
       const previousState = this.undoStack[this.undoStack.length - 1];
       Canvas.restoreState(previousState);
     } else if (this.undoStack.length === 1) {
-      // Clear the canvas for the last undo action
       const initialState = this.undoStack.pop();
       this.redoStack.push(initialState);
 
-      // Clear the canvas
+      // Clear the canvas when no more undo states exist
       Canvas.restoreState([]);
     } else {
-      console.warn('No more actions to undo');
+      console.warn('No more actions to undo.');
     }
   }
 
@@ -73,10 +68,11 @@ export class HistoryManager {
   redo() {
     if (this.redoStack.length > 0) {
       const nextState = this.redoStack.pop();
-      this.undoStack.push(nextState); // Save current state for future undo
+      this.undoStack.push(nextState);
+
       Canvas.restoreState(nextState);
     } else {
-      console.warn('No more actions to redo');
+      console.warn('No more actions to redo.');
     }
   }
 }

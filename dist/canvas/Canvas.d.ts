@@ -33,7 +33,11 @@ export declare class Canvas {
     style: {
       [key: string]: string;
     };
+    inlineStyle: string;
     classes: string[];
+    dataAttributes: {
+      [key: string]: string;
+    };
     imageSrc: string | null;
   }[];
   /**
