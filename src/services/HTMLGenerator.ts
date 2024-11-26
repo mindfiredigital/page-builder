@@ -50,8 +50,9 @@ export class HTMLGenerator {
       'delete-icon',
       'component-label',
       'editable-component',
-      'resizers', // Added resizer-related class
-      'resizer', // Added resizer-related class
+      'resizers',
+      'resizer',
+      'upload-btn',
     ];
 
     Array.from(element.children).forEach(child => {
@@ -125,8 +126,9 @@ export class HTMLGenerator {
       'component-controls',
       'delete-icon',
       'component-label',
-      'resizers', // Exclude resizer-related class
-      'resizer', // Exclude resizer-related class
+      'resizers',
+      'resizer',
+      'upload-btn',
     ];
 
     elements.forEach(component => {
