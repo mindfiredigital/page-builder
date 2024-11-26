@@ -118,6 +118,8 @@ export class HTMLGenerator {
       stylesToCapture.forEach(prop => {
         const value = computedStyles.getPropertyValue(prop);
         if (value && value !== 'none' && value !== '') {
+          // Exclude "resize" property with any value
+          if (prop === 'resize') return;
           componentStyles.push(`${prop}: ${value};`);
         }
       });
