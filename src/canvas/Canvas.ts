@@ -101,11 +101,54 @@ export class Canvas {
         : null;
 
       // Capture all inline styles
+      // Enhanced style capturing
+      const computedStyles = window.getComputedStyle(component);
       const styles: { [key: string]: string } = {};
-      Array.from(component.style).forEach(styleName => {
-        styles[styleName] = component.style.getPropertyValue(styleName);
-      });
 
+      // Capture all potentially relevant CSS properties
+      const stylesToCapture = [
+        'position',
+        'top',
+        'left',
+        'right',
+        'bottom',
+        'width',
+        'height',
+        'min-width',
+        'min-height',
+        'max-width',
+        'max-height',
+        'margin',
+        'padding',
+        'background-color',
+        'background-image',
+        'border',
+        'border-radius',
+        'transform',
+        'opacity',
+        'z-index',
+        'display',
+        'flex-direction',
+        'justify-content',
+        'align-items',
+        'flex-wrap',
+        'font-size',
+        'font-weight',
+        'color',
+        'text-align',
+        'line-height',
+      ];
+
+      stylesToCapture.forEach(prop => {
+        styles[prop] = computedStyles.getPropertyValue(prop);
+      });
+      // Capture data attributes
+      const dataAttributes: { [key: string]: string } = {};
+      Array.from(component.attributes)
+        .filter(attr => attr.name.startsWith('data-'))
+        .forEach(attr => {
+          dataAttributes[attr.name] = attr.value;
+        });
       return {
         id: component.id,
         type: baseType,
@@ -119,7 +162,9 @@ export class Canvas {
           height: component.offsetHeight,
         },
         style: styles, // Store all styles dynamically
+        inlineStyle: component.getAttribute('style') || '',
         classes: Array.from(component.classList),
+        dataAttributes: dataAttributes,
         imageSrc: imageSrc, // Store the image source if it's an image component
       };
     });
@@ -142,23 +187,45 @@ export class Canvas {
         // Restore full content
         component.innerHTML = componentData.content;
 
-        // Restore styles dynamically
-        Object.assign(component.style, componentData.style);
-
-        // Restore original classes
+        // Restore classes
         component.className = ''; // Clear existing classes
         componentData.classes.forEach((cls: string) => {
           component.classList.add(cls);
         });
 
-        // Add control buttons to the component itself
+        // Restore inline styles
+        if (componentData.inlineStyle) {
+          component.setAttribute('style', componentData.inlineStyle);
+        }
+
+        // Restore computed styles
+        if (componentData.computedStyle) {
+          Object.keys(componentData.computedStyle).forEach(prop => {
+            component.style.setProperty(
+              prop,
+              componentData.computedStyle[prop]
+            );
+          });
+        }
+
+        // Restore data attributes
+        if (componentData.dataAttributes) {
+          Object.entries(componentData.dataAttributes).forEach(
+            ([key, value]) => {
+              component.setAttribute(key, value as string);
+            }
+          );
+        }
+
+        // Add control buttons and listeners
         Canvas.controlsManager.addControlButtons(component);
         Canvas.addDraggableListeners(component);
-        // If it's a container, call restoreContainer
+
+        // Component-specific restoration
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreContainer(component);
         }
-        // If it's a imageComponent, call restoreImageUpload
+
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
