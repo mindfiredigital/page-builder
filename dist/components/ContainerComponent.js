@@ -134,6 +134,7 @@ export class ContainerComponent {
     const label = document.createElement('span');
     label.className = 'component-label';
     label.textContent = uniqueClass;
+    component.id = uniqueClass;
     label.style.display = 'none';
     component.appendChild(label);
     component.addEventListener('mouseenter', e => this.showLabel(e, component));
