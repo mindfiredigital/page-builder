@@ -569,7 +569,7 @@ html {
 .modal-content {
   background-color: white;
   width: 90%;
-  height: 70%;
+  height: 80%;
   max-width: 1000px;
   max-height: 600px;
   display: flex;
@@ -599,8 +599,8 @@ html {
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  color: #DE8F5F;
-  background-color:#342931;
+  color: #de8f5f;
+  background-color: #342931;
   overflow-y: auto;
   white-space: pre-wrap;
   line-height: 1.5;
@@ -628,5 +628,29 @@ html {
 }
 
 .bracket {
-  color: #EC8305;
+  color: #ec8305;
+}
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.export-btn {
+  position: absolute;
+  margin-left: 58.25%;
+  margin-top: 41.5%;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  outline: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.export-btn:hover {
+  background-color: #0056b3;
 }

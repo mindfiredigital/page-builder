@@ -11,6 +11,7 @@ import {
   syntaxHighlightCSS,
   syntaxHighlightHTML,
 } from './utils/utilityFunctions';
+import { createZipFile } from './utils/zipGenerator';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = new Canvas();
@@ -54,10 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Generate HTML and CSS
     const html = htmlGenerator.generateHTML();
     const css = htmlGenerator.generateCSS();
+
     // Format the HTML and CSS with syntax highlighting
     const highlightedHTML = syntaxHighlightHTML(html);
     const highlightedCSS = syntaxHighlightCSS(css);
-    // Create modal container
+
     // Create modal container
     const modal = document.createElement('div');
     modal.id = 'export-dialog';
@@ -67,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalContent = document.createElement('div');
     modalContent.classList.add('modal-content');
 
-    // Create the HTML and CSS sections
+    // Create the HTML section
     const htmlSection = document.createElement('div');
     htmlSection.classList.add('modal-section');
     const htmlTitle = document.createElement('h2');
@@ -79,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     htmlSection.appendChild(htmlTitle);
     htmlSection.appendChild(htmlCode);
 
+    // Create the CSS section
     const cssSection = document.createElement('div');
     cssSection.classList.add('modal-section');
     const cssTitle = document.createElement('h2');
@@ -90,12 +93,37 @@ document.addEventListener('DOMContentLoaded', () => {
     cssSection.appendChild(cssTitle);
     cssSection.appendChild(cssCode);
 
-    // Append sections to modal content
+    // Create Export to ZIP button
+    const exportButtonWrapper = document.createElement('div');
+    exportButtonWrapper.classList.add('button-wrapper'); // Wrapper for button
+
+    const exportButton = document.createElement('button');
+    exportButton.textContent = 'Export to ZIP';
+    exportButton.classList.add('export-btn');
+    exportButton.addEventListener('click', () => {
+      const updatedHTML = htmlCode.innerHTML;
+      const updatedCSS = cssCode.innerHTML;
+
+      const zipFile = createZipFile([
+        { name: 'index.html', content: updatedHTML },
+        { name: 'styles.css', content: updatedCSS },
+      ]);
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipFile);
+      link.download = 'exported-files.zip';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    // Append sections and button wrapper to modal content
     modalContent.appendChild(htmlSection);
     modalContent.appendChild(cssSection);
 
+    exportButtonWrapper.appendChild(modalContent);
+    exportButtonWrapper.appendChild(exportButton);
     // Append modal content to modal
-    modal.appendChild(modalContent);
+    modal.appendChild(exportButtonWrapper);
 
     // Append modal to body
     document.body.appendChild(modal);
