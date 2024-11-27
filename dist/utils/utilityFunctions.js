@@ -51,9 +51,12 @@ export function syntaxHighlightHTML(html) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/("(.*?)")/g, `<span class="string">$1</span>`) // String values
-    .replace(/(\b[a-zA-Z-]+\b)(?==")/g, `<span class="attribute">$1</span>`) // Attributes
-    .replace(/(&lt;\/?[a-zA-Z-]+&gt;)/g, `<span class="tag">$1</span>`); // Tags
+    .replace(
+      /\s([a-zA-Z-]+)="(.*?)"/g,
+      (match, attr, value) =>
+        ` ${attr}=<span class="attribute">"</span><span class="string">${value}</span><span class="attribute">"</span>`
+    )
+    .replace(/(&lt;\/?[a-zA-Z-]+&gt;)/g, `<span class="tag">$1</span>`);
 }
 export function syntaxHighlightCSS(css) {
   return css

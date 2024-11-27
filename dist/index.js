@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Generate HTML and CSS
         const html = htmlGenerator.generateHTML();
         const css = htmlGenerator.generateCSS();
+        console.log('this is html', html);
         // Format the HTML and CSS with syntax highlighting
         const highlightedHTML = syntaxHighlightHTML(html);
         const highlightedCSS = syntaxHighlightCSS(css);
