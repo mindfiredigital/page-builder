@@ -148,8 +148,6 @@ html {
   position: relative; /* Allow absolute positioned label to sit within */
   display: flex;
   justify-content: center;
-  resize: both;
-  overflow: hidden;
   width: 300px;
   height: 300px;
 }
@@ -185,6 +183,8 @@ html {
   cursor: text;
   position: relative;
   pointer-events: auto;
+}
+.component-resizer {
   overflow: hidden;
   resize: both;
 }
