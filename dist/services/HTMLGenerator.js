@@ -56,7 +56,7 @@ export class HTMLGenerator {
       });
       // Remove specific child elements
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .resizers, .resizer, upload-btn, component-resizer'
+        '.component-controls, .delete-icon, .component-label, .resizers, .resizer, .upload-btn, component-resizer'
       );
       elementsToRemove.forEach(el => el.remove());
       // Recursively clean up nested elements
