@@ -1,3 +1,5 @@
+import { Canvas } from '../canvas/Canvas.js';
+import { debounce } from '../utils/utilityFunctions.js';
 export class CustomizationSidebar {
   static init() {
     this.sidebarElement = document.getElementById('customization');
@@ -191,17 +193,22 @@ export class CustomizationSidebar {
       fontSize: document.getElementById('font-size'),
     };
     if (!controls) return;
+    const captureStateDebounced = debounce(() => {
+      Canvas.historyManager.captureState();
+    }, 300);
     (_a = controls.width) === null || _a === void 0
       ? void 0
       : _a.addEventListener('input', () => {
           const unit = document.getElementById('width-unit').value;
           component.style.width = `${controls.width.value}${unit}`;
+          captureStateDebounced();
         });
     (_b = controls.height) === null || _b === void 0
       ? void 0
       : _b.addEventListener('input', () => {
           const unit = document.getElementById('height-unit').value;
           component.style.height = `${controls.height.value}${unit}`;
+          captureStateDebounced();
         });
     (_c = controls.color) === null || _c === void 0
       ? void 0
@@ -211,29 +218,34 @@ export class CustomizationSidebar {
           if (colorValueSpan) {
             colorValueSpan.textContent = controls.color.value; // Update color hex code display
           }
+          captureStateDebounced();
         });
     (_d = controls.margin) === null || _d === void 0
       ? void 0
       : _d.addEventListener('input', () => {
           const unit = document.getElementById('margin-unit').value;
           component.style.margin = `${controls.margin.value}${unit}`;
+          captureStateDebounced();
         });
     (_e = controls.padding) === null || _e === void 0
       ? void 0
       : _e.addEventListener('input', () => {
           const unit = document.getElementById('padding-unit').value;
           component.style.padding = `${controls.padding.value}${unit}`;
+          captureStateDebounced();
         });
     (_f = controls.alignment) === null || _f === void 0
       ? void 0
       : _f.addEventListener('change', () => {
           component.style.textAlign = controls.alignment.value;
+          captureStateDebounced();
         });
     (_g = controls.fontSize) === null || _g === void 0
       ? void 0
       : _g.addEventListener('input', () => {
           const unit = document.getElementById('font-size-unit').value;
           component.style.fontSize = `${controls.fontSize.value}${unit}`;
+          captureStateDebounced();
         });
   }
 }

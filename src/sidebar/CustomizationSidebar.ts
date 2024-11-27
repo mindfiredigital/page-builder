@@ -1,3 +1,6 @@
+import { Canvas } from '../canvas/Canvas';
+import { debounce } from '../utils/utilityFunctions';
+
 export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
   private static controlsContainer: HTMLElement;
@@ -236,42 +239,59 @@ export class CustomizationSidebar {
 
     if (!controls) return;
 
+    const captureStateDebounced = debounce(() => {
+      Canvas.historyManager.captureState();
+    }, 300);
+
     controls.width?.addEventListener('input', () => {
       const unit = (document.getElementById('width-unit') as HTMLSelectElement)
         .value;
       component.style.width = `${controls.width.value}${unit}`;
+      captureStateDebounced();
     });
+
     controls.height?.addEventListener('input', () => {
       const unit = (document.getElementById('height-unit') as HTMLSelectElement)
         .value;
       component.style.height = `${controls.height.value}${unit}`;
+      captureStateDebounced();
     });
+
     controls.color?.addEventListener('input', () => {
       component.style.backgroundColor = controls.color.value;
       const colorValueSpan = document.querySelector('#color-value');
       if (colorValueSpan) {
         colorValueSpan.textContent = controls.color.value; // Update color hex code display
       }
+      captureStateDebounced();
     });
+
     controls.margin?.addEventListener('input', () => {
       const unit = (document.getElementById('margin-unit') as HTMLSelectElement)
         .value;
       component.style.margin = `${controls.margin.value}${unit}`;
+      captureStateDebounced();
     });
+
     controls.padding?.addEventListener('input', () => {
       const unit = (
         document.getElementById('padding-unit') as HTMLSelectElement
       ).value;
       component.style.padding = `${controls.padding.value}${unit}`;
+      captureStateDebounced();
     });
+
     controls.alignment?.addEventListener('change', () => {
       component.style.textAlign = controls.alignment.value;
+      captureStateDebounced();
     });
+
     controls.fontSize?.addEventListener('input', () => {
       const unit = (
         document.getElementById('font-size-unit') as HTMLSelectElement
       ).value;
       component.style.fontSize = `${controls.fontSize.value}${unit}`;
+      captureStateDebounced();
     });
   }
 }
