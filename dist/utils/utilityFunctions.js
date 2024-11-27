@@ -61,3 +61,10 @@ export function syntaxHighlightCSS(css) {
     .replace(/(:\s*[^;]+;)/g, `<span class="value">$1</span>`) // CSS values
     .replace(/({|})/g, `<span class="bracket">$1</span>`); // Braces
 }
+export function debounce(func, delay) {
+  let timeoutId = null;
+  return (...args) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+}

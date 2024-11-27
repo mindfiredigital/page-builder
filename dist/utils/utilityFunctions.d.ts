@@ -6,3 +6,7 @@ export declare function showDialogBox(
 ): void;
 export declare function syntaxHighlightHTML(html: string): string;
 export declare function syntaxHighlightCSS(css: string): string;
+export declare function debounce(
+  func: Function,
+  delay: number
+): (...args: any[]) => void;
