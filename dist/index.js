@@ -12,6 +12,7 @@ import {
   syntaxHighlightHTML,
 } from './utils/utilityFunctions.js';
 import { createZipFile } from './utils/zipGenerator.js';
+import { ShortcutManager } from './services/ShortcutManager.js';
 document.addEventListener('DOMContentLoaded', () => {
   var _a, _b, _c, _d, _e, _f, _g, _h, _j;
   const canvas = new Canvas();
@@ -21,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   createSidebar();
   Canvas.init();
   sidebar.init();
+  // Initialize ShortcutManager
+  ShortcutManager.init();
   CustomizationSidebar.init();
   const header = document.createElement('header');
   header.appendChild(createNavbar());
