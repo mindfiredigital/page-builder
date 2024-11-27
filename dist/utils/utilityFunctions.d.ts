@@ -4,3 +4,5 @@ export declare function showDialogBox(
   onConfirm: () => void,
   onCancel: () => void
 ): void;
+export declare function syntaxHighlightHTML(html: string): string;
+export declare function syntaxHighlightCSS(css: string): string;

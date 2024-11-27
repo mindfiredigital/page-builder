@@ -5,7 +5,12 @@ import { createSidebar } from './sidebar/CreateSidebar.js';
 import { createNavbar } from './navbar/CreateNavbar.js';
 import { HTMLGenerator } from './services/HTMLGenerator.js';
 import { JSONStorage } from './services/JSONStorage.js';
-import { showDialogBox, showNotification } from './utils/utilityFunctions.js';
+import {
+  showDialogBox,
+  showNotification,
+  syntaxHighlightCSS,
+  syntaxHighlightHTML,
+} from './utils/utilityFunctions.js';
 document.addEventListener('DOMContentLoaded', () => {
   var _a, _b, _c, _d, _e, _f, _g, _h, _j;
   const canvas = new Canvas();
@@ -52,6 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Generate HTML and CSS
         const html = htmlGenerator.generateHTML();
         const css = htmlGenerator.generateCSS();
+        // Format the HTML and CSS with syntax highlighting
+        const highlightedHTML = syntaxHighlightHTML(html);
+        const highlightedCSS = syntaxHighlightCSS(css);
+        // Create modal container
         // Create modal container
         const modal = document.createElement('div');
         modal.id = 'export-dialog';
@@ -64,20 +73,22 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlSection.classList.add('modal-section');
         const htmlTitle = document.createElement('h2');
         htmlTitle.textContent = 'HTML';
-        const htmlTextArea = document.createElement('textarea');
-        htmlTextArea.value = html;
-        htmlTextArea.setAttribute('readonly', 'true');
+        const htmlCode = document.createElement('div');
+        htmlCode.classList.add('code-block');
+        htmlCode.setAttribute('contenteditable', 'true');
+        htmlCode.innerHTML = highlightedHTML; // Apply syntax-highlighted HTML
         htmlSection.appendChild(htmlTitle);
-        htmlSection.appendChild(htmlTextArea);
+        htmlSection.appendChild(htmlCode);
         const cssSection = document.createElement('div');
         cssSection.classList.add('modal-section');
         const cssTitle = document.createElement('h2');
         cssTitle.textContent = 'CSS';
-        const cssTextArea = document.createElement('textarea');
-        cssTextArea.value = css;
-        cssTextArea.setAttribute('readonly', 'true');
+        const cssCode = document.createElement('div');
+        cssCode.classList.add('code-block');
+        cssCode.setAttribute('contenteditable', 'true');
+        cssCode.innerHTML = highlightedCSS; // Apply syntax-highlighted CSS
         cssSection.appendChild(cssTitle);
-        cssSection.appendChild(cssTextArea);
+        cssSection.appendChild(cssCode);
         // Append sections to modal content
         modalContent.appendChild(htmlSection);
         modalContent.appendChild(cssSection);
@@ -126,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(fullScreenModal);
         // Close modal function
         const closeModal = () => {
-          fullScreenModal.remove();
+          setTimeout(() => fullScreenModal.remove(), 300);
           document.removeEventListener('keydown', escKeyListener);
         };
         // Add event listener for close button
