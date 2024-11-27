@@ -568,20 +568,22 @@ html {
 /* Modal Content */
 .modal-content {
   background-color: white;
-  width: 80%;
+  width: 90%;
   height: 70%;
   max-width: 1000px;
   max-height: 600px;
   display: flex;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
 }
 
 /* Each Section of the Modal */
 .modal-section {
   width: 50%;
-  padding: 20px;
+  padding: 10px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .modal-section h2 {
@@ -591,7 +593,7 @@ html {
 }
 
 textarea {
-  width: 100%;
+  width: 95%;
   height: 80%;
   font-family: 'Courier New', monospace;
   font-size: 14px;
@@ -600,9 +602,4 @@ textarea {
   border: 1px solid #ccc;
   background-color: #f4f4f4;
   resize: none;
-}
-
-/* Add additional styles for the modal */
-.modal-section + .modal-section {
-  border-left: 1px solid #ddd;
 }
