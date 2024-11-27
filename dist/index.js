@@ -11,7 +11,7 @@ import {
   syntaxHighlightCSS,
   syntaxHighlightHTML,
 } from './utils/utilityFunctions.js';
-import { createZipFile } from './utils/jsZip.js';
+import { createZipFile } from './utils/zipGenerator.js';
 document.addEventListener('DOMContentLoaded', () => {
   var _a, _b, _c, _d, _e, _f, _g, _h, _j;
   const canvas = new Canvas();
