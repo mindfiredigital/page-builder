@@ -105,8 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
     exportButton.textContent = 'Export to ZIP';
     exportButton.classList.add('export-btn');
     exportButton.addEventListener('click', () => {
-      const updatedHTML = htmlCode.innerHTML;
-      const updatedCSS = cssCode.innerHTML;
+      const updatedHTML = html;
+      const updatedCSS = css;
 
       const zipFile = createZipFile([
         { name: 'index.html', content: updatedHTML },

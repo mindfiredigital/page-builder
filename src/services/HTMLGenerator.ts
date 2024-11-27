@@ -12,7 +12,10 @@ export class HTMLGenerator {
 
   generateHTML(): string {
     const canvasElement = document.getElementById('canvas');
-    if (!canvasElement) return this.getBaseHTML();
+    if (!canvasElement) {
+      console.warn('Canvas element not found!');
+      return this.getBaseHTML(); // Return base HTML if canvas is not found
+    }
 
     // Clone the canvas element to avoid modifying the original
     const cleanCanvas = canvasElement.cloneNode(true) as HTMLElement;
