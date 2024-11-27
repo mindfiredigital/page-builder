@@ -240,6 +240,9 @@ export class Canvas {
     const element = componentFactoryFunction();
     if (element) {
       element.classList.add('editable-component');
+      if (type != 'container') {
+        element.classList.add('component-resizer');
+      }
       const uniqueClass = Canvas.generateUniqueClass(type);
       element.setAttribute('id', uniqueClass);
       // Conditionally set contenteditable attribute

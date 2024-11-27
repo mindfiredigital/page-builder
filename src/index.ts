@@ -5,7 +5,13 @@ import { createSidebar } from './sidebar/CreateSidebar';
 import { createNavbar } from './navbar/CreateNavbar';
 import { HTMLGenerator } from './services/HTMLGenerator';
 import { JSONStorage } from './services/JSONStorage';
-import { showDialogBox, showNotification } from './utils/utilityFunctions';
+import {
+  showDialogBox,
+  showNotification,
+  syntaxHighlightCSS,
+  syntaxHighlightHTML,
+} from './utils/utilityFunctions';
+import { createZipFile } from './utils/zipGenerator';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = new Canvas();
@@ -44,9 +50,107 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('export-html-btn')?.addEventListener('click', () => {
+    const htmlGenerator = new HTMLGenerator(new Canvas());
+
+    // Generate HTML and CSS
     const html = htmlGenerator.generateHTML();
-    console.log('Generated HTML:', html);
+    const css = htmlGenerator.generateCSS();
+
+    // Format the HTML and CSS with syntax highlighting
+    const highlightedHTML = syntaxHighlightHTML(html);
+    const highlightedCSS = syntaxHighlightCSS(css);
+
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'export-dialog';
+    modal.classList.add('modal');
+
+    // Create modal content
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
+
+    // Create the HTML section
+    const htmlSection = document.createElement('div');
+    htmlSection.classList.add('modal-section');
+    const htmlTitle = document.createElement('h2');
+    htmlTitle.textContent = 'HTML';
+    const htmlCode = document.createElement('div');
+    htmlCode.classList.add('code-block');
+    htmlCode.setAttribute('contenteditable', 'true');
+    htmlCode.innerHTML = highlightedHTML; // Apply syntax-highlighted HTML
+    htmlSection.appendChild(htmlTitle);
+    htmlSection.appendChild(htmlCode);
+
+    // Create the CSS section
+    const cssSection = document.createElement('div');
+    cssSection.classList.add('modal-section');
+    const cssTitle = document.createElement('h2');
+    cssTitle.textContent = 'CSS';
+    const cssCode = document.createElement('div');
+    cssCode.classList.add('code-block');
+    cssCode.setAttribute('contenteditable', 'true');
+    cssCode.innerHTML = highlightedCSS; // Apply syntax-highlighted CSS
+    cssSection.appendChild(cssTitle);
+    cssSection.appendChild(cssCode);
+
+    // Create Export to ZIP button
+    const exportButtonWrapper = document.createElement('div');
+    exportButtonWrapper.classList.add('button-wrapper'); // Wrapper for button
+
+    const exportButton = document.createElement('button');
+    exportButton.textContent = 'Export to ZIP';
+    exportButton.classList.add('export-btn');
+    exportButton.addEventListener('click', () => {
+      const updatedHTML = htmlCode.innerHTML;
+      const updatedCSS = cssCode.innerHTML;
+
+      const zipFile = createZipFile([
+        { name: 'index.html', content: updatedHTML },
+        { name: 'styles.css', content: updatedCSS },
+      ]);
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipFile);
+      link.download = 'exported-files.zip';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    // Append sections and button wrapper to modal content
+    modalContent.appendChild(htmlSection);
+    modalContent.appendChild(cssSection);
+
+    exportButtonWrapper.appendChild(modalContent);
+    exportButtonWrapper.appendChild(exportButton);
+    // Append modal content to modal
+    modal.appendChild(exportButtonWrapper);
+
+    // Append modal to body
+    document.body.appendChild(modal);
+
+    // Show the modal
+    modal.classList.add('show');
+
+    // Close modal when clicking outside or pressing ESC
+    modal.addEventListener('click', event => {
+      if (event.target === modal) {
+        closeModal(modal);
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        closeModal(modal);
+      }
+    });
   });
+
+  // Close modal function
+  function closeModal(modal: HTMLElement) {
+    modal.classList.remove('show');
+    modal.classList.add('hide');
+    setTimeout(() => modal.remove(), 300); // Remove modal after transition
+  }
 
   // Functionality for "View" button
   document.getElementById('view-btn')?.addEventListener('click', () => {
@@ -73,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close modal function
     const closeModal = () => {
-      fullScreenModal.remove();
+      setTimeout(() => fullScreenModal.remove(), 300);
       document.removeEventListener('keydown', escKeyListener);
     };
 

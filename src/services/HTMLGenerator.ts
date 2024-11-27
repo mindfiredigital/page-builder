@@ -50,6 +50,10 @@ export class HTMLGenerator {
       'delete-icon',
       'component-label',
       'editable-component',
+      'resizers',
+      'resizer',
+      'upload-btn',
+      'component-resizer',
     ];
 
     Array.from(element.children).forEach(child => {
@@ -67,7 +71,7 @@ export class HTMLGenerator {
 
       // Remove specific child elements
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label'
+        '.component-controls, .delete-icon, .component-label, .resizers, .resizer, .upload-btn, component-resizer'
       );
       elementsToRemove.forEach(el => el.remove());
 
@@ -123,6 +127,9 @@ export class HTMLGenerator {
       'component-controls',
       'delete-icon',
       'component-label',
+      'resizers',
+      'resizer',
+      'upload-btn',
     ];
 
     elements.forEach(component => {
@@ -137,14 +144,12 @@ export class HTMLGenerator {
       stylesToCapture.forEach(prop => {
         const value = computedStyles.getPropertyValue(prop);
         if (value && value !== 'none' && value !== '') {
+          // Exclude "resize" property with any value
+          if (prop === 'resize') return;
+
           componentStyles.push(`${prop}: ${value};`);
         }
       });
-
-      // const inlineStyle = component.getAttribute('style');
-      // if (inlineStyle) {
-      //     componentStyles.push(`/* Inline Style */ ${inlineStyle}`);
-      // }
 
       const selector = this.generateUniqueSelector(component);
 

@@ -148,8 +148,6 @@ html {
   position: relative; /* Allow absolute positioned label to sit within */
   display: flex;
   justify-content: center;
-  resize: both;
-  overflow: hidden;
   width: 300px;
   height: 300px;
 }
@@ -185,6 +183,10 @@ html {
   cursor: text;
   position: relative;
   pointer-events: auto;
+}
+.component-resizer {
+  overflow: hidden;
+  resize: both;
 }
 
 /* Focused style for better visibility when editing */
@@ -538,4 +540,117 @@ html {
 #close-modal-btn:hover {
   transform: scale(1.1);
   background-color: #bebebe;
+}
+/* Basic Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.modal.hide {
+  opacity: 0;
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: white;
+  width: 90%;
+  height: 80%;
+  max-width: 1000px;
+  max-height: 600px;
+  display: flex;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+/* Each Section of the Modal */
+.modal-section {
+  width: 50%;
+  padding: 10px;
+}
+
+.modal-section h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Code Block Styles */
+.code-block {
+  width: 95%;
+  height: 80%;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  color: #de8f5f;
+  background-color: #342931;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* Syntax Highlighting */
+.tag {
+  color: #66d9ef;
+}
+
+.attribute {
+  color: #a6e22e;
+}
+
+.string {
+  color: #e6db74;
+}
+
+.property {
+  color: #66d9ef;
+}
+
+.value {
+  color: #e6db74;
+}
+
+.bracket {
+  color: #ec8305;
+}
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.export-btn {
+  position: absolute;
+  margin-left: 58.25%;
+  margin-top: 41.5%;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  outline: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.export-btn:hover {
+  background-color: #0056b3;
 }
