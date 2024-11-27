@@ -166,6 +166,9 @@ export class ContainerComponent {
     component.addEventListener('mouseleave', e => this.hideLabel(e, component));
 
     this.element.appendChild(component);
+
+    //capture state inside the container
+    Canvas.historyManager.captureState();
   }
 
   private showLabel(event: MouseEvent, component: HTMLElement): void {

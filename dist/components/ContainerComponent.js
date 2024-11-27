@@ -141,6 +141,8 @@ export class ContainerComponent {
     component.addEventListener('mouseenter', e => this.showLabel(e, component));
     component.addEventListener('mouseleave', e => this.hideLabel(e, component));
     this.element.appendChild(component);
+    //capture state inside the container
+    Canvas.historyManager.captureState();
   }
   showLabel(event, component) {
     event.stopPropagation();
