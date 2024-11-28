@@ -1,4 +1,5 @@
 import { HistoryManager } from '../services/HistoryManager';
+import { JSONStorage } from '../services/JSONStorage';
 import { ComponentControlsManager } from './ComponentControls';
 export declare class Canvas {
   private static components;
@@ -6,7 +7,7 @@ export declare class Canvas {
   private static sidebarElement;
   static controlsManager: ComponentControlsManager;
   static historyManager: HistoryManager;
-  private static jsonStorage;
+  static jsonStorage: JSONStorage;
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
   private static componentFactory;

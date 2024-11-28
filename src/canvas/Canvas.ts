@@ -19,7 +19,7 @@ export class Canvas {
   // Initialize CustomizationSidebar
 
   public static historyManager: HistoryManager; //accessible outside the Canvas class.
-  private static jsonStorage: JSONStorage;
+  public static jsonStorage: JSONStorage;
 
   // Add getters and setters for components to make it accessible outside the canvas class
   public static getComponents(): HTMLElement[] {

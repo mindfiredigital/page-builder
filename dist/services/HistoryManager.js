@@ -42,8 +42,9 @@ export class HistoryManager {
     } else if (this.undoStack.length === 1) {
       const initialState = this.undoStack.pop();
       this.redoStack.push(initialState);
-      // Clear the canvas when no more undo states exist
-      Canvas.restoreState([]);
+      // Load existing layout from local storage and render, if any else empty the canvas
+      const savedState = Canvas.jsonStorage.load();
+      savedState ? Canvas.restoreState(savedState) : Canvas.restoreState([]);
     } else {
       console.warn('No more actions to undo.');
     }
