@@ -4,6 +4,7 @@ export declare class ComponentControlsManager {
   private icons;
   constructor(canvas: typeof Canvas);
   /**
+   * First check if there is already a div with class  as component-controls exists
    * Add a div for each components in which we can add control buttons
    * We have added delete button
    */
