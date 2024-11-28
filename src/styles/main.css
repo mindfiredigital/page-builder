@@ -564,6 +564,7 @@ html {
 
 /* Modal Content */
 .modal-content {
+  position: relative;
   background-color: white;
   width: 90%;
   height: 70%;
@@ -634,8 +635,8 @@ html {
 }
 .export-btn {
   position: absolute;
-  margin-left: 58.25%;
-  margin-top: 41.5%;
+  bottom: 25px; 
+  right: 10px;
   padding: 10px 20px;
   font-size: 14px;
   color: #fff;

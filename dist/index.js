@@ -116,8 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Append sections and button wrapper to modal content
         modalContent.appendChild(htmlSection);
         modalContent.appendChild(cssSection);
+        modalContent.appendChild(exportButton);
         exportButtonWrapper.appendChild(modalContent);
-        exportButtonWrapper.appendChild(exportButton);
         // Append modal content to modal
         modal.appendChild(exportButtonWrapper);
         // Append modal to body
