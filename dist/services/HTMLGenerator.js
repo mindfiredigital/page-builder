@@ -16,7 +16,7 @@ export class HTMLGenerator {
     this.cleanupElements(cleanCanvas);
     // Create a full HTML document
     // Use the canvas's outerHTML to include the element itself
-    return this.getBaseHTML(cleanCanvas.outerHTML);
+    return this.getBaseHTML(cleanCanvas.innerHTML);
   }
   getBaseHTML(bodyContent = 'children') {
     return `<!DOCTYPE html>
@@ -29,8 +29,8 @@ export class HTMLGenerator {
       ${this.generateCSS()}
     </style>
  </head>
-        <body id="home">
-            <div>
+        <body>
+            <div id="home" class="home">
             ${bodyContent}
             </div>
         </body>
@@ -72,11 +72,32 @@ export class HTMLGenerator {
   generateCSS() {
     const canvasElement = document.getElementById('canvas');
     if (!canvasElement) return '';
+    const backgroundColor = canvasElement
+      ? window
+          .getComputedStyle(canvasElement)
+          .getPropertyValue('background-color')
+      : 'rgb(255, 255, 255)'; // Fallback to white if canvas is not found
     const styles = [];
-    const elements = [
-      canvasElement,
-      ...Array.from(canvasElement.querySelectorAll('*')),
-    ];
+    // Global and .home styles
+    styles.push(`
+      body, html {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          box-sizing: border-box;
+      }
+      .home {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          min-height:100vh;
+          background-color: ${backgroundColor};
+          margin: 0;
+      }
+      `);
+    const elements = canvasElement.querySelectorAll('*');
     const stylesToCapture = [
       'position',
       'top',
@@ -108,7 +129,6 @@ export class HTMLGenerator {
       'color',
       'text-align',
       'line-height',
-      'cursor',
     ];
     const classesToExclude = [
       'component-controls',
