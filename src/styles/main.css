@@ -635,8 +635,8 @@ html {
 }
 .export-btn {
   position: absolute;
-  bottom: 25px; 
-  right: 10px;
+  bottom: 15px; 
+  right: 15px;
   padding: 10px 20px;
   font-size: 14px;
   color: #fff;

@@ -7,12 +7,16 @@ export class ComponentControlsManager {
     this.canvas = canvas;
   }
   /**
+   * First check if there is already a div with class  as component-controls exists
    * Add a div for each components in which we can add control buttons
    * We have added delete button
    */
   addControlButtons(element) {
-    const controlsDiv = document.createElement('div');
-    controlsDiv.className = 'component-controls';
+    let controlsDiv = element.querySelector('.component-controls');
+    if (!controlsDiv) {
+      controlsDiv = document.createElement('div');
+      controlsDiv.className = 'component-controls';
+    }
     const deleteIcon = this.createDeleteIcon(element);
     // Append the delete icon to controlsDiv, for future we can add other buttons to this controls div
     controlsDiv.appendChild(deleteIcon);
