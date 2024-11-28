@@ -24,7 +24,8 @@ export class HTMLGenerator {
     this.cleanupElements(cleanCanvas);
 
     // Create a full HTML document
-    return this.getBaseHTML(cleanCanvas.innerHTML);
+    // Use the canvas's outerHTML to include the element itself
+    return this.getBaseHTML(cleanCanvas.outerHTML);
   }
 
   private getBaseHTML(bodyContent: string = 'children'): string {
@@ -90,7 +91,10 @@ export class HTMLGenerator {
     if (!canvasElement) return '';
 
     const styles: string[] = [];
-    const elements = canvasElement.querySelectorAll('*');
+    const elements = [
+      canvasElement,
+      ...Array.from(canvasElement.querySelectorAll('*')),
+    ];
 
     const stylesToCapture = [
       'position',

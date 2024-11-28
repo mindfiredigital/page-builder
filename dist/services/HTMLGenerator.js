@@ -15,7 +15,8 @@ export class HTMLGenerator {
     // Remove unwanted attributes and elements from all children
     this.cleanupElements(cleanCanvas);
     // Create a full HTML document
-    return this.getBaseHTML(cleanCanvas.innerHTML);
+    // Use the canvas's outerHTML to include the element itself
+    return this.getBaseHTML(cleanCanvas.outerHTML);
   }
   getBaseHTML(bodyContent = 'children') {
     return `<!DOCTYPE html>
@@ -72,7 +73,10 @@ export class HTMLGenerator {
     const canvasElement = document.getElementById('canvas');
     if (!canvasElement) return '';
     const styles = [];
-    const elements = canvasElement.querySelectorAll('*');
+    const elements = [
+      canvasElement,
+      ...Array.from(canvasElement.querySelectorAll('*')),
+    ];
     const stylesToCapture = [
       'position',
       'top',
