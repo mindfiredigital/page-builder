@@ -92,6 +92,17 @@ export class CustomizationSidebar {
       'center',
       'right',
     ]);
+    //Controls for fonts
+    this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
+      'Arial',
+      'Verdana',
+      'Helvetica',
+      'Times New Roman',
+      'Georgia',
+      'Courier New',
+      'sans-serif',
+      'serif',
+    ]);
     this.createControl(
       'Font Size',
       'font-size',
@@ -293,6 +304,7 @@ export class CustomizationSidebar {
       borderStyle: document.getElementById('border-style') as HTMLSelectElement,
       borderColor: document.getElementById('border-color') as HTMLInputElement,
       display: document.getElementById('display') as HTMLSelectElement,
+      fontFamily: document.getElementById('font-family') as HTMLSelectElement,
     };
 
     if (!controls) return;
@@ -382,6 +394,12 @@ export class CustomizationSidebar {
     //Controls for display edit
     controls.display?.addEventListener('change', () => {
       component.style.display = controls.display.value;
+      captureStateDebounced();
+    });
+
+    //Controls for fonts
+    controls.fontFamily?.addEventListener('change', () => {
+      component.style.fontFamily = controls.fontFamily.value;
       captureStateDebounced();
     });
   }

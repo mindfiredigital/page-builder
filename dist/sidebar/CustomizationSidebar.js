@@ -79,6 +79,17 @@ export class CustomizationSidebar {
       'center',
       'right',
     ]);
+    //Controls for fonts
+    this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
+      'Arial',
+      'Verdana',
+      'Helvetica',
+      'Times New Roman',
+      'Georgia',
+      'Courier New',
+      'sans-serif',
+      'serif',
+    ]);
     this.createControl(
       'Font Size',
       'font-size',
@@ -234,7 +245,7 @@ export class CustomizationSidebar {
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     const controls = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -248,6 +259,7 @@ export class CustomizationSidebar {
       borderStyle: document.getElementById('border-style'),
       borderColor: document.getElementById('border-color'),
       display: document.getElementById('display'),
+      fontFamily: document.getElementById('font-family'),
     };
     if (!controls) return;
     const captureStateDebounced = debounce(() => {
@@ -338,6 +350,13 @@ export class CustomizationSidebar {
       ? void 0
       : _m.addEventListener('change', () => {
           component.style.display = controls.display.value;
+          captureStateDebounced();
+        });
+    //Controls for fonts
+    (_o = controls.fontFamily) === null || _o === void 0
+      ? void 0
+      : _o.addEventListener('change', () => {
+          component.style.fontFamily = controls.fontFamily.value;
           captureStateDebounced();
         });
   }

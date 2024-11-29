@@ -64,12 +64,13 @@ html {
 #customization {
   display: none;
   right: 0;
-  width: 180px;
+  width: 260px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin-top: 4px;
   border: 1px solid #ecf0f1;
+  overflow: auto;
 }
 
 #sidebar h3 {
@@ -474,7 +475,6 @@ html {
 }
 #color-value {
   display: inline-block;
-  padding: 2px 4px;
   font-size: 13px;
   border: 1px solid #ccc;
   border-radius: 4px;
