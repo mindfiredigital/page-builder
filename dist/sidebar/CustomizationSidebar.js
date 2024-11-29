@@ -117,6 +117,13 @@ export class CustomizationSidebar {
         'outset',
       ]
     );
+    // Controls for Border Color
+    this.createControl(
+      'Border Color',
+      'border-color',
+      'color',
+      styles.borderColor || '#000000'
+    );
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
     // Set the color input to the component's background color in hex format
@@ -218,7 +225,7 @@ export class CustomizationSidebar {
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     const controls = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -230,6 +237,7 @@ export class CustomizationSidebar {
       textColor: document.getElementById('text-color'),
       borderWidth: document.getElementById('border-width'),
       borderStyle: document.getElementById('border-style'),
+      borderColor: document.getElementById('border-color'),
     };
     if (!controls) return;
     const captureStateDebounced = debounce(() => {
@@ -306,6 +314,13 @@ export class CustomizationSidebar {
       ? void 0
       : _k.addEventListener('change', () => {
           component.style.borderStyle = controls.borderStyle.value;
+          captureStateDebounced();
+        });
+    //Controls for border color
+    (_l = controls.borderColor) === null || _l === void 0
+      ? void 0
+      : _l.addEventListener('input', () => {
+          component.style.borderColor = controls.borderColor.value;
           captureStateDebounced();
         });
   }

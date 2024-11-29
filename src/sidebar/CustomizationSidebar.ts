@@ -130,6 +130,13 @@ export class CustomizationSidebar {
         'outset',
       ]
     );
+    // Controls for Border Color
+    this.createControl(
+      'Border Color',
+      'border-color',
+      'color',
+      styles.borderColor || '#000000'
+    );
 
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
@@ -275,6 +282,7 @@ export class CustomizationSidebar {
       textColor: document.getElementById('text-color') as HTMLInputElement,
       borderWidth: document.getElementById('border-width') as HTMLInputElement,
       borderStyle: document.getElementById('border-style') as HTMLSelectElement,
+      borderColor: document.getElementById('border-color') as HTMLInputElement,
     };
 
     if (!controls) return;
@@ -352,6 +360,12 @@ export class CustomizationSidebar {
     //Controls for border style
     controls.borderStyle?.addEventListener('change', () => {
       component.style.borderStyle = controls.borderStyle.value;
+      captureStateDebounced();
+    });
+
+    //Controls for border color
+    controls.borderColor?.addEventListener('input', () => {
+      component.style.borderColor = controls.borderColor.value;
       captureStateDebounced();
     });
   }
