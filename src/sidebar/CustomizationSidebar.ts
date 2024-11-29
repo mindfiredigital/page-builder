@@ -101,6 +101,18 @@ export class CustomizationSidebar {
       'color',
       styles.color || '#000000'
     );
+    //Controls for controlling border width
+    this.createControl(
+      'Border Width',
+      'border-width',
+      'number',
+      parseInt(styles.borderWidth) || 0,
+      {
+        min: 0,
+        max: 20,
+        unit: 'px',
+      }
+    );
 
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
@@ -244,6 +256,7 @@ export class CustomizationSidebar {
       alignment: document.getElementById('alignment') as HTMLSelectElement,
       fontSize: document.getElementById('font-size') as HTMLInputElement,
       textColor: document.getElementById('text-color') as HTMLInputElement,
+      borderWidth: document.getElementById('border-width') as HTMLInputElement,
     };
 
     if (!controls) return;
@@ -306,6 +319,15 @@ export class CustomizationSidebar {
     //Controls for editing text color
     controls.textColor?.addEventListener('input', () => {
       component.style.color = controls.textColor.value;
+      captureStateDebounced();
+    });
+
+    //Controls for controlling border and width
+    controls.borderWidth?.addEventListener('input', () => {
+      const unit = (
+        document.getElementById('border-width-unit') as HTMLSelectElement
+      ).value;
+      component.style.borderWidth = `${controls.borderWidth.value}${unit}`;
       captureStateDebounced();
     });
   }
