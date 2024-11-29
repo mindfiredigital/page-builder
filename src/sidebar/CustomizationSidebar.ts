@@ -94,6 +94,14 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
+    //Controls for text color editing
+    this.createControl(
+      'Text Color',
+      'text-color',
+      'color',
+      styles.color || '#000000'
+    );
+
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
 
@@ -235,6 +243,7 @@ export class CustomizationSidebar {
       padding: document.getElementById('padding') as HTMLInputElement,
       alignment: document.getElementById('alignment') as HTMLSelectElement,
       fontSize: document.getElementById('font-size') as HTMLInputElement,
+      textColor: document.getElementById('text-color') as HTMLInputElement,
     };
 
     if (!controls) return;
@@ -291,6 +300,12 @@ export class CustomizationSidebar {
         document.getElementById('font-size-unit') as HTMLSelectElement
       ).value;
       component.style.fontSize = `${controls.fontSize.value}${unit}`;
+      captureStateDebounced();
+    });
+
+    //Controls for editing text color
+    controls.textColor?.addEventListener('input', () => {
+      component.style.color = controls.textColor.value;
       captureStateDebounced();
     });
   }

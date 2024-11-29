@@ -81,6 +81,13 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
+    //Controls for text color editing
+    this.createControl(
+      'Text Color',
+      'text-color',
+      'color',
+      styles.color || '#000000'
+    );
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
     // Set the color input to the component's background color in hex format
@@ -182,7 +189,7 @@ export class CustomizationSidebar {
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     const controls = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -191,6 +198,7 @@ export class CustomizationSidebar {
       padding: document.getElementById('padding'),
       alignment: document.getElementById('alignment'),
       fontSize: document.getElementById('font-size'),
+      textColor: document.getElementById('text-color'),
     };
     if (!controls) return;
     const captureStateDebounced = debounce(() => {
@@ -245,6 +253,13 @@ export class CustomizationSidebar {
       : _g.addEventListener('input', () => {
           const unit = document.getElementById('font-size-unit').value;
           component.style.fontSize = `${controls.fontSize.value}${unit}`;
+          captureStateDebounced();
+        });
+    //Controls for editing text color
+    (_h = controls.textColor) === null || _h === void 0
+      ? void 0
+      : _h.addEventListener('input', () => {
+          component.style.color = controls.textColor.value;
           captureStateDebounced();
         });
   }
