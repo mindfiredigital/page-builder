@@ -5,6 +5,8 @@ import {
   ImageComponent,
   TextComponent,
   ContainerComponent,
+  TwoColumnContainer,
+  ThreeColumnContainer,
 } from '../components/index';
 import { HistoryManager } from '../services/HistoryManager';
 import { JSONStorage } from '../services/JSONStorage';
@@ -38,6 +40,8 @@ export class Canvas {
         new ImageComponent().create('https://via.placeholder.com/150'),
       text: () => new TextComponent().create(),
       container: () => new ContainerComponent().create(),
+      twocolumncontainer: () => new TwoColumnContainer().create(),
+      threecolumncontainer: () => new ThreeColumnContainer().create(),
     };
 
   static init() {

@@ -6,6 +6,8 @@ export function createSidebar() {
     image: '/dist/icons/image.png',
     text: 'dist/icons/text.png',
     container: '/dist/icons/square.png',
+    twocolumncontainer: '/dist/icons/column.png',
+    threecolumncontainer: '/dist/icons/threecolumn.png',
   };
   Object.entries(icons).forEach(([componentId, iconPath]) => {
     const iconElement = document.createElement('div');

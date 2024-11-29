@@ -5,6 +5,8 @@ import {
   ImageComponent,
   TextComponent,
   ContainerComponent,
+  TwoColumnContainer,
+  ThreeColumnContainer,
 } from '../components/index.js';
 import { HistoryManager } from '../services/HistoryManager.js';
 import { JSONStorage } from '../services/JSONStorage.js';
@@ -374,4 +376,6 @@ Canvas.componentFactory = {
   image: () => new ImageComponent().create('https://via.placeholder.com/150'),
   text: () => new TextComponent().create(),
   container: () => new ContainerComponent().create(),
+  twocolumncontainer: () => new TwoColumnContainer().create(),
+  threecolumncontainer: () => new ThreeColumnContainer().create(),
 };
