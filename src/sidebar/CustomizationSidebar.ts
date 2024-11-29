@@ -45,6 +45,15 @@ export class CustomizationSidebar {
 
     // Dynamically create controls
     const styles = getComputedStyle(component);
+    //Controls Display Control
+    this.createSelectControl('Display', 'display', styles.display || 'block', [
+      'block',
+      'inline',
+      'inline-block',
+      'flex',
+      'grid',
+      'none',
+    ]);
     this.createControl('Width', 'width', 'number', component.offsetWidth, {
       min: 0,
       max: 1000,
@@ -83,6 +92,17 @@ export class CustomizationSidebar {
       'center',
       'right',
     ]);
+    //Controls for fonts
+    this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
+      'Arial',
+      'Verdana',
+      'Helvetica',
+      'Times New Roman',
+      'Georgia',
+      'Courier New',
+      'sans-serif',
+      'serif',
+    ]);
     this.createControl(
       'Font Size',
       'font-size',
@@ -94,6 +114,50 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
+    //Controls for text color editing
+    this.createControl(
+      'Text Color',
+      'text-color',
+      'color',
+      styles.color || '#000000'
+    );
+    //Controls for border width
+    this.createControl(
+      'Border Width',
+      'border-width',
+      'number',
+      parseInt(styles.borderWidth) || 0,
+      {
+        min: 0,
+        max: 20,
+        unit: 'px',
+      }
+    );
+    //Controls for Border Style (solid, dashed, dotted, etc.)
+    this.createSelectControl(
+      'Border Style',
+      'border-style',
+      styles.borderStyle || 'none',
+      [
+        'none',
+        'solid',
+        'dashed',
+        'dotted',
+        'double',
+        'groove',
+        'ridge',
+        'inset',
+        'outset',
+      ]
+    );
+    // Controls for Border Color
+    this.createControl(
+      'Border Color',
+      'border-color',
+      'color',
+      styles.borderColor || '#000000'
+    );
+
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
 
@@ -235,6 +299,12 @@ export class CustomizationSidebar {
       padding: document.getElementById('padding') as HTMLInputElement,
       alignment: document.getElementById('alignment') as HTMLSelectElement,
       fontSize: document.getElementById('font-size') as HTMLInputElement,
+      textColor: document.getElementById('text-color') as HTMLInputElement,
+      borderWidth: document.getElementById('border-width') as HTMLInputElement,
+      borderStyle: document.getElementById('border-style') as HTMLSelectElement,
+      borderColor: document.getElementById('border-color') as HTMLInputElement,
+      display: document.getElementById('display') as HTMLSelectElement,
+      fontFamily: document.getElementById('font-family') as HTMLSelectElement,
     };
 
     if (!controls) return;
@@ -291,6 +361,45 @@ export class CustomizationSidebar {
         document.getElementById('font-size-unit') as HTMLSelectElement
       ).value;
       component.style.fontSize = `${controls.fontSize.value}${unit}`;
+      captureStateDebounced();
+    });
+
+    //Controls for editing text color
+    controls.textColor?.addEventListener('input', () => {
+      component.style.color = controls.textColor.value;
+      captureStateDebounced();
+    });
+
+    //Controls for editing border width
+    controls.borderWidth?.addEventListener('input', () => {
+      const unit = (
+        document.getElementById('border-width-unit') as HTMLSelectElement
+      ).value;
+      component.style.borderWidth = `${controls.borderWidth.value}${unit}`;
+      captureStateDebounced();
+    });
+
+    //Controls for border style
+    controls.borderStyle?.addEventListener('change', () => {
+      component.style.borderStyle = controls.borderStyle.value;
+      captureStateDebounced();
+    });
+
+    //Controls for border color
+    controls.borderColor?.addEventListener('input', () => {
+      component.style.borderColor = controls.borderColor.value;
+      captureStateDebounced();
+    });
+
+    //Controls for display edit
+    controls.display?.addEventListener('change', () => {
+      component.style.display = controls.display.value;
+      captureStateDebounced();
+    });
+
+    //Controls for fonts
+    controls.fontFamily?.addEventListener('change', () => {
+      component.style.fontFamily = controls.fontFamily.value;
       captureStateDebounced();
     });
   }
