@@ -52,7 +52,6 @@ export class TwoColumnContainer {
     // Ensure the drop is happening on a valid column
     if (targetColumn && targetColumn.classList.contains('column')) {
       targetColumn.appendChild(component);
-
       // Capture state for history
       Canvas.historyManager.captureState();
     }
