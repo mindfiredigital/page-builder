@@ -205,6 +205,7 @@ export class ContainerComponent {
     const style = document.createElement('style');
     style.textContent = `
       .container-component {
+        width: 100%;
         min-width: 100px;
         min-height: 100px;
       }
