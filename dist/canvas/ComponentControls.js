@@ -16,11 +16,11 @@ export class ComponentControlsManager {
     if (!controlsDiv) {
       controlsDiv = document.createElement('div');
       controlsDiv.className = 'component-controls';
+      element.appendChild(controlsDiv);
     }
     const deleteIcon = this.createDeleteIcon(element);
     // Append the delete icon to controlsDiv, for future we can add other buttons to this controls div
     controlsDiv.appendChild(deleteIcon);
-    element.appendChild(controlsDiv);
   }
   /**
    * First check if there is already deleteIcon within element
