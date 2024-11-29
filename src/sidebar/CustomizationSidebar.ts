@@ -101,7 +101,7 @@ export class CustomizationSidebar {
       'color',
       styles.color || '#000000'
     );
-    //Controls for controlling border width
+    //Controls for border width
     this.createControl(
       'Border Width',
       'border-width',
@@ -112,6 +112,23 @@ export class CustomizationSidebar {
         max: 20,
         unit: 'px',
       }
+    );
+    //Controls for Border Style (solid, dashed, dotted, etc.)
+    this.createSelectControl(
+      'Border Style',
+      'border-style',
+      styles.borderStyle || 'none',
+      [
+        'none',
+        'solid',
+        'dashed',
+        'dotted',
+        'double',
+        'groove',
+        'ridge',
+        'inset',
+        'outset',
+      ]
     );
 
     // Convert the background color to hex format
@@ -257,6 +274,7 @@ export class CustomizationSidebar {
       fontSize: document.getElementById('font-size') as HTMLInputElement,
       textColor: document.getElementById('text-color') as HTMLInputElement,
       borderWidth: document.getElementById('border-width') as HTMLInputElement,
+      borderStyle: document.getElementById('border-style') as HTMLSelectElement,
     };
 
     if (!controls) return;
@@ -322,12 +340,18 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
-    //Controls for controlling border and width
+    //Controls for editing border width
     controls.borderWidth?.addEventListener('input', () => {
       const unit = (
         document.getElementById('border-width-unit') as HTMLSelectElement
       ).value;
       component.style.borderWidth = `${controls.borderWidth.value}${unit}`;
+      captureStateDebounced();
+    });
+
+    //Controls for border style
+    controls.borderStyle?.addEventListener('change', () => {
+      component.style.borderStyle = controls.borderStyle.value;
       captureStateDebounced();
     });
   }

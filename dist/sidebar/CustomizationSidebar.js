@@ -88,7 +88,7 @@ export class CustomizationSidebar {
       'color',
       styles.color || '#000000'
     );
-    //Controls for controlling border width
+    //Controls for border width
     this.createControl(
       'Border Width',
       'border-width',
@@ -99,6 +99,23 @@ export class CustomizationSidebar {
         max: 20,
         unit: 'px',
       }
+    );
+    //Controls for Border Style (solid, dashed, dotted, etc.)
+    this.createSelectControl(
+      'Border Style',
+      'border-style',
+      styles.borderStyle || 'none',
+      [
+        'none',
+        'solid',
+        'dashed',
+        'dotted',
+        'double',
+        'groove',
+        'ridge',
+        'inset',
+        'outset',
+      ]
     );
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
@@ -201,7 +218,7 @@ export class CustomizationSidebar {
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     const controls = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -212,6 +229,7 @@ export class CustomizationSidebar {
       fontSize: document.getElementById('font-size'),
       textColor: document.getElementById('text-color'),
       borderWidth: document.getElementById('border-width'),
+      borderStyle: document.getElementById('border-style'),
     };
     if (!controls) return;
     const captureStateDebounced = debounce(() => {
@@ -275,12 +293,19 @@ export class CustomizationSidebar {
           component.style.color = controls.textColor.value;
           captureStateDebounced();
         });
-    //Controls for controlling border and width
+    //Controls for editing border width
     (_j = controls.borderWidth) === null || _j === void 0
       ? void 0
       : _j.addEventListener('input', () => {
           const unit = document.getElementById('border-width-unit').value;
           component.style.borderWidth = `${controls.borderWidth.value}${unit}`;
+          captureStateDebounced();
+        });
+    //Controls for border style
+    (_k = controls.borderStyle) === null || _k === void 0
+      ? void 0
+      : _k.addEventListener('change', () => {
+          component.style.borderStyle = controls.borderStyle.value;
           captureStateDebounced();
         });
   }
