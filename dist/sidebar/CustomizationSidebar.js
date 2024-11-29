@@ -32,6 +32,15 @@ export class CustomizationSidebar {
     this.componentNameHeader.textContent = `Component: ${componentId}`;
     // Dynamically create controls
     const styles = getComputedStyle(component);
+    //Controls Display Control
+    this.createSelectControl('Display', 'display', styles.display || 'block', [
+      'block',
+      'inline',
+      'inline-block',
+      'flex',
+      'grid',
+      'none',
+    ]);
     this.createControl('Width', 'width', 'number', component.offsetWidth, {
       min: 0,
       max: 1000,
@@ -225,7 +234,7 @@ export class CustomizationSidebar {
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     const controls = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -238,6 +247,7 @@ export class CustomizationSidebar {
       borderWidth: document.getElementById('border-width'),
       borderStyle: document.getElementById('border-style'),
       borderColor: document.getElementById('border-color'),
+      display: document.getElementById('display'),
     };
     if (!controls) return;
     const captureStateDebounced = debounce(() => {
@@ -321,6 +331,13 @@ export class CustomizationSidebar {
       ? void 0
       : _l.addEventListener('input', () => {
           component.style.borderColor = controls.borderColor.value;
+          captureStateDebounced();
+        });
+    //Controls for display edit
+    (_m = controls.display) === null || _m === void 0
+      ? void 0
+      : _m.addEventListener('change', () => {
+          component.style.display = controls.display.value;
           captureStateDebounced();
         });
   }

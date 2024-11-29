@@ -45,6 +45,15 @@ export class CustomizationSidebar {
 
     // Dynamically create controls
     const styles = getComputedStyle(component);
+    //Controls Display Control
+    this.createSelectControl('Display', 'display', styles.display || 'block', [
+      'block',
+      'inline',
+      'inline-block',
+      'flex',
+      'grid',
+      'none',
+    ]);
     this.createControl('Width', 'width', 'number', component.offsetWidth, {
       min: 0,
       max: 1000,
@@ -283,6 +292,7 @@ export class CustomizationSidebar {
       borderWidth: document.getElementById('border-width') as HTMLInputElement,
       borderStyle: document.getElementById('border-style') as HTMLSelectElement,
       borderColor: document.getElementById('border-color') as HTMLInputElement,
+      display: document.getElementById('display') as HTMLSelectElement,
     };
 
     if (!controls) return;
@@ -366,6 +376,12 @@ export class CustomizationSidebar {
     //Controls for border color
     controls.borderColor?.addEventListener('input', () => {
       component.style.borderColor = controls.borderColor.value;
+      captureStateDebounced();
+    });
+
+    //Controls for display edit
+    controls.display?.addEventListener('change', () => {
+      component.style.display = controls.display.value;
       captureStateDebounced();
     });
   }
