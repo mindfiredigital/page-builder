@@ -56,10 +56,16 @@ export class ContainerComponent {
         }
       }
     };
+    /**
+     * On mouse up event the resizing stops and captures the state
+     * Which will help keep tracking of state for undo/redo purpose
+     */
     this.stopResize = () => {
       window.removeEventListener('mousemove', this.resize);
       window.removeEventListener('mouseup', this.stopResize);
       this.currentResizer = null;
+      //capture each resized state
+      Canvas.historyManager.captureState();
     };
     this.element = document.createElement('div');
     this.element.classList.add('container-component');
