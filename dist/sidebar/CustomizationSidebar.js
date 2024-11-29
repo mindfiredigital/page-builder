@@ -32,6 +32,15 @@ export class CustomizationSidebar {
     this.componentNameHeader.textContent = `Component: ${componentId}`;
     // Dynamically create controls
     const styles = getComputedStyle(component);
+    //Controls Display Control
+    this.createSelectControl('Display', 'display', styles.display || 'block', [
+      'block',
+      'inline',
+      'inline-block',
+      'flex',
+      'grid',
+      'none',
+    ]);
     this.createControl('Width', 'width', 'number', component.offsetWidth, {
       min: 0,
       max: 1000,
@@ -70,6 +79,17 @@ export class CustomizationSidebar {
       'center',
       'right',
     ]);
+    //Controls for fonts
+    this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
+      'Arial',
+      'Verdana',
+      'Helvetica',
+      'Times New Roman',
+      'Georgia',
+      'Courier New',
+      'sans-serif',
+      'serif',
+    ]);
     this.createControl(
       'Font Size',
       'font-size',
@@ -80,6 +100,49 @@ export class CustomizationSidebar {
         max: 100,
         unit: 'px',
       }
+    );
+    //Controls for text color editing
+    this.createControl(
+      'Text Color',
+      'text-color',
+      'color',
+      styles.color || '#000000'
+    );
+    //Controls for border width
+    this.createControl(
+      'Border Width',
+      'border-width',
+      'number',
+      parseInt(styles.borderWidth) || 0,
+      {
+        min: 0,
+        max: 20,
+        unit: 'px',
+      }
+    );
+    //Controls for Border Style (solid, dashed, dotted, etc.)
+    this.createSelectControl(
+      'Border Style',
+      'border-style',
+      styles.borderStyle || 'none',
+      [
+        'none',
+        'solid',
+        'dashed',
+        'dotted',
+        'double',
+        'groove',
+        'ridge',
+        'inset',
+        'outset',
+      ]
+    );
+    // Controls for Border Color
+    this.createControl(
+      'Border Color',
+      'border-color',
+      'color',
+      styles.borderColor || '#000000'
     );
     // Convert the background color to hex format
     const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
@@ -182,7 +245,7 @@ export class CustomizationSidebar {
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     const controls = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -191,6 +254,12 @@ export class CustomizationSidebar {
       padding: document.getElementById('padding'),
       alignment: document.getElementById('alignment'),
       fontSize: document.getElementById('font-size'),
+      textColor: document.getElementById('text-color'),
+      borderWidth: document.getElementById('border-width'),
+      borderStyle: document.getElementById('border-style'),
+      borderColor: document.getElementById('border-color'),
+      display: document.getElementById('display'),
+      fontFamily: document.getElementById('font-family'),
     };
     if (!controls) return;
     const captureStateDebounced = debounce(() => {
@@ -245,6 +314,49 @@ export class CustomizationSidebar {
       : _g.addEventListener('input', () => {
           const unit = document.getElementById('font-size-unit').value;
           component.style.fontSize = `${controls.fontSize.value}${unit}`;
+          captureStateDebounced();
+        });
+    //Controls for editing text color
+    (_h = controls.textColor) === null || _h === void 0
+      ? void 0
+      : _h.addEventListener('input', () => {
+          component.style.color = controls.textColor.value;
+          captureStateDebounced();
+        });
+    //Controls for editing border width
+    (_j = controls.borderWidth) === null || _j === void 0
+      ? void 0
+      : _j.addEventListener('input', () => {
+          const unit = document.getElementById('border-width-unit').value;
+          component.style.borderWidth = `${controls.borderWidth.value}${unit}`;
+          captureStateDebounced();
+        });
+    //Controls for border style
+    (_k = controls.borderStyle) === null || _k === void 0
+      ? void 0
+      : _k.addEventListener('change', () => {
+          component.style.borderStyle = controls.borderStyle.value;
+          captureStateDebounced();
+        });
+    //Controls for border color
+    (_l = controls.borderColor) === null || _l === void 0
+      ? void 0
+      : _l.addEventListener('input', () => {
+          component.style.borderColor = controls.borderColor.value;
+          captureStateDebounced();
+        });
+    //Controls for display edit
+    (_m = controls.display) === null || _m === void 0
+      ? void 0
+      : _m.addEventListener('change', () => {
+          component.style.display = controls.display.value;
+          captureStateDebounced();
+        });
+    //Controls for fonts
+    (_o = controls.fontFamily) === null || _o === void 0
+      ? void 0
+      : _o.addEventListener('change', () => {
+          component.style.fontFamily = controls.fontFamily.value;
           captureStateDebounced();
         });
   }
