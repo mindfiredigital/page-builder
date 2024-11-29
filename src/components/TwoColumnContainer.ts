@@ -46,12 +46,16 @@ export class TwoColumnContainer {
     const component = Canvas.createComponent(componentType);
     if (!component) return;
 
-    // Append the component to the first column
-    const targetColumn = this.element.querySelector('.column-1') as HTMLElement;
-    targetColumn.appendChild(component);
+    // Determine the target column
+    const targetColumn = event.target as HTMLElement;
 
-    // Capture state for history
-    Canvas.historyManager.captureState();
+    // Ensure the drop is happening on a valid column
+    if (targetColumn && targetColumn.classList.contains('column')) {
+      targetColumn.appendChild(component);
+
+      // Capture state for history
+      Canvas.historyManager.captureState();
+    }
   }
 
   private addStyles(): void {
