@@ -26,13 +26,15 @@ export class CustomizationSidebar {
       console.error(`Component with ID "${componentId}" not found.`);
       return;
     }
+    // Check if the component is a canvas itself
+    const isCanvas = componentId.toLowerCase() === 'canvas';
     this.sidebarElement.style.display = 'block';
     this.controlsContainer.innerHTML = '';
     // Set the component name in the header
     this.componentNameHeader.textContent = `Component: ${componentId}`;
     // Dynamically create controls
     const styles = getComputedStyle(component);
-    //Controls Display Control
+    // Controls Display Control
     this.createSelectControl('Display', 'display', styles.display || 'block', [
       'block',
       'inline',
@@ -41,45 +43,48 @@ export class CustomizationSidebar {
       'grid',
       'none',
     ]);
-    this.createControl('Width', 'width', 'number', component.offsetWidth, {
-      min: 0,
-      max: 1000,
-      unit: 'px',
-    });
-    this.createControl('Height', 'height', 'number', component.offsetHeight, {
-      min: 0,
-      max: 1000,
-      unit: 'px',
-    });
+    // Exclude some controls for canvas
+    if (!isCanvas) {
+      this.createControl('Width', 'width', 'number', component.offsetWidth, {
+        min: 0,
+        max: 1000,
+        unit: 'px',
+      });
+      this.createControl('Height', 'height', 'number', component.offsetHeight, {
+        min: 0,
+        max: 1000,
+        unit: 'px',
+      });
+      this.createControl(
+        'Margin',
+        'margin',
+        'number',
+        parseInt(styles.margin) || 0,
+        {
+          min: 0,
+          max: 1000,
+          unit: 'px',
+        }
+      );
+      this.createControl(
+        'Padding',
+        'padding',
+        'number',
+        parseInt(styles.padding) || 0,
+        {
+          min: 0,
+          max: 1000,
+          unit: 'px',
+        }
+      );
+    }
     this.createControl('Color', 'color', 'color', styles.backgroundColor);
-    this.createControl(
-      'Margin',
-      'margin',
-      'number',
-      parseInt(styles.margin) || 0,
-      {
-        min: 0,
-        max: 1000,
-        unit: 'px',
-      }
-    );
-    this.createControl(
-      'Padding',
-      'padding',
-      'number',
-      parseInt(styles.padding) || 0,
-      {
-        min: 0,
-        max: 1000,
-        unit: 'px',
-      }
-    );
     this.createSelectControl('Text Alignment', 'alignment', styles.textAlign, [
       'left',
       'center',
       'right',
     ]);
-    //Controls for fonts
+    // Controls for fonts
     this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
       'Arial',
       'Verdana',
@@ -101,14 +106,14 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
-    //Controls for text color editing
+    // Controls for text color editing
     this.createControl(
       'Text Color',
       'text-color',
       'color',
       styles.color || '#000000'
     );
-    //Controls for border width
+    // Controls for border width
     this.createControl(
       'Border Width',
       'border-width',
@@ -120,7 +125,7 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
-    //Controls for Border Style (solid, dashed, dotted, etc.)
+    // Controls for Border Style
     this.createSelectControl(
       'Border Style',
       'border-style',
