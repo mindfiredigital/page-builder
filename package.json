@@ -9,7 +9,9 @@
     "watch": "tsc --watch",
     "test": "jest",
     "lint": "eslint .",
-    "copy-assets": "ncp ./src/icons ./dist/icons",
+    "copy-assets": "npm run copy-icons && npm run copy-styles",
+    "copy-icons": "ncp ./src/icons ./dist/icons",
+    "copy-styles": "ncp ./src/styles ./dist/styles",
     "prepare": "husky"
   },
   "keywords": [],
