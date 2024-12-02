@@ -1,4 +1,4 @@
-name: Deploy to Vercel Deployment Branch
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -34,10 +34,16 @@ jobs:
         cp -R dist/* deployment-root/
         cp index.html deployment-root/index.html
 
-    # Step 5: Push files to `vercel/deployment` branch
-    - name: Deploy to vercel/deployment Branch
+    # Step 5: Set Git user name and email
+    - name: Configure Git User
+      run: |
+        git config --local user.email "github-actions@github.com"
+        git config --local user.name "GitHub Actions"
+
+    # Step 6: Push files to `gh-pages` branch
+    - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: deployment-root
-        publish_branch: vercel/deployment
+        publish_branch: gh-pages
