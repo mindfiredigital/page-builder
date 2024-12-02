@@ -4,7 +4,7 @@ export class ComponentControlsManager {
   private canvas: typeof Canvas;
   //Image imports
   private icons = {
-    delete: '/dist/icons/delete.png',
+    delete: 'dist/icons/delete.png',
   };
 
   constructor(canvas: typeof Canvas) {
