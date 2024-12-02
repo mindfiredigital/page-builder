@@ -2,7 +2,7 @@ export class ComponentControlsManager {
   constructor(canvas) {
     //Image imports
     this.icons = {
-      delete: '/dist/icons/delete.png',
+      delete: 'dist/icons/delete.png',
     };
     this.canvas = canvas;
   }
