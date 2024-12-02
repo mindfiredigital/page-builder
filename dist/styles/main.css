@@ -55,12 +55,9 @@ html {
 #canvas {
   width: 100%;
   background-color: #ffffff; /* White background */
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-bottom: 5px;
+  padding: 5px;
   overflow-y: auto;
   overflow-x: auto;
-  border: 1px solid grey;
   box-sizing: border-box;
 }
 #customization {
