@@ -58,7 +58,7 @@ jobs:
           # Check if there are any changes before committing
           if [[ -n "$(git status --porcelain)" ]]; then
             git add . -f
-            git commit -m "chore: Copy build artifacts to gh-pages branch"
+            git commit -m "feat: Copy build artifacts to gh-pages branch"
           else
             echo "No changes to commit"
           fi
