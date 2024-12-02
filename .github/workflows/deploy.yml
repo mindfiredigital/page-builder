@@ -1,0 +1,44 @@
+name: Deploy to Vercel Deployment Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Node.js (if needed for building the project)
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18 # Use the version of Node.js your project requires
+
+    # Step 3: Install dependencies and build the project
+    - name: Install Dependencies and Build
+      run: |
+        npm ci
+        npm run build
+
+    # Step 4: Copy necessary files to root of deployment branch
+    - name: Prepare Deployment
+      run: |
+        rm -rf deployment-root || true
+        mkdir deployment-root
+        cp -R dist/* deployment-root/
+        cp -R styles deployment-root/styles
+        cp index.html deployment-root/index.html
+
+    # Step 5: Push files to `vercel/deployment` branch
+    - name: Deploy to vercel/deployment Branch
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: deployment-root
+        publish_branch: vercel/deployment
