@@ -2,13 +2,13 @@ export function createSidebar() {
   const sidebar = document.getElementById('sidebar')!;
 
   const icons = {
-    button: '/dist/icons/button.png',
-    header: '/dist/icons/header.png',
-    image: '/dist/icons/image.png',
+    button: 'dist/icons/button.png',
+    header: 'dist/icons/header.png',
+    image: 'dist/icons/image.png',
     text: 'dist/icons/text.png',
-    container: '/dist/icons/square.png',
-    twocolumncontainer: '/dist/icons/column.png',
-    threecolumncontainer: '/dist/icons/threecolumn.png',
+    container: 'dist/icons/square.png',
+    twocolumncontainer: 'dist/icons/column.png',
+    threecolumncontainer: 'dist/icons/threecolumn.png',
   };
 
   Object.entries(icons).forEach(([componentId, iconPath]) => {

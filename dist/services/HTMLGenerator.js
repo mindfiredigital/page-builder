@@ -129,6 +129,7 @@ export class HTMLGenerator {
       'color',
       'text-align',
       'line-height',
+      'font-family',
     ];
     const classesToExclude = [
       'component-controls',
