@@ -32,7 +32,6 @@ jobs:
         rm -rf deployment-root || true
         mkdir deployment-root
         cp -R dist/* deployment-root/
-        cp -R styles deployment-root/styles
         cp index.html deployment-root/index.html
 
     # Step 5: Push files to `vercel/deployment` branch
