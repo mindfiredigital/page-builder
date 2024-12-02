@@ -50,13 +50,13 @@ export class TwoColumnContainer {
     const style = document.createElement('style');
     style.textContent = `
         .two-column-container {
-          display: flex;
-          width: 100%;
-          min-width: 200px;
-          min-height: 100px;
+         display: flex;
+         width: 97%;
+         min-width: 100px;
+         min-height: 100px;
         }
         .column {
-          flex: 1;
+          flex-grow: 1;
           min-width: 50px;
           border: 1px dashed #ddd;
           padding: 10px;

@@ -213,7 +213,7 @@ export class ContainerComponent {
     style.textContent = `
       .container-component {
         display: flex;
-        width: 100%;
+        width: 97%;
         min-width: 100px;
         min-height: 100px;
       }

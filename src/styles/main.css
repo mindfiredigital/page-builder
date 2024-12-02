@@ -35,19 +35,18 @@ html {
 /* App Container */
 #app {
   display: flex;
-  width: 100%;
-  height: calc(100vh - 50px);
+  width: calc(215vh - 15px);
+  height: calc(100vh - 85px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff0a; /* White background */
+  background-color: #ffffff0a;
 }
 
 /* Sidebar (Left) */
 #sidebar {
-  width: 75px;
+  width: 55px;
   background-color: #f5f5f5;
-  padding: 10px;
+  padding: 8px;
   overflow-y: auto;
-  margin-right: 1px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-top: 4px;
 }
@@ -55,19 +54,22 @@ html {
 /* Canvas Area */
 #canvas {
   width: 100%;
-  height: auto;
   background-color: #ffffff; /* White background */
-  padding: 20px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
   overflow-y: auto;
   overflow-x: auto;
+  border: 1px solid grey;
+  box-sizing: border-box;
 }
 #customization {
   display: none;
   right: 0;
-  width: 260px;
+  width: 240px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 15px;
   margin-top: 4px;
   border: 1px solid #ecf0f1;
   overflow: auto;
@@ -82,10 +84,9 @@ html {
 
 /* Draggable Items */
 .draggable {
-  padding: 12px;
-  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 8px;
   text-align: center;
-  border-radius: 5px;
   cursor: grab;
   transition: background-color 0.3s;
 }

@@ -262,9 +262,17 @@ export class Canvas {
 
         component.style.position = 'absolute';
 
-        // Set component's initial position based on the drop location
-        component.style.left = `${event.offsetX}px`;
-        component.style.top = `${event.offsetY}px`;
+        if (
+          componentType === 'container' ||
+          componentType === 'twocolumncontainer' ||
+          componentType === 'threecolumncontainer'
+        ) {
+          // Specific logic for containers
+          component.style.top = `${event.offsetY}px`;
+        } else {
+          component.style.left = `${event.offsetX}px`;
+          component.style.top = `${event.offsetY}px`;
+        }
         // Create label for showing class name on hover
         const label = document.createElement('span');
         label.className = 'component-label';

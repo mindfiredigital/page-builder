@@ -65,12 +65,12 @@ export class ThreeColumnContainer {
     style.textContent = `
         .three-column-container {
           display: flex;
-          width: 100%;
-          min-width: 300px;
+          width: 97%;
+          min-width: 100px;
           min-height: 100px;
         }
         .column {
-          flex: 1;
+          flex-grow: 1;
           min-width: 50px;
           border: 1px dashed #ddd;
           padding: 10px;
