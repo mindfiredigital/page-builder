@@ -73,6 +73,10 @@ export class HTMLGenerator {
         childElement.classList.remove(classToRemove);
       });
 
+      // Remove input elements
+      const inputElements = element.querySelectorAll('input');
+      inputElements.forEach(input => input.remove());
+
       // Remove specific child elements
       const elementsToRemove = childElement.querySelectorAll(
         '.component-controls, .delete-icon, .component-label, .resizers, .resizer, .upload-btn, component-resizer'

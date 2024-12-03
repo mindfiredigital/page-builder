@@ -44,6 +44,7 @@ html {
 /* Sidebar (Left) */
 #sidebar {
   width: 55px;
+  flex-shrink: 0;
   background-color: #f5f5f5;
   padding: 8px;
   overflow-y: auto;
