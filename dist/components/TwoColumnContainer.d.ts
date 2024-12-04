@@ -24,4 +24,5 @@ export declare class TwoColumnContainer {
   private onDrop;
   private addStyles;
   create(): HTMLElement;
+  static restoreColumn(column: HTMLElement): void;
 }

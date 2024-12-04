@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas.js';
+import { ImageComponent } from './ImageComponent.js';
 export class TwoColumnContainer {
   constructor() {
     this.element = document.createElement('div');
@@ -113,5 +114,25 @@ export class TwoColumnContainer {
   }
   create() {
     return this.element;
+  }
+  static restoreColumn(column) {
+    const columnInstance = new TwoColumnContainer();
+    columnInstance.element = column;
+    // Reapply controls to child components inside the column
+    const columnChildren = column.querySelectorAll('.editable-component');
+    columnChildren.forEach(child => {
+      var _a;
+      // Add control buttons and draggable listeners to the child
+      Canvas.controlsManager.addControlButtons(child);
+      Canvas.addDraggableListeners(child);
+      // If the child is an image component, restore the image upload functionality
+      if (child.classList.contains('image-component')) {
+        const imageSrc =
+          ((_a = child.querySelector('img')) === null || _a === void 0
+            ? void 0
+            : _a.getAttribute('src')) || ''; // Get the saved image source
+        ImageComponent.restoreImageUpload(child, imageSrc);
+      }
+    });
   }
 }

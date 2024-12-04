@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas';
+import { ImageComponent } from './ImageComponent';
 
 export class TwoColumnContainer {
   private element: HTMLElement;
@@ -138,5 +139,24 @@ export class TwoColumnContainer {
 
   public create(): HTMLElement {
     return this.element;
+  }
+
+  public static restoreColumn(column: HTMLElement): void {
+    const columnInstance = new TwoColumnContainer();
+    columnInstance.element = column;
+
+    // Reapply controls to child components inside the column
+    const columnChildren = column.querySelectorAll('.editable-component');
+    columnChildren.forEach((child: any) => {
+      // Add control buttons and draggable listeners to the child
+      Canvas.controlsManager.addControlButtons(child);
+      Canvas.addDraggableListeners(child);
+
+      // If the child is an image component, restore the image upload functionality
+      if (child.classList.contains('image-component')) {
+        const imageSrc = child.querySelector('img')?.getAttribute('src') || ''; // Get the saved image source
+        ImageComponent.restoreImageUpload(child, imageSrc);
+      }
+    });
   }
 }

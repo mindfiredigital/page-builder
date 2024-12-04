@@ -189,6 +189,10 @@ export class Canvas {
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreContainer(component);
         }
+        // column-specific restoration
+        if (component.classList.contains('twoCol-component')) {
+          TwoColumnContainer.restoreColumn(component);
+        }
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
