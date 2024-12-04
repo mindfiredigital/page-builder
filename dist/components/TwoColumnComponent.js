@@ -1,92 +1,55 @@
-import { Canvas } from '../canvas/Canvas';
-
-export class TwoColumnContainer {
-  private element: HTMLElement;
-
+import { Canvas } from '../canvas/Canvas.js.js.js.js.js.js.js.js.js.js.js.js';
+export class TwoColumnComponent {
   constructor() {
     this.element = document.createElement('div');
-    this.element.classList.add('twoCol-component');
+    this.element.classList.add('2col-component');
     this.element.setAttribute('draggable', 'true');
-
     // Create columns
     const column1 = this.createColumn('column-1');
     const column2 = this.createColumn('column-2');
-
     // Append columns to the container
     this.element.appendChild(column1);
     this.element.appendChild(column2);
-
     // Add styles
     this.addStyles();
-
     // Add event listeners
     this.initializeEventListeners();
   }
-
-  private createColumn(className: string): HTMLElement {
+  createColumn(className) {
     const column = document.createElement('div');
     column.classList.add('column', className);
     column.setAttribute('draggable', 'true');
     column.style.width = '50%'; // Default 50% width for two columns
     return column;
   }
-
-  private initializeEventListeners(): void {
+  initializeEventListeners() {
     this.element.addEventListener('dragover', event => event.preventDefault());
     this.element.addEventListener('drop', this.onDrop.bind(this));
   }
-
-  private onDrop(event: DragEvent): void {
+  onDrop(event) {
+    var _a;
     event.preventDefault();
     event.stopPropagation();
-
-    const componentType = event.dataTransfer?.getData('component-type');
+    const componentType =
+      (_a = event.dataTransfer) === null || _a === void 0
+        ? void 0
+        : _a.getData('component-type');
     if (!componentType) return;
-
     const component = Canvas.createComponent(componentType);
     if (!component) return;
-
     // Determine the target column
-    const targetColumn = event.target as HTMLElement;
-
+    const targetColumn = event.target;
     // Ensure the drop is happening on a valid column
     if (targetColumn && targetColumn.classList.contains('column')) {
-      // Append the dropped component to the column
       targetColumn.appendChild(component);
-
-      // Get the parent container's ID
-      const parentId = this.element.id;
-
-      // Determine the column-specific suffix (c1 or c2)
-      const columnSuffix = targetColumn.classList.contains('column-1')
-        ? 'c1'
-        : 'c2';
-      const newClassName = `${parentId}-${columnSuffix}`;
-
-      // Update column ID and class
-      targetColumn.id = newClassName;
-      targetColumn.classList.add(newClassName);
-
-      // Optionally, update a visible label for the column
-      let label = targetColumn.querySelector(
-        '.column-label'
-      ) as HTMLSpanElement;
-      if (!label) {
-        label = document.createElement('span');
-        label.className = 'column-label';
-        targetColumn.appendChild(label);
-      }
-      label.textContent = newClassName; // Display the new ID or class
-
       // Capture state for history
       Canvas.historyManager.captureState();
     }
   }
-
-  private addStyles(): void {
+  addStyles() {
     const style = document.createElement('style');
     style.textContent = `
-        .twoCol-component {
+        .2col-component {
          display: flex;
          width: 97%;
          min-width: 100px;
@@ -105,8 +68,7 @@ export class TwoColumnContainer {
       `;
     document.head.appendChild(style);
   }
-
-  public create(): HTMLElement {
+  create() {
     return this.element;
   }
 }

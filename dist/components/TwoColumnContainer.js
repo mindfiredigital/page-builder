@@ -2,7 +2,7 @@ import { Canvas } from '../canvas/Canvas.js';
 export class TwoColumnContainer {
   constructor() {
     this.element = document.createElement('div');
-    this.element.classList.add('two-column-container');
+    this.element.classList.add('twoCol-component');
     this.element.setAttribute('draggable', 'true');
     // Create columns
     const column1 = this.createColumn('column-1');
@@ -41,7 +41,26 @@ export class TwoColumnContainer {
     const targetColumn = event.target;
     // Ensure the drop is happening on a valid column
     if (targetColumn && targetColumn.classList.contains('column')) {
+      // Append the dropped component to the column
       targetColumn.appendChild(component);
+      // Get the parent container's ID
+      const parentId = this.element.id;
+      // Determine the column-specific suffix (c1 or c2)
+      const columnSuffix = targetColumn.classList.contains('column-1')
+        ? 'c1'
+        : 'c2';
+      const newClassName = `${parentId}-${columnSuffix}`;
+      // Update column ID and class
+      targetColumn.id = newClassName;
+      targetColumn.classList.add(newClassName);
+      // Optionally, update a visible label for the column
+      let label = targetColumn.querySelector('.column-label');
+      if (!label) {
+        label = document.createElement('span');
+        label.className = 'column-label';
+        targetColumn.appendChild(label);
+      }
+      label.textContent = newClassName; // Display the new ID or class
       // Capture state for history
       Canvas.historyManager.captureState();
     }
@@ -49,7 +68,7 @@ export class TwoColumnContainer {
   addStyles() {
     const style = document.createElement('style');
     style.textContent = `
-        .two-column-container {
+        .twoCol-component {
          display: flex;
          width: 97%;
          min-width: 100px;

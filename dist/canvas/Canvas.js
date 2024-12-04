@@ -219,7 +219,7 @@ export class Canvas {
         component.style.position = 'absolute';
         if (
           componentType === 'container' ||
-          componentType === 'twocolumncontainer' ||
+          componentType === 'twoCol' ||
           componentType === 'threecolumncontainer'
         ) {
           // Specific logic for containers
@@ -384,6 +384,6 @@ Canvas.componentFactory = {
   image: () => new ImageComponent().create('https://via.placeholder.com/150'),
   text: () => new TextComponent().create(),
   container: () => new ContainerComponent().create(),
-  twocolumncontainer: () => new TwoColumnContainer().create(),
+  twoCol: () => new TwoColumnContainer().create(),
   threecolumncontainer: () => new ThreeColumnContainer().create(),
 };
