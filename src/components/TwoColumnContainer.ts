@@ -36,6 +36,25 @@ export class TwoColumnContainer {
     this.element.addEventListener('drop', this.onDrop.bind(this));
   }
 
+  /**
+   * Handles the drop event when a component is dragged and dropped onto a column within the container.
+   * The target column (where the component is dropped) is identified by checking if the target element contains the 'column' class.
+   * If the drop occurs inside a valid column, the component is appended to that column.
+   *
+   * The parent container's ID is fetched from the container's element, which is the element in which the column resides.
+   * Based on this ID, a unique suffix for the column is generated (either `c1` or `c2`), which ensures that the column’s
+   * ID and class names remain distinct within the parent container.
+   *
+   * The column’s ID and class name are dynamically updated with this new suffix to maintain proper structure and avoid conflicts.
+   * A visible label for the column is created or updated to reflect this new ID or class name.
+   *
+   * Next, a unique class name for the dropped component is generated using the `Canvas.generateUniqueClass()` method, which ensures
+   * that the component's ID and class are unique within the column. This unique class name is then applied to the component.
+   * A label for the component is created or updated to display its unique class name on the canvas.
+   *
+   * Finally, the state of the canvas is captured using `Canvas.historyManager.captureState()` to allow for undo/redo functionality.
+   */
+
   private onDrop(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -46,39 +65,50 @@ export class TwoColumnContainer {
     const component = Canvas.createComponent(componentType);
     if (!component) return;
 
-    // Determine the target column
     const targetColumn = event.target as HTMLElement;
 
-    // Ensure the drop is happening on a valid column
     if (targetColumn && targetColumn.classList.contains('column')) {
-      // Append the dropped component to the column
       targetColumn.appendChild(component);
 
-      // Get the parent container's ID
       const parentId = this.element.id;
 
-      // Determine the column-specific suffix (c1 or c2)
       const columnSuffix = targetColumn.classList.contains('column-1')
         ? 'c1'
         : 'c2';
-      const newClassName = `${parentId}-${columnSuffix}`;
 
-      // Update column ID and class
-      targetColumn.id = newClassName;
-      targetColumn.classList.add(newClassName);
+      const newColumnClassName = `${parentId}-${columnSuffix}`;
+      targetColumn.id = newColumnClassName;
+      targetColumn.classList.add(newColumnClassName);
 
-      // Optionally, update a visible label for the column
-      let label = targetColumn.querySelector(
+      let columnLabel = targetColumn.querySelector(
         '.column-label'
       ) as HTMLSpanElement;
-      if (!label) {
-        label = document.createElement('span');
-        label.className = 'column-label';
-        targetColumn.appendChild(label);
+      if (!columnLabel) {
+        columnLabel = document.createElement('span');
+        columnLabel.className = 'column-label';
+        targetColumn.appendChild(columnLabel);
       }
-      label.textContent = newClassName; // Display the new ID or class
+      columnLabel.textContent = newColumnClassName;
 
-      // Capture state for history
+      const uniqueComponentClass = Canvas.generateUniqueClass(
+        componentType,
+        true,
+        newColumnClassName
+      );
+      component.classList.add(uniqueComponentClass);
+
+      component.id = uniqueComponentClass;
+
+      let componentLabel = component.querySelector(
+        '.component-label'
+      ) as HTMLSpanElement;
+      if (!componentLabel) {
+        componentLabel = document.createElement('span');
+        componentLabel.className = 'component-label';
+        component.appendChild(componentLabel);
+      }
+      componentLabel.textContent = uniqueComponentClass;
+
       Canvas.historyManager.captureState();
     }
   }

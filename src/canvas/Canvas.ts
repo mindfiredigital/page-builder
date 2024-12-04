@@ -324,13 +324,19 @@ export class Canvas {
   ): string {
     if (isContainerComponent && containerClass) {
       // Handle container components
-      const containerElement = Canvas.components.find(component =>
+      let containerElement: any = Canvas.components.find(component =>
         component.classList.contains(containerClass)
       );
 
       if (!containerElement) {
-        console.warn(`Container with ID ${containerClass} not found.`);
-        return `${containerClass}-${type}1`;
+        // If container is not found in Canvas.components, try searching in .twoCol-component
+        containerElement = document.querySelector(
+          `.twoCol-component .${containerClass}`
+        );
+        if (!containerElement) {
+          console.warn(`Container with class ${containerClass} not found.`);
+          return `${containerClass}-${type}1`; // Default fallback name if no container found
+        }
       }
 
       const containerComponents = Array.from(
