@@ -2,7 +2,7 @@ import { Canvas } from '../canvas/Canvas.js';
 export class ThreeColumnContainer {
   constructor() {
     this.element = document.createElement('div');
-    this.element.classList.add('three-column-container');
+    this.element.classList.add('threeCol-component');
     this.element.setAttribute('draggable', 'true');
     // Create columns
     const column1 = this.createColumn('column-1');
@@ -51,7 +51,7 @@ export class ThreeColumnContainer {
   addStyles() {
     const style = document.createElement('style');
     style.textContent = `
-        .three-column-container {
+        .threeCol-component {
           display: flex;
           width: 97%;
           min-width: 100px;

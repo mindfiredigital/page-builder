@@ -5,7 +5,7 @@ export class ThreeColumnContainer {
 
   constructor() {
     this.element = document.createElement('div');
-    this.element.classList.add('three-column-container');
+    this.element.classList.add('threeCol-component');
     this.element.setAttribute('draggable', 'true');
 
     // Create columns
@@ -63,7 +63,7 @@ export class ThreeColumnContainer {
   private addStyles(): void {
     const style = document.createElement('style');
     style.textContent = `
-        .three-column-container {
+        .threeCol-component {
           display: flex;
           width: 97%;
           min-width: 100px;

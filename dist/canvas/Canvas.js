@@ -224,7 +224,7 @@ export class Canvas {
         if (
           componentType === 'container' ||
           componentType === 'twoCol' ||
-          componentType === 'threecolumncontainer'
+          componentType === 'threeCol'
         ) {
           // Specific logic for containers
           component.style.top = `${event.offsetY}px`;
@@ -395,5 +395,5 @@ Canvas.componentFactory = {
   text: () => new TextComponent().create(),
   container: () => new ContainerComponent().create(),
   twoCol: () => new TwoColumnContainer().create(),
-  threecolumncontainer: () => new ThreeColumnContainer().create(),
+  threeCol: () => new ThreeColumnContainer().create(),
 };
