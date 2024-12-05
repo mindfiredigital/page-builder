@@ -1,9 +1,4 @@
-export declare class ThreeColumnContainer {
-  private element;
+import { MultiColumnContainer } from '../services/MultiColumnContainer';
+export declare class ThreeColumnContainer extends MultiColumnContainer {
   constructor();
-  private createColumn;
-  private initializeEventListeners;
-  private onDrop;
-  private addStyles;
-  create(): HTMLElement;
 }

@@ -12,6 +12,7 @@ import { HistoryManager } from '../services/HistoryManager';
 import { JSONStorage } from '../services/JSONStorage';
 import { ComponentControlsManager } from './ComponentControls';
 import { CustomizationSidebar } from '../sidebar/CustomizationSidebar';
+import { MultiColumnContainer } from '../services/MultiColumnContainer';
 
 export class Canvas {
   private static components: HTMLElement[] = [];
@@ -41,7 +42,7 @@ export class Canvas {
       text: () => new TextComponent().create(),
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),
-      threecolumncontainer: () => new ThreeColumnContainer().create(),
+      threeCol: () => new ThreeColumnContainer().create(),
     };
 
   static init() {
@@ -231,8 +232,11 @@ export class Canvas {
         }
 
         // column-specific restoration
-        if (component.classList.contains('twoCol-component')) {
-          TwoColumnContainer.restoreColumn(component);
+        if (
+          component.classList.contains('twoCol-component') ||
+          component.classList.contains('threeCol-component')
+        ) {
+          MultiColumnContainer.restoreColumn(component);
         }
 
         if (componentData.type === 'image') {
@@ -270,7 +274,7 @@ export class Canvas {
         if (
           componentType === 'container' ||
           componentType === 'twoCol' ||
-          componentType === 'threecolumncontainer'
+          componentType === 'threeCol'
         ) {
           // Specific logic for containers
           component.style.top = `${event.offsetY}px`;
@@ -334,10 +338,8 @@ export class Canvas {
       );
 
       if (!containerElement) {
-        // If container is not found in Canvas.components, try searching in .twoCol-component
-        containerElement = document.querySelector(
-          `.twoCol-component .${containerClass}`
-        );
+        // If container is not found in Canvas.components, try searching in the whole document
+        containerElement = document.querySelector(`.${containerClass}`);
         if (!containerElement) {
           console.warn(`Container with class ${containerClass} not found.`);
           return `${containerClass}-${type}1`; // Default fallback name if no container found
