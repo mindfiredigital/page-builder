@@ -1,11 +1,12 @@
 import { Canvas } from '../canvas/Canvas';
+import { ImageComponent } from './ImageComponent';
 
 export class TwoColumnContainer {
   private element: HTMLElement;
 
   constructor() {
     this.element = document.createElement('div');
-    this.element.classList.add('two-column-container');
+    this.element.classList.add('twoCol-component');
     this.element.setAttribute('draggable', 'true');
 
     // Create columns
@@ -36,6 +37,25 @@ export class TwoColumnContainer {
     this.element.addEventListener('drop', this.onDrop.bind(this));
   }
 
+  /**
+   * Handles the drop event when a component is dragged and dropped onto a column within the container.
+   * The target column (where the component is dropped) is identified by checking if the target element contains the 'column' class.
+   * If the drop occurs inside a valid column, the component is appended to that column.
+   *
+   * The parent container's ID is fetched from the container's element, which is the element in which the column resides.
+   * Based on this ID, a unique suffix for the column is generated (either `c1` or `c2`), which ensures that the column’s
+   * ID and class names remain distinct within the parent container.
+   *
+   * The column’s ID and class name are dynamically updated with this new suffix to maintain proper structure and avoid conflicts.
+   * A visible label for the column is created or updated to reflect this new ID or class name.
+   *
+   * Next, a unique class name for the dropped component is generated using the `Canvas.generateUniqueClass()` method, which ensures
+   * that the component's ID and class are unique within the column. This unique class name is then applied to the component.
+   * A label for the component is created or updated to display its unique class name on the canvas.
+   *
+   * Finally, the state of the canvas is captured using `Canvas.historyManager.captureState()` to allow for undo/redo functionality.
+   */
+
   private onDrop(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -46,13 +66,50 @@ export class TwoColumnContainer {
     const component = Canvas.createComponent(componentType);
     if (!component) return;
 
-    // Determine the target column
     const targetColumn = event.target as HTMLElement;
 
-    // Ensure the drop is happening on a valid column
     if (targetColumn && targetColumn.classList.contains('column')) {
       targetColumn.appendChild(component);
-      // Capture state for history
+
+      const parentId = this.element.id;
+
+      const columnSuffix = targetColumn.classList.contains('column-1')
+        ? 'c1'
+        : 'c2';
+
+      const newColumnClassName = `${parentId}-${columnSuffix}`;
+      targetColumn.id = newColumnClassName;
+      targetColumn.classList.add(newColumnClassName);
+
+      let columnLabel = targetColumn.querySelector(
+        '.column-label'
+      ) as HTMLSpanElement;
+      if (!columnLabel) {
+        columnLabel = document.createElement('span');
+        columnLabel.className = 'column-label';
+        targetColumn.appendChild(columnLabel);
+      }
+      columnLabel.textContent = newColumnClassName;
+
+      const uniqueComponentClass = Canvas.generateUniqueClass(
+        componentType,
+        true,
+        newColumnClassName
+      );
+      component.classList.add(uniqueComponentClass);
+
+      component.id = uniqueComponentClass;
+
+      let componentLabel = component.querySelector(
+        '.component-label'
+      ) as HTMLSpanElement;
+      if (!componentLabel) {
+        componentLabel = document.createElement('span');
+        componentLabel.className = 'component-label';
+        component.appendChild(componentLabel);
+      }
+      componentLabel.textContent = uniqueComponentClass;
+
       Canvas.historyManager.captureState();
     }
   }
@@ -60,7 +117,7 @@ export class TwoColumnContainer {
   private addStyles(): void {
     const style = document.createElement('style');
     style.textContent = `
-        .two-column-container {
+        .twoCol-component {
          display: flex;
          width: 97%;
          min-width: 100px;
@@ -82,5 +139,24 @@ export class TwoColumnContainer {
 
   public create(): HTMLElement {
     return this.element;
+  }
+
+  public static restoreColumn(column: HTMLElement): void {
+    const columnInstance = new TwoColumnContainer();
+    columnInstance.element = column;
+
+    // Reapply controls to child components inside the column
+    const columnChildren = column.querySelectorAll('.editable-component');
+    columnChildren.forEach((child: any) => {
+      // Add control buttons and draggable listeners to the child
+      Canvas.controlsManager.addControlButtons(child);
+      Canvas.addDraggableListeners(child);
+
+      // If the child is an image component, restore the image upload functionality
+      if (child.classList.contains('image-component')) {
+        const imageSrc = child.querySelector('img')?.getAttribute('src') || ''; // Get the saved image source
+        ImageComponent.restoreImageUpload(child, imageSrc);
+      }
+    });
   }
 }

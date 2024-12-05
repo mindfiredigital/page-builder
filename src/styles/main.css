@@ -44,6 +44,7 @@ html {
 /* Sidebar (Left) */
 #sidebar {
   width: 55px;
+  flex-shrink: 0;
   background-color: #f5f5f5;
   padding: 8px;
   overflow-y: auto;
@@ -240,7 +241,8 @@ html {
   justify-content: center;
 }
 
-.component-label {
+.component-label,
+.column-label {
   position: absolute;
   top: 1px;
   left: 0;
@@ -255,6 +257,10 @@ html {
 }
 
 .editable-component:hover .component-label {
+  display: block;
+}
+/* Show column-label on hover of its column */
+.column:hover .column-label {
   display: block;
 }
 /* Pencil button styling */

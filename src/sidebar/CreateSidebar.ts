@@ -7,7 +7,7 @@ export function createSidebar() {
     image: 'dist/icons/image.png',
     text: 'dist/icons/text.png',
     container: 'dist/icons/square.png',
-    twocolumncontainer: 'dist/icons/column.png',
+    twoCol: 'dist/icons/column.png',
     threecolumncontainer: 'dist/icons/threecolumn.png',
   };
 

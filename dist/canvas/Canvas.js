@@ -189,6 +189,10 @@ export class Canvas {
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreContainer(component);
         }
+        // column-specific restoration
+        if (component.classList.contains('twoCol-component')) {
+          TwoColumnContainer.restoreColumn(component);
+        }
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
@@ -219,7 +223,7 @@ export class Canvas {
         component.style.position = 'absolute';
         if (
           componentType === 'container' ||
-          componentType === 'twocolumncontainer' ||
+          componentType === 'twoCol' ||
           componentType === 'threecolumncontainer'
         ) {
           // Specific logic for containers
@@ -273,12 +277,18 @@ export class Canvas {
   ) {
     if (isContainerComponent && containerClass) {
       // Handle container components
-      const containerElement = Canvas.components.find(component =>
+      let containerElement = Canvas.components.find(component =>
         component.classList.contains(containerClass)
       );
       if (!containerElement) {
-        console.warn(`Container with ID ${containerClass} not found.`);
-        return `${containerClass}-${type}1`;
+        // If container is not found in Canvas.components, try searching in .twoCol-component
+        containerElement = document.querySelector(
+          `.twoCol-component .${containerClass}`
+        );
+        if (!containerElement) {
+          console.warn(`Container with class ${containerClass} not found.`);
+          return `${containerClass}-${type}1`; // Default fallback name if no container found
+        }
       }
       const containerComponents = Array.from(containerElement.children);
       const typePattern = new RegExp(`${containerClass}-${type}(\\d+)`);
@@ -384,6 +394,6 @@ Canvas.componentFactory = {
   image: () => new ImageComponent().create('https://via.placeholder.com/150'),
   text: () => new TextComponent().create(),
   container: () => new ContainerComponent().create(),
-  twocolumncontainer: () => new TwoColumnContainer().create(),
+  twoCol: () => new TwoColumnContainer().create(),
   threecolumncontainer: () => new ThreeColumnContainer().create(),
 };
