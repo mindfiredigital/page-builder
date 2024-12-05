@@ -28,6 +28,17 @@ export class ThreeColumnContainer {
     this.element.addEventListener('dragover', event => event.preventDefault());
     this.element.addEventListener('drop', this.onDrop.bind(this));
   }
+  /**
+   * Handles the drop event for three-column containers, restoring the states of dropped components
+   * and ensuring that they are uniquely identified and labeled.
+   *
+   * This function manages:
+   * - Appending the dropped component to the target column.
+   * - Assigning a unique ID and class to the column and component based on the container's ID.
+   * - Creating or updating labels for the column and component for easy identification.
+   * - Capturing the current state in the history manager for undo/redo functionality.
+   *
+   */
   onDrop(event) {
     var _a;
     event.preventDefault();
@@ -43,8 +54,45 @@ export class ThreeColumnContainer {
     const targetColumn = event.target;
     // Ensure the drop is happening on a valid column
     if (targetColumn && targetColumn.classList.contains('column')) {
+      // Append the dropped component to the column
       targetColumn.appendChild(component);
-      // Capture state for history
+      // Get the parent container's ID
+      const parentId = this.element.id;
+      // Determine the column-specific suffix (c1, c2, or c3)
+      const columnSuffix = targetColumn.classList.contains('column-1')
+        ? 'c1'
+        : targetColumn.classList.contains('column-2')
+          ? 'c2'
+          : 'c3';
+      // Update the column's ID and class dynamically
+      const newColumnClassName = `${parentId}-${columnSuffix}`;
+      targetColumn.id = newColumnClassName;
+      targetColumn.classList.add(newColumnClassName);
+      // Optionally, update a visible label for the column
+      let columnLabel = targetColumn.querySelector('.column-label');
+      if (!columnLabel) {
+        columnLabel = document.createElement('span');
+        columnLabel.className = 'column-label';
+        targetColumn.appendChild(columnLabel);
+      }
+      columnLabel.textContent = newColumnClassName;
+      // Generate a unique class name for the dropped component
+      const uniqueComponentClass = Canvas.generateUniqueClass(
+        componentType,
+        true,
+        newColumnClassName
+      );
+      component.classList.add(uniqueComponentClass);
+      component.id = uniqueComponentClass;
+      // Optionally, create and update a visible label for the component
+      let componentLabel = component.querySelector('.component-label');
+      if (!componentLabel) {
+        componentLabel = document.createElement('span');
+        componentLabel.className = 'component-label';
+        component.appendChild(componentLabel);
+      }
+      componentLabel.textContent = uniqueComponentClass;
+      // Capture the state for history
       Canvas.historyManager.captureState();
     }
   }
