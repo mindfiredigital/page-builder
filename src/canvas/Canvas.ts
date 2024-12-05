@@ -12,6 +12,7 @@ import { HistoryManager } from '../services/HistoryManager';
 import { JSONStorage } from '../services/JSONStorage';
 import { ComponentControlsManager } from './ComponentControls';
 import { CustomizationSidebar } from '../sidebar/CustomizationSidebar';
+import { MultiColumnContainer } from '../services/MultiColumnContainer';
 
 export class Canvas {
   private static components: HTMLElement[] = [];
@@ -231,11 +232,11 @@ export class Canvas {
         }
 
         // column-specific restoration
-        if (component.classList.contains('twoCol-component')) {
-          TwoColumnContainer.restoreColumn(component);
-        }
-        if (component.classList.contains('threeCol-component')) {
-          ThreeColumnContainer.restoreColumn(component);
+        if (
+          component.classList.contains('twoCol-component') ||
+          component.classList.contains('threeCol-component')
+        ) {
+          MultiColumnContainer.restoreColumn(component);
         }
 
         if (componentData.type === 'image') {

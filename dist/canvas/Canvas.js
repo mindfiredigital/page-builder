@@ -12,6 +12,7 @@ import { HistoryManager } from '../services/HistoryManager.js';
 import { JSONStorage } from '../services/JSONStorage.js';
 import { ComponentControlsManager } from './ComponentControls.js';
 import { CustomizationSidebar } from '../sidebar/CustomizationSidebar.js';
+import { MultiColumnContainer } from '../services/MultiColumnContainer.js';
 export class Canvas {
   // Add getters and setters for components to make it accessible outside the canvas class
   static getComponents() {
@@ -190,11 +191,11 @@ export class Canvas {
           ContainerComponent.restoreContainer(component);
         }
         // column-specific restoration
-        if (component.classList.contains('twoCol-component')) {
-          TwoColumnContainer.restoreColumn(component);
-        }
-        if (component.classList.contains('threeCol-component')) {
-          ThreeColumnContainer.restoreColumn(component);
+        if (
+          component.classList.contains('twoCol-component') ||
+          component.classList.contains('threeCol-component')
+        ) {
+          MultiColumnContainer.restoreColumn(component);
         }
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
