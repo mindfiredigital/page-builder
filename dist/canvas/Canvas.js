@@ -193,6 +193,9 @@ export class Canvas {
         if (component.classList.contains('twoCol-component')) {
           TwoColumnContainer.restoreColumn(component);
         }
+        if (component.classList.contains('threeCol-component')) {
+          ThreeColumnContainer.restoreColumn(component);
+        }
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
@@ -281,10 +284,8 @@ export class Canvas {
         component.classList.contains(containerClass)
       );
       if (!containerElement) {
-        // If container is not found in Canvas.components, try searching in .twoCol-component
-        containerElement = document.querySelector(
-          `.twoCol-component .${containerClass}`
-        );
+        // If container is not found in Canvas.components, try searching in the whole document
+        containerElement = document.querySelector(`.${containerClass}`);
         if (!containerElement) {
           console.warn(`Container with class ${containerClass} not found.`);
           return `${containerClass}-${type}1`; // Default fallback name if no container found

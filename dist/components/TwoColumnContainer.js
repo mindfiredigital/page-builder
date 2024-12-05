@@ -116,8 +116,6 @@ export class TwoColumnContainer {
     return this.element;
   }
   static restoreColumn(column) {
-    const columnInstance = new TwoColumnContainer();
-    columnInstance.element = column;
     // Reapply controls to child components inside the column
     const columnChildren = column.querySelectorAll('.editable-component');
     columnChildren.forEach(child => {

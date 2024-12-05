@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas.js';
+import { ImageComponent } from './ImageComponent.js';
 export class ThreeColumnContainer {
   constructor() {
     this.element = document.createElement('div');
@@ -50,25 +51,18 @@ export class ThreeColumnContainer {
     if (!componentType) return;
     const component = Canvas.createComponent(componentType);
     if (!component) return;
-    // Determine the target column
     const targetColumn = event.target;
-    // Ensure the drop is happening on a valid column
     if (targetColumn && targetColumn.classList.contains('column')) {
-      // Append the dropped component to the column
       targetColumn.appendChild(component);
-      // Get the parent container's ID
       const parentId = this.element.id;
-      // Determine the column-specific suffix (c1, c2, or c3)
       const columnSuffix = targetColumn.classList.contains('column-1')
         ? 'c1'
         : targetColumn.classList.contains('column-2')
           ? 'c2'
           : 'c3';
-      // Update the column's ID and class dynamically
       const newColumnClassName = `${parentId}-${columnSuffix}`;
       targetColumn.id = newColumnClassName;
       targetColumn.classList.add(newColumnClassName);
-      // Optionally, update a visible label for the column
       let columnLabel = targetColumn.querySelector('.column-label');
       if (!columnLabel) {
         columnLabel = document.createElement('span');
@@ -76,7 +70,6 @@ export class ThreeColumnContainer {
         targetColumn.appendChild(columnLabel);
       }
       columnLabel.textContent = newColumnClassName;
-      // Generate a unique class name for the dropped component
       const uniqueComponentClass = Canvas.generateUniqueClass(
         componentType,
         true,
@@ -84,7 +77,6 @@ export class ThreeColumnContainer {
       );
       component.classList.add(uniqueComponentClass);
       component.id = uniqueComponentClass;
-      // Optionally, create and update a visible label for the component
       let componentLabel = component.querySelector('.component-label');
       if (!componentLabel) {
         componentLabel = document.createElement('span');
@@ -92,7 +84,6 @@ export class ThreeColumnContainer {
         component.appendChild(componentLabel);
       }
       componentLabel.textContent = uniqueComponentClass;
-      // Capture the state for history
       Canvas.historyManager.captureState();
     }
   }
@@ -120,5 +111,23 @@ export class ThreeColumnContainer {
   }
   create() {
     return this.element;
+  }
+  static restoreColumn(column) {
+    // Reapply controls to child components inside the column
+    const columnChildren = column.querySelectorAll('.editable-component');
+    columnChildren.forEach(child => {
+      var _a;
+      // Add control buttons and draggable listeners to the child
+      Canvas.controlsManager.addControlButtons(child);
+      Canvas.addDraggableListeners(child);
+      // If the child is an image component, restore the image upload functionality
+      if (child.classList.contains('image-component')) {
+        const imageSrc =
+          ((_a = child.querySelector('img')) === null || _a === void 0
+            ? void 0
+            : _a.getAttribute('src')) || ''; // Get the saved image source
+        ImageComponent.restoreImageUpload(child, imageSrc);
+      }
+    });
   }
 }

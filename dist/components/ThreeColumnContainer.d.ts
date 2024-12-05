@@ -17,4 +17,5 @@ export declare class ThreeColumnContainer {
   private onDrop;
   private addStyles;
   create(): HTMLElement;
+  static restoreColumn(column: HTMLElement): void;
 }
