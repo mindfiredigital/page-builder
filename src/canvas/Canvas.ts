@@ -299,32 +299,27 @@ export class Canvas {
   }
   // Reorder components in the Canvas model (in the components array)
   public static reorderComponent(fromIndex: number, toIndex: number): void {
-    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) {
-      return; // No change needed if fromIndex == toIndex or invalid indices
+    if (
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= this.components.length ||
+      toIndex >= this.components.length
+    ) {
+      console.error('Invalid indices for reordering');
+      return;
     }
 
-    // Remove the component from its current position
     const [movedComponent] = this.components.splice(fromIndex, 1);
-
-    // Insert the component at the new position
     this.components.splice(toIndex, 0, movedComponent);
 
-    //On adding new component to the canvas it captures the current state.
-    Canvas.historyManager.captureState();
-    // After updating the internal model, you may want to trigger a visual update
-    // For example, you might want to reorder the DOM nodes to reflect the new order
-    this.reorderDOM();
-  }
-
-  // Reorder the components in the DOM to reflect the model
-  private static reorderDOM(): void {
-    const canvasContainer = document.getElementById('canvas-container'); // Assuming this is the container holding components
-    if (!canvasContainer) return;
-
-    // Clear and append components in the new order
-    this.components.forEach(component => {
-      canvasContainer.appendChild(component); // Reappending in new order
-    });
+    const canvasContainer = document.getElementById('canvas-container');
+    if (canvasContainer) {
+      canvasContainer.innerHTML = '';
+      this.components.forEach(component => {
+        canvasContainer.appendChild(component);
+      });
+    }
+    this.historyManager.captureState();
   }
 
   // Add component to the Canvas and track it
