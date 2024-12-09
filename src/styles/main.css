@@ -639,7 +639,7 @@ html {
 }
 .export-btn {
   position: absolute;
-  bottom: 15px; 
+  bottom: 15px;
   right: 15px;
   padding: 10px 20px;
   font-size: 14px;
@@ -655,4 +655,46 @@ html {
 
 .export-btn:hover {
   background-color: #0056b3;
+}
+
+.layers-mode-toggle {
+  display: flex;
+  margin-bottom: 10px;
+}
+.layers-mode-toggle button {
+  flex: 1;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+}
+.layers-mode-toggle button.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+.layers-list {
+  list-style-type: none;
+  padding: 0;
+}
+.layer-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #f5f5f5;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.layer-item:hover {
+  background-color: #e0e0e0;
+}
+.layer-visibility,
+.layer-lock {
+  margin-right: 10px;
+  cursor: pointer;
+}
+.layer-name {
+  flex-grow: 1;
+}
+.hidden {
+  display: none;
 }

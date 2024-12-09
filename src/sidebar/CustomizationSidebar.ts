@@ -6,17 +6,44 @@ export class CustomizationSidebar {
   private static controlsContainer: HTMLElement;
   private static componentNameHeader: HTMLElement;
   private static closeButton: HTMLElement;
+  private static layersModeToggle: HTMLDivElement;
+  private static layersView: HTMLDivElement;
 
   static init() {
     this.sidebarElement = document.getElementById('customization')!;
     this.controlsContainer = document.getElementById('controls')!;
     this.componentNameHeader = document.getElementById('component-name')!;
-    this.closeButton = document.createElement('button'); // Create close button
+    this.closeButton = document.createElement('button');
 
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
       return;
     }
+
+    // Create layers mode toggle
+    this.layersModeToggle = document.createElement('div');
+    this.layersModeToggle.className = 'layers-mode-toggle';
+    this.layersModeToggle.innerHTML = `
+      <button id="customize-tab" class="active">Customize</button>
+      <button id="layers-tab">Layers</button>
+    `;
+    this.sidebarElement.insertBefore(
+      this.layersModeToggle,
+      this.componentNameHeader
+    );
+
+    // Create layers view
+    this.layersView = document.createElement('div');
+    this.layersView.id = 'layers-view';
+    this.layersView.className = 'layers-view hidden';
+    this.controlsContainer.appendChild(this.layersView);
+
+    // Add event listeners for tab switching
+    const customizeTab = this.layersModeToggle.querySelector('#customize-tab')!;
+    const layersTab = this.layersModeToggle.querySelector('#layers-tab')!;
+
+    customizeTab.addEventListener('click', () => this.switchToCustomizeMode());
+    layersTab.addEventListener('click', () => this.switchToLayersMode());
 
     // Add the close button to the sidebar
     this.sidebarElement.appendChild(this.closeButton);
@@ -29,7 +56,157 @@ export class CustomizationSidebar {
     });
   }
 
+  private static switchToCustomizeMode() {
+    const customizeTab = document.getElementById('customize-tab')!;
+    const layersTab = document.getElementById('layers-tab')!;
+    const layersView = document.getElementById('layers-view')!;
+    const controlsContainer = document.getElementById('controls')!;
+
+    customizeTab.classList.add('active');
+    layersTab.classList.remove('active');
+    layersView.classList.add('hidden');
+    controlsContainer.classList.remove('hidden');
+  }
+
+  private static switchToLayersMode() {
+    console.log('Switching to Layers mode...');
+    const controlsContainer = document.getElementById('controls')!;
+    const layersView = document.getElementById('layers-view')!;
+
+    console.log('Before switch:');
+    console.log(
+      'Controls visibility:',
+      controlsContainer.classList.contains('hidden')
+    );
+    console.log('Layers visibility:', layersView.classList.contains('hidden'));
+
+    // Ensure only the layers view is visible
+    controlsContainer.style.display = 'none'; // Hides the controls
+    layersView.style.display = 'block';
+
+    console.log('After switch:');
+    console.log(
+      'Controls visibility:',
+      controlsContainer.classList.contains('hidden')
+    );
+    console.log('Layers visibility:', layersView.classList.contains('hidden'));
+
+    // Update the layers view
+    this.updateLayersView();
+  }
+
+  private static updateLayersView() {
+    const layersView = document.getElementById('layers-view')!;
+    layersView.innerHTML = ''; // Clear existing layers
+    // Hide controls and show layers
+    CustomizationSidebar.controlsContainer.classList.add('hidden');
+    layersView.classList.remove('hidden');
+    const components = Canvas.getComponents();
+
+    // Create layers list with drag and drop functionality
+    const layersList = document.createElement('ul');
+    layersList.className = 'layers-list';
+    layersList.setAttribute('draggable', 'true');
+
+    components.forEach((component, index) => {
+      const layerItem = document.createElement('li');
+      layerItem.className = 'layer-item';
+      layerItem.setAttribute('draggable', 'true');
+      layerItem.dataset.index = index.toString();
+
+      // Create layer visibility toggle
+      const visibilityToggle = document.createElement('span');
+      visibilityToggle.innerHTML =
+        component.style.display === 'none' ? '👁️‍🗨️' : '👁️';
+      visibilityToggle.className = 'layer-visibility';
+      visibilityToggle.addEventListener('click', () => {
+        if (component.style.display === 'none') {
+          component.style.display = 'block';
+          visibilityToggle.innerHTML = '👁️';
+        } else {
+          component.style.display = 'none';
+          visibilityToggle.innerHTML = '👁️‍🗨️';
+        }
+      });
+
+      // Create layer name (based on component type and unique class)
+      const layerName = document.createElement('span');
+      const componentType = component.classList[0]
+        .split(/\d/)[0]
+        .replace('-component', '');
+      layerName.textContent = `${componentType} ${component.id}`;
+      layerName.className = 'layer-name';
+
+      // Make layer selectable to show customization
+      layerName.addEventListener('click', () => {
+        this.switchToCustomizeMode();
+        this.showSidebar(component.id);
+      });
+
+      // Create layer lock toggle
+      const lockToggle = document.createElement('span');
+      const isLocked = component.getAttribute('data-locked') === 'true';
+      lockToggle.innerHTML = isLocked ? '🔒' : '🔓';
+      lockToggle.className = 'layer-lock';
+      lockToggle.addEventListener('click', () => {
+        const currentLockState =
+          component.getAttribute('data-locked') === 'true';
+        if (currentLockState) {
+          component.removeAttribute('data-locked');
+          component.style.pointerEvents = 'auto';
+          lockToggle.innerHTML = '🔓';
+        } else {
+          component.setAttribute('data-locked', 'true');
+          component.style.pointerEvents = 'none';
+          lockToggle.innerHTML = '🔒';
+        }
+      });
+
+      // Drag and drop for reordering
+      layerItem.addEventListener('dragstart', e => {
+        e.dataTransfer?.setData('text/plain', index.toString());
+      });
+
+      layerItem.addEventListener('dragover', e => {
+        e.preventDefault();
+      });
+
+      layerItem.addEventListener('drop', e => {
+        e.preventDefault();
+        const fromIndex = parseInt(
+          e.dataTransfer?.getData('text/plain') || '-1'
+        );
+        const toIndex = parseInt(layerItem.dataset.index || '-1');
+
+        if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+          Canvas.reorderComponent(fromIndex, toIndex);
+          this.updateLayersView();
+        }
+      });
+
+      layerItem.appendChild(visibilityToggle);
+      layerItem.appendChild(layerName);
+      layerItem.appendChild(lockToggle);
+
+      layersList.appendChild(layerItem);
+    });
+
+    layersView.appendChild(layersList);
+  }
+
   static showSidebar(componentId: string) {
+    const customizeTab = document.getElementById('customize-tab')!;
+    const layersTab = document.getElementById('layers-tab')!;
+    const layersView = document.getElementById('layers-view')!;
+    const controlsContainer = document.getElementById('controls')!;
+
+    // Ensure we're in customize mode when showing sidebar
+    customizeTab.classList.add('active');
+    layersTab.classList.remove('active');
+    layersView.classList.add('hidden');
+    controlsContainer.classList.remove('hidden');
+
+    // Existing showSidebar logic follows...
     const component = document.getElementById(componentId);
     console.log(`Showing sidebar for: ${componentId}`);
     if (!component) {

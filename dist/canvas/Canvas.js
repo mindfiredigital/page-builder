@@ -249,6 +249,29 @@ export class Canvas {
       }
     }
   }
+  // Method to reorder components (for layers functionality)
+  static reorderComponent(fromIndex, toIndex) {
+    if (
+      fromIndex < 0 ||
+      fromIndex >= this.components.length ||
+      toIndex < 0 ||
+      toIndex >= this.components.length
+    ) {
+      console.error('Invalid component indices');
+      return;
+    }
+    // Remove the component from its current position
+    const [movedComponent] = this.components.splice(fromIndex, 1);
+    // Insert the component at the new position
+    this.components.splice(toIndex, 0, movedComponent);
+    // Reorder DOM elements to match the new z-index
+    this.components.forEach((component, index) => {
+      component.style.zIndex = `${index}`;
+      this.canvasElement.appendChild(component);
+    });
+    // Capture the new state
+    this.historyManager.captureState();
+  }
   static createComponent(type) {
     const componentFactoryFunction = Canvas.componentFactory[type];
     if (!componentFactoryFunction) {
