@@ -198,20 +198,31 @@ document.addEventListener('DOMContentLoaded', () => {
     margin-bottom: 10px;
   `;
         const sizes = [
-          { label: 'Mobile', width: '375px', height: '90%' },
-          { label: 'Tablet', width: '768px', height: '90%' },
-          { label: 'Desktop', width: '97%', height: '90%' },
+          { icon: 'dist/icons/mobile.png', width: '375px', height: '90%' },
+          { icon: 'dist/icons/tablet.png', width: '768px', height: '90%' },
+          { icon: 'dist/icons/computer.png', width: '97%', height: '90%' },
         ];
         sizes.forEach(size => {
           const button = document.createElement('button');
-          button.textContent = size.label;
           button.style.cssText = `
-      padding: 5px 10px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
+      padding: 5px;
+      border: none;
+      background: none;
       cursor: pointer;
-      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     `;
+          // Add icon to button
+          const icon = document.createElement('img');
+          icon.src = size.icon;
+          icon.alt = 'Device Icon';
+          icon.style.cssText = `
+      width: 24px;
+      height: 24px;
+    `;
+          button.appendChild(icon);
+          // Add event listener to adjust iframe dimensions
           button.addEventListener('click', () => {
             iframe.style.width = size.width;
             iframe.style.height = size.height;
