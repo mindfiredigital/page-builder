@@ -244,34 +244,46 @@ export class Canvas {
         Canvas.components.push(component);
         Canvas.canvasElement.appendChild(component);
         Canvas.addDraggableListeners(component); // Add drag functionality
+        CustomizationSidebar.updateLayersView();
         //On adding new component to the canvas it captures the current state.
         Canvas.historyManager.captureState();
       }
     }
   }
-  // Method to reorder components (for layers functionality)
+  // Reorder components in the Canvas model (in the components array)
   static reorderComponent(fromIndex, toIndex) {
-    if (
-      fromIndex < 0 ||
-      fromIndex >= this.components.length ||
-      toIndex < 0 ||
-      toIndex >= this.components.length
-    ) {
-      console.error('Invalid component indices');
-      return;
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) {
+      return; // No change needed if fromIndex == toIndex or invalid indices
     }
     // Remove the component from its current position
     const [movedComponent] = this.components.splice(fromIndex, 1);
     // Insert the component at the new position
     this.components.splice(toIndex, 0, movedComponent);
-    // Reorder DOM elements to match the new z-index
-    this.components.forEach((component, index) => {
-      component.style.zIndex = `${index}`;
-      this.canvasElement.appendChild(component);
-    });
-    // Capture the new state
-    this.historyManager.captureState();
+    //On adding new component to the canvas it captures the current state.
+    Canvas.historyManager.captureState();
+    // After updating the internal model, you may want to trigger a visual update
+    // For example, you might want to reorder the DOM nodes to reflect the new order
+    this.reorderDOM();
   }
+  // Reorder the components in the DOM to reflect the model
+  static reorderDOM() {
+    const canvasContainer = document.getElementById('canvas-container'); // Assuming this is the container holding components
+    if (!canvasContainer) return;
+    // Clear and append components in the new order
+    this.components.forEach(component => {
+      canvasContainer.appendChild(component); // Reappending in new order
+    });
+  }
+  // Add component to the Canvas and track it
+  // public static addComponent(component: HTMLElement): void {
+  //   // Add the component to the components array
+  //   this.components.push(component);
+  //   // Assuming there is a DOM container that holds the components
+  //   const canvasContainer = document.getElementById('canvas-container');
+  //   if (canvasContainer) {
+  //     canvasContainer.appendChild(component); // Append the new component to the canvas
+  //   }
+  // }
   static createComponent(type) {
     const componentFactoryFunction = Canvas.componentFactory[type];
     if (!componentFactoryFunction) {
@@ -294,6 +306,7 @@ export class Canvas {
       }
       //Add control for each component
       Canvas.controlsManager.addControlButtons(element);
+      CustomizationSidebar.updateLayersView();
     }
     return element;
   }

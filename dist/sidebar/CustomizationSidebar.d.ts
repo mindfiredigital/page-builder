@@ -8,7 +8,7 @@ export declare class CustomizationSidebar {
   static init(): void;
   private static switchToCustomizeMode;
   private static switchToLayersMode;
-  private static updateLayersView;
+  static updateLayersView(): void;
   static showSidebar(componentId: string): void;
   static hideSidebar(): void;
   static rgbToHex(rgb: string): string;

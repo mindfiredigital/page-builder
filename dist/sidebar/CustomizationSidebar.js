@@ -49,6 +49,9 @@ export class CustomizationSidebar {
     layersTab.classList.remove('active');
     layersView.classList.add('hidden');
     controlsContainer.classList.remove('hidden');
+    // Ensure only the control view is visible
+    controlsContainer.style.display = 'block'; // show the controls
+    layersView.style.display = 'none';
   }
   static switchToLayersMode() {
     console.log('Switching to Layers mode...');
@@ -78,7 +81,7 @@ export class CustomizationSidebar {
     // Hide controls and show layers
     CustomizationSidebar.controlsContainer.classList.add('hidden');
     layersView.classList.remove('hidden');
-    const components = Canvas.getComponents();
+    const components = Canvas.getComponents(); // Get the updated components
     // Create layers list with drag and drop functionality
     const layersList = document.createElement('ul');
     layersList.className = 'layers-list';
@@ -152,15 +155,20 @@ export class CustomizationSidebar {
         );
         const toIndex = parseInt(layerItem.dataset.index || '-1');
         if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+          // Reorder components in the model
           Canvas.reorderComponent(fromIndex, toIndex);
+          // After reordering, update the layers view in real-time
           this.updateLayersView();
         }
       });
+      // Append elements to the layer item
       layerItem.appendChild(visibilityToggle);
       layerItem.appendChild(layerName);
       layerItem.appendChild(lockToggle);
+      // Add the layer item to the layers list
       layersList.appendChild(layerItem);
     });
+    // Append the layers list to the layers view container
     layersView.appendChild(layersList);
   }
   static showSidebar(componentId) {

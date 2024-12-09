@@ -52,6 +52,7 @@ export declare class Canvas {
   static restoreState(state: any): void;
   static onDrop(event: DragEvent): void;
   static reorderComponent(fromIndex: number, toIndex: number): void;
+  private static reorderDOM;
   static createComponent(type: string): HTMLElement | null;
   static generateUniqueClass(
     type: string,
