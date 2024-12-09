@@ -175,17 +175,18 @@ document.addEventListener('DOMContentLoaded', () => {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px;
+    padding: 10px;
   `;
 
     // Insert the generated HTML inside an iframe for isolation
     const iframe = document.createElement('iframe');
     iframe.id = 'preview-iframe';
     iframe.style.cssText = `
-    width: 100%;
+    width: 97%;
     height: 90%;
     border: none;
     background: #fff;
+    margin-right: 20px;
   `;
     iframe.srcdoc = html; // Set the generated HTML as iframe content
     fullScreenModal.appendChild(iframe);
@@ -214,9 +215,9 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
 
     const sizes = [
-      { label: 'Mobile', width: '375px', height: '667px' },
-      { label: 'Tablet', width: '768px', height: '1024px' },
-      { label: 'Desktop', width: '100%', height: '100%' },
+      { label: 'Mobile', width: '375px', height: '90%' },
+      { label: 'Tablet', width: '768px', height: '90%' },
+      { label: 'Desktop', width: '97%', height: '90%' },
     ];
 
     sizes.forEach(size => {
