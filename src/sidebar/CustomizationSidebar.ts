@@ -72,27 +72,17 @@ export class CustomizationSidebar {
   }
 
   private static switchToLayersMode() {
-    console.log('Switching to Layers mode...');
-    const controlsContainer = document.getElementById('controls')!;
+    const customizeTab = document.getElementById('customize-tab')!;
+    const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
+    const controlsContainer = document.getElementById('controls')!;
 
-    console.log('Before switch:');
-    console.log(
-      'Controls visibility:',
-      controlsContainer.classList.contains('hidden')
-    );
-    console.log('Layers visibility:', layersView.classList.contains('hidden'));
+    layersTab.classList.add('active');
+    customizeTab.classList.remove('active');
 
     // Ensure only the layers view is visible
     controlsContainer.style.display = 'none'; // Hides the controls
     layersView.style.display = 'block';
-
-    console.log('After switch:');
-    console.log(
-      'Controls visibility:',
-      controlsContainer.classList.contains('hidden')
-    );
-    console.log('Layers visibility:', layersView.classList.contains('hidden'));
 
     // Update the layers view
     this.updateLayersView();
@@ -136,10 +126,10 @@ export class CustomizationSidebar {
 
       // Create layer name (based on component type and unique class)
       const layerName = document.createElement('span');
-      const componentType = component.classList[0]
-        .split(/\d/)[0]
-        .replace('-component', '');
-      layerName.textContent = `${componentType} ${component.id}`;
+      //const componentType = component.classList[0]
+      // .split(/\d/)[0]
+      // .replace('-component', '');
+      layerName.textContent = `${component.id}`;
       layerName.className = 'layer-name';
 
       // Make layer selectable to show customization
