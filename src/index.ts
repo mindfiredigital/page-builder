@@ -163,18 +163,82 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create a full-screen modal
     const fullScreenModal = document.createElement('div');
     fullScreenModal.id = 'preview-modal';
+    fullScreenModal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #e6e6e6;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+  `;
 
-    // Insert the generated HTML
-    fullScreenModal.innerHTML = html;
+    // Insert the generated HTML inside an iframe for isolation
+    const iframe = document.createElement('iframe');
+    iframe.id = 'preview-iframe';
+    iframe.style.cssText = `
+    width: 100%;
+    height: 90%;
+    border: none;
+    background: #fff;
+  `;
+    iframe.srcdoc = html; // Set the generated HTML as iframe content
+    fullScreenModal.appendChild(iframe);
 
-    // Add the modal to the document
     // Create a close button
     const closeButton = document.createElement('button');
     closeButton.id = 'close-modal-btn';
     closeButton.textContent = '✕';
-
-    // Append the close button to the modal
+    closeButton.style.cssText = `
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  `;
     fullScreenModal.appendChild(closeButton);
+
+    // Create responsiveness options
+    const responsivenessContainer = document.createElement('div');
+    responsivenessContainer.style.cssText = `
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  `;
+
+    const sizes = [
+      { label: 'Mobile', width: '375px', height: '667px' },
+      { label: 'Tablet', width: '768px', height: '1024px' },
+      { label: 'Desktop', width: '100%', height: '100%' },
+    ];
+
+    sizes.forEach(size => {
+      const button = document.createElement('button');
+      button.textContent = size.label;
+      button.style.cssText = `
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      cursor: pointer;
+      border-radius: 4px;
+    `;
+
+      button.addEventListener('click', () => {
+        iframe.style.width = size.width;
+        iframe.style.height = size.height;
+      });
+
+      responsivenessContainer.appendChild(button);
+    });
+
+    fullScreenModal.insertBefore(responsivenessContainer, iframe);
 
     // Add the modal to the document
     document.body.appendChild(fullScreenModal);
