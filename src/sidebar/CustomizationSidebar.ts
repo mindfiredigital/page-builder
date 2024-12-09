@@ -24,8 +24,8 @@ export class CustomizationSidebar {
     this.layersModeToggle = document.createElement('div');
     this.layersModeToggle.className = 'layers-mode-toggle';
     this.layersModeToggle.innerHTML = `
-      <button id="customize-tab" class="active">Customize</button>
-      <button id="layers-tab">Layers</button>
+      <button id="customize-tab" title="Customize" class="active">⚙️</button>
+      <button id="layers-tab" title="Layers"> ☰ </button>
     `;
     this.sidebarElement.insertBefore(
       this.layersModeToggle,
@@ -61,6 +61,7 @@ export class CustomizationSidebar {
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
     const controlsContainer = document.getElementById('controls')!;
+    const componentName = document.getElementById('component-name')!;
 
     customizeTab.classList.add('active');
     layersTab.classList.remove('active');
@@ -69,6 +70,7 @@ export class CustomizationSidebar {
     // Ensure only the control view is visible
     controlsContainer.style.display = 'block'; // show the controls
     layersView.style.display = 'none';
+    componentName.style.display = 'block';
   }
 
   private static switchToLayersMode() {
@@ -76,6 +78,7 @@ export class CustomizationSidebar {
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
     const controlsContainer = document.getElementById('controls')!;
+    const componentName = document.getElementById('component-name')!;
 
     layersTab.classList.add('active');
     customizeTab.classList.remove('active');
@@ -83,7 +86,7 @@ export class CustomizationSidebar {
     // Ensure only the layers view is visible
     controlsContainer.style.display = 'none'; // Hides the controls
     layersView.style.display = 'block';
-
+    componentName.style.display = 'none';
     // Update the layers view
     this.updateLayersView();
   }
