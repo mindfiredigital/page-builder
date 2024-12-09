@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: #e6e6e6;
+    background: #f5f5f5;
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -215,9 +215,24 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
 
     const sizes = [
-      { icon: 'dist/icons/mobile.png', width: '375px', height: '90%' },
-      { icon: 'dist/icons/tablet.png', width: '768px', height: '90%' },
-      { icon: 'dist/icons/computer.png', width: '97%', height: '90%' },
+      {
+        icon: 'dist/icons/mobile.png',
+        title: 'Desktop',
+        width: '375px',
+        height: '90%',
+      },
+      {
+        icon: 'dist/icons/tablet.png',
+        title: 'Tablet',
+        width: '768px',
+        height: '90%',
+      },
+      {
+        icon: 'dist/icons/computer.png',
+        title: 'Mobile',
+        width: '97%',
+        height: '90%',
+      },
     ];
 
     sizes.forEach(size => {
@@ -231,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
       align-items: center;
       justify-content: center;
     `;
-
+      button.title = size.title;
       // Add icon to button
       const icon = document.createElement('img');
       icon.src = size.icon;
