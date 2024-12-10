@@ -13,12 +13,14 @@ import {
 } from './utils/utilityFunctions.js';
 import { createZipFile } from './utils/zipGenerator.js';
 import { ShortcutManager } from './services/ShortcutManager.js';
+import { PreviewPanel } from './canvas/PreviewPanel.js';
 document.addEventListener('DOMContentLoaded', () => {
   var _a, _b, _c, _d, _e, _f, _g, _h, _j;
   const canvas = new Canvas();
   const sidebar = new Sidebar(canvas);
   const htmlGenerator = new HTMLGenerator(canvas);
   const jsonStorage = new JSONStorage();
+  const previewPanel = new PreviewPanel();
   createSidebar();
   Canvas.init();
   sidebar.init();
@@ -266,23 +268,17 @@ document.addEventListener('DOMContentLoaded', () => {
   (_e = document.getElementById('preview-desktop')) === null || _e === void 0
     ? void 0
     : _e.addEventListener('click', () => {
-        const canvas = document.getElementById('canvas');
-        canvas.classList.remove('preview-tablet', 'preview-mobile');
-        canvas.classList.add('preview-desktop');
+        previewPanel.setPreviewMode('desktop');
       });
   (_f = document.getElementById('preview-tablet')) === null || _f === void 0
     ? void 0
     : _f.addEventListener('click', () => {
-        const canvas = document.getElementById('canvas');
-        canvas.classList.remove('preview-desktop', 'preview-mobile');
-        canvas.classList.add('preview-tablet');
+        previewPanel.setPreviewMode('tablet');
       });
   (_g = document.getElementById('preview-mobile')) === null || _g === void 0
     ? void 0
     : _g.addEventListener('click', () => {
-        const canvas = document.getElementById('canvas');
-        canvas.classList.remove('preview-desktop', 'preview-tablet');
-        canvas.classList.add('preview-mobile');
+        previewPanel.setPreviewMode('mobile');
       });
   //Functionality for undo button
   (_h = document.getElementById('undo-btn')) === null || _h === void 0
