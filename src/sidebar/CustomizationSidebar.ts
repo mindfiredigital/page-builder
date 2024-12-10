@@ -95,10 +95,6 @@ export class CustomizationSidebar {
     const layersView = document.getElementById('layers-view')!;
     layersView.innerHTML = ''; // Clear existing layers
 
-    // Hide controls and show layers
-    CustomizationSidebar.controlsContainer.classList.add('hidden');
-    layersView.classList.remove('hidden');
-
     const components = Canvas.getComponents(); // Get the updated components
 
     // Create layers list with drag and drop functionality
