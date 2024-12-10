@@ -42,6 +42,7 @@ export class HTMLGenerator {
       'component-controls',
       'delete-icon',
       'component-label',
+      'column-label',
       'editable-component',
       'resizers',
       'resizer',
@@ -63,7 +64,7 @@ export class HTMLGenerator {
       inputElements.forEach(input => input.remove());
       // Remove specific child elements
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .resizers, .resizer, .upload-btn, component-resizer'
+        '.component-controls, .delete-icon, .component-label,.column-label, .resizers, .resizer, .upload-btn, component-resizer'
       );
       elementsToRemove.forEach(el => el.remove());
       // Recursively clean up nested elements

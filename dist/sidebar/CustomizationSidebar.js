@@ -90,7 +90,7 @@ export class CustomizationSidebar {
       visibilityToggle.className = 'layer-visibility';
       visibilityToggle.addEventListener('click', () => {
         if (component.style.display === 'none') {
-          component.style.display = 'block';
+          component.style.display = component.dataset.originalDisplay || '';
           visibilityToggle.innerHTML = '👁️';
         } else {
           component.style.display = 'none';
