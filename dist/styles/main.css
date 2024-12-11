@@ -675,3 +675,43 @@ html {
 .hidden {
   display: none;
 }
+
+/* Remove default padding and add animation */
+ul {
+  margin: 0; /* Remove any default margins */
+  padding: 0; /* Remove any default padding */
+  list-style: none; /* Optional: Remove bullets if not needed */
+}
+.layer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  list-style: none;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 300ms ease;
+}
+
+.layer-item:hover {
+  background-color: #f9f9f9;
+  transform: scale(1.02);
+}
+
+.layer-children {
+  padding: 0; /* No padding for nested children */
+  margin: 0;
+  max-height: 0;
+  padding: 0;
+  list-style: none;
+  transition: max-height 300ms ease, opacity 300ms ease;
+}
+
+.layer-expand-toggle {
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.layer-children.expanded {
+  max-height: none; /* Allow height to expand */
+  opacity: 1; /* Smoothly fade in */
+}

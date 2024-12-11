@@ -40,7 +40,7 @@ export class HTMLGenerator {
     </style>
  </head>
         <body>
-            <div id="home" class="home">
+            <div id="page" class="home">
             ${bodyContent}
             </div>
         </body>

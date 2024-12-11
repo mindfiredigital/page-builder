@@ -3,7 +3,7 @@ import { HTMLGenerator } from '../services/HTMLGenerator.js';
 class LayersViewController {
   constructor(
     layersViewSelector = '#layers-view',
-    canvasRootSelector = '#home'
+    canvasRootSelector = '#page'
   ) {
     // Ensure elements exist before assignment
     this.initializeElements(layersViewSelector, canvasRootSelector);
@@ -47,10 +47,12 @@ class LayersViewController {
     const traverseDom = (element, depth = 0) => {
       var _a;
       const htmlElement = element; // Assert the element is an HTMLElement
+      // Skip elements without an `id` attribute
+      if (!htmlElement.id) {
+        return null;
+      }
       const layer = {
-        id:
-          htmlElement.id || `layer-${Math.random().toString(36).substr(2, 9)}`, // Assign unique ID if missing
-        type: htmlElement.tagName.toLowerCase(),
+        id: htmlElement.id, // Assign unique ID if missing
         isVisible:
           ((_a = htmlElement.style) === null || _a === void 0
             ? void 0
@@ -61,12 +63,17 @@ class LayersViewController {
       };
       Array.from(element.children).forEach(child => {
         const childLayer = traverseDom(child, depth + 1);
-        layer.children.push(childLayer);
+        if (childLayer) {
+          layer.children.push(childLayer);
+        }
       });
       return layer;
     };
     const rootElements = Array.from(doc.body.children);
-    return rootElements.map(element => traverseDom(element));
+    // Build the hierarchy and filter out any `null` layers
+    return rootElements
+      .map(element => traverseDom(element))
+      .filter(layer => layer !== null);
   }
   /**
    * Render the layers view with nested structure
@@ -93,7 +100,8 @@ class LayersViewController {
    */
   static renderLayerItems(parentElement, layers, depth = 0) {
     layers.forEach(layer => {
-      const layerItem = this.createLayerItemElement(layer, depth);
+      const layerItem = this.createLayerItemElement(layer);
+      layerItem.style.paddingLeft = `${depth * 1}px`; // Add indentation
       // Handle nested children
       if (layer.children && layer.children.length > 0) {
         const expandToggle = document.createElement('span');
@@ -101,26 +109,35 @@ class LayersViewController {
         expandToggle.textContent = '▶';
         const childrenContainer = document.createElement('ul');
         childrenContainer.className = 'layer-children';
-        // Recursive rendering of children
+        childrenContainer.style.display = 'none'; // Initially hidden
+        childrenContainer.style.paddingLeft = '0'; // Remove additional left padding
+        // Recursive rendering of children with increased depth
         this.renderLayerItems(childrenContainer, layer.children, depth + 1);
         // Toggle expand/collapse
         expandToggle.addEventListener('click', () => {
-          const isExpanded = childrenContainer.classList.toggle('expanded');
-          expandToggle.textContent = isExpanded ? '▼' : '▶';
+          const isExpanded = childrenContainer.style.display === 'block';
+          if (isExpanded) {
+            childrenContainer.style.display = 'none';
+            expandToggle.textContent = '▶';
+          } else {
+            childrenContainer.style.display = 'block';
+            expandToggle.textContent = '▼';
+          }
         });
-        layerItem.insertBefore(expandToggle, layerItem.firstChild);
-        layerItem.appendChild(childrenContainer);
+        layerItem.appendChild(expandToggle);
+        parentElement.appendChild(layerItem);
+        parentElement.appendChild(childrenContainer); // Append children container after the parent
+      } else {
+        parentElement.appendChild(layerItem);
       }
-      parentElement.appendChild(layerItem);
     });
   }
   /**
    * Create a layer item element with advanced interactions
    */
-  static createLayerItemElement(layer, depth) {
+  static createLayerItemElement(layer) {
     const layerItem = document.createElement('li');
     layerItem.className = 'layer-item';
-    layerItem.style.paddingLeft = `${depth * 20}px`; // Indentation for nested layers
     layerItem.dataset.layerId = layer.id;
     // Visibility toggle
     const visibilityToggle = document.createElement('span');
@@ -132,7 +149,7 @@ class LayersViewController {
     // Layer name with type
     const layerName = document.createElement('span');
     layerName.className = 'layer-name';
-    layerName.textContent = `${layer.type} - ${layer.id}`;
+    layerName.textContent = `${layer.id}`;
     layerName.addEventListener('click', () => this.selectLayer(layer));
     // Lock toggle
     const lockToggle = document.createElement('span');
@@ -244,7 +261,6 @@ class LayersViewController {
     if (propertiesContainer) {
       propertiesContainer.innerHTML = `
         <h3>Layer Properties: ${layerId}</h3>
-        <div>Type: ${component.tagName}</div>
         <div>Visibility: ${component.style.display !== 'none' ? 'Visible' : 'Hidden'}</div>
         <div>Locked: ${component.getAttribute('data-locked') === 'true' ? 'Yes' : 'No'}</div>
       `;
@@ -254,66 +270,4 @@ class LayersViewController {
 LayersViewController.layersView = null;
 LayersViewController.canvasRoot = null;
 LayersViewController.draggedItem = null;
-// CSS to complement the layers view (can be in a separate stylesheet)
-const layerViewStyles = `
-.layers-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 12px;
-}
-
-.layer-item {
-  display: flex;
-  align-items: center;
-  padding: 5px 10px;
-  border-bottom: 1px solid #e0e0e0;
-  cursor: move;
-  transition: background-color 0.2s;
-}
-
-.layer-item:hover {
-  background-color: #f5f5f5;
-}
-
-.layer-expand-toggle {
-  margin-right: 10px;
-  cursor: pointer;
-  user-select: none;
-  width: 15px;
-  text-align: center;
-}
-
-.layer-visibility, 
-.layer-lock {
-  margin-right: 10px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.layer-name {
-  flex-grow: 1;
-  margin-right: 10px;
-}
-
-.layer-children {
-  display: none;
-  list-style: none;
-  padding-left: 20px;
-}
-
-.layer-children.expanded {
-  display: block;
-}
-
-.layer-item[data-depth="1"] { padding-left: 20px; }
-.layer-item[data-depth="2"] { padding-left: 40px; }
-.layer-item[data-depth="3"] { padding-left: 60px; }
-.layer-item[data-depth="4"] { padding-left: 80px; }
-`;
-// Append styles to document
-const styleElement = document.createElement('style');
-styleElement.textContent = layerViewStyles;
-document.head.appendChild(styleElement);
 export default LayersViewController;
