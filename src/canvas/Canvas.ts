@@ -13,12 +13,14 @@ import { JSONStorage } from '../services/JSONStorage';
 import { ComponentControlsManager } from './ComponentControls';
 import { CustomizationSidebar } from '../sidebar/CustomizationSidebar';
 import { MultiColumnContainer } from '../services/MultiColumnContainer';
+import { GridManager } from './GridManager';
 
 export class Canvas {
   private static components: HTMLElement[] = [];
   private static canvasElement: HTMLElement;
   private static sidebarElement: HTMLElement;
   public static controlsManager: ComponentControlsManager;
+  private static gridManager: GridManager;
   // Initialize CustomizationSidebar
 
   public static historyManager: HistoryManager; //accessible outside the Canvas class.
@@ -67,6 +69,10 @@ export class Canvas {
     Canvas.historyManager = new HistoryManager(Canvas.canvasElement); // Pass the canvas element here
     Canvas.jsonStorage = new JSONStorage();
     Canvas.controlsManager = new ComponentControlsManager(Canvas);
+
+    //Initialize grid manager and initialize drop-view
+    Canvas.gridManager = new GridManager();
+    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
 
     const dragDropManager = new DragDropManager(
       Canvas.canvasElement,
@@ -261,40 +267,47 @@ export class Canvas {
     const componentType = event.dataTransfer?.getData('component-type');
     console.log(`Dropped component type: ${componentType}`);
 
-    if (componentType) {
-      const component = Canvas.createComponent(componentType);
-      if (component) {
-        // Add unique class name
-        const uniqueClass = Canvas.generateUniqueClass(componentType);
-        component.id = uniqueClass;
-        component.classList.add(uniqueClass);
+    if (!componentType) {
+      return;
+    }
+    const { gridX, gridY } = this.gridManager.mousePositionAtGridCorner(
+      event,
+      Canvas.canvasElement
+    );
+    const component = Canvas.createComponent(componentType);
+    if (component) {
+      // Add unique class name
+      const uniqueClass = Canvas.generateUniqueClass(componentType);
+      component.id = uniqueClass;
+      component.classList.add(uniqueClass);
 
+      component.style.position = 'absolute';
+
+      if (
+        componentType === 'container' ||
+        componentType === 'twoCol' ||
+        componentType === 'threeCol'
+      ) {
+        // Specific logic for containers
+        component.style.top = `${event.offsetY}px`;
+      } else {
+        // Position the component at the snapped grid corner
         component.style.position = 'absolute';
-
-        if (
-          componentType === 'container' ||
-          componentType === 'twoCol' ||
-          componentType === 'threeCol'
-        ) {
-          // Specific logic for containers
-          component.style.top = `${event.offsetY}px`;
-        } else {
-          component.style.left = `${event.offsetX}px`;
-          component.style.top = `${event.offsetY}px`;
-        }
-        // Create label for showing class name on hover
-        const label = document.createElement('span');
-        label.className = 'component-label';
-        label.textContent = uniqueClass;
-        component.appendChild(label);
-
-        Canvas.components.push(component);
-        Canvas.canvasElement.appendChild(component);
-        Canvas.addDraggableListeners(component); // Add drag functionality
-        CustomizationSidebar.updateLayersView();
-        //On adding new component to the canvas it captures the current state.
-        Canvas.historyManager.captureState();
+        component.style.left = `${gridX}px`;
+        component.style.top = `${gridY}px`;
       }
+      // Create label for showing class name on hover
+      const label = document.createElement('span');
+      label.className = 'component-label';
+      label.textContent = uniqueClass;
+      component.appendChild(label);
+
+      Canvas.components.push(component);
+      Canvas.canvasElement.appendChild(component);
+      Canvas.addDraggableListeners(component); // Add drag functionality
+      CustomizationSidebar.updateLayersView();
+      //On adding new component to the canvas it captures the current state.
+      Canvas.historyManager.captureState();
     }
   }
   // Reorder components in the Canvas model (in the components array)

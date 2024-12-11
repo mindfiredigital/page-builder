@@ -6,6 +6,7 @@ export declare class Canvas {
   private static canvasElement;
   private static sidebarElement;
   static controlsManager: ComponentControlsManager;
+  private static gridManager;
   static historyManager: HistoryManager;
   static jsonStorage: JSONStorage;
   static getComponents(): HTMLElement[];
