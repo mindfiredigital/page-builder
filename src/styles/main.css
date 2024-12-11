@@ -60,6 +60,10 @@ html {
   overflow-y: auto;
   overflow-x: auto;
   box-sizing: border-box;
+  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(to right, #efefef 1px, transparent 1px),
+    linear-gradient(to bottom, #efefef 1px, transparent 1px);
 }
 #customization {
   display: none;
@@ -105,8 +109,8 @@ html {
   background-color: #f9f9f9; /* Light grey */
   border-radius: 5px;
   cursor: pointer;
-  position: relative;
-  transition: box-shadow 0.3s;
+  position: absolute;
+  transition: box-shadow 0.3s;  
 }
 
 .component:hover {
@@ -714,4 +718,17 @@ ul {
 .layer-children.expanded {
   max-height: none; /* Allow height to expand */
   opacity: 1; /* Smoothly fade in */
+}
+
+/* Drop preview for grid corner */
+.drop-preview {
+  border: 2px dashed rgba(0, 0, 255, 0.7); /* Dashed blue border */
+  background-color: rgba(0, 0, 255, 0.1); /* Light blue background */
+  position: absolute;
+  pointer-events: none; /* Ensure it doesn't interfere with events */
+  display: none; /* Initially hidden */
+}
+
+.drop-preview.visible {
+  display: block;
 }

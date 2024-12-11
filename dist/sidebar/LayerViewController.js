@@ -52,7 +52,7 @@ class LayersViewController {
         return null;
       }
       const layer = {
-        id: htmlElement.id, // Assign unique ID if missing
+        id: htmlElement.id,
         isVisible:
           ((_a = htmlElement.style) === null || _a === void 0
             ? void 0
