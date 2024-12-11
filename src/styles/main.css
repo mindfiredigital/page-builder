@@ -672,29 +672,6 @@ html {
   background-color: #e0e0e0;
   font-weight: bold;
 }
-.layers-list {
-  list-style-type: none;
-  padding: 0;
-}
-.layer-item {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  background-color: #f5f5f5;
-  margin-bottom: 4px;
-  cursor: pointer;
-}
-.layer-item:hover {
-  background-color: #e0e0e0;
-}
-.layer-visibility,
-.layer-lock {
-  margin-right: 10px;
-  cursor: pointer;
-}
-.layer-name {
-  flex-grow: 1;
-}
 .hidden {
   display: none;
 }

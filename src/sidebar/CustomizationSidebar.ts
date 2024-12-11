@@ -1,6 +1,6 @@
 import { Canvas } from '../canvas/Canvas';
 import { debounce } from '../utils/utilityFunctions';
-
+import LayersViewController from './LayerViewController';
 export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
   private static controlsContainer: HTMLElement;
@@ -8,6 +8,7 @@ export class CustomizationSidebar {
   private static closeButton: HTMLElement;
   private static layersModeToggle: HTMLDivElement;
   private static layersView: HTMLDivElement;
+  private static layersViewController: LayersViewController;
 
   static init() {
     this.sidebarElement = document.getElementById('customization')!;
@@ -19,6 +20,8 @@ export class CustomizationSidebar {
       console.error('CustomizationSidebar: Required elements not found.');
       return;
     }
+    // Initialize LayersViewController
+    this.layersViewController = new LayersViewController();
 
     // Create layers mode toggle
     this.layersModeToggle = document.createElement('div');
@@ -87,111 +90,12 @@ export class CustomizationSidebar {
     controlsContainer.style.display = 'none'; // Hides the controls
     layersView.style.display = 'block';
     componentName.style.display = 'none';
-    // Update the layers view
-    this.updateLayersView();
+    // Update the layers view using the new LayersViewController
+    LayersViewController.updateLayersView();
   }
 
   public static updateLayersView() {
-    const layersView = document.getElementById('layers-view')!;
-    layersView.innerHTML = ''; // Clear existing layers
-
-    const components = Canvas.getComponents(); // Get the updated components
-
-    // Create layers list with drag and drop functionality
-    const layersList = document.createElement('ul');
-    layersList.className = 'layers-list';
-    layersList.setAttribute('draggable', 'true');
-
-    components.forEach((component, index) => {
-      const layerItem = document.createElement('li');
-      layerItem.className = 'layer-item';
-      layerItem.setAttribute('draggable', 'true');
-      layerItem.dataset.index = index.toString();
-
-      // Create layer visibility toggle
-      const visibilityToggle = document.createElement('span');
-      visibilityToggle.innerHTML =
-        component.style.display === 'none' ? '👁️‍🗨️' : '👁️';
-      visibilityToggle.className = 'layer-visibility';
-      visibilityToggle.addEventListener('click', () => {
-        if (component.style.display === 'none') {
-          component.style.display = component.dataset.originalDisplay || '';
-          visibilityToggle.innerHTML = '👁️';
-        } else {
-          component.style.display = 'none';
-          visibilityToggle.innerHTML = '👁️‍🗨️';
-        }
-      });
-
-      // Create layer name (based on component type and unique class)
-      const layerName = document.createElement('span');
-      //const componentType = component.classList[0]
-      // .split(/\d/)[0]
-      // .replace('-component', '');
-      layerName.textContent = `${component.id}`;
-      layerName.className = 'layer-name';
-
-      // Make layer selectable to show customization
-      layerName.addEventListener('click', () => {
-        this.switchToCustomizeMode();
-        this.showSidebar(component.id);
-      });
-
-      // Create layer lock toggle
-      const lockToggle = document.createElement('span');
-      const isLocked = component.getAttribute('data-locked') === 'true';
-      lockToggle.innerHTML = isLocked ? '🔒' : '🔓';
-      lockToggle.className = 'layer-lock';
-      lockToggle.addEventListener('click', () => {
-        const currentLockState =
-          component.getAttribute('data-locked') === 'true';
-        if (currentLockState) {
-          component.removeAttribute('data-locked');
-          component.style.pointerEvents = 'auto';
-          lockToggle.innerHTML = '🔓';
-        } else {
-          component.setAttribute('data-locked', 'true');
-          component.style.pointerEvents = 'none';
-          lockToggle.innerHTML = '🔒';
-        }
-      });
-
-      // Drag and drop for reordering
-      layerItem.addEventListener('dragstart', e => {
-        e.dataTransfer?.setData('text/plain', index.toString());
-      });
-
-      layerItem.addEventListener('dragover', e => {
-        e.preventDefault();
-      });
-
-      layerItem.addEventListener('drop', e => {
-        e.preventDefault();
-        const fromIndex = parseInt(
-          e.dataTransfer?.getData('text/plain') || '-1'
-        );
-        const toIndex = parseInt(layerItem.dataset.index || '-1');
-
-        if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
-          // Reorder components in the model
-          Canvas.reorderComponent(fromIndex, toIndex);
-
-          // After reordering, update the layers view in real-time
-          this.updateLayersView();
-        }
-      });
-
-      // Append elements to the layer item
-      layerItem.appendChild(visibilityToggle);
-      layerItem.appendChild(layerName);
-      layerItem.appendChild(lockToggle);
-
-      // Add the layer item to the layers list
-      layersList.appendChild(layerItem);
-    });
-
-    // Append the layers list to the layers view container
-    layersView.appendChild(layersList);
+    LayersViewController.updateLayersView();
   }
 
   static showSidebar(componentId: string) {
@@ -592,5 +496,9 @@ export class CustomizationSidebar {
       component.style.fontFamily = controls.fontFamily.value;
       captureStateDebounced();
     });
+  }
+
+  static getLayersViewController(): LayersViewController {
+    return this.layersViewController;
   }
 }
