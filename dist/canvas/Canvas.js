@@ -62,6 +62,8 @@ export class Canvas {
     Canvas.canvasElement.innerHTML = '';
     Canvas.components = [];
     Canvas.historyManager.captureState(); // Capture cleared state for undo functionality if needed
+    // Reinitialize the drop-preview after clearing the canvas
+    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
   }
   /**
    * Generates the current state of the canvas for undo/redo purposes.
@@ -209,6 +211,8 @@ export class Canvas {
         Canvas.components.push(component);
       }
     });
+    // Reinitialize the drop-preview after restoring the state
+    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
   }
   static onDrop(event) {
     var _a;
