@@ -732,3 +732,18 @@ ul {
 .drop-preview.visible {
   display: block;
 }
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
+.close-btn:hover {
+  color: red; /* Optional: Change color on hover */
+}
