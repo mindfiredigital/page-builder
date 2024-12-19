@@ -74,6 +74,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create modal content
         const modalContent = document.createElement('div');
         modalContent.classList.add('modal-content');
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.textContent = '×'; // '×' is a cross symbol, but you can customize it
+        closeButton.classList.add('close-btn');
+        closeButton.addEventListener('click', () => {
+          closeModal(modal);
+        });
+        // Append the close button to the top-right corner of modal content
+        modalContent.appendChild(closeButton);
         // Create the HTML section
         const htmlSection = document.createElement('div');
         htmlSection.classList.add('modal-section');

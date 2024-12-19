@@ -9,11 +9,23 @@ export function createSidebar() {
     twoCol: 'dist/icons/column.png',
     threeCol: 'dist/icons/threecolumn.png',
   };
+  const titles = {
+    button: 'Button',
+    header: 'Header',
+    image: 'Image',
+    text: 'Text',
+    container: 'Container',
+    twoCol: 'Two Column Layout',
+    threeCol: 'Three Column Layout',
+  };
   Object.entries(icons).forEach(([componentId, iconPath]) => {
     const iconElement = document.createElement('div');
     iconElement.classList.add('draggable');
     iconElement.id = componentId;
     iconElement.setAttribute('draggable', 'true');
+    // Use the custom title instead of the componentId
+    const customTitle = titles[componentId] || `Drag to add ${componentId}`;
+    iconElement.setAttribute('title', customTitle);
     const img = document.createElement('img');
     img.src = iconPath;
     img.alt = `${componentId} icon`;
