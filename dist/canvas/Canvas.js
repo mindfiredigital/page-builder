@@ -1,4 +1,5 @@
 import { DragDropManager } from './DragDropManager.js';
+import { DeleteElementHandler } from './DeleteElement.js';
 import {
   ButtonComponent,
   HeaderComponent,
@@ -448,3 +449,15 @@ Canvas.componentFactory = {
   twoCol: () => new TwoColumnContainer().create(),
   threeCol: () => new ThreeColumnContainer().create(),
 };
+const canvas = document.getElementById('canvas');
+// Instantiate the DeleteElementHandler
+const deleteElementHandler = new DeleteElementHandler();
+if (canvas) {
+  // Attach click event listener to canvas elements
+  canvas.addEventListener('click', event => {
+    const target = event.target;
+    if (target !== canvas) {
+      deleteElementHandler.selectElement(target);
+    }
+  });
+}

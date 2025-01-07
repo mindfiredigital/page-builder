@@ -115,6 +115,7 @@ export class MultiColumnContainer {
         position: relative;
       }
       .column:hover {
+        outline: 1px solid #3498db;
         background: #f5f5f5;
       }
     `;
