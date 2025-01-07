@@ -1,4 +1,5 @@
 import { DragDropManager } from './DragDropManager';
+import { DeleteElementHandler } from './DeleteElement';
 import {
   ButtonComponent,
   HeaderComponent,
@@ -518,4 +519,19 @@ export class Canvas {
       };
     });
   }
+}
+
+const canvas = document.getElementById('canvas');
+
+// Instantiate the DeleteElementHandler
+const deleteElementHandler = new DeleteElementHandler();
+
+if (canvas) {
+  // Attach click event listener to canvas elements
+  canvas.addEventListener('click', (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (target !== canvas) {
+      deleteElementHandler.selectElement(target);
+    }
+  });
 }

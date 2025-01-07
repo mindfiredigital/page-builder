@@ -19,11 +19,13 @@ export declare class ContainerComponent {
    */
   private stopResize;
   private initializeEventListeners;
+  private onDragStart;
+  private makeDraggable;
   private onDrop;
   private showLabel;
   private hideLabel;
-  private onHover;
-  private onBlur;
+  private onMouseOver;
+  private onMouseLeave;
   private addStyles;
   create(): HTMLElement;
   private static restoreResizer;

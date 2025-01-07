@@ -115,9 +115,50 @@ export class ContainerComponent {
   }
   initializeEventListeners() {
     this.element.addEventListener('dragover', event => event.preventDefault());
+    this.element.addEventListener('dragstart', this.onDragStart.bind(this));
     this.element.addEventListener('drop', this.onDrop.bind(this));
-    this.element.addEventListener('mouseenter', this.onHover.bind(this));
-    this.element.addEventListener('mouseleave', this.onBlur.bind(this));
+    this.element.addEventListener('mouseover', this.onMouseOver.bind(this));
+    this.element.addEventListener('mouseleave', this.onMouseLeave.bind(this));
+  }
+  onDragStart(event) {
+    event.stopPropagation();
+  }
+  makeDraggable(element) {
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let offsetX = 0;
+    let offsetY = 0;
+    const onMouseDown = event => {
+      event.preventDefault();
+      event.stopPropagation();
+      isDragging = true;
+      // Calculate initial positions
+      startX = event.clientX;
+      startY = event.clientY;
+      const rect = element.getBoundingClientRect();
+      offsetX = rect.left;
+      offsetY = rect.top;
+      // Add event listeners for dragging
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+    };
+    const onMouseMove = event => {
+      if (!isDragging) return;
+      // Calculate the new position
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      // Update the element's position using CSS transform
+      element.style.transform = `translate(${offsetX + deltaX}px, ${offsetY + deltaY}px)`;
+    };
+    const onMouseUp = () => {
+      isDragging = false;
+      // Remove event listeners to stop dragging
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+    // Attach the mousedown event to the element
+    element.addEventListener('mousedown', onMouseDown);
   }
   onDrop(event) {
     var _a;
@@ -130,7 +171,6 @@ export class ContainerComponent {
     if (!componentType) return;
     const component = Canvas.createComponent(componentType);
     if (!component) return;
-    //Getting class name of the container, since unique name is stored at position 2
     const containerClass = this.element.classList[2];
     const uniqueClass = Canvas.generateUniqueClass(
       componentType,
@@ -147,7 +187,9 @@ export class ContainerComponent {
     component.addEventListener('mouseenter', e => this.showLabel(e, component));
     component.addEventListener('mouseleave', e => this.hideLabel(e, component));
     this.element.appendChild(component);
-    //capture state inside the container
+    // Apply draggable functionality to the new component
+    this.makeDraggable(component);
+    // Capture state for undo/redo
     Canvas.historyManager.captureState();
   }
   showLabel(event, component) {
@@ -156,7 +198,6 @@ export class ContainerComponent {
     if (label) {
       label.style.display = 'block';
     }
-    component.classList.add('hover-active');
   }
   hideLabel(event, component) {
     event.stopPropagation();
@@ -164,60 +205,62 @@ export class ContainerComponent {
     if (label) {
       label.style.display = 'none';
     }
-    component.classList.remove('hover-active');
   }
-  onHover(event) {
+  onMouseOver(event) {
+    event.stopPropagation();
+    const elements = document.querySelectorAll('.container-highlight');
+    // Loop through each element and remove the class
+    elements.forEach(element => {
+      element.classList.remove('container-highlight');
+    });
     if (event.target === this.element) {
-      this.element.classList.add('hover-active');
+      this.element.classList.add('container-highlight');
     }
   }
-  onBlur(event) {
+  onMouseLeave(event) {
     if (event.target === this.element) {
-      this.element.classList.remove('hover-active');
+      this.element.classList.remove('container-highlight');
     }
   }
   addStyles() {
     const style = document.createElement('style');
     style.textContent = `
       .container-component {
+        position: relative;
         display: flex;
-        width: 97%;
         min-width: 100px;
         min-height: 100px;
+        cursor: grab;
+        border: 1px solid #ddd;
       }
+
       .resizer {
         width: 10px;
         height: 10px;
         border-radius: 50%;
         background: white;
-        border: 3px solid #4286f4;
+        border: 2px solid #4286f4;
         position: absolute;
-        display: none; /* Hide resizers by default */
       }
-  
-      /* Show resizers on hover */
-      .container-component:hover .resizer {
-        display: block;
-      }
-  
+
       .resizer.top-left {
         left: -5px;
         top: -5px;
         cursor: nwse-resize;
       }
-  
+
       .resizer.top-right {
         right: -5px;
         top: -5px;
         cursor: nesw-resize;
       }
-  
+
       .resizer.bottom-left {
         left: -5px;
         bottom: -5px;
         cursor: nesw-resize;
       }
-  
+
       .resizer.bottom-right {
         right: -5px;
         bottom: -5px;
@@ -254,7 +297,9 @@ export class ContainerComponent {
     const containerInstance = new ContainerComponent();
     containerInstance.element = container;
     // Reapply controls to child components inside the container
-    const containerChildren = container.querySelectorAll('.editable-component');
+    const containerChildren = container.querySelectorAll(
+      '.container-highlight'
+    );
     containerChildren.forEach(child => {
       var _a;
       // Add control buttons and draggable listeners

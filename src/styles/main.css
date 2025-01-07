@@ -191,12 +191,16 @@ html {
 }
 
 /* Focused style for better visibility when editing */
-.editable-component:focus {
+/* .editable-component:focus {
   outline: 2px solid #3498db;
 }
 
 .editable-component:hover {
-  outline: 1px solid #3498db; /* Blue border on hover */
+  outline: 1px solid #3498db;
+} */
+
+.container-highlight{
+  outline: 1px solid #3498db;
 }
 
 /* Ensures child containers are styled separately */
