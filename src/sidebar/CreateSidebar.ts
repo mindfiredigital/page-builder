@@ -9,6 +9,7 @@ export function createSidebar() {
     container: 'dist/icons/square.png',
     twoCol: 'dist/icons/column.png',
     threeCol: 'dist/icons/threecolumn.png',
+    portfolio: 'dist/icons/portfolio.png',
   };
 
   const titles: { [key: string]: string } = {
@@ -19,6 +20,7 @@ export function createSidebar() {
     container: 'Container',
     twoCol: 'Two Column Layout',
     threeCol: 'Three Column Layout',
+    portfolio: 'Portfolio Template',
   };
 
   Object.entries(icons).forEach(([componentId, iconPath]) => {
@@ -26,6 +28,7 @@ export function createSidebar() {
     iconElement.classList.add('draggable');
     iconElement.id = componentId;
     iconElement.setAttribute('draggable', 'true');
+    iconElement.setAttribute('data-component', componentId);
 
     // Use the custom title instead of the componentId
     const customTitle = titles[componentId] || `Drag to add ${componentId}`;
