@@ -1,3 +1,4 @@
+//event helper
 export function addEvent(
   el: HTMLElement,
   event: string,
