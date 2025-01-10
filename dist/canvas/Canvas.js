@@ -1,5 +1,6 @@
 import { DragDropManager } from './DragDropManager.js';
 import { DeleteElementHandler } from './DeleteElement.js';
+import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate.js';
 import {
   ButtonComponent,
   HeaderComponent,
@@ -148,14 +149,6 @@ export class Canvas {
       };
     });
   }
-  /**
-   * Restores the canvas to a previous state.
-   * This functions helps for undoing and redoing purpose
-   * Clears the canvas. Iterates through the state and recreates components using createComponent().
-   * Then restores their position, content, styles, and classes.
-   * Re-adds them to the canvasElement and components array.
-   * Dynamic functionalities also re-applied (e.g resize container, delete a component etc).
-   */
   static restoreState(state) {
     Canvas.canvasElement.innerHTML = '';
     Canvas.components = [];
@@ -288,16 +281,6 @@ export class Canvas {
     }
     this.historyManager.captureState();
   }
-  // Add component to the Canvas and track it
-  // public static addComponent(component: HTMLElement): void {
-  //   // Add the component to the components array
-  //   this.components.push(component);
-  //   // Assuming there is a DOM container that holds the components
-  //   const canvasContainer = document.getElementById('canvas-container');
-  //   if (canvasContainer) {
-  //     canvasContainer.appendChild(component); // Append the new component to the canvas
-  //   }
-  // }
   static createComponent(type) {
     const componentFactoryFunction = Canvas.componentFactory[type];
     if (!componentFactoryFunction) {
@@ -373,17 +356,6 @@ export class Canvas {
       return `${type}${maxNumber + 1}`;
     }
   }
-  /**
-   * Adds drag-and-drop behavior to a component.
-   * Makes the component draggable (draggable="true").
-   * On dragstart:
-   * -Captures initial positions and dimensions.
-   * -Locks dimensions to prevent resizing during the drag.
-   * On dragend:
-   * -Calculates new positions based on the drag delta.
-   * -Ensures the component stays within canvas boundaries then Resets dimensions and captures the new state.
-   *
-   */
   static addDraggableListeners(element) {
     element.setAttribute('draggable', 'true');
     element.style.cursor = 'grab';
@@ -448,6 +420,7 @@ Canvas.componentFactory = {
   container: () => new ContainerComponent().create(),
   twoCol: () => new TwoColumnContainer().create(),
   threeCol: () => new ThreeColumnContainer().create(),
+  portfolio: () => new UserPortfolioTemplate().create(),
 };
 const canvas = document.getElementById('canvas');
 // Instantiate the DeleteElementHandler

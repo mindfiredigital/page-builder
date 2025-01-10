@@ -42,14 +42,6 @@ export declare class Canvas {
     };
     imageSrc: string | null;
   }[];
-  /**
-   * Restores the canvas to a previous state.
-   * This functions helps for undoing and redoing purpose
-   * Clears the canvas. Iterates through the state and recreates components using createComponent().
-   * Then restores their position, content, styles, and classes.
-   * Re-adds them to the canvasElement and components array.
-   * Dynamic functionalities also re-applied (e.g resize container, delete a component etc).
-   */
   static restoreState(state: any): void;
   static onDrop(event: DragEvent): void;
   static reorderComponent(fromIndex: number, toIndex: number): void;
@@ -59,17 +51,6 @@ export declare class Canvas {
     isContainerComponent?: boolean,
     containerClass?: string | null
   ): string;
-  /**
-   * Adds drag-and-drop behavior to a component.
-   * Makes the component draggable (draggable="true").
-   * On dragstart:
-   * -Captures initial positions and dimensions.
-   * -Locks dimensions to prevent resizing during the drag.
-   * On dragend:
-   * -Calculates new positions based on the drag delta.
-   * -Ensures the component stays within canvas boundaries then Resets dimensions and captures the new state.
-   *
-   */
   static addDraggableListeners(element: HTMLElement): void;
   static exportLayout(): {
     type: string;
