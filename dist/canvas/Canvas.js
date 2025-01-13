@@ -1,6 +1,7 @@
 import { DragDropManager } from './DragDropManager.js';
 import { DeleteElementHandler } from './DeleteElement.js';
 import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate.js';
+import { LandingPageTemplate } from './../templates/LandingPageTemplate.js';
 import {
   ButtonComponent,
   HeaderComponent,
@@ -421,6 +422,7 @@ Canvas.componentFactory = {
   twoCol: () => new TwoColumnContainer().create(),
   threeCol: () => new ThreeColumnContainer().create(),
   portfolio: () => new UserPortfolioTemplate().create(),
+  landingpage: () => new LandingPageTemplate().create(),
 };
 const canvas = document.getElementById('canvas');
 // Instantiate the DeleteElementHandler

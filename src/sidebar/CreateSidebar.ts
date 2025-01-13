@@ -10,6 +10,7 @@ export function createSidebar() {
     twoCol: 'dist/icons/column.png',
     threeCol: 'dist/icons/threecolumn.png',
     portfolio: 'dist/icons/portfolio.png',
+    landingpage: 'dist/icons/landingpage.png',
   };
 
   const titles: { [key: string]: string } = {
@@ -21,6 +22,7 @@ export function createSidebar() {
     twoCol: 'Two Column Layout',
     threeCol: 'Three Column Layout',
     portfolio: 'Portfolio Template',
+    landingpage: 'Landing Page Template',
   };
 
   Object.entries(icons).forEach(([componentId, iconPath]) => {

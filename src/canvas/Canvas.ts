@@ -1,6 +1,7 @@
 import { DragDropManager } from './DragDropManager';
 import { DeleteElementHandler } from './DeleteElement';
 import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate';
+import { LandingPageTemplate } from './../templates/LandingPageTemplate';
 
 import {
   ButtonComponent,
@@ -49,6 +50,7 @@ export class Canvas {
       twoCol: () => new TwoColumnContainer().create(),
       threeCol: () => new ThreeColumnContainer().create(),
       portfolio: () => new UserPortfolioTemplate().create(),
+      landingpage: () => new LandingPageTemplate().create(),
     };
 
   static init() {
