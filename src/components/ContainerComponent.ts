@@ -137,9 +137,9 @@ export class ContainerComponent {
   };
 
   private initializeEventListeners(): void {
-    this.element.addEventListener('dragover', event => event.preventDefault());
     this.element.addEventListener('dragstart', this.onDragStart.bind(this));
     this.element.addEventListener('drop', this.onDrop.bind(this));
+    this.element.addEventListener('dragover', event => event.preventDefault());
     this.element.addEventListener('mouseover', this.onMouseOver.bind(this));
     this.element.addEventListener('mouseleave', this.onMouseLeave.bind(this));
   }
@@ -271,7 +271,7 @@ export class ContainerComponent {
     const style = document.createElement('style');
     style.textContent = `
       .container-component {
-        position: relative;
+        position: relative !important;
         display: flex;
         min-width: 100px;
         min-height: 100px;
