@@ -430,41 +430,48 @@ export class Canvas {
     element.setAttribute('draggable', 'true');
     element.style.cursor = 'grab';
 
-    let dragStartX = 0;
-    let dragStartY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
     let elementStartX = 0;
     let elementStartY = 0;
 
-    element.addEventListener('dragstart', (event: DragEvent) => {
-      if (event.dataTransfer) {
-        // Capture starting positions
-        const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-        const rect = element.getBoundingClientRect();
+    // Helper function to get element position relative to canvas
+    const getRelativePosition = (clientX: number, clientY: number) => {
+      const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+      return {
+        x: clientX - canvasRect.left,
+        y: clientY - canvasRect.top,
+      };
+    };
 
-        // Capture starting coordinates
-        dragStartX = event.clientX;
-        dragStartY = event.clientY;
+    element.addEventListener('mousedown', (event: MouseEvent) => {
+      if (event.button !== 0) return; // Only handle left mouse button
 
-        // Current element position relative to canvas
-        elementStartX = rect.left - canvasRect.left;
-        elementStartY = rect.top - canvasRect.top;
+      isDragging = true;
+      const pos = getRelativePosition(event.clientX, event.clientY);
+      startX = pos.x;
+      startY = pos.y;
 
-        event.dataTransfer.effectAllowed = 'move';
-        element.style.cursor = 'grabbing';
-      }
+      // Get current element position
+      elementStartX = element.offsetLeft;
+      elementStartY = element.offsetTop;
+
+      element.style.cursor = 'grabbing';
+
+      // Prevent text selection during drag
+      event.preventDefault();
     });
 
-    element.addEventListener('dragend', (event: DragEvent) => {
-      event.preventDefault();
-      // const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+    // Add mousemove listener to the canvas instead of the element
+    Canvas.canvasElement.addEventListener('mousemove', (event: MouseEvent) => {
+      if (!isDragging) return;
 
-      // Calculate movement delta
-      const deltaX = event.clientX - dragStartX;
-      const deltaY = event.clientY - dragStartY;
+      const pos = getRelativePosition(event.clientX, event.clientY);
 
       // Calculate new position
-      let newX = elementStartX + deltaX;
-      let newY = elementStartY + deltaY;
+      let newX = elementStartX + (pos.x - startX);
+      let newY = elementStartY + (pos.y - startY);
 
       // Constrain within canvas boundaries
       const maxX = Canvas.canvasElement.offsetWidth - element.offsetWidth;
@@ -473,15 +480,43 @@ export class Canvas {
       newX = Math.max(0, Math.min(newX, maxX));
       newY = Math.max(0, Math.min(newY, maxY));
 
-      // Set new position
+      // Update position
       element.style.left = `${newX}px`;
       element.style.top = `${newY}px`;
 
-      // Reset cursor
+      event.preventDefault();
+    });
+
+    // Add mouseup listener to document to handle cases where cursor leaves the canvas
+    document.addEventListener('mouseup', (event: MouseEvent) => {
+      if (!isDragging) return;
+
+      isDragging = false;
       element.style.cursor = 'grab';
 
       // Capture the state after dragging
       Canvas.historyManager.captureState();
+
+      event.preventDefault();
+    });
+
+    // Keep the dragstart event for compatibility with drop zones
+    element.addEventListener('dragstart', (event: DragEvent) => {
+      if (event.dataTransfer) {
+        // Set required data transfer for Firefox
+        event.dataTransfer.setData('text/plain', '');
+        event.dataTransfer.effectAllowed = 'move';
+      }
+    });
+
+    // Prevent default drag behavior
+    element.addEventListener('drag', (event: DragEvent) => {
+      event.preventDefault();
+    });
+
+    element.addEventListener('dragend', (event: DragEvent) => {
+      event.preventDefault();
+      element.style.cursor = 'grab';
     });
   }
 
