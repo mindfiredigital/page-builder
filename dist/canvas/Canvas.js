@@ -365,6 +365,9 @@ export class Canvas {
     let startY = 0;
     let elementStartX = 0;
     let elementStartY = 0;
+    let dragThreshold = 5; // Pixels to move before initiating drag
+    let initialMousePos = { x: 0, y: 0 };
+    let hasMovedEnoughToDrag = false;
     // Helper function to get element position relative to canvas
     const getRelativePosition = (clientX, clientY) => {
       const canvasRect = Canvas.canvasElement.getBoundingClientRect();
@@ -373,59 +376,89 @@ export class Canvas {
         y: clientY - canvasRect.top,
       };
     };
+    // Helper function to check if clicking on control buttons or handles
+    const isControlElement = target => {
+      return (
+        target.closest('.component-controls') ||
+        target.closest('.resize-handle') ||
+        target.classList.contains('component-controls') ||
+        target.classList.contains('resize-handle')
+      );
+    };
     element.addEventListener('mousedown', event => {
-      if (event.button !== 0) return; // Only handle left mouse button
+      const target = event.target;
+      // Don't initiate drag if clicking on controls or handles
+      if (isControlElement(target)) {
+        return;
+      }
+      // Store initial mouse position for threshold check
+      initialMousePos = { x: event.clientX, y: event.clientY };
+      hasMovedEnoughToDrag = false;
+      // Only handle left mouse button
+      if (event.button !== 0) return;
       isDragging = true;
       const pos = getRelativePosition(event.clientX, event.clientY);
       startX = pos.x;
       startY = pos.y;
-      // Get current element position
       elementStartX = element.offsetLeft;
       elementStartY = element.offsetTop;
-      element.style.cursor = 'grabbing';
-      // Prevent text selection during drag
-      event.preventDefault();
+      // Don't prevent default here to allow for text selection
     });
-    // Add mousemove listener to the canvas instead of the element
     Canvas.canvasElement.addEventListener('mousemove', event => {
       if (!isDragging) return;
-      const pos = getRelativePosition(event.clientX, event.clientY);
-      // Calculate new position
-      let newX = elementStartX + (pos.x - startX);
-      let newY = elementStartY + (pos.y - startY);
-      // Constrain within canvas boundaries
-      const maxX = Canvas.canvasElement.offsetWidth - element.offsetWidth;
-      const maxY = Canvas.canvasElement.offsetHeight - element.offsetHeight;
-      newX = Math.max(0, Math.min(newX, maxX));
-      newY = Math.max(0, Math.min(newY, maxY));
-      // Update position
-      element.style.left = `${newX}px`;
-      element.style.top = `${newY}px`;
-      event.preventDefault();
+      // Check if moved enough to initiate drag
+      const deltaX = Math.abs(event.clientX - initialMousePos.x);
+      const deltaY = Math.abs(event.clientY - initialMousePos.y);
+      if (!hasMovedEnoughToDrag) {
+        if (deltaX > dragThreshold || deltaY > dragThreshold) {
+          hasMovedEnoughToDrag = true;
+          element.style.cursor = 'grabbing';
+        } else {
+          return;
+        }
+      }
+      // Only prevent default and move element if we've moved enough
+      if (hasMovedEnoughToDrag) {
+        event.preventDefault();
+        const pos = getRelativePosition(event.clientX, event.clientY);
+        let newX = elementStartX + (pos.x - startX);
+        let newY = elementStartY + (pos.y - startY);
+        const maxX = Canvas.canvasElement.offsetWidth - element.offsetWidth;
+        const maxY = Canvas.canvasElement.offsetHeight - element.offsetHeight;
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+        element.style.left = `${newX}px`;
+        element.style.top = `${newY}px`;
+      }
     });
-    // Add mouseup listener to document to handle cases where cursor leaves the canvas
     document.addEventListener('mouseup', event => {
       if (!isDragging) return;
       isDragging = false;
+      hasMovedEnoughToDrag = false;
       element.style.cursor = 'grab';
-      // Capture the state after dragging
-      Canvas.historyManager.captureState();
-      event.preventDefault();
+      if (hasMovedEnoughToDrag) {
+        Canvas.historyManager.captureState();
+        event.preventDefault();
+      }
     });
-    // Keep the dragstart event for compatibility with drop zones
+    // Handle drag and drop events for compatibility
     element.addEventListener('dragstart', event => {
+      // Prevent drag start if we're editing content
+      if (event.target.matches(':focus')) {
+        event.preventDefault();
+        return;
+      }
       if (event.dataTransfer) {
-        // Set required data transfer for Firefox
         event.dataTransfer.setData('text/plain', '');
         event.dataTransfer.effectAllowed = 'move';
       }
     });
-    // Prevent default drag behavior
     element.addEventListener('drag', event => {
-      event.preventDefault();
+      if (event.target.matches(':focus')) {
+        event.preventDefault();
+      }
     });
     element.addEventListener('dragend', event => {
-      event.preventDefault();
       element.style.cursor = 'grab';
     });
   }
