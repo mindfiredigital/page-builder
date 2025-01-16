@@ -191,8 +191,8 @@ position: relative;
 pointer-events: auto;
 }
 .component-resizer {
-overflow: hidden;
-resize: both;
+overflow: hidden !important;
+resize: both !important;
 }
 
 /* Focused style for better visibility when editing */
