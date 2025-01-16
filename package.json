@@ -6,13 +6,14 @@
   "scripts": {
     "build": "tsc && node script/fix-imports.js && npm run copy-assets",
     "start": "lite-server",
-    "watch": "tsc --watch",
-    "test": "jest",
-    "lint": "eslint .",
+    "watch": "turbo run build --filter=. --watch",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
     "copy-assets": "npm run copy-icons && npm run copy-styles",
     "copy-icons": "ncp ./src/icons ./dist/icons",
     "copy-styles": "ncp ./src/styles ./dist/styles",
-    "prepare": "husky"
+    "release": "turbo run build && semantic-release",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
@@ -31,7 +32,8 @@
     "prettier": "^3.3.3",
     "semantic-release": "^24.1.1",
     "tsc-alias": "^1.8.10",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "turbo": "^1.10.0"
   },
   "lint-staged": {
     "**/*.{js,ts}": [
