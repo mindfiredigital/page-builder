@@ -43,8 +43,7 @@ export class Canvas {
     {
       button: () => new ButtonComponent().create(),
       header: () => new HeaderComponent().create(),
-      image: () =>
-        new ImageComponent().create('https://via.placeholder.com/150'),
+      image: () => new ImageComponent().create(),
       text: () => new TextComponent().create(),
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),
