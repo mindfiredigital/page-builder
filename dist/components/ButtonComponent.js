@@ -1,7 +1,7 @@
 export class ButtonComponent {
   create(label = 'Click Me') {
     const element = document.createElement('button');
-    element.innerText = label; // Default button text
+    element.innerText = label;
     element.classList.add('button-component');
     // Optional styling
     element.style.padding = '10px 20px';
