@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas.js';
+import { ImageComponent } from './ImageComponent.js';
 export class ContainerComponent {
   constructor() {
     this.MINIMUM_SIZE = 20;
@@ -55,10 +56,16 @@ export class ContainerComponent {
         }
       }
     };
+    /**
+     * On mouse up event the resizing stops and captures the state
+     * Which will help keep tracking of state for undo/redo purpose
+     */
     this.stopResize = () => {
       window.removeEventListener('mousemove', this.resize);
       window.removeEventListener('mouseup', this.stopResize);
       this.currentResizer = null;
+      //capture each resized state
+      Canvas.historyManager.captureState();
     };
     this.element = document.createElement('div');
     this.element.classList.add('container-component');
@@ -107,10 +114,51 @@ export class ContainerComponent {
     window.addEventListener('mouseup', this.stopResize);
   }
   initializeEventListeners() {
-    this.element.addEventListener('dragover', event => event.preventDefault());
+    this.element.addEventListener('dragstart', this.onDragStart.bind(this));
     this.element.addEventListener('drop', this.onDrop.bind(this));
-    this.element.addEventListener('mouseenter', this.onHover.bind(this));
-    this.element.addEventListener('mouseleave', this.onBlur.bind(this));
+    this.element.addEventListener('dragover', event => event.preventDefault());
+    this.element.addEventListener('mouseover', this.onMouseOver.bind(this));
+    this.element.addEventListener('mouseleave', this.onMouseLeave.bind(this));
+  }
+  onDragStart(event) {
+    event.stopPropagation();
+  }
+  makeDraggable(element) {
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let offsetX = 0;
+    let offsetY = 0;
+    const onMouseDown = event => {
+      event.preventDefault();
+      event.stopPropagation();
+      isDragging = true;
+      // Calculate initial positions
+      startX = event.clientX;
+      startY = event.clientY;
+      const rect = element.getBoundingClientRect();
+      offsetX = rect.left;
+      offsetY = rect.top;
+      // Add event listeners for dragging
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+    };
+    const onMouseMove = event => {
+      if (!isDragging) return;
+      // Calculate the new position
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      // Update the element's position using CSS transform
+      element.style.transform = `translate(${offsetX + deltaX}px, ${offsetY + deltaY}px)`;
+    };
+    const onMouseUp = () => {
+      isDragging = false;
+      // Remove event listeners to stop dragging
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+    // Attach the mousedown event to the element
+    element.addEventListener('mousedown', onMouseDown);
   }
   onDrop(event) {
     var _a;
@@ -123,7 +171,6 @@ export class ContainerComponent {
     if (!componentType) return;
     const component = Canvas.createComponent(componentType);
     if (!component) return;
-    //Getting class name of the container, since unique name is stored at position 2
     const containerClass = this.element.classList[2];
     const uniqueClass = Canvas.generateUniqueClass(
       componentType,
@@ -134,11 +181,16 @@ export class ContainerComponent {
     const label = document.createElement('span');
     label.className = 'component-label';
     label.textContent = uniqueClass;
+    component.id = uniqueClass;
     label.style.display = 'none';
     component.appendChild(label);
     component.addEventListener('mouseenter', e => this.showLabel(e, component));
     component.addEventListener('mouseleave', e => this.hideLabel(e, component));
     this.element.appendChild(component);
+    // Apply draggable functionality to the new component
+    this.makeDraggable(component);
+    // Capture state for undo/redo
+    Canvas.historyManager.captureState();
   }
   showLabel(event, component) {
     event.stopPropagation();
@@ -146,7 +198,6 @@ export class ContainerComponent {
     if (label) {
       label.style.display = 'block';
     }
-    component.classList.add('hover-active');
   }
   hideLabel(event, component) {
     event.stopPropagation();
@@ -154,60 +205,62 @@ export class ContainerComponent {
     if (label) {
       label.style.display = 'none';
     }
-    component.classList.remove('hover-active');
   }
-  onHover(event) {
+  onMouseOver(event) {
+    event.stopPropagation();
+    const elements = document.querySelectorAll('.container-highlight');
+    // Loop through each element and remove the class
+    elements.forEach(element => {
+      element.classList.remove('container-highlight');
+    });
     if (event.target === this.element) {
-      this.element.classList.add('hover-active');
+      this.element.classList.add('container-highlight');
     }
   }
-  onBlur(event) {
+  onMouseLeave(event) {
     if (event.target === this.element) {
-      this.element.classList.remove('hover-active');
+      this.element.classList.remove('container-highlight');
     }
   }
   addStyles() {
     const style = document.createElement('style');
     style.textContent = `
       .container-component {
-        background: white;
-        position: absolute;
+        position: relative !important;
+        display: flex;
         min-width: 100px;
         min-height: 100px;
+        cursor: grab;
+        border: 1px solid #ddd;
       }
+
       .resizer {
         width: 10px;
         height: 10px;
         border-radius: 50%;
         background: white;
-        border: 3px solid #4286f4;
+        border: 2px solid #4286f4;
         position: absolute;
-        display: none; /* Hide resizers by default */
       }
-  
-      /* Show resizers on hover */
-      .container-component:hover .resizer {
-        display: block;
-      }
-  
+
       .resizer.top-left {
         left: -5px;
         top: -5px;
         cursor: nwse-resize;
       }
-  
+
       .resizer.top-right {
         right: -5px;
         top: -5px;
         cursor: nesw-resize;
       }
-  
+
       .resizer.bottom-left {
         left: -5px;
         bottom: -5px;
         cursor: nesw-resize;
       }
-  
+
       .resizer.bottom-right {
         right: -5px;
         bottom: -5px;
@@ -218,5 +271,57 @@ export class ContainerComponent {
   }
   create() {
     return this.element;
+  }
+  static restoreResizer(element) {
+    // Remove any existing resizers
+    const oldResizers = element.querySelector('.resizers');
+    if (oldResizers) {
+      oldResizers.remove();
+    }
+    // Create new resizers container
+    const resizersDiv = document.createElement('div');
+    resizersDiv.classList.add('resizers');
+    // Create temporary container instance to bind event listeners
+    const container = new ContainerComponent();
+    container.element = element;
+    container.resizers = resizersDiv;
+    // Add resize handles
+    container.addResizeHandles();
+    // Add new resizers to the element
+    element.appendChild(resizersDiv);
+  }
+  static restoreContainer(container) {
+    // Restore resizer functionality
+    ContainerComponent.restoreResizer(container);
+    // Create a temporary instance of ContainerComponent to reuse its methods
+    const containerInstance = new ContainerComponent();
+    containerInstance.element = container;
+    // Reapply controls to child components inside the container
+    const containerChildren = container.querySelectorAll('.editable-component');
+    containerChildren.forEach(child => {
+      var _a;
+      // Add control buttons and draggable listeners
+      Canvas.controlsManager.addControlButtons(child);
+      Canvas.addDraggableListeners(child);
+      // Bind the showLabel and hideLabel methods
+      child.addEventListener('mouseenter', event =>
+        containerInstance.showLabel(event, child)
+      );
+      child.addEventListener('mouseleave', event =>
+        containerInstance.hideLabel(event, child)
+      );
+      // If the child is an image component, restore the image upload feature
+      if (child.classList.contains('image-component')) {
+        const imageSrc =
+          ((_a = child.querySelector('img')) === null || _a === void 0
+            ? void 0
+            : _a.getAttribute('src')) || ''; // Get the saved image source
+        ImageComponent.restoreImageUpload(child, imageSrc);
+      }
+      // If the child is itself a container, restore it recursively
+      if (child.classList.contains('container-component')) {
+        this.restoreContainer(child);
+      }
+    });
   }
 }

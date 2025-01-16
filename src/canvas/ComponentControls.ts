@@ -4,7 +4,7 @@ export class ComponentControlsManager {
   private canvas: typeof Canvas;
   //Image imports
   private icons = {
-    delete: '/dist/icons/delete.png',
+    delete: 'dist/icons/delete.png',
   };
 
   constructor(canvas: typeof Canvas) {
@@ -12,29 +12,45 @@ export class ComponentControlsManager {
   }
 
   /**
+   * First check if there is already a div with class  as component-controls exists
    * Add a div for each components in which we can add control buttons
    * We have added delete button
+   * NB: For image container we are using appendChild method instead of prepend since it is hampering the style.
    */
   public addControlButtons(element: HTMLElement): void {
-    const controlsDiv = document.createElement('div');
-    controlsDiv.className = 'component-controls';
-
+    let ImageComponent = element.querySelector('img') as HTMLImageElement;
+    let controlsDiv = element.querySelector(
+      '.component-controls'
+    ) as HTMLElement;
+    if (!controlsDiv) {
+      controlsDiv = document.createElement('div');
+      controlsDiv.className = 'component-controls';
+      if (ImageComponent) {
+        element.appendChild(controlsDiv);
+      } else {
+        element.prepend(controlsDiv);
+      }
+    }
     const deleteIcon = this.createDeleteIcon(element);
     // Append the delete icon to controlsDiv, for future we can add other buttons to this controls div
     controlsDiv.appendChild(deleteIcon);
-    element.appendChild(controlsDiv);
   }
 
   /**
+   * First check if there is already deleteIcon within element
    * Creating delete icon
    * Adding click event for the  delete icon
    */
   private createDeleteIcon(element: HTMLElement): HTMLImageElement {
-    const deleteIcon = document.createElement('img');
-    deleteIcon.src = this.icons.delete;
-    deleteIcon.alt = 'Delete';
-    deleteIcon.classList.add('delete-icon');
-    // click event to the delete icon
+    let deleteIcon = element.querySelector('.delete-icon') as HTMLImageElement;
+    if (!deleteIcon) {
+      deleteIcon = document.createElement('img');
+      deleteIcon.src = this.icons.delete;
+      deleteIcon.alt = 'Delete';
+      deleteIcon.classList.add('delete-icon');
+      element.appendChild(deleteIcon);
+    }
+    // Attach the click event handler
     deleteIcon.onclick = e => {
       e.stopPropagation();
       this.handleDelete(element);

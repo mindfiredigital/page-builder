@@ -4,16 +4,16 @@ export function createNavbar() {
   navbar.id = 'preview-navbar';
 
   const icons = {
-    desktop: '/dist/icons/computer.png',
-    tablet: '/dist/icons/tablet.png',
-    mobile: '/dist/icons/mobile.png',
-    save: '/dist/icons/file.png',
-    export: '/dist/icons/code.png',
-    view: '/dist/icons/view.png',
-    edit: '/dist/icons/pencil.png',
-    undo: '/dist/icons/undo.png',
-    redo: '/dist/icons/redo.png',
-    reset: '/dist/icons/reset.png',
+    desktop: 'dist/icons/computer.png',
+    tablet: 'dist/icons/tablet.png',
+    mobile: 'dist/icons/mobile.png',
+    save: 'dist/icons/file.png',
+    export: 'dist/icons/code.png',
+    view: 'dist/icons/view.png',
+    edit: 'dist/icons/pencil.png',
+    undo: 'dist/icons/undo.png',
+    redo: 'dist/icons/redo.png',
+    reset: 'dist/icons/reset.png',
   };
 
   // Array of button data with only titles
@@ -30,7 +30,6 @@ export function createNavbar() {
     { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
     { id: 'reset-btn', icon: icons.reset, title: 'Reset' },
     { id: 'export-html-btn', icon: icons.export, title: 'Export HTML' },
-    { id: 'edit-btn', icon: icons.edit, title: 'Edit' },
   ];
 
   const leftContainer = document.createElement('div');

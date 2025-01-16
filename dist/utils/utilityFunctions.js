@@ -46,3 +46,28 @@ export function showDialogBox(message, onConfirm, onCancel) {
           : dialog.classList.add('hidden'); // Hide the dialog after action
       });
 }
+export function syntaxHighlightHTML(html) {
+  return html
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(
+      /\s([a-zA-Z-]+)="(.*?)"/g,
+      (match, attr, value) =>
+        ` ${attr}=<span class="attribute">"</span><span class="string">${value}</span><span class="attribute">"</span>`
+    )
+    .replace(/(&lt;\/?[a-zA-Z-]+&gt;)/g, `<span class="tag">$1</span>`);
+}
+export function syntaxHighlightCSS(css) {
+  return css
+    .replace(/([a-zA-Z-]+)(?=:)/g, `<span class="property">$1</span>`) // CSS properties
+    .replace(/(:\s*[^;]+;)/g, `<span class="value">$1</span>`) // CSS values
+    .replace(/({|})/g, `<span class="bracket">$1</span>`); // Braces
+}
+export function debounce(func, delay) {
+  let timeoutId = null;
+  return (...args) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+}

@@ -1,0 +1,16 @@
+
+> page-builder@1.0.0 build E:\Page-Builder
+> tsc && node script/fix-imports.js && npm run copy-assets
+
+
+> page-builder@1.0.0 copy-assets
+> npm run copy-icons && npm run copy-styles
+
+
+> page-builder@1.0.0 copy-icons
+> ncp ./src/icons ./dist/icons
+
+
+> page-builder@1.0.0 copy-styles
+> ncp ./src/styles ./dist/styles
+

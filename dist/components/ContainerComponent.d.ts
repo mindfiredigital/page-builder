@@ -13,13 +13,21 @@ export declare class ContainerComponent {
   private addResizeHandles;
   private initResize;
   private resize;
+  /**
+   * On mouse up event the resizing stops and captures the state
+   * Which will help keep tracking of state for undo/redo purpose
+   */
   private stopResize;
   private initializeEventListeners;
+  private onDragStart;
+  private makeDraggable;
   private onDrop;
   private showLabel;
   private hideLabel;
-  private onHover;
-  private onBlur;
+  private onMouseOver;
+  private onMouseLeave;
   private addStyles;
   create(): HTMLElement;
+  private static restoreResizer;
+  static restoreContainer(container: HTMLElement): void;
 }

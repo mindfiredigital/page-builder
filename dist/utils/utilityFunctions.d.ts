@@ -4,3 +4,9 @@ export declare function showDialogBox(
   onConfirm: () => void,
   onCancel: () => void
 ): void;
+export declare function syntaxHighlightHTML(html: string): string;
+export declare function syntaxHighlightCSS(css: string): string;
+export declare function debounce(
+  func: Function,
+  delay: number
+): (...args: any[]) => void;
