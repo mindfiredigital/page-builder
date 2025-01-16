@@ -41,8 +41,8 @@ export class Canvas {
 
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
     {
-      button: () => new ButtonComponent().create('Click Me'),
-      header: () => new HeaderComponent().create(1, 'Editable Header'),
+      button: () => new ButtonComponent().create(),
+      header: () => new HeaderComponent().create(),
       image: () =>
         new ImageComponent().create('https://via.placeholder.com/150'),
       text: () => new TextComponent().create(),
