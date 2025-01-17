@@ -42,14 +42,13 @@ class n {
       (t.style.width = '300px'),
       (t.style.height = '300px'),
       (t.style.position = 'relative'),
-      (t.style.backgroundColor = '#f0f0f0'),
+      (t.style.backgroundColor = e ? 'transparent' : '#f0f0f0'),
       (t.style.display = 'flex'),
       (t.style.border = 'none'),
       (t.style.alignItems = 'center'),
       (t.style.justifyContent = 'center');
     const o = document.createElement('div');
-    (o.textContent = 'Upload your image'),
-      (o.style.color = '#666666'),
+    (o.style.color = '#666666'),
       (o.style.border = 'none'),
       (o.style.display = e ? 'none' : 'block');
     const i = document.createElement('input');
@@ -106,7 +105,8 @@ class n {
         o &&
           ((o.src = s),
           (o.style.display = 'block'),
-          (n.style.display = 'none'));
+          (n.style.display = 'none'),
+          (t.style.backgroundColor = 'transparent'));
       }),
         e.readAsDataURL(o);
     }
@@ -119,8 +119,13 @@ class n {
     s.addEventListener('change', t => this.handleFileChange(t, e, n)),
       o.addEventListener('click', () => s.click()),
       t
-        ? ((i.src = t), (i.style.display = 'block'), (n.style.display = 'none'))
-        : ((i.style.display = 'none'), (n.style.display = 'block')),
+        ? ((i.src = t),
+          (i.style.display = 'block'),
+          (n.style.display = 'none'),
+          (e.style.backgroundColor = 'transparent'))
+        : ((i.style.display = 'none'),
+          (n.style.display = 'block'),
+          (e.style.backgroundColor = '#f0f0f0')),
       e.addEventListener('mouseenter', () => {
         o.style.opacity = '1';
       }),

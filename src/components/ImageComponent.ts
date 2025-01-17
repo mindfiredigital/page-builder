@@ -10,7 +10,7 @@ export class ImageComponent {
     container.style.width = '300px';
     container.style.height = '300px';
     container.style.position = 'relative';
-    container.style.backgroundColor = '#f0f0f0';
+    container.style.backgroundColor = src ? 'transparent' : '#f0f0f0';
     container.style.display = 'flex';
     container.style.border = 'none';
     container.style.alignItems = 'center';
@@ -18,7 +18,6 @@ export class ImageComponent {
 
     // Create upload text
     const uploadText = document.createElement('div');
-    uploadText.textContent = 'Upload your image';
     uploadText.style.color = '#666666';
     uploadText.style.border = 'none';
     uploadText.style.display = src ? 'none' : 'block';
@@ -101,6 +100,8 @@ export class ImageComponent {
           imageElement.src = base64String;
           imageElement.style.display = 'block';
           uploadText.style.display = 'none';
+          // Make background transparent after image is loaded
+          container.style.backgroundColor = 'transparent';
         }
       };
 
@@ -129,9 +130,11 @@ export class ImageComponent {
       imageElement.src = src;
       imageElement.style.display = 'block';
       uploadText.style.display = 'none';
+      component.style.backgroundColor = 'transparent';
     } else {
       imageElement.style.display = 'none';
       uploadText.style.display = 'block';
+      component.style.backgroundColor = '#f0f0f0';
     }
 
     // Restore hover functionality
