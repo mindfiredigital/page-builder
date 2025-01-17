@@ -29,7 +29,7 @@ jobs:
         run: pnpm install  # Install all dependencies using pnpm
 
       - name: 'Build application'
-        run: pnpm build  # Assuming there's a build script in each package
+        run: pnpm turbo run build  # Assuming there's a build script in each package
 
       - name: 'Restore changes in json'
         run: |
