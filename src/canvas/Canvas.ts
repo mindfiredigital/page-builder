@@ -1,6 +1,6 @@
 import { DragDropManager } from './DragDropManager';
 import { DeleteElementHandler } from './DeleteElement';
-import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate';
+// import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate';
 import { LandingPageTemplate } from './../templates/LandingPageTemplate';
 
 import {
@@ -11,6 +11,7 @@ import {
   ContainerComponent,
   TwoColumnContainer,
   ThreeColumnContainer,
+  // LinkComponent
 } from '../components/index';
 import { HistoryManager } from '../services/HistoryManager';
 import { JSONStorage } from '../services/JSONStorage';
@@ -48,8 +49,9 @@ export class Canvas {
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),
       threeCol: () => new ThreeColumnContainer().create(),
-      portfolio: () => new UserPortfolioTemplate().create(),
+      // portfolio: () => new UserPortfolioTemplate().create(),
       landingpage: () => new LandingPageTemplate().create(),
+      // link: ()=> new LinkComponent().create()
     };
 
   static init() {
