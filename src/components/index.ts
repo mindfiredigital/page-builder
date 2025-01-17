@@ -5,3 +5,4 @@ export { HeaderComponent } from './HeaderComponent';
 export { ContainerComponent } from './ContainerComponent';
 export { TwoColumnContainer } from './TwoColumnContainer';
 export { ThreeColumnContainer } from './ThreeColumnContainer';
+export { LinkComponent } from './LinkComponent';
