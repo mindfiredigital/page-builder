@@ -1,14 +1,7 @@
 {
   "name": "@mindfiredigital/pagebuilder",
   "version": "1.0.0",
-  "description": "",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "access": "public"
-  },
-  "files": [
-    "dist"
-  ],
+  "description": "pagebuilder",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "scripts": {
@@ -86,17 +79,6 @@
   },
   "engines": {
     "node": ">=12.0.0"
-  },
-  "release": {
-    "repositoryUrl": "https://github.com/mindfiredigital/pagebuilder.git",
-    "branches": [
-      "main",
-      "next",
-      {
-        "name": "beta",
-        "prerelease": true
-      }
-    ]
   },
   "packageManager": "pnpm@8.6.0"
 }
