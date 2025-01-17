@@ -10,12 +10,12 @@ src/canvas/Canvas.ts -> src/templates/UserPortfolioTemplate.ts -> src/components
 src/canvas/Canvas.ts -> src/services/HistoryManager.ts -> src/canvas/Canvas.ts
 src/canvas/Canvas.ts -> src/sidebar/CustomizationSidebar.ts -> src/canvas/Canvas.ts
 src/canvas/Canvas.ts -> src/sidebar/CustomizationSidebar.ts -> src/sidebar/LayerViewController.ts -> src/canvas/Canvas.ts
-[32mcreated [1mdist/index.js[22m in [1m20.8s[22m[39m
+[32mcreated [1mdist/index.js[22m in [1m11s[22m[39m
 [36m
 [1msrc/index.ts[22m → [1mdist/index.d.ts[22m...[39m
 [1m[33m(!) Generated an empty chunk[39m[22m
 "index"
-[32mcreated [1mdist/index.d.ts[22m in [1m4.1s[22m[39m
+[32mcreated [1mdist/index.d.ts[22m in [1m5.7s[22m[39m
 
 > page-builder@1.0.0 copy-assets
 > npm run copy-icons && npm run copy-styles

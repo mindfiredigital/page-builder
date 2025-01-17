@@ -34,56 +34,99 @@ class t {
   }
 }
 class n {
-  create(e = 'https://via.placeholder.com/300') {
+  create(e = null) {
     const t = document.createElement('div');
     t.classList.add('image-component');
-    const s = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`,
-      o = document.createElement('input');
-    (o.type = 'file'),
-      (o.accept = 'image/*'),
-      (o.style.display = 'none'),
-      o.addEventListener('change', e => n.handleFileChange(e, t));
-    const i = document.createElement('button');
-    i.classList.add('upload-btn'),
-      (i.innerHTML = '🖊️'),
-      i.addEventListener('click', () => o.click());
-    const a = document.createElement('img'),
-      r = `${s}-img`;
+    const s = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    (t.id = s),
+      (t.style.width = '300px'),
+      (t.style.height = '300px'),
+      (t.style.position = 'relative'),
+      (t.style.backgroundColor = '#f0f0f0'),
+      (t.style.display = 'flex'),
+      (t.style.border = 'none'),
+      (t.style.alignItems = 'center'),
+      (t.style.justifyContent = 'center');
+    const o = document.createElement('div');
+    (o.textContent = 'Upload your image'),
+      (o.style.color = '#666666'),
+      (o.style.border = 'none'),
+      (o.style.display = e ? 'none' : 'block');
+    const i = document.createElement('input');
+    (i.type = 'file'),
+      (i.accept = 'image/*'),
+      (i.style.display = 'none'),
+      i.addEventListener('change', e => n.handleFileChange(e, t, o));
+    const a = document.createElement('button');
+    a.classList.add('upload-btn'),
+      (a.innerHTML = '🖊️'),
+      (a.style.position = 'absolute'),
+      (a.style.padding = '8px'),
+      (a.style.background = 'transparent'),
+      (a.style.border = 'none'),
+      (a.style.cursor = 'pointer'),
+      (a.style.opacity = '0'),
+      (a.style.transition = 'opacity 0.2s'),
+      (a.style.left = '50%'),
+      (a.style.top = '50%'),
+      (a.style.transform = 'translate(-50%, -50%)'),
+      (a.style.fontSize = '24px'),
+      a.addEventListener('click', () => i.click());
+    const r = document.createElement('img'),
+      l = `${s}-img`;
     return (
-      (a.id = r),
-      (a.src = e),
-      (a.alt = 'Image Component'),
-      (a.style.width = '100%'),
-      (a.style.height = '100%'),
-      (a.style.objectFit = 'contain'),
+      (r.id = l),
+      (r.style.width = '100%'),
+      (r.style.height = '100%'),
+      (r.style.objectFit = 'contain'),
+      (r.style.border = 'none'),
+      (r.style.display = 'none'),
+      e && ((r.src = e), (r.style.display = 'block')),
+      t.addEventListener('mouseenter', () => {
+        a.style.opacity = '1';
+      }),
+      t.addEventListener('mouseleave', () => {
+        a.style.opacity = '0';
+      }),
       t.appendChild(o),
       t.appendChild(i),
       t.appendChild(a),
+      t.appendChild(r),
       t
     );
   }
-  static handleFileChange(e, t) {
-    const n = e.target,
-      s = n.files ? n.files[0] : null;
-    if (s) {
+  static handleFileChange(e, t, n) {
+    const s = e.target,
+      o = s.files ? s.files[0] : null;
+    if (o) {
       const e = new FileReader();
       (e.onload = function () {
-        const n = e.result,
-          s = t.querySelector('img');
-        s && (s.src = n);
+        const s = e.result,
+          o = t.querySelector('img');
+        o &&
+          ((o.src = s),
+          (o.style.display = 'block'),
+          (n.style.display = 'none'));
       }),
-        e.readAsDataURL(s);
+        e.readAsDataURL(o);
     }
   }
   static restoreImageUpload(e, t) {
-    const n = e.querySelector('input[type="file"]');
-    n.addEventListener('change', t => this.handleFileChange(t, e));
-    e.querySelector('.upload-btn').addEventListener('click', () => n.click());
-    const s = e.querySelector('img');
-    (s.src = t),
-      (s.style.width = '100%'),
-      (s.style.height = '100%'),
-      (s.style.objectFit = 'contain');
+    const n = e.querySelector('div:not(.upload-btn)'),
+      s = e.querySelector('input[type="file"]'),
+      o = e.querySelector('.upload-btn'),
+      i = e.querySelector('img');
+    s.addEventListener('change', t => this.handleFileChange(t, e, n)),
+      o.addEventListener('click', () => s.click()),
+      t
+        ? ((i.src = t), (i.style.display = 'block'), (n.style.display = 'none'))
+        : ((i.style.display = 'none'), (n.style.display = 'block')),
+      e.addEventListener('mouseenter', () => {
+        o.style.opacity = '1';
+      }),
+      e.addEventListener('mouseleave', () => {
+        o.style.opacity = '0';
+      });
   }
 }
 class s {
@@ -486,26 +529,26 @@ class d {
       (d.style.justifyContent = 'space-evenly'),
       (d.style.marginBottom = '30px');
     const c = new t('Web Developer'),
-      m = new t('Full Stack Developer');
+      p = new t('Full Stack Developer');
     (c.create().style.fontSize = '18px'),
       (c.create().style.color = '#555'),
-      (m.create().style.fontSize = '18px'),
-      (m.create().style.fontStyle = 'italic'),
-      (m.create().style.color = '#777'),
+      (p.create().style.fontSize = '18px'),
+      (p.create().style.fontStyle = 'italic'),
+      (p.create().style.color = '#777'),
       l.create().appendChild(c.create()),
-      l.create().appendChild(m.create()),
+      l.create().appendChild(p.create()),
       e.appendChild(d);
-    const p = new t(
+    const m = new t(
       'Hello. I am John Doe, a passionate developer who loves creating innovative and user-friendly websites. I have experience in both front-end and back-end development.'
     ).create();
     return (
-      (p.style.fontSize = '16px'),
-      (p.style.lineHeight = '1.7'),
-      (p.style.marginBottom = '40px'),
-      (p.style.color = '#555'),
-      (p.style.textAlign = 'left'),
-      (p.style.padding = '0 10px'),
-      e.appendChild(p),
+      (m.style.fontSize = '16px'),
+      (m.style.lineHeight = '1.7'),
+      (m.style.marginBottom = '40px'),
+      (m.style.color = '#555'),
+      (m.style.textAlign = 'left'),
+      (m.style.padding = '0 10px'),
+      e.appendChild(m),
       e
     );
   }
@@ -653,8 +696,8 @@ class c {
       color: '#666',
       marginBottom: '30px',
     });
-    const m = new s().create();
-    Object.assign(m.style, {
+    const p = new s().create();
+    Object.assign(p.style, {
       padding: '12px 24px',
       fontSize: '16px',
       color: '#fff',
@@ -664,36 +707,36 @@ class c {
       cursor: 'pointer',
       transition: 'background-color 0.3s',
     }),
-      m.addEventListener('mouseenter', () => {
-        m.style.backgroundColor = '#0056b3';
+      p.addEventListener('mouseenter', () => {
+        p.style.backgroundColor = '#0056b3';
       }),
-      m.addEventListener('mouseleave', () => {
-        m.style.backgroundColor = '#007bff';
+      p.addEventListener('mouseleave', () => {
+        p.style.backgroundColor = '#007bff';
       }),
       l.appendChild(d),
       l.appendChild(c),
-      l.appendChild(m);
-    const p = new i().create();
-    p.classList.add('container'),
-      Object.assign(p.style, {
+      l.appendChild(p);
+    const m = new i().create();
+    m.classList.add('container'),
+      Object.assign(m.style, {
         textAlign: 'center',
         padding: '20px',
         marginTop: '40px',
         borderTop: '1px solid #ddd',
       }),
-      e(p);
+      e(m);
     const u = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
       Object.assign(u.style, { fontSize: '14px', color: '#999' }),
-      p.appendChild(u),
+      m.appendChild(u),
       n.appendChild(o),
       n.appendChild(l),
-      n.appendChild(p),
+      n.appendChild(m),
       n
     );
   }
 }
-class m {
+class p {
   constructor(e) {
     (this.undoStack = []), (this.redoStack = []), (this.canvas = e);
   }
@@ -727,7 +770,7 @@ class m {
     } else console.warn('No more actions to redo.');
   }
 }
-class p {
+class m {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -1308,7 +1351,7 @@ class v {
       this.controlsContainer.appendChild(o);
   }
   static addListeners(e) {
-    var t, n, s, o, i, a, r, l, d, c, m, p, u;
+    var t, n, s, o, i, a, r, l, d, c, p, m, u;
     const h = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -1391,14 +1434,14 @@ class v {
         c.addEventListener('change', () => {
           (e.style.borderStyle = h.borderStyle.value), g();
         }),
-      null === (m = h.borderColor) ||
-        void 0 === m ||
-        m.addEventListener('input', () => {
+      null === (p = h.borderColor) ||
+        void 0 === p ||
+        p.addEventListener('input', () => {
           (e.style.borderColor = h.borderColor.value), g();
         }),
-      null === (p = h.display) ||
-        void 0 === p ||
-        p.addEventListener('change', () => {
+      null === (m = h.display) ||
+        void 0 === m ||
+        m.addEventListener('change', () => {
           (e.style.display = h.display.value), g();
         }),
       null === (u = h.fontFamily) ||
@@ -1465,8 +1508,8 @@ class f {
           t && v.showSidebar(t.id);
       }),
       (f.canvasElement.style.position = 'relative'),
-      (f.historyManager = new m(f.canvasElement)),
-      (f.jsonStorage = new p()),
+      (f.historyManager = new p(f.canvasElement)),
+      (f.jsonStorage = new m()),
       (f.controlsManager = new u(f)),
       (f.gridManager = new b()),
       f.gridManager.initializeDropPreview(f.canvasElement);
@@ -1711,9 +1754,9 @@ class f {
         let l = s + a,
           d = o + r;
         const c = f.canvasElement.offsetWidth - e.offsetWidth,
-          m = f.canvasElement.offsetHeight - e.offsetHeight;
+          p = f.canvasElement.offsetHeight - e.offsetHeight;
         (l = Math.max(0, Math.min(l, c))),
-          (d = Math.max(0, Math.min(d, m))),
+          (d = Math.max(0, Math.min(d, p))),
           (e.style.left = `${l}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
@@ -1929,8 +1972,8 @@ document.addEventListener('DOMContentLoaded', () => {
   var e, t, n, s, o, i, a, r, l;
   const d = new f(),
     c = new w(d),
-    m = new g(d),
-    u = new p(),
+    p = new g(d),
+    u = new m(),
     y = new S();
   !(function () {
     const e = document.getElementById('sidebar'),
@@ -2154,16 +2197,16 @@ document.addEventListener('DOMContentLoaded', () => {
           (c.innerHTML = s),
           l.appendChild(d),
           l.appendChild(c);
-        const m = document.createElement('div');
-        m.classList.add('modal-section');
-        const p = document.createElement('h2');
-        p.textContent = 'CSS';
+        const p = document.createElement('div');
+        p.classList.add('modal-section');
+        const m = document.createElement('h2');
+        m.textContent = 'CSS';
         const u = document.createElement('div');
         u.classList.add('code-block'),
           u.setAttribute('contenteditable', 'true'),
           (u.innerHTML = o),
-          m.appendChild(p),
-          m.appendChild(u);
+          p.appendChild(m),
+          p.appendChild(u);
         const h = document.createElement('div');
         h.classList.add('button-wrapper');
         const y = document.createElement('button');
@@ -2181,7 +2224,7 @@ document.addEventListener('DOMContentLoaded', () => {
               URL.revokeObjectURL(s.href);
           }),
           a.appendChild(l),
-          a.appendChild(m),
+          a.appendChild(p),
           a.appendChild(y),
           h.appendChild(a),
           i.appendChild(h),
@@ -2197,7 +2240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (s = document.getElementById('view-btn')) ||
       void 0 === s ||
       s.addEventListener('click', () => {
-        const e = m.generateHTML(),
+        const e = p.generateHTML(),
           t = document.createElement('div');
         (t.id = 'preview-modal'),
           (t.style.cssText =
