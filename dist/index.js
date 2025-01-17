@@ -1776,7 +1776,7 @@ class f {
   (f.componentFactory = {
     button: () => new s().create(),
     header: () => new o().create(),
-    image: () => new n().create('https://via.placeholder.com/150'),
+    image: () => new n().create(),
     text: () => new t().create(),
     container: () => new i().create(),
     twoCol: () => new r().create(),
@@ -2019,8 +2019,11 @@ document.addEventListener('DOMContentLoaded', () => {
         Extra: ['portfolio', 'landingpage'],
       }).forEach(([e, o]) => {
         const i = document.createElement('div');
-        i.classList.add('category'),
-          (i.innerHTML = `<h4>${e}</h4>`),
+        i.classList.add('category');
+        const a = document.createElement('h4');
+        a.classList.add('categoryHeading'),
+          (a.innerHTML = e),
+          i.prepend(a),
           o.forEach(e => {
             const s = document.createElement('div');
             s.classList.add('draggable'),

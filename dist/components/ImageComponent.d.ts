@@ -6,5 +6,4 @@ export declare class ImageComponent {
     uploadText: HTMLElement
   ): void;
   static restoreImageUpload(component: HTMLElement, src: string): void;
-  addResizableHandles(container: HTMLElement): void;
 }
