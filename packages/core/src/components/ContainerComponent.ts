@@ -351,9 +351,7 @@ export class ContainerComponent {
     containerInstance.element = container;
 
     // Reapply controls to child components inside the container
-    const containerChildren = container.querySelectorAll(
-      '.container-highlight'
-    );
+    const containerChildren = container.querySelectorAll('.editable-component');
     containerChildren.forEach((child: any) => {
       // Add control buttons and draggable listeners
       Canvas.controlsManager.addControlButtons(child);

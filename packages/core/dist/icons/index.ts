@@ -10,3 +10,4 @@ export { default as SaveIcon } from './file.png';
 export { default as ExportIcon } from './code.png';
 export { default as UndoIcon } from './undo.png';
 export { default as RedoIcon } from './redo.png';
+export { default as LinkIcon } from './linkIcon.png';
