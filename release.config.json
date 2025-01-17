@@ -1,0 +1,17 @@
+{
+  "branches": ["main", "next", "master", "beta"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    {
+      "path": "@semantic-release/npm",
+      "pkgRoot": "packages/core"
+    },
+    "@semantic-release/git",
+    {
+      "path": "@semantic-release/exec",
+      "cmd": "pnpm version --no-git-tag-version ${nextRelease.version}"
+    }
+  ]
+}

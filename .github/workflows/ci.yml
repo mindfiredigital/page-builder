@@ -22,15 +22,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: 'Install dependencies'
-        run: npm install
+      - name: Install pnpm
+        run: npm install -g pnpm  # Install pnpm
+
+      - name: 'Install dependencies with pnpm'
+        run: pnpm install  # Install all dependencies using pnpm
 
       - name: 'Build application'
-        run: npm run build
+        run: pnpm build  # Assuming there's a build script in each package
 
       - name: 'Restore changes in json'
         run: |
-          git restore package-lock.json
+          git restore package-lock.json  # Restore any changes in lock files if needed
 
       - name: 'Set Git user name and email'
         run: |
@@ -38,7 +41,7 @@ jobs:
           git config --local user.name "GitHub Actions"
 
   create-github-release:
-    name: Create Github release document and publish to node
+    name: Create GitHub release document and publish to npm
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -52,9 +55,15 @@ jobs:
         with:
           node-version: 20.x
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies with pnpm
+        run: pnpm install
+
       - name: Semantic Release and npm release
         run: |
-          npm ci
+          pnpm install --frozen-lockfile
           npx semantic-release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
