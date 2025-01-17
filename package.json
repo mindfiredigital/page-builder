@@ -1,8 +1,16 @@
 {
-  "name": "page-builder",
+  "name": "@mindfiredigital/pagebuilder",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c && node script/fix-imports.js && npm run copy-assets",
     "start": "lite-server",
@@ -15,9 +23,27 @@
     "release": "turbo run build && semantic-release",
     "prepare": "husky install"
   },
-  "keywords": [],
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "keywords": [
+    "pagebuilder",
+    "rich-page-builder",
+    "html-editor",
+    "typescript",
+    "npm-package"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
     "@commitlint/cli": "^19.4.0",
@@ -60,5 +86,16 @@
   },
   "engines": {
     "node": ">=12.0.0"
+  },
+  "release": {
+    "repositoryUrl": "https://github.com/mindfiredigital/pagebuilder.git",
+    "branches": [
+      "main",
+      "next",
+      {
+        "name": "beta",
+        "prerelease": true
+      }
+    ]
   }
 }
