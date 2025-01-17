@@ -42,7 +42,10 @@ export function createSidebar() {
   Object.entries(categories).forEach(([category, components]) => {
     const categoryMenu = document.createElement('div');
     categoryMenu.classList.add('category');
-    categoryMenu.innerHTML = `<h4>${category}</h4>`;
+    const categoryHeading = document.createElement('h4');
+    categoryHeading.classList.add('categoryHeading');
+    categoryHeading.innerHTML = category;
+    categoryMenu.prepend(categoryHeading);
     components.forEach(componentId => {
       const iconElement = document.createElement('div');
       iconElement.classList.add('draggable');
