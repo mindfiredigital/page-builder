@@ -14,6 +14,7 @@ import {
 import { createZipFile } from './utils/zipGenerator';
 import { ShortcutManager } from './services/ShortcutManager';
 import { PreviewPanel } from './canvas/PreviewPanel';
+import './styles/main.css';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = new Canvas();
