@@ -31,9 +31,9 @@ jobs:
       - name: 'Build application'
         run: pnpm turbo run build  # Assuming there's a build script in each package
 
-      - name: 'Restore changes in json'
+      - name: 'Restore changes in pnpm lock'
         run: |
-          git restore package-lock.json  # Restore any changes in lock files if needed
+          git restore pnpm-lock.yaml  # Restore any changes in lock files if needed
 
       - name: 'Set Git user name and email'
         run: |
