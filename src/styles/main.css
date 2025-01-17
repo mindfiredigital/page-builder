@@ -756,3 +756,8 @@ color: #333;
 .close-btn:hover {
 color: red; /* Optional: Change color on hover */
 }
+
+.categoryHeading{
+    margin: 0%;
+   text-align: center;
+}
