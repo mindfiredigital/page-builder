@@ -1,6 +1,28 @@
-# Page Builder
+<h1 align="center">PageBuilder</h1><br><br>
+<p align="center">
+<a href="https://www.npmjs.com/package/@mindfiredigital/pagebuilder"><img src="https://img.shields.io/npm/v/@mindfiredigital/pagebuilder.svg?sanitize=true" alt="Version"></a>
+<a href="https://www.npmjs.com/package/@mindfiredigital/pagebuilder"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs"></a>
+</p>
 
-An open-source, lightweight page builder component designed for creating static web pages with a drag-and-drop interface. This component library generates HTML output and supports customization options. Built with TypeScript and vanilla JavaScript for performance, it includes modular components, responsive previews, and data handling for layout storage and retrieval.
+<br>
+
+<p align="center"> lightweight page builder library designed for creating static web pages with a drag-and-drop interface. This component library generates HTML output and supports customization options. Built with TypeScript and vanilla JavaScript for performance, it includes modular components, responsive previews, and data handling for layout storage and retrieval. </p>
+
+<br>
+
+<!-- <p align="center">
+  <!-- <img alt="Screenshot of the React Text Igniter" src="https://res.cloudinary.com/dxf1kplcx/image/upload/v1725448061/react-text-igniter-screenshot_c4dq9c.png"\>
+</p> -->
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Contributing](#contributing)
+- [License](#license)
+
+<br>
 
 ## Features
 
@@ -8,73 +30,74 @@ An open-source, lightweight page builder component designed for creating static 
 - **Responsive Preview**: Preview page layouts in different device modes (Desktop, Tablet, Mobile).
 - **Configuration Sidebar**: Customize component properties like text, color, padding, and margin via a configuration sidebar.
 - **Data Storage**: Save layout configurations in JSON format for easy retrieval and editing.
+- **Layers**: Enabling users to manage component hierarchy visually.
 - **Output HTML**: Export the final HTML layout for use in static web pages or other applications.
+
+<br>
 
 ## Installation
 
-1. **Clone the Repository**:
+To install the `@mindfiredigital/pagebuilder` npm package in your project, use the following command:
 
-   ```bash
-   git clone https://github.com/lakinmindfire/page-builder.git
-   cd page-builder
-   ```
+```bash
+npm install @mindfiredigital/pagebuilder
+```
 
-2. **Install Dependencies**:
+<br>
 
-   ```bash
-   npm install
-   ```
+## Getting Started
 
-3. **Compile TypeScript**:
+- **Initialization**: Initialize the PageBuilder in your project.
 
-   ```bash
-   npm run build
-   ```
+```javascript
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Builder</title>
+    <link rel="stylesheet" href="dist/styles/main.css" />
+  </head>
+  <body>
+    <header>
+      <nav id="preview-navbar">
+      </nav>
+    </header>
+    <div id="app">
+        <div id="sidebar"></div>
+      <div id="canvas" class="canvas"></div>
+      <div id="customization">
+        <h4 id="component-name">Component: None </h4>
+        <div id="controls"></div>
+        <div id="layers-view" class="hidden"></div>
+      </div>
+      <!-- Notification for saving -->
+      <div id="notification" class="notification hidden"></div>
+      <!-- Dialog for reset  -->
+      <div id="dialog" class="dialog hidden">
+        <div class="dialog-content">
+          <p id="dialog-message"></p>
+          <button id="dialog-yes" class="dialog-btn">Yes</button>
+          <button id="dialog-no" class="dialog-btn">No</button>
+        </div>
+      </div>
+    </div>
 
-4. **Run Development Server**:
+    <!-- Bundle JavaScript -->
+    <script src="node_modules/@mindfiredigital/pagebuilder/dist/index.js"></script>
+  </body>
+</html>
+```
 
-   ```bash
-   npm start
-   ```
-
-   This command will start a local server with `lite-server` and open the project in your default browser at http://localhost:3000/.
-
-## Usage
-
-- **Add Components**: Drag items from the left sidebar to the main canvas to add components like text, images, buttons, and headers.
-- **Customize Components**: Click on any component to open the configuration sidebar on the right. Here you can adjust properties such as text, color, padding, and margins.
-- **Preview Modes**: Use the preview panel at the top to view layouts on different devices (Desktop, Tablet, Mobile).
-- **Save Layout**: Save your layout configuration in JSON format for future editing.
-- **Export HTML**: Export the final HTML code for use in other applications or websites.
-
-## Configuration
-
-- **Responsive Preview Options**: The preview panel allows you to switch between desktop, tablet, and mobile views, adjusting the canvas width accordingly.
-- **Configuration Sidebar**: Customize each component by adjusting text, alignment, padding, and more in real-time.
-
-## Folder Descriptions
-
-- **`src/components/`**: Contains modular, reusable components for building page layouts. Each component is implemented in its own file for flexibility.
-- **`src/canvas/`**: Manages the main canvas, including drag-and-drop functionality and preview panel logic.
-- **`src/sidebar/`**: Configuration sidebar logic for customizing selected components' properties.
-- **`src/services/`**: Data management services, including HTML generation and JSON storage/retrieval.
-- **`src/utils/`**: Utility functions for event handling, DOM manipulation, and responsive design support.
-- **`src/styles/`**: Core CSS styles for the layout and components.
+<br>
 
 ## Contributing
 
-Contributions are welcome! Please submit a pull request or open an issue if you have ideas for improvements or new features.
+We welcome contributions from the community. If you'd like to contribute to the `Pagebuilder` npm package, please follow our [Contributing Guidelines](CONTRIBUTING.md).
+<br>
 
-1. Fork the repository
-2. Create a new branch from `dev` branch for your feature:
-   ```bash
-   git checkout -b feature/feature-name
-   ```
-3. Commit your changes and push to the branch:
-   ```bash
-   git commit -m "feat: Add new feature"
-   git push origin feature/feature-name
-   ```
-4. Submit a pull request for review.
+## License
 
-Please ensure your contributions adhere to the project's [Code of Conduct](./CODE_OF_CONDUCT.md) and are licensed under the project's [License](./LICENSE).
+Copyright (c) Mindfire Digital llp. All rights reserved.
+
+Licensed under the MIT license.
