@@ -1990,7 +1990,6 @@ document.addEventListener('DOMContentLoaded', () => {
         container: 'dist/icons/square.png',
         twoCol: 'dist/icons/column.png',
         threeCol: 'dist/icons/threecolumn.png',
-        portfolio: 'dist/icons/portfolio.png',
         landingpage: 'dist/icons/landingpage.png',
       },
       n = {
@@ -2001,7 +2000,6 @@ document.addEventListener('DOMContentLoaded', () => {
         container: 'Container',
         twoCol: 'Two Column Layout',
         threeCol: 'Three Column Layout',
-        portfolio: 'Portfolio Template',
         landingpage: 'Landing Page Template',
       },
       s = document.createElement('div');
@@ -2016,7 +2014,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'twoCol',
           'threeCol',
         ],
-        Extra: ['portfolio', 'landingpage'],
+        Extra: ['landingpage'],
       }).forEach(([e, o]) => {
         const i = document.createElement('div');
         i.classList.add('category');

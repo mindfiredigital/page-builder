@@ -10,7 +10,7 @@ export function createSidebar() {
     container: 'dist/icons/square.png',
     twoCol: 'dist/icons/column.png',
     threeCol: 'dist/icons/threecolumn.png',
-    portfolio: 'dist/icons/portfolio.png',
+    // portfolio: 'dist/icons/portfolio.png',
     landingpage: 'dist/icons/landingpage.png',
   };
 
@@ -22,7 +22,7 @@ export function createSidebar() {
     container: 'Container',
     twoCol: 'Two Column Layout',
     threeCol: 'Three Column Layout',
-    portfolio: 'Portfolio Template',
+    // portfolio: 'Portfolio Template',
     landingpage: 'Landing Page Template',
   };
 
@@ -40,7 +40,8 @@ export function createSidebar() {
       'twoCol',
       'threeCol',
     ],
-    Extra: ['portfolio', 'landingpage'],
+    // Add portfolio for version 2
+    Extra: ['landingpage'],
   };
 
   Object.entries(categories).forEach(([category, components]) => {

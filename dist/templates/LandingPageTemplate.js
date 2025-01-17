@@ -2,7 +2,7 @@ import {
   ContainerComponent,
   TextComponent,
   ButtonComponent,
-} from '../components/index.js.js.js.js.js.js.js.js.js.js.js.js.js.js.js.js';
+} from '../components/index.js.js.js.js.js.js.js.js.js.js.js.js.js.js.js.js.js.js.js';
 export class LandingPageTemplate {
   create() {
     const enableDragAndResize = element => {
