@@ -1,7 +1,7 @@
 <h1 align="center">PageBuilder</h1><br><br>
 <p align="center">
-<a href="https://www.npmjs.com/package/@mindfiredigital/pagebuilder"><img src="https://img.shields.io/npm/v/@mindfiredigital/pagebuilder.svg?sanitize=true" alt="Version"></a>
-<a href="https://www.npmjs.com/package/@mindfiredigital/pagebuilder"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs"></a>
+<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder-core"><img src="https://img.shields.io/npm/v/@mindfiredigital/page-builder-core.svg?sanitize=true" alt="Version"></a>
+<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder-core"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs"></a>
 </p>
 
 <br>
@@ -37,10 +37,10 @@
 
 ## Installation
 
-To install the `@mindfiredigital/pagebuilder` npm package in your project, use the following command:
+To install the `@mindfiredigital/page-builder-core` npm package in your project, use the following command:
 
 ```bash
-npm install @mindfiredigital/pagebuilder
+npm install @mindfiredigital/page-builder-core
 ```
 
 <br>
@@ -84,7 +84,7 @@ npm install @mindfiredigital/pagebuilder
     </div>
 
     <!-- Bundle JavaScript -->
-    <script src="node_modules/@mindfiredigital/pagebuilder/dist/index.js"></script>
+    <script src="node_modules/@mindfiredigital/page-builder-core/dist/index.js"></script>
   </body>
 </html>
 ```
