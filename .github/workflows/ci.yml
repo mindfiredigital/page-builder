@@ -63,6 +63,7 @@ jobs:
 
       - name: Semantic Release and npm release
         run: |
+          cd packages/core
           pnpm install --frozen-lockfile
           npx semantic-release
         env:
