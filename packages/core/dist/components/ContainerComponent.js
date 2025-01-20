@@ -1,5 +1,5 @@
-import { Canvas } from '../canvas/Canvas.js.js.js.js.js.js.js.js.js.js';
-import { ImageComponent } from './ImageComponent.js.js.js.js.js.js.js.js.js.js';
+import { Canvas } from '../canvas/Canvas.js';
+import { ImageComponent } from './ImageComponent.js';
 export class ContainerComponent {
   constructor() {
     this.MINIMUM_SIZE = 20;
@@ -297,9 +297,7 @@ export class ContainerComponent {
     const containerInstance = new ContainerComponent();
     containerInstance.element = container;
     // Reapply controls to child components inside the container
-    const containerChildren = container.querySelectorAll(
-      '.container-highlight'
-    );
+    const containerChildren = container.querySelectorAll('.editable-component');
     containerChildren.forEach(child => {
       var _a;
       // Add control buttons and draggable listeners

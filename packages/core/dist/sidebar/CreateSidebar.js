@@ -1,15 +1,18 @@
+import { svgs } from '../icons/svgs.js';
 export function createSidebar() {
   const sidebar = document.getElementById('sidebar');
+  // Define your components, icons, and titles as before
   const icons = {
-    button: 'dist/icons/button.png',
-    header: 'dist/icons/header.png',
-    image: 'dist/icons/image.png',
-    text: 'dist/icons/text.png',
-    container: 'dist/icons/square.png',
-    twoCol: 'dist/icons/column.png',
-    threeCol: 'dist/icons/threecolumn.png',
-    portfolio: 'dist/icons/portfolio.png',
-    landingpage: 'dist/icons/landingpage.png',
+    button: svgs.button,
+    header: svgs.header,
+    image: svgs.image,
+    text: svgs.text,
+    container: svgs.container,
+    twoCol: svgs.twocol,
+    threeCol: svgs.threecol,
+    // portfolio: 'dist/icons/portfolio.png',
+    landingpage: svgs.landing,
+    // link: 'dist/icons/linkIcon.png'
   };
   const titles = {
     button: 'Button',
@@ -19,22 +22,57 @@ export function createSidebar() {
     container: 'Container',
     twoCol: 'Two Column Layout',
     threeCol: 'Three Column Layout',
-    portfolio: 'Portfolio Template',
+    // portfolio: 'Portfolio Template',
     landingpage: 'Landing Page Template',
+    // link: 'Link',
   };
-  Object.entries(icons).forEach(([componentId, iconPath]) => {
-    const iconElement = document.createElement('div');
-    iconElement.classList.add('draggable');
-    iconElement.id = componentId;
-    iconElement.setAttribute('draggable', 'true');
-    iconElement.setAttribute('data-component', componentId);
-    // Use the custom title instead of the componentId
-    const customTitle = titles[componentId] || `Drag to add ${componentId}`;
-    iconElement.setAttribute('title', customTitle);
-    const img = document.createElement('img');
-    img.src = iconPath;
-    img.alt = `${componentId} icon`;
-    iconElement.appendChild(img);
-    sidebar.appendChild(iconElement);
+  // Create the Templates menu section
+  const templatesMenu = document.createElement('div');
+  templatesMenu.classList.add('menu');
+  // Categories under Templates
+  const categories = {
+    Basic: [
+      'button',
+      'header',
+      'text',
+      'image',
+      'container',
+      'twoCol',
+      'threeCol',
+      // 'link'
+    ],
+    // Add portfolio for version 2
+    Extra: ['landingpage'],
+  };
+  Object.entries(categories).forEach(([category, components]) => {
+    const categoryMenu = document.createElement('div');
+    categoryMenu.classList.add('category');
+    const categoryHeading = document.createElement('h4');
+    categoryHeading.classList.add('categoryHeading');
+    categoryHeading.innerHTML = category;
+    categoryMenu.prepend(categoryHeading);
+    components.forEach(componentId => {
+      const iconElement = document.createElement('div');
+      iconElement.classList.add('draggable');
+      iconElement.id = componentId;
+      iconElement.setAttribute('draggable', 'true');
+      iconElement.setAttribute('data-component', componentId);
+      const customTitle = titles[componentId] || `Drag to add ${componentId}`;
+      iconElement.setAttribute('title', customTitle);
+      // Add SVG as innerHTML
+      if (icons[componentId]) {
+        iconElement.innerHTML = icons[componentId];
+        // Optionally style the SVG
+        const svgElement = iconElement.querySelector('svg');
+        if (svgElement) {
+          svgElement.classList.add('component-icon');
+        }
+      } else {
+        console.warn(`Icon not found for component: ${componentId}`);
+      }
+      categoryMenu.appendChild(iconElement);
+    });
+    templatesMenu.appendChild(categoryMenu);
   });
+  sidebar.appendChild(templatesMenu);
 }

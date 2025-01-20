@@ -2,7 +2,8 @@ export class ComponentControlsManager {
   constructor(canvas) {
     //Image imports
     this.icons = {
-      delete: 'dist/icons/delete.png',
+      delete:
+        'https://res.cloudinary.com/dodvwsaqj/image/upload/v1737366522/delete-2-svgrepo-com_fwkzn7.svg',
     };
     this.canvas = canvas;
   }
@@ -10,13 +11,19 @@ export class ComponentControlsManager {
    * First check if there is already a div with class  as component-controls exists
    * Add a div for each components in which we can add control buttons
    * We have added delete button
+   * NB: For image container we are using appendChild method instead of prepend since it is hampering the style.
    */
   addControlButtons(element) {
+    let ImageComponent = element.querySelector('img');
     let controlsDiv = element.querySelector('.component-controls');
     if (!controlsDiv) {
       controlsDiv = document.createElement('div');
       controlsDiv.className = 'component-controls';
-      element.appendChild(controlsDiv);
+      if (ImageComponent) {
+        element.appendChild(controlsDiv);
+      } else {
+        element.prepend(controlsDiv);
+      }
     }
     const deleteIcon = this.createDeleteIcon(element);
     // Append the delete icon to controlsDiv, for future we can add other buttons to this controls div
