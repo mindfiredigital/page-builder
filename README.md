@@ -10,9 +10,19 @@
 
 <br>
 
-<!-- <p align="center">
-  <!-- <img alt="Screenshot of the React Text Igniter" src="https://res.cloudinary.com/dxf1kplcx/image/upload/v1725448061/react-text-igniter-screenshot_c4dq9c.png"\>
-</p> -->
+## Live Demo
+
+Click the button below to open the project on StackBlitz.
+
+<a href="https://stackblitz.com/edit/stackblitz-starters-3d4yfpj4?file=index.html" target="_blank">
+  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz">
+</a>
+
+## Screenshot
+
+ <p align="center">
+   <img alt="Screenshot of the Page builder" src="https://res.cloudinary.com/dodvwsaqj/image/upload/v1737367074/landing_sdtu4q.png"\>
+</p>
 
 ## Table of Contents
 
@@ -56,6 +66,7 @@ npm install @mindfiredigital/page-builder-core
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Page Builder</title>
+    <link rel="stylesheet" href="node_modules/@mindfiredigital/page-builder-core/dist/styles/main.css" />
   </head>
   <body>
     <header>
