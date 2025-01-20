@@ -10,9 +10,9 @@
 
 <br>
 
-<!-- <p align="center">
-  <!-- <img alt="Screenshot of the React Text Igniter" src="https://res.cloudinary.com/dxf1kplcx/image/upload/v1725448061/react-text-igniter-screenshot_c4dq9c.png"\>
-</p> -->
+ <p align="center">
+   <img alt="Screenshot of the React Text Igniter" src="https://res.cloudinary.com/dodvwsaqj/image/upload/v1737367074/landing_sdtu4q.png"\>
+</p>
 
 ## Table of Contents
 
