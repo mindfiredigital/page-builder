@@ -1,7 +1,7 @@
 {
   "name": "@mindfiredigital/page-builder-core",
   "version": "1.0.0",
-  "description": "",
+  "description": "UI Page builder",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
@@ -36,12 +36,19 @@
   },
   "keywords": [
     "pagebuilder",
+    "page-builder-core",
     "rich-page-builder",
     "html-editor",
     "typescript",
-    "npm-package"
+    "npm-package",
+    "block-editor",
+    "visual-editor",
+    "no-code",
+    "low-code",
+    "component-based",
+    "responsive-design"
   ],
-  "author": "",
+  "author": "Mindfiredigital",
   "license": "MIT",
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
