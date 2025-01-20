@@ -1,7 +1,11 @@
 {
   "name": "@mindfiredigital/page-builder-core",
-  "version": "1.0.0",
+  "version": "1.0.0-development",
   "description": "UI Page builder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mindfiredigital/page-builder.git"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
