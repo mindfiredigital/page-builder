@@ -1,19 +1,19 @@
 // Function to create the navbar
+import { svgs } from '../icons/svgs';
 export function createNavbar() {
   const navbar = document.createElement('nav');
   navbar.id = 'preview-navbar';
 
   const icons = {
-    desktop: 'dist/icons/computer.png',
-    tablet: 'dist/icons/tablet.png',
-    mobile: 'dist/icons/mobile.png',
-    save: 'dist/icons/file.png',
-    export: 'dist/icons/code.png',
-    view: 'dist/icons/view.png',
-    edit: 'dist/icons/pencil.png',
-    undo: 'dist/icons/undo.png',
-    redo: 'dist/icons/redo.png',
-    reset: 'dist/icons/reset.png',
+    desktop: svgs.desktop,
+    tablet: svgs.tablet,
+    mobile: svgs.mobile,
+    save: svgs.save,
+    export: svgs.code,
+    view: svgs.view,
+    undo: svgs.undo,
+    redo: svgs.redo,
+    reset: svgs.reset,
   };
 
   // Array of button data with only titles
@@ -41,12 +41,13 @@ export function createNavbar() {
     button.classList.add('preview-btn');
     button.title = title;
 
-    const img = document.createElement('img');
-    img.src = icon;
-    img.alt = `${title}`;
-    img.classList.add('nav-icon');
+    // Insert the SVG directly as innerHTML
+    button.innerHTML = icon;
 
-    button.appendChild(img);
+    const svgElement = button.querySelector('svg');
+    if (svgElement) {
+      svgElement.classList.add('nav-icon');
+    }
     leftContainer.appendChild(button);
   });
 
@@ -63,12 +64,13 @@ export function createNavbar() {
     button.classList.add('preview-btn');
     button.title = title;
 
-    const img = document.createElement('img');
-    img.src = icon;
-    img.alt = `${title}`;
-    img.classList.add('nav-icon');
+    // Insert the SVG directly as innerHTML
+    button.innerHTML = icon;
 
-    button.appendChild(img);
+    const svgElement = button.querySelector('svg');
+    if (svgElement) {
+      svgElement.classList.add('nav-icon');
+    }
     rightContainer.appendChild(button);
   });
 

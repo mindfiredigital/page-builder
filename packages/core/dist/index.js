@@ -605,8 +605,8 @@ class d {
       color: '#666',
       marginBottom: '30px',
     });
-    const m = new s().create();
-    Object.assign(m.style, {
+    const h = new s().create();
+    Object.assign(h.style, {
       padding: '12px 24px',
       fontSize: '16px',
       color: '#fff',
@@ -616,15 +616,15 @@ class d {
       cursor: 'pointer',
       transition: 'background-color 0.3s',
     }),
-      m.addEventListener('mouseenter', () => {
-        m.style.backgroundColor = '#0056b3';
+      h.addEventListener('mouseenter', () => {
+        h.style.backgroundColor = '#0056b3';
       }),
-      m.addEventListener('mouseleave', () => {
-        m.style.backgroundColor = '#007bff';
+      h.addEventListener('mouseleave', () => {
+        h.style.backgroundColor = '#007bff';
       }),
       l.appendChild(d),
       l.appendChild(c),
-      l.appendChild(m);
+      l.appendChild(h);
     const p = new o().create();
     p.classList.add('container'),
       Object.assign(p.style, {
@@ -634,10 +634,10 @@ class d {
         borderTop: '1px solid #ddd',
       }),
       e(p);
-    const u = new t('© 2025 MyBrand. All rights reserved.').create();
+    const m = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
-      Object.assign(u.style, { fontSize: '14px', color: '#999' }),
-      p.appendChild(u),
+      Object.assign(m.style, { fontSize: '14px', color: '#999' }),
+      p.appendChild(m),
       n.appendChild(i),
       n.appendChild(l),
       n.appendChild(p),
@@ -679,7 +679,7 @@ class c {
     } else console.warn('No more actions to redo.');
   }
 }
-class m {
+class h {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -726,7 +726,7 @@ class p {
     this.canvas.setComponents(t), this.canvas.historyManager.captureState();
   }
 }
-function u(e) {
+function m(e) {
   const t = document.getElementById('notification');
   t &&
     ((t.innerHTML = e),
@@ -736,7 +736,7 @@ function u(e) {
       t.classList.remove('visible'), t.classList.add('hidden');
     }, 2e3));
 }
-class h {
+class u {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -886,7 +886,7 @@ class g {
         (g.canvasRoot = document.body));
   }
   static buildLayerHierarchyFromDOM(e) {
-    const t = new h(new b()).generateHTML(),
+    const t = new u(new b()).generateHTML(),
       n = new DOMParser().parseFromString(t, 'text/html'),
       s = (e, t = 0) => {
         var n;
@@ -1030,7 +1030,7 @@ class g {
   }
 }
 (g.layersView = null), (g.canvasRoot = null), (g.draggedItem = null);
-class y {
+class v {
   static init() {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1204,7 +1204,7 @@ class y {
         'color',
         r.borderColor || '#000000'
       );
-    const l = y.rgbToHex(r.backgroundColor),
+    const l = v.rgbToHex(r.backgroundColor),
       d = document.getElementById('color');
     d && (d.value = l), this.addListeners(o);
   }
@@ -1260,8 +1260,8 @@ class y {
       this.controlsContainer.appendChild(i);
   }
   static addListeners(e) {
-    var t, n, s, i, o, a, r, l, d, c, m, p, u;
-    const h = {
+    var t, n, s, i, o, a, r, l, d, c, h, p, m;
+    const u = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
       color: document.getElementById('color'),
@@ -1276,7 +1276,7 @@ class y {
       display: document.getElementById('display'),
       fontFamily: document.getElementById('font-family'),
     };
-    if (!h) return;
+    if (!u) return;
     const g = (function (e, t) {
       let n = null;
       return (...s) => {
@@ -1285,85 +1285,85 @@ class y {
     })(() => {
       b.historyManager.captureState();
     }, 300);
-    null === (t = h.width) ||
+    null === (t = u.width) ||
       void 0 === t ||
       t.addEventListener('input', () => {
         const t = document.getElementById('width-unit').value;
-        (e.style.width = `${h.width.value}${t}`), g();
+        (e.style.width = `${u.width.value}${t}`), g();
       }),
-      null === (n = h.height) ||
+      null === (n = u.height) ||
         void 0 === n ||
         n.addEventListener('input', () => {
           const t = document.getElementById('height-unit').value;
-          (e.style.height = `${h.height.value}${t}`), g();
+          (e.style.height = `${u.height.value}${t}`), g();
         }),
-      null === (s = h.color) ||
+      null === (s = u.color) ||
         void 0 === s ||
         s.addEventListener('input', () => {
-          e.style.backgroundColor = h.color.value;
+          e.style.backgroundColor = u.color.value;
           const t = document.querySelector('#color-value');
-          t && (t.textContent = h.color.value), g();
+          t && (t.textContent = u.color.value), g();
         }),
-      null === (i = h.margin) ||
+      null === (i = u.margin) ||
         void 0 === i ||
         i.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
-          (e.style.margin = `${h.margin.value}${t}`), g();
+          (e.style.margin = `${u.margin.value}${t}`), g();
         }),
-      null === (o = h.padding) ||
+      null === (o = u.padding) ||
         void 0 === o ||
         o.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
-          (e.style.padding = `${h.padding.value}${t}`), g();
+          (e.style.padding = `${u.padding.value}${t}`), g();
         }),
-      null === (a = h.alignment) ||
+      null === (a = u.alignment) ||
         void 0 === a ||
         a.addEventListener('change', () => {
-          (e.style.textAlign = h.alignment.value), g();
+          (e.style.textAlign = u.alignment.value), g();
         }),
-      null === (r = h.fontSize) ||
+      null === (r = u.fontSize) ||
         void 0 === r ||
         r.addEventListener('input', () => {
           const t = document.getElementById('font-size-unit').value;
-          (e.style.fontSize = `${h.fontSize.value}${t}`), g();
+          (e.style.fontSize = `${u.fontSize.value}${t}`), g();
         }),
-      null === (l = h.textColor) ||
+      null === (l = u.textColor) ||
         void 0 === l ||
         l.addEventListener('input', () => {
-          (e.style.color = h.textColor.value), g();
+          (e.style.color = u.textColor.value), g();
         }),
-      null === (d = h.borderWidth) ||
+      null === (d = u.borderWidth) ||
         void 0 === d ||
         d.addEventListener('input', () => {
           const t = document.getElementById('border-width-unit').value;
-          (e.style.borderWidth = `${h.borderWidth.value}${t}`), g();
+          (e.style.borderWidth = `${u.borderWidth.value}${t}`), g();
         }),
-      null === (c = h.borderStyle) ||
+      null === (c = u.borderStyle) ||
         void 0 === c ||
         c.addEventListener('change', () => {
-          (e.style.borderStyle = h.borderStyle.value), g();
+          (e.style.borderStyle = u.borderStyle.value), g();
         }),
-      null === (m = h.borderColor) ||
-        void 0 === m ||
-        m.addEventListener('input', () => {
-          (e.style.borderColor = h.borderColor.value), g();
+      null === (h = u.borderColor) ||
+        void 0 === h ||
+        h.addEventListener('input', () => {
+          (e.style.borderColor = u.borderColor.value), g();
         }),
-      null === (p = h.display) ||
+      null === (p = u.display) ||
         void 0 === p ||
         p.addEventListener('change', () => {
-          (e.style.display = h.display.value), g();
+          (e.style.display = u.display.value), g();
         }),
-      null === (u = h.fontFamily) ||
-        void 0 === u ||
-        u.addEventListener('change', () => {
-          (e.style.fontFamily = h.fontFamily.value), g();
+      null === (m = u.fontFamily) ||
+        void 0 === m ||
+        m.addEventListener('change', () => {
+          (e.style.fontFamily = u.fontFamily.value), g();
         });
   }
   static getLayersViewController() {
     return this.layersViewController;
   }
 }
-class v {
+class y {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -1414,13 +1414,13 @@ class b {
         const t = e.target;
         console.log('this is my component,', t),
           console.log('this is component id ', t.id),
-          t && y.showSidebar(t.id);
+          t && v.showSidebar(t.id);
       }),
       (b.canvasElement.style.position = 'relative'),
       (b.historyManager = new c(b.canvasElement)),
-      (b.jsonStorage = new m()),
+      (b.jsonStorage = new h()),
       (b.controlsManager = new p(b)),
-      (b.gridManager = new v()),
+      (b.gridManager = new y()),
       b.gridManager.initializeDropPreview(b.canvasElement);
     new e(b.canvasElement, b.sidebarElement).enable();
     const t = b.jsonStorage.load();
@@ -1559,7 +1559,7 @@ class b {
         b.components.push(o),
         b.canvasElement.appendChild(o),
         b.addDraggableListeners(o),
-        y.updateLayersView(),
+        v.updateLayersView(),
         b.historyManager.captureState();
     }
   }
@@ -1594,7 +1594,7 @@ class b {
           ? n.setAttribute('contenteditable', 'false')
           : n.setAttribute('contenteditable', 'true'),
         b.controlsManager.addControlButtons(n),
-        y.updateLayersView();
+        v.updateLayersView();
     }
     return n;
   }
@@ -1663,9 +1663,9 @@ class b {
         let l = s + a,
           d = i + r;
         const c = b.canvasElement.offsetWidth - e.offsetWidth,
-          m = b.canvasElement.offsetHeight - e.offsetHeight;
+          h = b.canvasElement.offsetHeight - e.offsetHeight;
         (l = Math.max(0, Math.min(l, c))),
-          (d = Math.max(0, Math.min(d, m))),
+          (d = Math.max(0, Math.min(d, h))),
           (e.style.left = `${l}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
@@ -1687,7 +1687,7 @@ class b {
     threeCol: () => new l().create(),
     landingpage: () => new d().create(),
   });
-const E = document.getElementById('canvas'),
+const w = document.getElementById('canvas'),
   f = new (class {
     constructor() {
       (this.selectedElement = null),
@@ -1706,12 +1706,12 @@ const E = document.getElementById('canvas'),
         this.selectedElement.classList.add('selected');
     }
   })();
-E &&
-  E.addEventListener('click', e => {
+w &&
+  w.addEventListener('click', e => {
     const t = e.target;
-    t !== E && f.selectElement(t);
+    t !== w && f.selectElement(t);
   });
-class L {
+class E {
   constructor(e) {
     this.canvas = e;
   }
@@ -1736,7 +1736,36 @@ class L {
       }
   }
 }
-function w(e) {
+const L = {
+  desktop:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n            </svg>',
+  tablet:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M19 12V11.988M4 19H20C21.1046 19 22 18.1046 22 17V7C22 5.89543 21.1046 5 20 5H4C2.89543 5 2 5.89543 2 7V17C2 18.1046 2.89543 19 4 19Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            </svg>',
+  mobile:
+    '<svg fill="#000000" width="800px" height="800px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M22.461 5H9.539a1.6 1.6 0 0 0-1.601 1.603V25.4A1.6 1.6 0 0 0 9.539 27h12.922c.885 0 1.602-.718 1.602-1.602V6.603A1.603 1.603 0 0 0 22.461 5zm-6.46 20.418a1.022 1.022 0 1 1 1.021-1.021c-.001.634-.46 1.021-1.021 1.021zm6.862-3.501H9.138V7.704h13.725v14.213z"/></svg>',
+  save: '<svg fill="#000000" width="800px" height="800px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">\n                <path d="M790.706 338.824v112.94H395.412c-31.06 0-56.47 25.3-56.47 56.471v744.509c17.73-6.325 36.592-10.391 56.47-10.391h1129.412c19.877 0 38.738 4.066 56.47 10.39V508.236c0-31.171-25.412-56.47-56.47-56.47h-395.295V338.824h395.295c93.402 0 169.411 76.009 169.411 169.411v1242.353c0 93.403-76.01 169.412-169.411 169.412H395.412C302.009 1920 226 1843.99 226 1750.588V508.235c0-93.402 76.01-169.411 169.412-169.411h395.294Zm734.118 1016.47H395.412c-31.06 0-56.47 25.299-56.47 56.47v338.824c0 31.172 25.41 56.47 56.47 56.47h1129.412c31.058 0 56.47-25.298 56.47-56.47v-338.823c0-31.172-25.412-56.47-56.47-56.47ZM1016.622-.023v880.151l246.212-246.325 79.85 79.85-382.532 382.644-382.645-382.644 79.85-79.85L903.68 880.128V-.022h112.941ZM564.824 1468.235c-62.344 0-112.942 50.71-112.942 112.941s50.598 112.942 112.942 112.942c62.343 0 112.94-50.71 112.94-112.942 0-62.23-50.597-112.94-112.94-112.94Z" fill-rule="evenodd"/>\n            </svg>',
+  code: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M14.1809 4.2755C14.581 4.3827 14.8185 4.79396 14.7113 5.19406L10.7377 20.0238C10.6304 20.4239 10.2192 20.6613 9.81909 20.5541C9.41899 20.4469 9.18156 20.0356 9.28876 19.6355L13.2624 4.80583C13.3696 4.40573 13.7808 4.16829 14.1809 4.2755Z" fill="#1C274C"/>\n        <path d="M16.4425 7.32781C16.7196 7.01993 17.1938 6.99497 17.5017 7.27206L19.2392 8.8358C19.9756 9.49847 20.5864 10.0482 21.0058 10.5467C21.4468 11.071 21.7603 11.6342 21.7603 12.3295C21.7603 13.0248 21.4468 13.5881 21.0058 14.1123C20.5864 14.6109 19.9756 15.1606 19.2392 15.8233L17.5017 17.387C17.1938 17.6641 16.7196 17.6391 16.4425 17.3313C16.1654 17.0234 16.1904 16.5492 16.4983 16.2721L18.1947 14.7452C18.9826 14.0362 19.5138 13.5558 19.8579 13.1467C20.1882 12.7541 20.2603 12.525 20.2603 12.3295C20.2603 12.1341 20.1882 11.9049 19.8579 11.5123C19.5138 11.1033 18.9826 10.6229 18.1947 9.91383L16.4983 8.387C16.1904 8.10991 16.1654 7.63569 16.4425 7.32781Z" fill="#1C274C"/>\n        <path d="M7.50178 8.387C7.80966 8.10991 7.83462 7.63569 7.55752 7.32781C7.28043 7.01993 6.80621 6.99497 6.49833 7.27206L4.76084 8.8358C4.0245 9.49847 3.41369 10.0482 2.99428 10.5467C2.55325 11.071 2.23975 11.6342 2.23975 12.3295C2.23975 13.0248 2.55325 13.5881 2.99428 14.1123C3.41369 14.6109 4.02449 15.1606 4.76082 15.8232L6.49833 17.387C6.80621 17.6641 7.28043 17.6391 7.55752 17.3313C7.83462 17.0234 7.80966 16.5492 7.50178 16.2721L5.80531 14.7452C5.01743 14.0362 4.48623 13.5558 4.14213 13.1467C3.81188 12.7541 3.73975 12.525 3.73975 12.3295C3.73975 12.1341 3.81188 11.9049 4.14213 11.5123C4.48623 11.1033 5.01743 10.6229 5.80531 9.91383L7.50178 8.387Z" fill="#1C274C"/>\n        </svg>',
+  view: '<svg width="800px" height="800px" viewBox="0 -0.5 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.5 12.5C19.5 14.985 16.366 17 12.5 17C8.634 17 5.5 14.985 5.5 12.5C5.5 10.015 8.634 8 12.5 8C16.366 8 19.5 10.015 19.5 12.5Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.25 12.5C14.2716 13.1393 13.9429 13.7395 13.3925 14.0656C12.8422 14.3917 12.1578 14.3917 11.6075 14.0656C11.0571 13.7395 10.7284 13.1393 10.75 12.5C10.7284 11.8607 11.0571 11.2604 11.6075 10.9344C12.1578 10.6083 12.8422 10.6083 13.3925 10.9344C13.9429 11.2604 14.2716 11.8607 14.25 12.5V12.5Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n                </svg>',
+  undo: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.53033 3.46967C7.82322 3.76256 7.82322 4.23744 7.53033 4.53033L5.81066 6.25H15C18.1756 6.25 20.75 8.82436 20.75 12C20.75 15.1756 18.1756 17.75 15 17.75H8.00001C7.58579 17.75 7.25001 17.4142 7.25001 17C7.25001 16.5858 7.58579 16.25 8.00001 16.25H15C17.3472 16.25 19.25 14.3472 19.25 12C19.25 9.65279 17.3472 7.75 15 7.75H5.81066L7.53033 9.46967C7.82322 9.76256 7.82322 10.2374 7.53033 10.5303C7.23744 10.8232 6.76256 10.8232 6.46967 10.5303L3.46967 7.53033C3.17678 7.23744 3.17678 6.76256 3.46967 6.46967L6.46967 3.46967C6.76256 3.17678 7.23744 3.17678 7.53033 3.46967Z" fill="#1C274C"/>\n        </svg>',
+  redo: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M20 7H9.00001C6.23858 7 4 9.23857 4 12C4 14.7614 6.23858 17 9 17H16M20 7L17 4M20 7L17 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n        </svg>',
+  reset:
+    '<svg width="800px" height="800px" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">\n\n            <g fill="none" fill-rule="evenodd" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" transform="matrix(0 1 1 0 2.5 2.5)">\n\n            <path d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8"/>\n\n            <circle cx="8" cy="8" fill="#000000" r="2"/>\n\n            <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)"/>\n\n            </g>\n\n            </svg>',
+  bullet_list:
+    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 16 16">\n                      <title>Bullet List</title><path fill="currentColor" d="M2 4.5a1 1 0 1 0 0-2a1 1 0 0 0 0 2M2 9a1 1 0 1 0 0-2a1 1 0 0 0 0 2m1 3.5a1 1 0 1 1-2 0a1 1 0 0 1 2 0M5.5 3a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zM5 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 5 8m.5 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1z"/></svg>',
+  numbered_list:
+    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 512 512">\n                      <title>Numbererd List</title>\n                      <path fill="currentColor" d="M184 80h288v32H184zm0 160h288v32H184zm0 160h288v32H184zm-64-240V40H56v32h32v88zM56 262.111V312h80v-32H91.777L136 257.889V192H56v32h48v14.111zM56 440v32h80V344H56v32h48v16H80v32h24v16z"/>\n                  </svg>',
+  insert_table:
+    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 20 20">\n                      <title>Insert Table</title>\n                      <path fill="currentColor" d="M1.364 5.138v12.02h17.272V5.138zM.909 1.5h18.182c.502 0 .909.4.909.895v15.21a.9.9 0 0 1-.91.895H.91c-.503 0-.91-.4-.91-.895V2.395C0 1.9.407 1.5.91 1.5m5.227 1.759c0-.37.306-.671.682-.671s.682.3.682.671v13.899c0 .37-.305.67-.682.67a.676.676 0 0 1-.682-.67zm6.96-.64c.377 0 .682.3.682.67v4.995h4.91c.377 0 .683.301.683.672c0 .37-.306.671-.682.671l-4.911-.001v3.062h5.002c.377 0 .682.3.682.671c0 .37-.305.671-.682.671h-5.002v3.158a.676.676 0 0 1-.682.671a.676.676 0 0 1-.681-.67l-.001-3.159H1.001a.676.676 0 0 1-.682-.67c0-.371.305-.672.682-.672h11.413V9.626L.909 9.627a.676.676 0 0 1-.682-.671c0-.37.306-.671.682-.671l11.505-.001V3.289c0-.37.306-.67.682-.67"/>\n                  </svg>',
+  insert_layout:
+    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 256 256">\n                      <title>Insert Layout</title>\n                      <path fill="currentColor" d="M216 42H40a14 14 0 0 0-14 14v144a14 14 0 0 0 14 14h176a14 14 0 0 0 14-14V56a14 14 0 0 0-14-14M40 54h176a2 2 0 0 1 2 2v42H38V56a2 2 0 0 1 2-2m-2 146v-90h60v92H40a2 2 0 0 1-2-2m178 2H110v-92h108v90a2 2 0 0 1-2 2"/>\n                  </svg>',
+  heading:
+    '<svg \n                  xmlns="http://www.w3.org/2000/svg" \n                  width="18" \n                  height="18" \n                  viewBox="0 0 24 24">\n                  <title>Heading</title>\n                  <path fill="currentColor" d="M17 11V4h2v17h-2v-8H7v8H5V4h2v7z"/>\n              </svg>',
+  hyperlink:
+    '<svg \n                  xmlns="http://www.w3.org/2000/svg" \n                  width="18" \n                  height="18" \n                  viewBox="0 0 24 24">\n                  <title>Hyperlink</title>\n                  <path fill="currentColor" d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353a.75.75 0 0 0-1.18.928a5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061z"/>\n                  <path fill="currentColor" d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353a.75.75 0 0 0 1.18-.928a5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568z"/>\n              </svg>',
+  image:
+    '<svg \n              xmlns="http://www.w3.org/2000/svg" \n              width="18" \n              height="18" \n              viewBox="0 0 16 16">\n              <title>Insert Image</title>\n              <path fill="currentColor" d="M6 5a2 2 0 1 1-4 0a2 2 0 0 1 4 0m9-4a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm-3.448 6.134l-3.76 2.769a.5.5 0 0 1-.436.077l-.087-.034l-1.713-.87L1 11.8V14h14V9.751zM15 2H1v8.635l4.28-2.558a.5.5 0 0 1 .389-.054l.094.037l1.684.855l3.813-2.807a.5.5 0 0 1 .52-.045l.079.05L15 8.495z"/>\n          </svg>',
+};
+function C(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let s = 0;
@@ -1852,7 +1881,7 @@ function w(e) {
   const r = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
   return new Blob([r], { type: 'application/zip' });
 }
-class C {
+class x {
   static init() {
     document.addEventListener('keydown', this.handleKeydown);
   }
@@ -1867,7 +1896,7 @@ class C {
       }
   }
 }
-class x {
+class S {
   setPreviewMode(e) {
     const t = document.getElementById('canvas');
     t.classList.forEach(e => {
@@ -1879,10 +1908,10 @@ class x {
 document.addEventListener('DOMContentLoaded', () => {
   var e, t, n, s, i, o, a, r, l;
   const d = new b(),
-    c = new L(d),
-    p = new h(d),
-    g = new m(),
-    v = new x();
+    c = new E(d),
+    p = new u(d),
+    g = new h(),
+    y = new S();
   !(function () {
     const e = document.getElementById('sidebar'),
       t = {
@@ -1945,87 +1974,84 @@ document.addEventListener('DOMContentLoaded', () => {
   })(),
     b.init(),
     c.init(),
-    C.init(),
-    y.init();
-  const E = document.createElement('header');
+    x.init(),
+    v.init();
+  const w = document.createElement('header');
   function f(e) {
     e.classList.remove('show'),
       e.classList.add('hide'),
       setTimeout(() => e.remove(), 300);
   }
-  E.appendChild(
+  w.appendChild(
     (function () {
       const e = document.createElement('nav');
       e.id = 'preview-navbar';
-      const t = [
+      const t = {
+          desktop: L.desktop,
+          tablet: L.tablet,
+          mobile: L.mobile,
+          save: L.save,
+          export: L.code,
+          view: L.view,
+          undo: L.undo,
+          redo: L.redo,
+          reset: L.reset,
+        },
+        n = [
           {
             id: 'preview-desktop',
-            icon: 'dist/icons/computer.png',
+            icon: t.desktop,
             title: 'Preview in Desktop',
           },
-          {
-            id: 'preview-tablet',
-            icon: 'dist/icons/tablet.png',
-            title: 'Preview in Tablet',
-          },
-          {
-            id: 'preview-mobile',
-            icon: 'dist/icons/mobile.png',
-            title: 'Preview in Mobile',
-          },
-          { id: 'undo-btn', icon: 'dist/icons/undo.png', title: 'Undo button' },
-          { id: 'redo-btn', icon: 'dist/icons/redo.png', title: 'Redo button' },
+          { id: 'preview-tablet', icon: t.tablet, title: 'Preview in Tablet' },
+          { id: 'preview-mobile', icon: t.mobile, title: 'Preview in Mobile' },
+          { id: 'undo-btn', icon: t.undo, title: 'Undo button' },
+          { id: 'redo-btn', icon: t.redo, title: 'Redo button' },
         ],
-        n = [
-          { id: 'view-btn', icon: 'dist/icons/view.png', title: 'View' },
-          { id: 'save-btn', icon: 'dist/icons/file.png', title: 'Save Layout' },
-          { id: 'reset-btn', icon: 'dist/icons/reset.png', title: 'Reset' },
-          {
-            id: 'export-html-btn',
-            icon: 'dist/icons/code.png',
-            title: 'Export HTML',
-          },
+        s = [
+          { id: 'view-btn', icon: t.view, title: 'View' },
+          { id: 'save-btn', icon: t.save, title: 'Save Layout' },
+          { id: 'reset-btn', icon: t.reset, title: 'Reset' },
+          { id: 'export-html-btn', icon: t.export, title: 'Export HTML' },
         ],
-        s = document.createElement('div');
-      s.classList.add('left-buttons'),
-        t.forEach(({ id: e, icon: t, title: n }) => {
-          const i = document.createElement('button');
-          (i.id = e), i.classList.add('preview-btn'), (i.title = n);
-          const o = document.createElement('img');
-          (o.src = t),
-            (o.alt = `${n}`),
-            o.classList.add('nav-icon'),
-            i.appendChild(o),
-            s.appendChild(i);
-        });
-      const i = document.createElement('div');
-      i.classList.add('center-text'), (i.textContent = 'Page Builder');
-      const o = document.createElement('div');
-      return (
-        o.classList.add('right-buttons'),
+        i = document.createElement('div');
+      i.classList.add('left-buttons'),
         n.forEach(({ id: e, icon: t, title: n }) => {
           const s = document.createElement('button');
-          (s.id = e), s.classList.add('preview-btn'), (s.title = n);
-          const i = document.createElement('img');
-          (i.src = t),
-            (i.alt = `${n}`),
-            i.classList.add('nav-icon'),
-            s.appendChild(i),
-            o.appendChild(s);
+          (s.id = e),
+            s.classList.add('preview-btn'),
+            (s.title = n),
+            (s.innerHTML = t);
+          const o = s.querySelector('svg');
+          o && o.classList.add('nav-icon'), i.appendChild(s);
+        });
+      const o = document.createElement('div');
+      o.classList.add('center-text'), (o.textContent = 'Page Builder');
+      const a = document.createElement('div');
+      return (
+        a.classList.add('right-buttons'),
+        s.forEach(({ id: e, icon: t, title: n }) => {
+          const s = document.createElement('button');
+          (s.id = e),
+            s.classList.add('preview-btn'),
+            (s.title = n),
+            (s.innerHTML = t);
+          const i = s.querySelector('svg');
+          i && i.classList.add('nav-icon'), a.appendChild(s);
         }),
-        e.appendChild(s),
         e.appendChild(i),
         e.appendChild(o),
+        e.appendChild(a),
         e
       );
     })()
   ),
-    document.body.insertBefore(E, document.getElementById('app')),
+    document.body.insertBefore(w, document.getElementById('app')),
     null === (e = document.getElementById('save-btn')) ||
       void 0 === e ||
       e.addEventListener('click', () => {
         const e = b.getState();
-        g.save(e), u('Saving progress...');
+        g.save(e), m('Saving progress...');
       }),
     null === (t = document.getElementById('reset-btn')) ||
       void 0 === t ||
@@ -2050,7 +2076,7 @@ document.addEventListener('DOMContentLoaded', () => {
           () => {
             g.remove(),
               b.clearCanvas(),
-              u('The saved layout has been successfully reset.');
+              m('The saved layout has been successfully reset.');
           },
           () => {
             console.log('Layout reset canceled.');
@@ -2060,7 +2086,7 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (n = document.getElementById('export-html-btn')) ||
       void 0 === n ||
       n.addEventListener('click', () => {
-        const e = new h(new b()),
+        const e = new u(new b()),
           t = e.generateHTML(),
           n = e.generateCSS();
         console.log('this is html', t);
@@ -2106,23 +2132,23 @@ document.addEventListener('DOMContentLoaded', () => {
           (c.innerHTML = s),
           l.appendChild(d),
           l.appendChild(c);
-        const m = document.createElement('div');
-        m.classList.add('modal-section');
+        const h = document.createElement('div');
+        h.classList.add('modal-section');
         const p = document.createElement('h2');
         p.textContent = 'CSS';
-        const u = document.createElement('div');
-        u.classList.add('code-block'),
-          u.setAttribute('contenteditable', 'true'),
-          (u.innerHTML = i),
-          m.appendChild(p),
-          m.appendChild(u);
+        const m = document.createElement('div');
+        m.classList.add('code-block'),
+          m.setAttribute('contenteditable', 'true'),
+          (m.innerHTML = i),
+          h.appendChild(p),
+          h.appendChild(m);
         const g = document.createElement('div');
         g.classList.add('button-wrapper');
-        const y = document.createElement('button');
-        (y.textContent = 'Export to ZIP'),
-          y.classList.add('export-btn'),
-          y.addEventListener('click', () => {
-            const e = w([
+        const v = document.createElement('button');
+        (v.textContent = 'Export to ZIP'),
+          v.classList.add('export-btn'),
+          v.addEventListener('click', () => {
+            const e = C([
                 { name: 'index.html', content: t },
                 { name: 'styles.css', content: n },
               ]),
@@ -2133,8 +2159,8 @@ document.addEventListener('DOMContentLoaded', () => {
               URL.revokeObjectURL(s.href);
           }),
           a.appendChild(l),
-          a.appendChild(m),
-          a.appendChild(y),
+          a.appendChild(h),
+          a.appendChild(v),
           g.appendChild(a),
           o.appendChild(g),
           document.body.appendChild(o),
@@ -2219,17 +2245,17 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (i = document.getElementById('preview-desktop')) ||
       void 0 === i ||
       i.addEventListener('click', () => {
-        v.setPreviewMode('desktop');
+        y.setPreviewMode('desktop');
       }),
     null === (o = document.getElementById('preview-tablet')) ||
       void 0 === o ||
       o.addEventListener('click', () => {
-        v.setPreviewMode('tablet');
+        y.setPreviewMode('tablet');
       }),
     null === (a = document.getElementById('preview-mobile')) ||
       void 0 === a ||
       a.addEventListener('click', () => {
-        v.setPreviewMode('mobile');
+        y.setPreviewMode('mobile');
       }),
     null === (r = document.getElementById('undo-btn')) ||
       void 0 === r ||

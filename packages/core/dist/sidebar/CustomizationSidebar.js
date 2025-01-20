@@ -1,6 +1,6 @@
-import { Canvas } from '../canvas/Canvas.js.js.js.js.js.js';
-import { debounce } from '../utils/utilityFunctions.js.js.js.js.js.js';
-import LayersViewController from './LayerViewController.js.js.js.js.js.js';
+import { Canvas } from '../canvas/Canvas.js.js.js.js.js.js.js';
+import { debounce } from '../utils/utilityFunctions.js.js.js.js.js.js.js';
+import LayersViewController from './LayerViewController.js.js.js.js.js.js.js';
 export class CustomizationSidebar {
   static init() {
     this.sidebarElement = document.getElementById('customization');
