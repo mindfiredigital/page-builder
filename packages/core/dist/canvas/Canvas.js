@@ -1,7 +1,7 @@
-import { DragDropManager } from './DragDropManager.js.js.js.js.js.js.js';
-import { DeleteElementHandler } from './DeleteElement.js.js.js.js.js.js.js';
-import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate.js.js.js.js.js.js.js';
-import { LandingPageTemplate } from './../templates/LandingPageTemplate.js.js.js.js.js.js.js';
+import { DragDropManager } from './DragDropManager.js.js.js.js.js.js.js.js.js.js';
+import { DeleteElementHandler } from './DeleteElement.js.js.js.js.js.js.js.js.js.js';
+import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate.js.js.js.js.js.js.js.js.js.js';
+import { LandingPageTemplate } from './../templates/LandingPageTemplate.js.js.js.js.js.js.js.js.js.js';
 import {
   ButtonComponent,
   HeaderComponent,
@@ -10,13 +10,13 @@ import {
   ContainerComponent,
   TwoColumnContainer,
   ThreeColumnContainer,
-} from '../components/index.js.js.js.js.js.js.js';
-import { HistoryManager } from '../services/HistoryManager.js.js.js.js.js.js.js';
-import { JSONStorage } from '../services/JSONStorage.js.js.js.js.js.js.js';
-import { ComponentControlsManager } from './ComponentControls.js.js.js.js.js.js.js';
-import { CustomizationSidebar } from '../sidebar/CustomizationSidebar.js.js.js.js.js.js.js';
-import { MultiColumnContainer } from '../services/MultiColumnContainer.js.js.js.js.js.js.js';
-import { GridManager } from './GridManager.js.js.js.js.js.js.js';
+} from '../components/index.js.js.js.js.js.js.js.js.js.js';
+import { HistoryManager } from '../services/HistoryManager.js.js.js.js.js.js.js.js.js.js';
+import { JSONStorage } from '../services/JSONStorage.js.js.js.js.js.js.js.js.js.js';
+import { ComponentControlsManager } from './ComponentControls.js.js.js.js.js.js.js.js.js.js';
+import { CustomizationSidebar } from '../sidebar/CustomizationSidebar.js.js.js.js.js.js.js.js.js.js';
+import { MultiColumnContainer } from '../services/MultiColumnContainer.js.js.js.js.js.js.js.js.js.js';
+import { GridManager } from './GridManager.js.js.js.js.js.js.js.js.js.js';
 export class Canvas {
   // Add getters and setters for components to make it accessible outside the canvas class
   static getComponents() {

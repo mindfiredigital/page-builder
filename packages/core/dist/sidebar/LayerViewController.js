@@ -1,5 +1,5 @@
-import { Canvas } from '../canvas/Canvas.js.js.js.js.js.js.js'; // Assuming a Canvas management class
-import { HTMLGenerator } from '../services/HTMLGenerator.js.js.js.js.js.js.js';
+import { Canvas } from '../canvas/Canvas.js.js.js.js.js.js.js.js.js.js'; // Assuming a Canvas management class
+import { HTMLGenerator } from '../services/HTMLGenerator.js.js.js.js.js.js.js.js.js.js';
 class LayersViewController {
   constructor(
     layersViewSelector = '#layers-view',

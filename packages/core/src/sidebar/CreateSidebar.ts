@@ -1,17 +1,18 @@
+import { svgs } from '../icons/svgs';
 export function createSidebar() {
   const sidebar = document.getElementById('sidebar')!;
 
   // Define your components, icons, and titles as before
   const icons: { [key: string]: string } = {
-    button: 'dist/icons/button.png',
-    header: 'dist/icons/header.png',
-    image: 'dist/icons/image.png',
-    text: 'dist/icons/text.png',
-    container: 'dist/icons/square.png',
-    twoCol: 'dist/icons/column.png',
-    threeCol: 'dist/icons/threecolumn.png',
+    button: svgs.button,
+    header: svgs.header,
+    image: svgs.image,
+    text: svgs.text,
+    container: svgs.container,
+    twoCol: svgs.twocol,
+    threeCol: svgs.threecol,
     // portfolio: 'dist/icons/portfolio.png',
-    landingpage: 'dist/icons/landingpage.png',
+    landingpage: svgs.landing,
     // link: 'dist/icons/linkIcon.png'
   };
 
@@ -66,10 +67,18 @@ export function createSidebar() {
       const customTitle = titles[componentId] || `Drag to add ${componentId}`;
       iconElement.setAttribute('title', customTitle);
 
-      const img = document.createElement('img');
-      img.src = icons[componentId];
-      img.alt = `${componentId} icon`;
-      iconElement.appendChild(img);
+      // Add SVG as innerHTML
+      if (icons[componentId]) {
+        iconElement.innerHTML = icons[componentId];
+
+        // Optionally style the SVG
+        const svgElement = iconElement.querySelector('svg');
+        if (svgElement) {
+          svgElement.classList.add('component-icon');
+        }
+      } else {
+        console.warn(`Icon not found for component: ${componentId}`);
+      }
 
       categoryMenu.appendChild(iconElement);
     });

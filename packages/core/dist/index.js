@@ -47,15 +47,15 @@ class n {
       (t.style.border = 'none'),
       (t.style.alignItems = 'center'),
       (t.style.justifyContent = 'center');
-    const i = document.createElement('div');
-    (i.style.color = '#666666'),
-      (i.style.border = 'none'),
-      (i.style.display = e ? 'none' : 'block');
-    const o = document.createElement('input');
-    (o.type = 'file'),
-      (o.accept = 'image/*'),
-      (o.style.display = 'none'),
-      o.addEventListener('change', e => n.handleFileChange(e, t, i));
+    const o = document.createElement('div');
+    (o.style.color = '#666666'),
+      (o.style.border = 'none'),
+      (o.style.display = e ? 'none' : 'block');
+    const i = document.createElement('input');
+    (i.type = 'file'),
+      (i.accept = 'image/*'),
+      (i.style.display = 'none'),
+      i.addEventListener('change', e => n.handleFileChange(e, t, o));
     const a = document.createElement('button');
     a.classList.add('upload-btn'),
       (a.innerHTML = '🖊️'),
@@ -70,7 +70,7 @@ class n {
       (a.style.top = '50%'),
       (a.style.transform = 'translate(-50%, -50%)'),
       (a.style.fontSize = '24px'),
-      a.addEventListener('click', () => o.click());
+      a.addEventListener('click', () => i.click());
     const r = document.createElement('img'),
       l = `${s}-img`;
     return (
@@ -87,8 +87,8 @@ class n {
       t.addEventListener('mouseleave', () => {
         a.style.opacity = '0';
       }),
-      t.appendChild(i),
       t.appendChild(o),
+      t.appendChild(i),
       t.appendChild(a),
       t.appendChild(r),
       t
@@ -96,41 +96,41 @@ class n {
   }
   static handleFileChange(e, t, n) {
     const s = e.target,
-      i = s.files ? s.files[0] : null;
-    if (i) {
+      o = s.files ? s.files[0] : null;
+    if (o) {
       const e = new FileReader();
       (e.onload = function () {
         const s = e.result,
-          i = t.querySelector('img');
-        i &&
-          ((i.src = s),
-          (i.style.display = 'block'),
+          o = t.querySelector('img');
+        o &&
+          ((o.src = s),
+          (o.style.display = 'block'),
           (n.style.display = 'none'),
           (t.style.backgroundColor = 'transparent'));
       }),
-        e.readAsDataURL(i);
+        e.readAsDataURL(o);
     }
   }
   static restoreImageUpload(e, t) {
     const n = e.querySelector('div:not(.upload-btn)'),
       s = e.querySelector('input[type="file"]'),
-      i = e.querySelector('.upload-btn'),
-      o = e.querySelector('img');
+      o = e.querySelector('.upload-btn'),
+      i = e.querySelector('img');
     s.addEventListener('change', t => this.handleFileChange(t, e, n)),
-      i.addEventListener('click', () => s.click()),
+      o.addEventListener('click', () => s.click()),
       t
-        ? ((o.src = t),
-          (o.style.display = 'block'),
+        ? ((i.src = t),
+          (i.style.display = 'block'),
           (n.style.display = 'none'),
           (e.style.backgroundColor = 'transparent'))
-        : ((o.style.display = 'none'),
+        : ((i.style.display = 'none'),
           (n.style.display = 'block'),
           (e.style.backgroundColor = '#f0f0f0')),
       e.addEventListener('mouseenter', () => {
-        i.style.opacity = '1';
+        o.style.opacity = '1';
       }),
       e.addEventListener('mouseleave', () => {
-        i.style.opacity = '0';
+        o.style.opacity = '0';
       });
   }
 }
@@ -148,13 +148,13 @@ class s {
     );
   }
 }
-class i {
+class o {
   create(e = 1, t = 'Header') {
     const n = document.createElement(`h${e}`);
     return (n.innerText = t), n.classList.add('header-component'), n;
   }
 }
-class o {
+class i {
   constructor() {
     (this.MINIMUM_SIZE = 20),
       (this.originalWidth = 0),
@@ -202,7 +202,7 @@ class o {
         window.removeEventListener('mousemove', this.resize),
           window.removeEventListener('mouseup', this.stopResize),
           (this.currentResizer = null),
-          b.historyManager.captureState();
+          w.historyManager.captureState();
       }),
       (this.element = document.createElement('div')),
       this.element.classList.add('container-component'),
@@ -257,13 +257,13 @@ class o {
     let t = !1,
       n = 0,
       s = 0,
-      i = 0,
-      o = 0;
+      o = 0,
+      i = 0;
     const a = a => {
         if (!t) return;
         const r = a.clientX - n,
           l = a.clientY - s;
-        e.style.transform = `translate(${i + r}px, ${o + l}px)`;
+        e.style.transform = `translate(${o + r}px, ${i + l}px)`;
       },
       r = () => {
         (t = !1),
@@ -277,8 +277,8 @@ class o {
         (n = l.clientX),
         (s = l.clientY);
       const d = e.getBoundingClientRect();
-      (i = d.left),
-        (o = d.top),
+      (o = d.left),
+        (i = d.top),
         window.addEventListener('mousemove', a),
         window.addEventListener('mouseup', r);
     });
@@ -291,22 +291,22 @@ class o {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const s = b.createComponent(n);
+    const s = w.createComponent(n);
     if (!s) return;
-    const i = this.element.classList[2],
-      o = b.generateUniqueClass(n, !0, i);
-    s.classList.add(o);
+    const o = this.element.classList[2],
+      i = w.generateUniqueClass(n, !0, o);
+    s.classList.add(i);
     const a = document.createElement('span');
     (a.className = 'component-label'),
-      (a.textContent = o),
-      (s.id = o),
+      (a.textContent = i),
+      (s.id = i),
       (a.style.display = 'none'),
       s.appendChild(a),
       s.addEventListener('mouseenter', e => this.showLabel(e, s)),
       s.addEventListener('mouseleave', e => this.hideLabel(e, s)),
       this.element.appendChild(s),
       this.makeDraggable(s),
-      b.historyManager.captureState();
+      w.historyManager.captureState();
   }
   showLabel(e, t) {
     e.stopPropagation();
@@ -344,18 +344,18 @@ class o {
     t && t.remove();
     const n = document.createElement('div');
     n.classList.add('resizers');
-    const s = new o();
+    const s = new i();
     (s.element = e), (s.resizers = n), s.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e) {
-    o.restoreResizer(e);
-    const t = new o();
+    i.restoreResizer(e);
+    const t = new i();
     t.element = e;
     e.querySelectorAll('.editable-component').forEach(e => {
       var s;
       if (
-        (b.controlsManager.addControlButtons(e),
-        b.addDraggableListeners(e),
+        (w.controlsManager.addControlButtons(e),
+        w.addDraggableListeners(e),
         e.addEventListener('mouseenter', n => t.showLabel(n, e)),
         e.addEventListener('mouseleave', n => t.hideLabel(n, e)),
         e.classList.contains('image-component'))
@@ -403,28 +403,28 @@ class a {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const s = b.createComponent(n);
+    const s = w.createComponent(n);
     if (!s) return;
-    const i = e.target;
-    if (i && i.classList.contains('column')) {
-      i.appendChild(s);
-      const e = `${this.element.id}-${`c${Array.from(i.parentElement.children).indexOf(i) + 1}`}`;
-      (i.id = e), i.classList.add(e);
-      let t = i.querySelector('.column-label');
+    const o = e.target;
+    if (o && o.classList.contains('column')) {
+      o.appendChild(s);
+      const e = `${this.element.id}-${`c${Array.from(o.parentElement.children).indexOf(o) + 1}`}`;
+      (o.id = e), o.classList.add(e);
+      let t = o.querySelector('.column-label');
       t ||
         ((t = document.createElement('span')),
         (t.className = 'column-label'),
-        i.appendChild(t)),
+        o.appendChild(t)),
         (t.textContent = e);
-      const o = b.generateUniqueClass(n, !0, e);
-      s.classList.add(o), (s.id = o);
+      const i = w.generateUniqueClass(n, !0, e);
+      s.classList.add(i), (s.id = i);
       let a = s.querySelector('.component-label');
       a ||
         ((a = document.createElement('span')),
         (a.className = 'component-label'),
         s.appendChild(a)),
-        (a.textContent = o),
-        b.historyManager.captureState();
+        (a.textContent = i),
+        w.historyManager.captureState();
     }
   }
   addStyles(e) {
@@ -439,8 +439,8 @@ class a {
     e.querySelectorAll('.editable-component').forEach(e => {
       var t;
       if (
-        (b.controlsManager.addControlButtons(e),
-        b.addDraggableListeners(e),
+        (w.controlsManager.addControlButtons(e),
+        w.addDraggableListeners(e),
         e.classList.contains('image-component'))
       ) {
         const s =
@@ -468,8 +468,8 @@ class d {
         let t,
           n,
           s,
-          i,
-          o = !1,
+          o,
+          i = !1,
           a = !1,
           r = 0,
           l = 0;
@@ -477,7 +477,7 @@ class d {
           (e.style.cursor = 'move'),
           e.addEventListener('mousedown', s => {
             a ||
-              ((o = !0),
+              ((i = !0),
               (t = s.clientX),
               (n = s.clientY),
               (r = parseFloat(e.getAttribute('data-x') || '0')),
@@ -486,24 +486,24 @@ class d {
               document.addEventListener('mouseup', c));
           });
         const d = s => {
-            if (o) {
-              const i = s.clientX - t,
-                o = s.clientY - n,
-                a = r + i,
-                d = l + o;
+            if (i) {
+              const o = s.clientX - t,
+                i = s.clientY - n,
+                a = r + o,
+                d = l + i;
               (e.style.transform = `translate(${a}px, ${d}px)`),
                 e.setAttribute('data-x', a.toString()),
                 e.setAttribute('data-y', d.toString());
             }
           },
           c = () => {
-            (o = !1),
+            (i = !1),
               document.removeEventListener('mousemove', d),
               document.removeEventListener('mouseup', c);
           };
         if (e.classList.contains('container')) {
-          const o = document.createElement('div');
-          Object.assign(o.style, {
+          const i = document.createElement('div');
+          Object.assign(i.style, {
             width: '10px',
             height: '10px',
             background: 'blue',
@@ -512,21 +512,21 @@ class d {
             bottom: '0',
             cursor: 'se-resize',
           }),
-            e.appendChild(o),
-            o.addEventListener('mousedown', o => {
-              o.stopPropagation(),
+            e.appendChild(i),
+            i.addEventListener('mousedown', i => {
+              i.stopPropagation(),
                 (a = !0),
                 (s = e.offsetWidth),
-                (i = e.offsetHeight),
-                (t = o.clientX),
-                (n = o.clientY),
+                (o = e.offsetHeight),
+                (t = i.clientX),
+                (n = i.clientY),
                 document.addEventListener('mousemove', r),
                 document.addEventListener('mouseup', l);
             });
-          const r = o => {
+          const r = i => {
               if (a) {
-                const a = s + (o.clientX - t),
-                  r = i + (o.clientY - n);
+                const a = s + (i.clientX - t),
+                  r = o + (i.clientY - n);
                 (e.style.width = `${a}px`), (e.style.height = `${r}px`);
               }
             },
@@ -537,7 +537,7 @@ class d {
             };
         }
       },
-      n = new o().create();
+      n = new i().create();
     n.classList.add('container'),
       Object.assign(n.style, {
         width: '100%',
@@ -547,23 +547,23 @@ class d {
         fontFamily: "'Roboto', sans-serif",
       }),
       e(n);
-    const i = new o().create();
-    i.classList.add('container'),
-      Object.assign(i.style, {
+    const o = new i().create();
+    o.classList.add('container'),
+      Object.assign(o.style, {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '40px',
         width: '100%',
       }),
-      e(i);
+      e(o);
     const a = new t('MyBrand').create();
     Object.assign(a.style, {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333',
     });
-    const r = new o().create();
+    const r = new i().create();
     r.classList.add('container'),
       Object.assign(r.style, { display: 'flex', gap: '20px' }),
       e(r),
@@ -576,9 +576,9 @@ class d {
         }),
           r.appendChild(n);
       }),
-      i.appendChild(a),
-      i.appendChild(r);
-    const l = new o().create();
+      o.appendChild(a),
+      o.appendChild(r);
+    const l = new i().create();
     l.classList.add('container'),
       Object.assign(l.style, {
         textAlign: 'center',
@@ -605,8 +605,8 @@ class d {
       color: '#666',
       marginBottom: '30px',
     });
-    const h = new s().create();
-    Object.assign(h.style, {
+    const p = new s().create();
+    Object.assign(p.style, {
       padding: '12px 24px',
       fontSize: '16px',
       color: '#fff',
@@ -616,31 +616,31 @@ class d {
       cursor: 'pointer',
       transition: 'background-color 0.3s',
     }),
-      h.addEventListener('mouseenter', () => {
-        h.style.backgroundColor = '#0056b3';
+      p.addEventListener('mouseenter', () => {
+        p.style.backgroundColor = '#0056b3';
       }),
-      h.addEventListener('mouseleave', () => {
-        h.style.backgroundColor = '#007bff';
+      p.addEventListener('mouseleave', () => {
+        p.style.backgroundColor = '#007bff';
       }),
       l.appendChild(d),
       l.appendChild(c),
-      l.appendChild(h);
-    const p = new o().create();
-    p.classList.add('container'),
-      Object.assign(p.style, {
+      l.appendChild(p);
+    const h = new i().create();
+    h.classList.add('container'),
+      Object.assign(h.style, {
         textAlign: 'center',
         padding: '20px',
         marginTop: '40px',
         borderTop: '1px solid #ddd',
       }),
-      e(p);
+      e(h);
     const m = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
       Object.assign(m.style, { fontSize: '14px', color: '#999' }),
-      p.appendChild(m),
-      n.appendChild(i),
+      h.appendChild(m),
+      n.appendChild(o),
       n.appendChild(l),
-      n.appendChild(p),
+      n.appendChild(h),
       n
     );
   }
@@ -650,7 +650,7 @@ class c {
     (this.undoStack = []), (this.redoStack = []), (this.canvas = e);
   }
   captureState() {
-    const e = b.getState();
+    const e = w.getState();
     if (e.length > 0) {
       const t = this.undoStack[this.undoStack.length - 1];
       JSON.stringify(e) !== JSON.stringify(t) &&
@@ -664,22 +664,22 @@ class c {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
       const t = this.undoStack[this.undoStack.length - 1];
-      b.restoreState(t);
+      w.restoreState(t);
     } else if (1 === this.undoStack.length) {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
-      const t = b.jsonStorage.load();
-      t ? b.restoreState(t) : b.restoreState([]);
+      const t = w.jsonStorage.load();
+      t ? w.restoreState(t) : w.restoreState([]);
     } else console.warn('No more actions to undo.');
   }
   redo() {
     if (this.redoStack.length > 0) {
       const e = this.redoStack.pop();
-      this.undoStack.push(e), b.restoreState(e);
+      this.undoStack.push(e), w.restoreState(e);
     } else console.warn('No more actions to redo.');
   }
 }
-class h {
+class p {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -691,7 +691,7 @@ class h {
     localStorage.removeItem('pageLayout');
   }
 }
-class p {
+class h {
   constructor(e) {
     (this.icons = { delete: 'dist/icons/delete.png' }), (this.canvas = e);
   }
@@ -767,20 +767,20 @@ class u {
         'drop-preview',
       ];
     Array.from(e.children).forEach(s => {
-      const i = s;
+      const o = s;
       t.forEach(e => {
-        i.removeAttribute(e);
+        o.removeAttribute(e);
       }),
         n.forEach(e => {
-          i.classList.remove(e);
+          o.classList.remove(e);
         });
       e.querySelectorAll('input').forEach(e => e.remove());
-      i
+      o
         .querySelectorAll(
           '.component-controls, .delete-icon, .component-label,.column-label, .resizers, .resizer, .drop-preview, .upload-btn, component-resizer'
         )
         .forEach(e => e.remove()),
-        i.children.length > 0 && this.cleanupElements(i);
+        o.children.length > 0 && this.cleanupElements(o);
     });
   }
   generateCSS() {
@@ -794,7 +794,7 @@ class u {
       `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n      .home {\n          display: flex;\n          justify-content: center;\n          align-items: center;\n          width: 100%;\n          min-height:100vh;\n          background-color: ${t};\n          margin: 0;\n      }\n      `
     );
     const s = e.querySelectorAll('*'),
-      i = [
+      o = [
         'position',
         'top',
         'left',
@@ -827,7 +827,7 @@ class u {
         'line-height',
         'font-family',
       ],
-      o = [
+      i = [
         'component-controls',
         'delete-icon',
         'component-label',
@@ -837,10 +837,10 @@ class u {
       ];
     return (
       s.forEach(e => {
-        if (o.some(t => e.classList.contains(t))) return;
+        if (i.some(t => e.classList.contains(t))) return;
         const t = window.getComputedStyle(e),
           s = [];
-        i.forEach(e => {
+        o.forEach(e => {
           const n = t.getPropertyValue(e);
           if (n && 'none' !== n && '' !== n) {
             if ('resize' === e) return;
@@ -886,27 +886,27 @@ class g {
         (g.canvasRoot = document.body));
   }
   static buildLayerHierarchyFromDOM(e) {
-    const t = new u(new b()).generateHTML(),
+    const t = new u(new w()).generateHTML(),
       n = new DOMParser().parseFromString(t, 'text/html'),
       s = (e, t = 0) => {
         var n;
-        const i = e;
-        if (!i.id) return null;
-        const o = {
-          id: i.id,
+        const o = e;
+        if (!o.id) return null;
+        const i = {
+          id: o.id,
           isVisible:
             'none' !==
-            (null === (n = i.style) || void 0 === n ? void 0 : n.display),
-          isLocked: 'true' === i.getAttribute('data-locked'),
+            (null === (n = o.style) || void 0 === n ? void 0 : n.display),
+          isLocked: 'true' === o.getAttribute('data-locked'),
           depth: t,
           children: [],
         };
         return (
           Array.from(e.children).forEach(e => {
             const n = s(e, t + 1);
-            n && o.children.push(n);
+            n && i.children.push(n);
           }),
-          o
+          i
         );
       };
     return Array.from(n.body.children)
@@ -930,21 +930,21 @@ class g {
         ((s.style.paddingLeft = 1 * n + 'px'),
         t.children && t.children.length > 0)
       ) {
-        const i = document.createElement('span');
-        (i.className = 'layer-expand-toggle'), (i.textContent = '▶');
-        const o = document.createElement('ul');
-        (o.className = 'layer-children'),
-          (o.style.display = 'none'),
-          (o.style.paddingLeft = '0'),
-          this.renderLayerItems(o, t.children, n + 1),
-          i.addEventListener('click', () => {
-            'block' === o.style.display
-              ? ((o.style.display = 'none'), (i.textContent = '▶'))
-              : ((o.style.display = 'block'), (i.textContent = '▼'));
+        const o = document.createElement('span');
+        (o.className = 'layer-expand-toggle'), (o.textContent = '▶');
+        const i = document.createElement('ul');
+        (i.className = 'layer-children'),
+          (i.style.display = 'none'),
+          (i.style.paddingLeft = '0'),
+          this.renderLayerItems(i, t.children, n + 1),
+          o.addEventListener('click', () => {
+            'block' === i.style.display
+              ? ((i.style.display = 'none'), (o.textContent = '▶'))
+              : ((i.style.display = 'block'), (o.textContent = '▼'));
           }),
-          s.appendChild(i),
+          s.appendChild(o),
           e.appendChild(s),
-          e.appendChild(o);
+          e.appendChild(i);
       } else e.appendChild(s);
     });
   }
@@ -959,18 +959,18 @@ class g {
     (s.className = 'layer-name'),
       (s.textContent = `${e.id}`),
       s.addEventListener('click', () => this.selectLayer(e));
-    const i = document.createElement('span');
+    const o = document.createElement('span');
     return (
-      (i.className = 'layer-lock'),
-      (i.innerHTML = e.isLocked ? '🔒' : '🔓'),
-      i.addEventListener('click', () => this.toggleLayerLock(e)),
+      (o.className = 'layer-lock'),
+      (o.innerHTML = e.isLocked ? '🔒' : '🔓'),
+      o.addEventListener('click', () => this.toggleLayerLock(e)),
       (t.draggable = !0),
       t.addEventListener('dragstart', t => this.handleDragStart(t, e)),
       t.addEventListener('dragover', this.handleDragOver),
       t.addEventListener('drop', t => this.handleDrop(t, e)),
       t.appendChild(n),
       t.appendChild(s),
-      t.appendChild(i),
+      t.appendChild(o),
       t
     );
   }
@@ -1014,8 +1014,8 @@ class g {
           ? void 0
           : n.getData('text/plain')) || '-1'
       ),
-      i = parseInt(t.id || '-1');
-    b.reorderComponent(s, i), this.updateLayersView();
+      o = parseInt(t.id || '-1');
+    w.reorderComponent(s, o), this.updateLayersView();
   }
   static switchToCustomizeMode(e) {
     const t = document.getElementById('customize-sidebar');
@@ -1030,7 +1030,7 @@ class g {
   }
 }
 (g.layersView = null), (g.canvasRoot = null), (g.draggedItem = null);
-class v {
+class y {
   static init() {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1071,26 +1071,26 @@ class v {
       t = document.getElementById('layers-tab'),
       n = document.getElementById('layers-view'),
       s = document.getElementById('controls'),
-      i = document.getElementById('component-name');
+      o = document.getElementById('component-name');
     e.classList.add('active'),
       t.classList.remove('active'),
       n.classList.add('hidden'),
       s.classList.remove('hidden'),
       (s.style.display = 'block'),
       (n.style.display = 'none'),
-      (i.style.display = 'block');
+      (o.style.display = 'block');
   }
   static switchToLayersMode() {
     const e = document.getElementById('customize-tab'),
       t = document.getElementById('layers-tab'),
       n = document.getElementById('layers-view'),
       s = document.getElementById('controls'),
-      i = document.getElementById('component-name');
+      o = document.getElementById('component-name');
     t.classList.add('active'),
       e.classList.remove('active'),
       (s.style.display = 'none'),
       (n.style.display = 'block'),
-      (i.style.display = 'none'),
+      (o.style.display = 'none'),
       g.updateLayersView();
   }
   static updateLayersView() {
@@ -1100,19 +1100,19 @@ class v {
     const t = document.getElementById('customize-tab'),
       n = document.getElementById('layers-tab'),
       s = document.getElementById('layers-view'),
-      i = document.getElementById('controls');
+      o = document.getElementById('controls');
     t.classList.add('active'),
       n.classList.remove('active'),
       s.classList.add('hidden'),
-      i.classList.remove('hidden');
-    const o = document.getElementById(e);
-    if ((console.log(`Showing sidebar for: ${e}`), !o))
+      o.classList.remove('hidden');
+    const i = document.getElementById(e);
+    if ((console.log(`Showing sidebar for: ${e}`), !i))
       return void console.error(`Component with ID "${e}" not found.`);
     const a = 'canvas' === e.toLowerCase();
     (this.sidebarElement.style.display = 'block'),
       (this.controlsContainer.innerHTML = ''),
       (this.componentNameHeader.textContent = `Component: ${e}`);
-    const r = getComputedStyle(o);
+    const r = getComputedStyle(i);
     this.createSelectControl('Display', 'display', r.display || 'block', [
       'block',
       'inline',
@@ -1122,12 +1122,12 @@ class v {
       'none',
     ]),
       a ||
-        (this.createControl('Width', 'width', 'number', o.offsetWidth, {
+        (this.createControl('Width', 'width', 'number', i.offsetWidth, {
           min: 0,
           max: 1e3,
           unit: 'px',
         }),
-        this.createControl('Height', 'height', 'number', o.offsetHeight, {
+        this.createControl('Height', 'height', 'number', i.offsetHeight, {
           min: 0,
           max: 1e3,
           unit: 'px',
@@ -1204,9 +1204,9 @@ class v {
         'color',
         r.borderColor || '#000000'
       );
-    const l = v.rgbToHex(r.backgroundColor),
+    const l = y.rgbToHex(r.backgroundColor),
       d = document.getElementById('color');
-    d && (d.value = l), this.addListeners(o);
+    d && (d.value = l), this.addListeners(i);
   }
   static hideSidebar() {
     this.sidebarElement && (this.sidebarElement.style.display = 'none');
@@ -1216,22 +1216,22 @@ class v {
     if (!t) return e;
     return `#${((1 << 24) | (parseInt(t[1], 10) << 16) | (parseInt(t[2], 10) << 8) | parseInt(t[3], 10)).toString(16).slice(1).toUpperCase()}`;
   }
-  static createControl(e, t, n, s, i = {}) {
-    const o = document.createElement('div');
-    o.classList.add('control-wrapper');
-    if ('number' === n && i.unit) {
-      const a = i.unit;
-      o.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${s}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === a ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === a ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === a ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === a ? 'selected' : ''}>%</option>\n                  </select>\n              `;
+  static createControl(e, t, n, s, o = {}) {
+    const i = document.createElement('div');
+    i.classList.add('control-wrapper');
+    if ('number' === n && o.unit) {
+      const a = o.unit;
+      i.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${s}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === a ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === a ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === a ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === a ? 'selected' : ''}>%</option>\n                  </select>\n              `;
     } else
-      o.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${s}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${s}">\n        `;
-    const a = o.querySelector('input'),
-      r = o.querySelector(`#${t}-unit`);
+      i.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${s}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${s}">\n        `;
+    const a = i.querySelector('input'),
+      r = i.querySelector(`#${t}-unit`);
     a &&
-      Object.keys(i).forEach(e => {
-        a.setAttribute(e, i[e].toString());
+      Object.keys(o).forEach(e => {
+        a.setAttribute(e, o[e].toString());
       });
-    const l = o.querySelector('input[type="color"]'),
-      d = o.querySelector('#color-value');
+    const l = i.querySelector('input[type="color"]'),
+      d = i.querySelector('#color-value');
     l &&
       l.addEventListener('input', () => {
         d && (d.value = l.value);
@@ -1240,7 +1240,7 @@ class v {
         d.addEventListener('input', () => {
           l && (l.value = d.value);
         }),
-      this.controlsContainer.appendChild(o),
+      this.controlsContainer.appendChild(i),
       r &&
         r.addEventListener('change', () => {
           const e = r.value,
@@ -1249,18 +1249,18 @@ class v {
         });
   }
   static createSelectControl(e, t, n, s) {
-    const i = document.createElement('div');
-    i.classList.add('control-wrapper');
-    const o = s
+    const o = document.createElement('div');
+    o.classList.add('control-wrapper');
+    const i = s
       .map(
         e => `<option value="${e}" ${e === n ? 'selected' : ''}>${e}</option>`
       )
       .join('');
-    (i.innerHTML = `\n              <label for="${t}">${e}:</label>\n              <select id="${t}">${o}</select>\n          `),
-      this.controlsContainer.appendChild(i);
+    (o.innerHTML = `\n              <label for="${t}">${e}:</label>\n              <select id="${t}">${i}</select>\n          `),
+      this.controlsContainer.appendChild(o);
   }
   static addListeners(e) {
-    var t, n, s, i, o, a, r, l, d, c, h, p, m;
+    var t, n, s, o, i, a, r, l, d, c, p, h, m;
     const u = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -1283,7 +1283,7 @@ class v {
         n && clearTimeout(n), (n = setTimeout(() => e(...s), t));
       };
     })(() => {
-      b.historyManager.captureState();
+      w.historyManager.captureState();
     }, 300);
     null === (t = u.width) ||
       void 0 === t ||
@@ -1304,15 +1304,15 @@ class v {
           const t = document.querySelector('#color-value');
           t && (t.textContent = u.color.value), g();
         }),
-      null === (i = u.margin) ||
-        void 0 === i ||
-        i.addEventListener('input', () => {
+      null === (o = u.margin) ||
+        void 0 === o ||
+        o.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
           (e.style.margin = `${u.margin.value}${t}`), g();
         }),
-      null === (o = u.padding) ||
-        void 0 === o ||
-        o.addEventListener('input', () => {
+      null === (i = u.padding) ||
+        void 0 === i ||
+        i.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
           (e.style.padding = `${u.padding.value}${t}`), g();
         }),
@@ -1343,14 +1343,14 @@ class v {
         c.addEventListener('change', () => {
           (e.style.borderStyle = u.borderStyle.value), g();
         }),
-      null === (h = u.borderColor) ||
-        void 0 === h ||
-        h.addEventListener('input', () => {
+      null === (p = u.borderColor) ||
+        void 0 === p ||
+        p.addEventListener('input', () => {
           (e.style.borderColor = u.borderColor.value), g();
         }),
-      null === (p = u.display) ||
-        void 0 === p ||
-        p.addEventListener('change', () => {
+      null === (h = u.display) ||
+        void 0 === h ||
+        h.addEventListener('change', () => {
           (e.style.display = u.display.value), g();
         }),
       null === (m = u.fontFamily) ||
@@ -1363,7 +1363,7 @@ class v {
     return this.layersViewController;
   }
 }
-class y {
+class v {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -1381,9 +1381,9 @@ class y {
       });
   }
   showGridCornerHighlight(e, t, n) {
-    const { gridX: s, gridY: i } = this.mousePositionAtGridCorner(e, n);
+    const { gridX: s, gridY: o } = this.mousePositionAtGridCorner(e, n);
     (t.style.left = `${s}px`),
-      (t.style.top = `${i}px`),
+      (t.style.top = `${o}px`),
       (t.style.width = '20px'),
       (t.style.height = '20px'),
       t.classList.add('visible');
@@ -1391,53 +1391,53 @@ class y {
   mousePositionAtGridCorner(e, t) {
     const n = t.getBoundingClientRect(),
       s = e.clientX - n.left,
-      i = e.clientY - n.top;
-    return { gridX: 20 * Math.floor(s / 20), gridY: 20 * Math.floor(i / 20) };
+      o = e.clientY - n.top;
+    return { gridX: 20 * Math.floor(s / 20), gridY: 20 * Math.floor(o / 20) };
   }
   getCellSize() {
     return this.cellSize;
   }
 }
-class b {
+class w {
   static getComponents() {
-    return b.components;
+    return w.components;
   }
   static setComponents(e) {
-    b.components = e;
+    w.components = e;
   }
   static init() {
-    (b.canvasElement = document.getElementById('canvas')),
-      (b.sidebarElement = document.getElementById('sidebar')),
-      b.canvasElement.addEventListener('drop', b.onDrop.bind(b)),
-      b.canvasElement.addEventListener('dragover', e => e.preventDefault()),
-      b.canvasElement.addEventListener('click', e => {
+    (w.canvasElement = document.getElementById('canvas')),
+      (w.sidebarElement = document.getElementById('sidebar')),
+      w.canvasElement.addEventListener('drop', w.onDrop.bind(w)),
+      w.canvasElement.addEventListener('dragover', e => e.preventDefault()),
+      w.canvasElement.addEventListener('click', e => {
         const t = e.target;
         console.log('this is my component,', t),
           console.log('this is component id ', t.id),
-          t && v.showSidebar(t.id);
+          t && y.showSidebar(t.id);
       }),
-      (b.canvasElement.style.position = 'relative'),
-      (b.historyManager = new c(b.canvasElement)),
-      (b.jsonStorage = new h()),
-      (b.controlsManager = new p(b)),
-      (b.gridManager = new y()),
-      b.gridManager.initializeDropPreview(b.canvasElement);
-    new e(b.canvasElement, b.sidebarElement).enable();
-    const t = b.jsonStorage.load();
-    t && b.restoreState(t);
+      (w.canvasElement.style.position = 'relative'),
+      (w.historyManager = new c(w.canvasElement)),
+      (w.jsonStorage = new p()),
+      (w.controlsManager = new h(w)),
+      (w.gridManager = new v()),
+      w.gridManager.initializeDropPreview(w.canvasElement);
+    new e(w.canvasElement, w.sidebarElement).enable();
+    const t = w.jsonStorage.load();
+    t && w.restoreState(t);
   }
   static clearCanvas() {
-    (b.canvasElement.innerHTML = ''),
-      (b.components = []),
-      b.historyManager.captureState(),
-      b.gridManager.initializeDropPreview(b.canvasElement);
+    (w.canvasElement.innerHTML = ''),
+      (w.components = []),
+      w.historyManager.captureState(),
+      w.gridManager.initializeDropPreview(w.canvasElement);
   }
   static getState() {
-    return b.components.map(e => {
+    return w.components.map(e => {
       const t = e.classList[0].split(/\d/)[0].replace('-component', ''),
         n = e.querySelector('img') ? e.querySelector('img').src : null,
         s = window.getComputedStyle(e),
-        i = {};
+        o = {};
       [
         'position',
         'top',
@@ -1470,14 +1470,14 @@ class b {
         'text-align',
         'line-height',
       ].forEach(e => {
-        i[e] = s.getPropertyValue(e);
+        o[e] = s.getPropertyValue(e);
       });
-      const o = {};
+      const i = {};
       return (
         Array.from(e.attributes)
           .filter(e => e.name.startsWith('data-'))
           .forEach(e => {
-            o[e.name] = e.value;
+            i[e.name] = e.value;
           }),
         {
           id: e.id,
@@ -1485,20 +1485,20 @@ class b {
           content: e.innerHTML,
           position: { x: e.offsetLeft, y: e.offsetTop },
           dimensions: { width: e.offsetWidth, height: e.offsetHeight },
-          style: i,
+          style: o,
           inlineStyle: e.getAttribute('style') || '',
           classes: Array.from(e.classList),
-          dataAttributes: o,
+          dataAttributes: i,
           imageSrc: n,
         }
       );
     });
   }
   static restoreState(e) {
-    (b.canvasElement.innerHTML = ''),
-      (b.components = []),
+    (w.canvasElement.innerHTML = ''),
+      (w.components = []),
       e.forEach(e => {
-        const t = b.createComponent(e.type);
+        const t = w.createComponent(e.type);
         t &&
           ((t.innerHTML = e.content),
           (t.className = ''),
@@ -1514,17 +1514,17 @@ class b {
             Object.entries(e.dataAttributes).forEach(([e, n]) => {
               t.setAttribute(e, n);
             }),
-          b.controlsManager.addControlButtons(t),
-          b.addDraggableListeners(t),
-          t.classList.contains('container-component') && o.restoreContainer(t),
+          w.controlsManager.addControlButtons(t),
+          w.addDraggableListeners(t),
+          t.classList.contains('container-component') && i.restoreContainer(t),
           (t.classList.contains('twoCol-component') ||
             t.classList.contains('threeCol-component')) &&
             a.restoreColumn(t),
           'image' === e.type && n.restoreImageUpload(t, e.imageSrc),
-          b.canvasElement.appendChild(t),
-          b.components.push(t));
+          w.canvasElement.appendChild(t),
+          w.components.push(t));
       }),
-      b.gridManager.initializeDropPreview(b.canvasElement);
+      w.gridManager.initializeDropPreview(w.canvasElement);
   }
   static onDrop(e) {
     var t;
@@ -1537,30 +1537,30 @@ class b {
         ? void 0
         : t.getData('component-type');
     if ((console.log(`Dropped component type: ${n}`), !n)) return;
-    const { gridX: s, gridY: i } = this.gridManager.mousePositionAtGridCorner(
+    const { gridX: s, gridY: o } = this.gridManager.mousePositionAtGridCorner(
         e,
-        b.canvasElement
+        w.canvasElement
       ),
-      o = b.createComponent(n);
-    if (o) {
-      const t = b.generateUniqueClass(n);
-      (o.id = t),
-        o.classList.add(t),
-        (o.style.position = 'absolute'),
+      i = w.createComponent(n);
+    if (i) {
+      const t = w.generateUniqueClass(n);
+      (i.id = t),
+        i.classList.add(t),
+        (i.style.position = 'absolute'),
         'container' === n || 'twoCol' === n || 'threeCol' === n
-          ? (o.style.top = `${e.offsetY}px`)
-          : ((o.style.position = 'absolute'),
-            (o.style.left = `${s}px`),
-            (o.style.top = `${i}px`));
+          ? (i.style.top = `${e.offsetY}px`)
+          : ((i.style.position = 'absolute'),
+            (i.style.left = `${s}px`),
+            (i.style.top = `${o}px`));
       const a = document.createElement('span');
       (a.className = 'component-label'),
         (a.textContent = t),
-        o.appendChild(a),
-        b.components.push(o),
-        b.canvasElement.appendChild(o),
-        b.addDraggableListeners(o),
-        v.updateLayersView(),
-        b.historyManager.captureState();
+        i.appendChild(a),
+        w.components.push(i),
+        w.canvasElement.appendChild(i),
+        w.addDraggableListeners(i),
+        y.updateLayersView(),
+        w.historyManager.captureState();
     }
   }
   static reorderComponent(e, t) {
@@ -1582,50 +1582,50 @@ class b {
       this.historyManager.captureState();
   }
   static createComponent(e) {
-    const t = b.componentFactory[e];
+    const t = w.componentFactory[e];
     if (!t) return console.warn(`Unknown component type: ${e}`), null;
     const n = t();
     if (n) {
       n.classList.add('editable-component'),
         'container' != e && n.classList.add('component-resizer');
-      const t = b.generateUniqueClass(e);
+      const t = w.generateUniqueClass(e);
       n.setAttribute('id', t),
         'image' === e
           ? n.setAttribute('contenteditable', 'false')
           : n.setAttribute('contenteditable', 'true'),
-        b.controlsManager.addControlButtons(n),
-        v.updateLayersView();
+        w.controlsManager.addControlButtons(n),
+        y.updateLayersView();
     }
     return n;
   }
   static generateUniqueClass(e, t = !1, n = null) {
     if (t && n) {
-      let t = b.components.find(e => e.classList.contains(n));
+      let t = w.components.find(e => e.classList.contains(n));
       if (!t && ((t = document.querySelector(`.${n}`)), !t))
         return (
           console.warn(`Container with class ${n} not found.`), `${n}-${e}1`
         );
       const s = Array.from(t.children),
-        i = new RegExp(`${n}-${e}(\\d+)`);
-      let o = 0;
+        o = new RegExp(`${n}-${e}(\\d+)`);
+      let i = 0;
       return (
         s.forEach(e => {
           e.classList.forEach(e => {
-            const t = e.match(i);
+            const t = e.match(o);
             if (t) {
               const e = parseInt(t[1]);
-              o = Math.max(o, e);
+              i = Math.max(i, e);
             }
           });
         }),
-        `${n}-${e}${o + 1}`
+        `${n}-${e}${i + 1}`
       );
     }
     {
       const t = new RegExp(`${e}(\\d+)`);
       let n = 0;
       return (
-        b.components.forEach(e => {
+        w.components.forEach(e => {
           e.classList.forEach(e => {
             const s = e.match(t);
             if (s) {
@@ -1643,51 +1643,51 @@ class b {
     let t = 0,
       n = 0,
       s = 0,
-      i = 0;
-    e.addEventListener('dragstart', o => {
-      if (o.dataTransfer) {
-        const a = b.canvasElement.getBoundingClientRect(),
+      o = 0;
+    e.addEventListener('dragstart', i => {
+      if (i.dataTransfer) {
+        const a = w.canvasElement.getBoundingClientRect(),
           r = e.getBoundingClientRect();
-        (t = o.clientX),
-          (n = o.clientY),
+        (t = i.clientX),
+          (n = i.clientY),
           (s = r.left - a.left),
-          (i = r.top - a.top),
-          (o.dataTransfer.effectAllowed = 'move'),
+          (o = r.top - a.top),
+          (i.dataTransfer.effectAllowed = 'move'),
           (e.style.cursor = 'grabbing');
       }
     }),
-      e.addEventListener('dragend', o => {
-        o.preventDefault();
-        const a = o.clientX - t,
-          r = o.clientY - n;
+      e.addEventListener('dragend', i => {
+        i.preventDefault();
+        const a = i.clientX - t,
+          r = i.clientY - n;
         let l = s + a,
-          d = i + r;
-        const c = b.canvasElement.offsetWidth - e.offsetWidth,
-          h = b.canvasElement.offsetHeight - e.offsetHeight;
+          d = o + r;
+        const c = w.canvasElement.offsetWidth - e.offsetWidth,
+          p = w.canvasElement.offsetHeight - e.offsetHeight;
         (l = Math.max(0, Math.min(l, c))),
-          (d = Math.max(0, Math.min(d, h))),
+          (d = Math.max(0, Math.min(d, p))),
           (e.style.left = `${l}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
-          b.historyManager.captureState();
+          w.historyManager.captureState();
       });
   }
   static exportLayout() {
-    return b.components.map(e => ({ type: e.className, content: e.innerHTML }));
+    return w.components.map(e => ({ type: e.className, content: e.innerHTML }));
   }
 }
-(b.components = []),
-  (b.componentFactory = {
+(w.components = []),
+  (w.componentFactory = {
     button: () => new s().create(),
-    header: () => new i().create(),
+    header: () => new o().create(),
     image: () => new n().create(),
     text: () => new t().create(),
-    container: () => new o().create(),
+    container: () => new i().create(),
     twoCol: () => new r().create(),
     threeCol: () => new l().create(),
     landingpage: () => new d().create(),
   });
-const w = document.getElementById('canvas'),
+const b = document.getElementById('canvas'),
   f = new (class {
     constructor() {
       (this.selectedElement = null),
@@ -1706,12 +1706,12 @@ const w = document.getElementById('canvas'),
         this.selectedElement.classList.add('selected');
     }
   })();
-w &&
-  w.addEventListener('click', e => {
+b &&
+  b.addEventListener('click', e => {
     const t = e.target;
-    t !== w && f.selectElement(t);
+    t !== b && f.selectElement(t);
   });
-class E {
+class C {
   constructor(e) {
     this.canvas = e;
   }
@@ -1736,7 +1736,7 @@ class E {
       }
   }
 }
-const L = {
+const E = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n            </svg>',
   tablet:
@@ -1750,28 +1750,31 @@ const L = {
   redo: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M20 7H9.00001C6.23858 7 4 9.23857 4 12C4 14.7614 6.23858 17 9 17H16M20 7L17 4M20 7L17 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n        </svg>',
   reset:
     '<svg width="800px" height="800px" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">\n\n            <g fill="none" fill-rule="evenodd" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" transform="matrix(0 1 1 0 2.5 2.5)">\n\n            <path d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8"/>\n\n            <circle cx="8" cy="8" fill="#000000" r="2"/>\n\n            <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)"/>\n\n            </g>\n\n            </svg>',
-  bullet_list:
-    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 16 16">\n                      <title>Bullet List</title><path fill="currentColor" d="M2 4.5a1 1 0 1 0 0-2a1 1 0 0 0 0 2M2 9a1 1 0 1 0 0-2a1 1 0 0 0 0 2m1 3.5a1 1 0 1 1-2 0a1 1 0 0 1 2 0M5.5 3a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zM5 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 5 8m.5 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1z"/></svg>',
-  numbered_list:
-    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 512 512">\n                      <title>Numbererd List</title>\n                      <path fill="currentColor" d="M184 80h288v32H184zm0 160h288v32H184zm0 160h288v32H184zm-64-240V40H56v32h32v88zM56 262.111V312h80v-32H91.777L136 257.889V192H56v32h48v14.111zM56 440v32h80V344H56v32h48v16H80v32h24v16z"/>\n                  </svg>',
-  insert_table:
-    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 20 20">\n                      <title>Insert Table</title>\n                      <path fill="currentColor" d="M1.364 5.138v12.02h17.272V5.138zM.909 1.5h18.182c.502 0 .909.4.909.895v15.21a.9.9 0 0 1-.91.895H.91c-.503 0-.91-.4-.91-.895V2.395C0 1.9.407 1.5.91 1.5m5.227 1.759c0-.37.306-.671.682-.671s.682.3.682.671v13.899c0 .37-.305.67-.682.67a.676.676 0 0 1-.682-.67zm6.96-.64c.377 0 .682.3.682.67v4.995h4.91c.377 0 .683.301.683.672c0 .37-.306.671-.682.671l-4.911-.001v3.062h5.002c.377 0 .682.3.682.671c0 .37-.305.671-.682.671h-5.002v3.158a.676.676 0 0 1-.682.671a.676.676 0 0 1-.681-.67l-.001-3.159H1.001a.676.676 0 0 1-.682-.67c0-.371.305-.672.682-.672h11.413V9.626L.909 9.627a.676.676 0 0 1-.682-.671c0-.37.306-.671.682-.671l11.505-.001V3.289c0-.37.306-.67.682-.67"/>\n                  </svg>',
-  insert_layout:
-    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 256 256">\n                      <title>Insert Layout</title>\n                      <path fill="currentColor" d="M216 42H40a14 14 0 0 0-14 14v144a14 14 0 0 0 14 14h176a14 14 0 0 0 14-14V56a14 14 0 0 0-14-14M40 54h176a2 2 0 0 1 2 2v42H38V56a2 2 0 0 1 2-2m-2 146v-90h60v92H40a2 2 0 0 1-2-2m178 2H110v-92h108v90a2 2 0 0 1-2 2"/>\n                  </svg>',
-  heading:
-    '<svg \n                  xmlns="http://www.w3.org/2000/svg" \n                  width="18" \n                  height="18" \n                  viewBox="0 0 24 24">\n                  <title>Heading</title>\n                  <path fill="currentColor" d="M17 11V4h2v17h-2v-8H7v8H5V4h2v7z"/>\n              </svg>',
+  button:
+    '<svg width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">\n\n                <rect x="0" fill="none" width="20" height="20"/>\n\n                <g>\n\n                <path d="M17 5H3c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm1 7c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h14c.6 0 1 .4 1 1v5z"/>\n\n                </g>\n\n                </svg>',
+  header:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7.55228 5 8 5.44772 8 6V11.5H16V6C16 5.44772 16.4477 5 17 5C17.5523 5 18 5.44772 18 6V12.5V19C18 19.5523 17.5523 20 17 20C16.4477 20 16 19.5523 16 19V13.5H8V19C8 19.5523 7.55228 20 7 20C6.44772 20 6 19.5523 6 19V12.5V6C6 5.44772 6.44772 5 7 5Z" fill="#000000"/>\n                    </svg>',
+  image:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <rect width="24" height="24" fill="white"/>\n        <path d="M21 16V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V18M21 16V4C21 3.44772 20.5523 3 20 3H4C3.44772 3 3 3.44772 3 4V18M21 16L15.4829 12.3219C15.1843 12.1228 14.8019 12.099 14.4809 12.2595L3 18" stroke="#000000" stroke-linejoin="round"/>\n        <circle cx="8" cy="9" r="2" stroke="#000000" stroke-linejoin="round"/>\n        </svg>',
+  container:
+    '<svg fill="#000000" width="800px" height="800px" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" id="memory-box-outer-light-dashed-all"><path d="M4 0V2H2V4H0V0H4M2 6V10H0V6H2M2 12V16H0V12H2M2 18V20H4V22H0V18H2M6 0H10V2H6V0M12 0H16V2H12V0M18 0H22V4H20V2H18V0M18 22V20H20V18H22V22H18M16 22H12V20H16V22M10 22H6V20H10V22M20 6H22V10H20V6M20 12H22V16H20V12Z" /></svg>',
+  text: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M4 4C4 3.44772 4.44772 3 5 3H19C19.5523 3 20 3.44772 20 4V6C20 6.55228 19.5523 7 19 7C18.4477 7 18 6.55228 18 6V5H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V5H6V6C6 6.55228 5.55228 7 5 7C4.44772 7 4 6.55228 4 6V4Z" fill="#000000"/>\n        </svg>',
   hyperlink:
     '<svg \n                  xmlns="http://www.w3.org/2000/svg" \n                  width="18" \n                  height="18" \n                  viewBox="0 0 24 24">\n                  <title>Hyperlink</title>\n                  <path fill="currentColor" d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353a.75.75 0 0 0-1.18.928a5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061z"/>\n                  <path fill="currentColor" d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353a.75.75 0 0 0 1.18-.928a5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568z"/>\n              </svg>',
-  image:
-    '<svg \n              xmlns="http://www.w3.org/2000/svg" \n              width="18" \n              height="18" \n              viewBox="0 0 16 16">\n              <title>Insert Image</title>\n              <path fill="currentColor" d="M6 5a2 2 0 1 1-4 0a2 2 0 0 1 4 0m9-4a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zm-3.448 6.134l-3.76 2.769a.5.5 0 0 1-.436.077l-.087-.034l-1.713-.87L1 11.8V14h14V9.751zM15 2H1v8.635l4.28-2.558a.5.5 0 0 1 .389-.054l.094.037l1.684.855l3.813-2.807a.5.5 0 0 1 .52-.045l.079.05L15 8.495z"/>\n          </svg>',
+  twocol:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n    <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H12M12 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H12M12 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n    </svg>',
+  threecol:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M9.33333 20H5C4.44772 20 4 19.5523 4 19V5C4 4.44772 4.44772 4 5 4H9.33333M9.33333 20V4M9.33333 20H14.6667M9.33333 4H14.6667M14.6667 4H19C19.5523 4 20 4.44772 20 5V19C20 19.5523 19.5523 20 19 20H14.6667M14.6667 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n        </svg>',
+  landing:
+    '<svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" \n\t viewBox="0 0 32 32" xml:space="preserve">\n        <style type="text/css">\n            .st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}\n            .st1{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}\n            .st2{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5.2066,0;}\n        </style>\n        <line class="st0" x1="3" y1="11" x2="29" y2="11"/>\n        <line class="st0" x1="7" y1="8" x2="7" y2="8"/>\n        <line class="st0" x1="10" y1="8" x2="10" y2="8"/>\n        <line class="st0" x1="13" y1="8" x2="13" y2="8"/>\n        <rect x="3" y="5" class="st0" width="26" height="22"/>\n        <rect x="6" y="14" class="st0" width="10" height="10"/>\n        <rect x="19" y="21" class="st0" width="7" height="3"/>\n        <line class="st0" x1="20" y1="15" x2="26" y2="15"/>\n        <line class="st0" x1="23" y1="18" x2="26" y2="18"/>\n        <polyline class="st0" points="6,22 12,19 16,22 "/>\n        <line class="st0" x1="9" y1="17" x2="9" y2="17"/>\n        </svg>',
 };
-function C(e) {
+function L(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let s = 0;
-  const i = [];
+  const o = [];
   e.forEach(e => {
-    const o = t(e.name),
+    const i = t(e.name),
       a = t(e.content),
       r = (function (e) {
         let t = 4294967295;
@@ -1817,20 +1820,20 @@ function C(e) {
           s.set(e, 30),
           s
         );
-      })(o, a, r);
+      })(i, a, r);
     n.push(l), n.push(a);
     const d = ((e, t, n, s) => {
-      const i = new Uint8Array(46 + e.length);
+      const o = new Uint8Array(46 + e.length);
       return (
-        i.set([80, 75, 1, 2]),
-        i.set([20, 0], 4),
-        i.set([20, 0], 6),
-        i.set([0, 0], 8),
-        i.set([0, 0], 10),
-        i.set([0, 0], 12),
-        i.set([0, 0], 14),
-        i.set([255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255], 16),
-        i.set(
+        o.set([80, 75, 1, 2]),
+        o.set([20, 0], 4),
+        o.set([20, 0], 6),
+        o.set([0, 0], 8),
+        o.set([0, 0], 10),
+        o.set([0, 0], 12),
+        o.set([0, 0], 14),
+        o.set([255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255], 16),
+        o.set(
           [
             255 & t.length,
             (t.length >> 8) & 255,
@@ -1839,7 +1842,7 @@ function C(e) {
           ],
           20
         ),
-        i.set(
+        o.set(
           [
             255 & t.length,
             (t.length >> 8) & 255,
@@ -1848,21 +1851,21 @@ function C(e) {
           ],
           24
         ),
-        i.set([255 & e.length, (e.length >> 8) & 255], 28),
-        i.set([0, 0], 30),
-        i.set([0, 0], 32),
-        i.set([0, 0], 34),
-        i.set([0, 0], 36),
-        i.set([0, 0, 0, 0], 38),
-        i.set([255 & s, (s >> 8) & 255, (s >> 16) & 255, (s >> 24) & 255], 42),
-        i.set(e, 46),
-        i
+        o.set([255 & e.length, (e.length >> 8) & 255], 28),
+        o.set([0, 0], 30),
+        o.set([0, 0], 32),
+        o.set([0, 0], 34),
+        o.set([0, 0], 36),
+        o.set([0, 0, 0, 0], 38),
+        o.set([255 & s, (s >> 8) & 255, (s >> 16) & 255, (s >> 24) & 255], 42),
+        o.set(e, 46),
+        o
       );
-    })(o, a, r, s);
-    i.push(d), (s += l.length + a.length);
+    })(i, a, r, s);
+    o.push(d), (s += l.length + a.length);
   }),
-    n.push(...i);
-  const o = i.reduce((e, t) => e + t.length, 0),
+    n.push(...o);
+  const i = o.reduce((e, t) => e + t.length, 0),
     a = ((e, t, n) => {
       const s = new Uint8Array(22);
       return (
@@ -1876,7 +1879,7 @@ function C(e) {
         s.set([0, 0], 20),
         s
       );
-    })(e.length, o, s);
+    })(e.length, i, s);
   n.push(a);
   const r = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
   return new Blob([r], { type: 'application/zip' });
@@ -1889,14 +1892,14 @@ class x {
     if (e.ctrlKey || e.metaKey)
       switch (e.key.toLowerCase()) {
         case 'z':
-          e.preventDefault(), b.historyManager.undo();
+          e.preventDefault(), w.historyManager.undo();
           break;
         case 'y':
-          e.preventDefault(), b.historyManager.redo();
+          e.preventDefault(), w.historyManager.redo();
       }
   }
 }
-class S {
+class k {
   setPreviewMode(e) {
     const t = document.getElementById('canvas');
     t.classList.forEach(e => {
@@ -1906,23 +1909,23 @@ class S {
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
-  var e, t, n, s, i, o, a, r, l;
-  const d = new b(),
-    c = new E(d),
-    p = new u(d),
-    g = new h(),
-    y = new S();
+  var e, t, n, s, o, i, a, r, l;
+  const d = new w(),
+    c = new C(d),
+    h = new u(d),
+    g = new p(),
+    v = new k();
   !(function () {
     const e = document.getElementById('sidebar'),
       t = {
-        button: 'dist/icons/button.png',
-        header: 'dist/icons/header.png',
-        image: 'dist/icons/image.png',
-        text: 'dist/icons/text.png',
-        container: 'dist/icons/square.png',
-        twoCol: 'dist/icons/column.png',
-        threeCol: 'dist/icons/threecolumn.png',
-        landingpage: 'dist/icons/landingpage.png',
+        button: E.button,
+        header: E.header,
+        image: E.image,
+        text: E.text,
+        container: E.container,
+        twoCol: E.twocol,
+        threeCol: E.threecol,
+        landingpage: E.landing,
       },
       n = {
         button: 'Button',
@@ -1947,55 +1950,55 @@ document.addEventListener('DOMContentLoaded', () => {
           'threeCol',
         ],
         Extra: ['landingpage'],
-      }).forEach(([e, i]) => {
-        const o = document.createElement('div');
-        o.classList.add('category');
+      }).forEach(([e, o]) => {
+        const i = document.createElement('div');
+        i.classList.add('category');
         const a = document.createElement('h4');
         a.classList.add('categoryHeading'),
           (a.innerHTML = e),
-          o.prepend(a),
-          i.forEach(e => {
+          i.prepend(a),
+          o.forEach(e => {
             const s = document.createElement('div');
             s.classList.add('draggable'),
               (s.id = e),
               s.setAttribute('draggable', 'true'),
               s.setAttribute('data-component', e);
-            const i = n[e] || `Drag to add ${e}`;
-            s.setAttribute('title', i);
-            const a = document.createElement('img');
-            (a.src = t[e]),
-              (a.alt = `${e} icon`),
-              s.appendChild(a),
-              o.appendChild(s);
+            const o = n[e] || `Drag to add ${e}`;
+            if ((s.setAttribute('title', o), t[e])) {
+              s.innerHTML = t[e];
+              const n = s.querySelector('svg');
+              n && n.classList.add('component-icon');
+            } else console.warn(`Icon not found for component: ${e}`);
+            i.appendChild(s);
           }),
-          s.appendChild(o);
+          s.appendChild(i);
       }),
       e.appendChild(s);
   })(),
-    b.init(),
+    w.init(),
     c.init(),
     x.init(),
-    v.init();
-  const w = document.createElement('header');
+    y.init();
+  const b = document.createElement('header');
   function f(e) {
     e.classList.remove('show'),
       e.classList.add('hide'),
       setTimeout(() => e.remove(), 300);
   }
-  w.appendChild(
+  b.appendChild(
     (function () {
       const e = document.createElement('nav');
       e.id = 'preview-navbar';
       const t = {
-          desktop: L.desktop,
-          tablet: L.tablet,
-          mobile: L.mobile,
-          save: L.save,
-          export: L.code,
-          view: L.view,
-          undo: L.undo,
-          redo: L.redo,
-          reset: L.reset,
+          desktop: E.desktop,
+          tablet: E.tablet,
+          mobile: E.mobile,
+          save: E.save,
+          export: E.code,
+          view: E.view,
+          undo: E.undo,
+          redo: E.redo,
+          reset: E.reset,
         },
         n = [
           {
@@ -2014,19 +2017,19 @@ document.addEventListener('DOMContentLoaded', () => {
           { id: 'reset-btn', icon: t.reset, title: 'Reset' },
           { id: 'export-html-btn', icon: t.export, title: 'Export HTML' },
         ],
-        i = document.createElement('div');
-      i.classList.add('left-buttons'),
+        o = document.createElement('div');
+      o.classList.add('left-buttons'),
         n.forEach(({ id: e, icon: t, title: n }) => {
           const s = document.createElement('button');
           (s.id = e),
             s.classList.add('preview-btn'),
             (s.title = n),
             (s.innerHTML = t);
-          const o = s.querySelector('svg');
-          o && o.classList.add('nav-icon'), i.appendChild(s);
+          const i = s.querySelector('svg');
+          i && i.classList.add('nav-icon'), o.appendChild(s);
         });
-      const o = document.createElement('div');
-      o.classList.add('center-text'), (o.textContent = 'Page Builder');
+      const i = document.createElement('div');
+      i.classList.add('center-text'), (i.textContent = 'Page Builder');
       const a = document.createElement('div');
       return (
         a.classList.add('right-buttons'),
@@ -2036,21 +2039,21 @@ document.addEventListener('DOMContentLoaded', () => {
             s.classList.add('preview-btn'),
             (s.title = n),
             (s.innerHTML = t);
-          const i = s.querySelector('svg');
-          i && i.classList.add('nav-icon'), a.appendChild(s);
+          const o = s.querySelector('svg');
+          o && o.classList.add('nav-icon'), a.appendChild(s);
         }),
-        e.appendChild(i),
         e.appendChild(o),
+        e.appendChild(i),
         e.appendChild(a),
         e
       );
     })()
   ),
-    document.body.insertBefore(w, document.getElementById('app')),
+    document.body.insertBefore(b, document.getElementById('app')),
     null === (e = document.getElementById('save-btn')) ||
       void 0 === e ||
       e.addEventListener('click', () => {
-        const e = b.getState();
+        const e = w.getState();
         g.save(e), m('Saving progress...');
       }),
     null === (t = document.getElementById('reset-btn')) ||
@@ -2058,24 +2061,24 @@ document.addEventListener('DOMContentLoaded', () => {
       t.addEventListener('click', () => {
         !(function (e, t, n) {
           const s = document.getElementById('dialog'),
-            i = document.getElementById('dialog-yes'),
-            o = document.getElementById('dialog-no'),
+            o = document.getElementById('dialog-yes'),
+            i = document.getElementById('dialog-no'),
             a = document.getElementById('dialog-message');
           a && (a.innerHTML = e),
             null == s || s.classList.remove('hidden'),
-            null == i ||
-              i.addEventListener('click', () => {
-                t(), null == s || s.classList.add('hidden');
-              }),
             null == o ||
               o.addEventListener('click', () => {
+                t(), null == s || s.classList.add('hidden');
+              }),
+            null == i ||
+              i.addEventListener('click', () => {
                 n(), null == s || s.classList.add('hidden');
               });
         })(
           'Are you sure you want to reset the layout?',
           () => {
             g.remove(),
-              b.clearCanvas(),
+              w.clearCanvas(),
               m('The saved layout has been successfully reset.');
           },
           () => {
@@ -2086,7 +2089,7 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (n = document.getElementById('export-html-btn')) ||
       void 0 === n ||
       n.addEventListener('click', () => {
-        const e = new u(new b()),
+        const e = new u(new w()),
           t = e.generateHTML(),
           n = e.generateCSS();
         console.log('this is html', t);
@@ -2105,21 +2108,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 '<span class="tag">$1</span>'
               );
           })(t),
-          i = (function (e) {
+          o = (function (e) {
             return e
               .replace(/([a-zA-Z-]+)(?=:)/g, '<span class="property">$1</span>')
               .replace(/(:\s*[^;]+;)/g, '<span class="value">$1</span>')
               .replace(/({|})/g, '<span class="bracket">$1</span>');
           })(n),
-          o = document.createElement('div');
-        (o.id = 'export-dialog'), o.classList.add('modal');
+          i = document.createElement('div');
+        (i.id = 'export-dialog'), i.classList.add('modal');
         const a = document.createElement('div');
         a.classList.add('modal-content');
         const r = document.createElement('button');
         (r.textContent = '×'),
           r.classList.add('close-btn'),
           r.addEventListener('click', () => {
-            f(o);
+            f(i);
           }),
           a.appendChild(r);
         const l = document.createElement('div');
@@ -2132,23 +2135,23 @@ document.addEventListener('DOMContentLoaded', () => {
           (c.innerHTML = s),
           l.appendChild(d),
           l.appendChild(c);
-        const h = document.createElement('div');
-        h.classList.add('modal-section');
-        const p = document.createElement('h2');
-        p.textContent = 'CSS';
+        const p = document.createElement('div');
+        p.classList.add('modal-section');
+        const h = document.createElement('h2');
+        h.textContent = 'CSS';
         const m = document.createElement('div');
         m.classList.add('code-block'),
           m.setAttribute('contenteditable', 'true'),
-          (m.innerHTML = i),
-          h.appendChild(p),
-          h.appendChild(m);
+          (m.innerHTML = o),
+          p.appendChild(h),
+          p.appendChild(m);
         const g = document.createElement('div');
         g.classList.add('button-wrapper');
-        const v = document.createElement('button');
-        (v.textContent = 'Export to ZIP'),
-          v.classList.add('export-btn'),
-          v.addEventListener('click', () => {
-            const e = C([
+        const y = document.createElement('button');
+        (y.textContent = 'Export to ZIP'),
+          y.classList.add('export-btn'),
+          y.addEventListener('click', () => {
+            const e = L([
                 { name: 'index.html', content: t },
                 { name: 'styles.css', content: n },
               ]),
@@ -2159,23 +2162,23 @@ document.addEventListener('DOMContentLoaded', () => {
               URL.revokeObjectURL(s.href);
           }),
           a.appendChild(l),
-          a.appendChild(h),
-          a.appendChild(v),
+          a.appendChild(p),
+          a.appendChild(y),
           g.appendChild(a),
-          o.appendChild(g),
-          document.body.appendChild(o),
-          o.classList.add('show'),
-          o.addEventListener('click', e => {
-            e.target === o && f(o);
+          i.appendChild(g),
+          document.body.appendChild(i),
+          i.classList.add('show'),
+          i.addEventListener('click', e => {
+            e.target === i && f(i);
           }),
           document.addEventListener('keydown', e => {
-            'Escape' === e.key && f(o);
+            'Escape' === e.key && f(i);
           });
       }),
     null === (s = document.getElementById('view-btn')) ||
       void 0 === s ||
       s.addEventListener('click', () => {
-        const e = p.generateHTML(),
+        const e = h.generateHTML(),
           t = document.createElement('div');
         (t.id = 'preview-modal'),
           (t.style.cssText =
@@ -2192,8 +2195,8 @@ document.addEventListener('DOMContentLoaded', () => {
           (s.style.cssText =
             '\n    position: absolute;\n    top: 10px;\n    right: 20px;\n    font-size: 20px;\n    border: none;\n    background: none;\n    cursor: pointer;\n  '),
           t.appendChild(s);
-        const i = document.createElement('div');
-        i.style.cssText =
+        const o = document.createElement('div');
+        o.style.cssText =
           '\n    display: flex;\n    gap: 10px;\n    margin-bottom: 10px;\n  ';
         [
           {
@@ -2228,43 +2231,43 @@ document.addEventListener('DOMContentLoaded', () => {
             t.addEventListener('click', () => {
               (n.style.width = e.width), (n.style.height = e.height);
             }),
-            i.appendChild(t);
+            o.appendChild(t);
         }),
-          t.insertBefore(i, n),
+          t.insertBefore(o, n),
           document.body.appendChild(t);
-        const o = () => {
+        const i = () => {
           setTimeout(() => t.remove(), 300),
             document.removeEventListener('keydown', a);
         };
-        s.addEventListener('click', o);
+        s.addEventListener('click', i);
         const a = e => {
-          'Escape' === e.key && o();
+          'Escape' === e.key && i();
         };
         document.addEventListener('keydown', a);
       }),
-    null === (i = document.getElementById('preview-desktop')) ||
-      void 0 === i ||
-      i.addEventListener('click', () => {
-        y.setPreviewMode('desktop');
-      }),
-    null === (o = document.getElementById('preview-tablet')) ||
+    null === (o = document.getElementById('preview-desktop')) ||
       void 0 === o ||
       o.addEventListener('click', () => {
-        y.setPreviewMode('tablet');
+        v.setPreviewMode('desktop');
+      }),
+    null === (i = document.getElementById('preview-tablet')) ||
+      void 0 === i ||
+      i.addEventListener('click', () => {
+        v.setPreviewMode('tablet');
       }),
     null === (a = document.getElementById('preview-mobile')) ||
       void 0 === a ||
       a.addEventListener('click', () => {
-        y.setPreviewMode('mobile');
+        v.setPreviewMode('mobile');
       }),
     null === (r = document.getElementById('undo-btn')) ||
       void 0 === r ||
       r.addEventListener('click', () => {
-        b.historyManager.undo();
+        w.historyManager.undo();
       }),
     null === (l = document.getElementById('redo-btn')) ||
       void 0 === l ||
       l.addEventListener('click', () => {
-        b.historyManager.redo();
+        w.historyManager.redo();
       });
 });
