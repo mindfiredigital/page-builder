@@ -28,7 +28,9 @@ Click the button below to open the project on StackBlitz.
 
 - [Features](#features)
 - [Installation](#installation)
-- [Getting Started](#getting-started)
+- [Getting Started with npm](#getting-started-with-npm)
+- [Usage via CDN](#usage-via-cdn)
+  - [CDN Usage Example](#cdn-usage-example)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -55,7 +57,7 @@ npm install @mindfiredigital/page-builder-core
 
 <br>
 
-## Getting Started
+## Getting Started with npm
 
 - **Initialization**: Initialize the PageBuilder in your project.
 
@@ -95,6 +97,68 @@ npm install @mindfiredigital/page-builder-core
 
     <!-- Bundle JavaScript -->
     <script src="node_modules/@mindfiredigital/page-builder-core/dist/index.js"></script>
+  </body>
+</html>
+```
+
+<br>
+
+## Usage via CDN
+
+You can include @mindfiredigital/page-builder-core in your HTML file using the provided CDN link. This allows you to quickly test or use the library without installing it via npm.
+
+```javascript
+
+ <!-- CDN stylesheet -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/styles/main.css" />
+
+ <!--CDN Bundle JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/index.js"></script>
+```
+
+## CDN Usage Example
+
+- **Initialization**: Initialize the PageBuilder in your project.
+
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Builder</title>
+    <!-- CDN stylesheet -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/styles/main.css"
+    />
+  </head>
+  <body>
+    <header>
+      <nav id="preview-navbar"></nav>
+    </header>
+    <div id="app">
+      <div id="sidebar"></div>
+      <div id="canvas" class="canvas"></div>
+      <div id="customization">
+        <h4 id="component-name">Component: None</h4>
+        <div id="controls"></div>
+        <div id="layers-view" class="hidden"></div>
+      </div>
+      <!-- Notification for saving -->
+      <div id="notification" class="notification hidden"></div>
+      <!-- Dialog for reset  -->
+      <div id="dialog" class="dialog hidden">
+        <div class="dialog-content">
+          <p id="dialog-message"></p>
+          <button id="dialog-yes" class="dialog-btn">Yes</button>
+          <button id="dialog-no" class="dialog-btn">No</button>
+        </div>
+      </div>
+    </div>
+
+    <!--CDN Bundle JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/index.js"></script>
   </body>
 </html>
 ```
