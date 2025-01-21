@@ -15,6 +15,7 @@ import { createZipFile } from './utils/zipGenerator';
 import { ShortcutManager } from './services/ShortcutManager';
 import { PreviewPanel } from './canvas/PreviewPanel';
 import './styles/main.css';
+import { svgs } from './icons/svgs';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = new Canvas();
@@ -230,19 +231,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sizes = [
       {
-        icon: 'dist/icons/mobile.png',
+        icon: svgs.mobile,
         title: 'Desktop',
         width: '375px',
         height: '90%',
       },
       {
-        icon: 'dist/icons/tablet.png',
+        icon: svgs.tablet,
         title: 'Tablet',
         width: '768px',
         height: '90%',
       },
       {
-        icon: 'dist/icons/computer.png',
+        icon: svgs.desktop,
         title: 'Mobile',
         width: '97%',
         height: '90%',
@@ -252,24 +253,29 @@ document.addEventListener('DOMContentLoaded', () => {
     sizes.forEach(size => {
       const button = document.createElement('button');
       button.style.cssText = `
-      padding: 5px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `;
+        padding: 5px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
       button.title = size.title;
-      // Add icon to button
-      const icon = document.createElement('img');
-      icon.src = size.icon;
-      icon.alt = 'Device Icon';
-      icon.style.cssText = `
-      width: 24px;
-      height: 24px;
-    `;
-      button.appendChild(icon);
+
+      // Add SVG as innerHTML
+      const iconContainer = document.createElement('div');
+      iconContainer.innerHTML = size.icon;
+
+      // Optionally style the SVG
+      const svgElement = iconContainer.querySelector('svg');
+      if (svgElement) {
+        svgElement.style.width = '24px';
+        svgElement.style.height = '24px';
+        svgElement.classList.add('component-icon'); // Add a custom class if needed
+      }
+
+      button.appendChild(iconContainer);
 
       // Add event listener to adjust iframe dimensions
       button.addEventListener('click', () => {
