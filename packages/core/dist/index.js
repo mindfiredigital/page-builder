@@ -1740,7 +1740,7 @@ class C {
       }
   }
 }
-const E = {
+const L = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n            </svg>',
   tablet:
@@ -1776,7 +1776,7 @@ const E = {
   close:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M6.99486 7.00636C6.60433 7.39689 6.60433 8.03005 6.99486 8.42058L10.58 12.0057L6.99486 15.5909C6.60433 15.9814 6.60433 16.6146 6.99486 17.0051C7.38538 17.3956 8.01855 17.3956 8.40907 17.0051L11.9942 13.4199L15.5794 17.0051C15.9699 17.3956 16.6031 17.3956 16.9936 17.0051C17.3841 16.6146 17.3841 15.9814 16.9936 15.5909L13.4084 12.0057L16.9936 8.42059C17.3841 8.03007 17.3841 7.3969 16.9936 7.00638C16.603 6.61585 15.9699 6.61585 15.5794 7.00638L11.9942 10.5915L8.40907 7.00636C8.01855 6.61584 7.38538 6.61584 6.99486 7.00636Z" fill="#0F0F0F"/>\n            </svg>',
 };
-function L(e) {
+function E(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let s = 0;
@@ -1926,14 +1926,14 @@ document.addEventListener('DOMContentLoaded', () => {
   !(function () {
     const e = document.getElementById('sidebar'),
       t = {
-        button: E.button,
-        header: E.header,
-        image: E.image,
-        text: E.text,
-        container: E.container,
-        twoCol: E.twocol,
-        threeCol: E.threecol,
-        landingpage: E.landing,
+        button: L.button,
+        header: L.header,
+        image: L.image,
+        text: L.text,
+        container: L.container,
+        twoCol: L.twocol,
+        threeCol: L.threecol,
+        landingpage: L.landing,
       },
       n = {
         button: 'Button',
@@ -1998,15 +1998,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const e = document.createElement('nav');
       e.id = 'preview-navbar';
       const t = {
-          desktop: E.desktop,
-          tablet: E.tablet,
-          mobile: E.mobile,
-          save: E.save,
-          export: E.code,
-          view: E.view,
-          undo: E.undo,
-          redo: E.redo,
-          reset: E.reset,
+          desktop: L.desktop,
+          tablet: L.tablet,
+          mobile: L.mobile,
+          save: L.save,
+          export: L.code,
+          view: L.view,
+          undo: L.undo,
+          redo: L.redo,
+          reset: L.reset,
         },
         n = [
           {
@@ -2159,7 +2159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (y.textContent = 'Export to ZIP'),
           y.classList.add('export-btn'),
           y.addEventListener('click', () => {
-            const e = L([
+            const e = E([
                 { name: 'index.html', content: t },
                 { name: 'styles.css', content: n },
               ]),
@@ -2207,34 +2207,21 @@ document.addEventListener('DOMContentLoaded', () => {
         o.style.cssText =
           '\n    display: flex;\n    gap: 10px;\n    margin-bottom: 10px;\n  ';
         [
-          {
-            icon: 'dist/icons/mobile.png',
-            title: 'Desktop',
-            width: '375px',
-            height: '90%',
-          },
-          {
-            icon: 'dist/icons/tablet.png',
-            title: 'Tablet',
-            width: '768px',
-            height: '90%',
-          },
-          {
-            icon: 'dist/icons/computer.png',
-            title: 'Mobile',
-            width: '97%',
-            height: '90%',
-          },
+          { icon: L.mobile, title: 'Desktop', width: '375px', height: '90%' },
+          { icon: L.tablet, title: 'Tablet', width: '768px', height: '90%' },
+          { icon: L.desktop, title: 'Mobile', width: '97%', height: '90%' },
         ].forEach(e => {
           const t = document.createElement('button');
           (t.style.cssText =
-            '\n      padding: 5px;\n      border: none;\n      background: none;\n      cursor: pointer;\n      display: flex;\n      align-items: center;\n      justify-content: center;\n    '),
+            '\n        padding: 5px;\n        border: none;\n        background: none;\n        cursor: pointer;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n      '),
             (t.title = e.title);
-          const s = document.createElement('img');
-          (s.src = e.icon),
-            (s.alt = 'Device Icon'),
-            (s.style.cssText =
-              '\n      width: 24px;\n      height: 24px;\n    '),
+          const s = document.createElement('div');
+          s.innerHTML = e.icon;
+          const i = s.querySelector('svg');
+          i &&
+            ((i.style.width = '24px'),
+            (i.style.height = '24px'),
+            i.classList.add('component-icon')),
             t.appendChild(s),
             t.addEventListener('click', () => {
               (n.style.width = e.width), (n.style.height = e.height);
