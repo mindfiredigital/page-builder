@@ -11,6 +11,7 @@ export declare const svgs: {
   button: string;
   header: string;
   image: string;
+  video: string;
   container: string;
   text: string;
   hyperlink: string;
