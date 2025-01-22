@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@animation-ui/core/*": ["packages/core/src/*"]
+      "@mindfiredigital/page-builder-core/*": ["packages/core/dist/*"]
     },
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
