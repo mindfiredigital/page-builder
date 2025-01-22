@@ -135,6 +135,51 @@ class n {
   }
 }
 class s {
+  create(e = null) {
+    const t = document.createElement('div');
+    t.classList.add('video-container');
+    const n = document.createElement('input');
+    (n.type = 'file'),
+      (n.accept = 'video/*'),
+      (n.style.display = 'none'),
+      n.addEventListener('change', e => this.handleFileChange(e, t));
+    const s = document.createElement('div');
+    s.classList.add('upload-text'), (s.innerText = e ? '' : 'Upload Video');
+    const o = document.createElement('video');
+    (o.controls = !0),
+      (o.style.width = '100%'),
+      (o.style.height = '100%'),
+      (o.style.display = e ? 'block' : 'none'),
+      e && (o.src = e);
+    const i = document.createElement('button');
+    return (
+      (i.innerHTML = '🖊️'),
+      i.classList.add('pencil-button'),
+      i.addEventListener('click', () => n.click()),
+      t.appendChild(s),
+      t.appendChild(n),
+      t.appendChild(o),
+      t.appendChild(i),
+      t
+    );
+  }
+  handleFileChange(e, t) {
+    const n = e.target,
+      s = n.files ? n.files[0] : null;
+    if (s && s.type.startsWith('video/')) {
+      const e = new FileReader();
+      (e.onload = () => {
+        const n = t.querySelector('video'),
+          s = t.querySelector('.upload-text');
+        (n.src = e.result),
+          (n.style.display = 'block'),
+          (s.style.display = 'none');
+      }),
+        e.readAsDataURL(s);
+    } else alert('Please upload a valid video file.');
+  }
+}
+class o {
   create(e = 'Click Me') {
     const t = document.createElement('button');
     return (
@@ -148,13 +193,13 @@ class s {
     );
   }
 }
-class o {
+class i {
   create(e = 1, t = 'Header') {
     const n = document.createElement(`h${e}`);
     return (n.innerText = t), n.classList.add('header-component'), n;
   }
 }
-class i {
+class a {
   constructor() {
     (this.MINIMUM_SIZE = 20),
       (this.originalWidth = 0),
@@ -202,7 +247,7 @@ class i {
         window.removeEventListener('mousemove', this.resize),
           window.removeEventListener('mouseup', this.stopResize),
           (this.currentResizer = null),
-          w.historyManager.captureState();
+          b.historyManager.captureState();
       }),
       (this.element = document.createElement('div')),
       this.element.classList.add('container-component'),
@@ -291,10 +336,10 @@ class i {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const s = w.createComponent(n);
+    const s = b.createComponent(n);
     if (!s) return;
     const o = this.element.classList[2],
-      i = w.generateUniqueClass(n, !0, o);
+      i = b.generateUniqueClass(n, !0, o);
     s.classList.add(i);
     const a = document.createElement('span');
     (a.className = 'component-label'),
@@ -306,7 +351,7 @@ class i {
       s.addEventListener('mouseleave', e => this.hideLabel(e, s)),
       this.element.appendChild(s),
       this.makeDraggable(s),
-      w.historyManager.captureState();
+      b.historyManager.captureState();
   }
   showLabel(e, t) {
     e.stopPropagation();
@@ -344,18 +389,18 @@ class i {
     t && t.remove();
     const n = document.createElement('div');
     n.classList.add('resizers');
-    const s = new i();
+    const s = new a();
     (s.element = e), (s.resizers = n), s.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e) {
-    i.restoreResizer(e);
-    const t = new i();
+    a.restoreResizer(e);
+    const t = new a();
     t.element = e;
     e.querySelectorAll('.editable-component').forEach(e => {
       var s;
       if (
-        (w.controlsManager.addControlButtons(e),
-        w.addDraggableListeners(e),
+        (b.controlsManager.addControlButtons(e),
+        b.addDraggableListeners(e),
         e.addEventListener('mouseenter', n => t.showLabel(n, e)),
         e.addEventListener('mouseleave', n => t.hideLabel(n, e)),
         e.classList.contains('image-component'))
@@ -370,7 +415,7 @@ class i {
     });
   }
 }
-class a {
+class r {
   constructor(e, t = `${e}Col-component`) {
     (this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -403,7 +448,7 @@ class a {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const s = w.createComponent(n);
+    const s = b.createComponent(n);
     if (!s) return;
     const o = e.target;
     if (o && o.classList.contains('column')) {
@@ -416,7 +461,7 @@ class a {
         (t.className = 'column-label'),
         o.appendChild(t)),
         (t.textContent = e);
-      const i = w.generateUniqueClass(n, !0, e);
+      const i = b.generateUniqueClass(n, !0, e);
       s.classList.add(i), (s.id = i);
       let a = s.querySelector('.component-label');
       a ||
@@ -424,7 +469,7 @@ class a {
         (a.className = 'component-label'),
         s.appendChild(a)),
         (a.textContent = i),
-        w.historyManager.captureState();
+        b.historyManager.captureState();
     }
   }
   addStyles(e) {
@@ -439,8 +484,8 @@ class a {
     e.querySelectorAll('.editable-component').forEach(e => {
       var t;
       if (
-        (w.controlsManager.addControlButtons(e),
-        w.addDraggableListeners(e),
+        (b.controlsManager.addControlButtons(e),
+        b.addDraggableListeners(e),
         e.classList.contains('image-component'))
       ) {
         const s =
@@ -452,17 +497,17 @@ class a {
     });
   }
 }
-class r extends a {
+class l extends r {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class l extends a {
+class d extends r {
   constructor() {
     super(3, 'threeCol-component');
   }
 }
-class d {
+class c {
   create() {
     const e = e => {
         let t,
@@ -537,7 +582,7 @@ class d {
             };
         }
       },
-      n = new i().create();
+      n = new a().create();
     n.classList.add('container'),
       Object.assign(n.style, {
         width: '100%',
@@ -547,23 +592,23 @@ class d {
         fontFamily: "'Roboto', sans-serif",
       }),
       e(n);
-    const o = new i().create();
-    o.classList.add('container'),
-      Object.assign(o.style, {
+    const s = new a().create();
+    s.classList.add('container'),
+      Object.assign(s.style, {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '40px',
         width: '100%',
       }),
-      e(o);
-    const a = new t('MyBrand').create();
-    Object.assign(a.style, {
+      e(s);
+    const i = new t('MyBrand').create();
+    Object.assign(i.style, {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333',
     });
-    const r = new i().create();
+    const r = new a().create();
     r.classList.add('container'),
       Object.assign(r.style, { display: 'flex', gap: '20px' }),
       e(r),
@@ -576,9 +621,9 @@ class d {
         }),
           r.appendChild(n);
       }),
-      o.appendChild(a),
-      o.appendChild(r);
-    const l = new i().create();
+      s.appendChild(i),
+      s.appendChild(r);
+    const l = new a().create();
     l.classList.add('container'),
       Object.assign(l.style, {
         textAlign: 'center',
@@ -605,7 +650,7 @@ class d {
       color: '#666',
       marginBottom: '30px',
     });
-    const p = new s().create();
+    const p = new o().create();
     Object.assign(p.style, {
       padding: '12px 24px',
       fontSize: '16px',
@@ -625,7 +670,7 @@ class d {
       l.appendChild(d),
       l.appendChild(c),
       l.appendChild(p);
-    const h = new i().create();
+    const h = new a().create();
     h.classList.add('container'),
       Object.assign(h.style, {
         textAlign: 'center',
@@ -638,19 +683,19 @@ class d {
     return (
       Object.assign(m.style, { fontSize: '14px', color: '#999' }),
       h.appendChild(m),
-      n.appendChild(o),
+      n.appendChild(s),
       n.appendChild(l),
       n.appendChild(h),
       n
     );
   }
 }
-class c {
+class p {
   constructor(e) {
     (this.undoStack = []), (this.redoStack = []), (this.canvas = e);
   }
   captureState() {
-    const e = w.getState();
+    const e = b.getState();
     if (e.length > 0) {
       const t = this.undoStack[this.undoStack.length - 1];
       JSON.stringify(e) !== JSON.stringify(t) &&
@@ -664,22 +709,22 @@ class c {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
       const t = this.undoStack[this.undoStack.length - 1];
-      w.restoreState(t);
+      b.restoreState(t);
     } else if (1 === this.undoStack.length) {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
-      const t = w.jsonStorage.load();
-      t ? w.restoreState(t) : w.restoreState([]);
+      const t = b.jsonStorage.load();
+      t ? b.restoreState(t) : b.restoreState([]);
     } else console.warn('No more actions to undo.');
   }
   redo() {
     if (this.redoStack.length > 0) {
       const e = this.redoStack.pop();
-      this.undoStack.push(e), w.restoreState(e);
+      this.undoStack.push(e), b.restoreState(e);
     } else console.warn('No more actions to redo.');
   }
 }
-class p {
+class h {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -691,7 +736,7 @@ class p {
     localStorage.removeItem('pageLayout');
   }
 }
-class h {
+class m {
   constructor(e) {
     (this.icons = {
       delete:
@@ -730,7 +775,7 @@ class h {
     this.canvas.setComponents(t), this.canvas.historyManager.captureState();
   }
 }
-function m(e) {
+function u(e) {
   const t = document.getElementById('notification');
   t &&
     ((t.innerHTML = e),
@@ -740,7 +785,7 @@ function m(e) {
       t.classList.remove('visible'), t.classList.add('hidden');
     }, 2e3));
 }
-class u {
+class g {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -872,25 +917,25 @@ class u {
     this.styleElement.textContent = e;
   }
 }
-class g {
+class y {
   constructor(e = '#layers-view', t = '#page') {
     this.initializeElements(e, t);
   }
   initializeElements(e, t) {
-    (g.layersView = document.querySelector(e)),
-      g.layersView ||
-        ((g.layersView = document.createElement('div')),
-        (g.layersView.id = 'layers-view'),
-        (g.layersView.className = 'layers-view'),
-        document.body.appendChild(g.layersView),
+    (y.layersView = document.querySelector(e)),
+      y.layersView ||
+        ((y.layersView = document.createElement('div')),
+        (y.layersView.id = 'layers-view'),
+        (y.layersView.className = 'layers-view'),
+        document.body.appendChild(y.layersView),
         console.warn(`Layers view element created: ${e}`)),
-      (g.canvasRoot = document.querySelector(t)),
-      g.canvasRoot ||
+      (y.canvasRoot = document.querySelector(t)),
+      y.canvasRoot ||
         (console.error(`Canvas root element not found: ${t}`),
-        (g.canvasRoot = document.body));
+        (y.canvasRoot = document.body));
   }
   static buildLayerHierarchyFromDOM(e) {
-    const t = new u(new w()).generateHTML(),
+    const t = new g(new b()).generateHTML(),
       n = new DOMParser().parseFromString(t, 'text/html'),
       s = (e, t = 0) => {
         var n;
@@ -1019,7 +1064,7 @@ class g {
           : n.getData('text/plain')) || '-1'
       ),
       o = parseInt(t.id || '-1');
-    w.reorderComponent(s, o), this.updateLayersView();
+    b.reorderComponent(s, o), this.updateLayersView();
   }
   static switchToCustomizeMode(e) {
     const t = document.getElementById('customize-sidebar');
@@ -1033,8 +1078,8 @@ class g {
       (n.innerHTML = `\n        <h3>Layer Properties: ${e}</h3>\n        <div>Visibility: ${'none' !== t.style.display ? 'Visible' : 'Hidden'}</div>\n        <div>Locked: ${'true' === t.getAttribute('data-locked') ? 'Yes' : 'No'}</div>\n      `);
   }
 }
-(g.layersView = null), (g.canvasRoot = null), (g.draggedItem = null);
-class y {
+(y.layersView = null), (y.canvasRoot = null), (y.draggedItem = null);
+class v {
   static init() {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1046,7 +1091,7 @@ class y {
       return void console.error(
         'CustomizationSidebar: Required elements not found.'
       );
-    (this.layersViewController = new g()),
+    (this.layersViewController = new y()),
       (this.layersModeToggle = document.createElement('div')),
       (this.layersModeToggle.className = 'layers-mode-toggle'),
       (this.layersModeToggle.innerHTML =
@@ -1095,10 +1140,10 @@ class y {
       (s.style.display = 'none'),
       (n.style.display = 'block'),
       (o.style.display = 'none'),
-      g.updateLayersView();
+      y.updateLayersView();
   }
   static updateLayersView() {
-    g.updateLayersView();
+    y.updateLayersView();
   }
   static showSidebar(e) {
     const t = document.getElementById('customize-tab'),
@@ -1208,7 +1253,7 @@ class y {
         'color',
         r.borderColor || '#000000'
       );
-    const l = y.rgbToHex(r.backgroundColor),
+    const l = v.rgbToHex(r.backgroundColor),
       d = document.getElementById('color');
     d && (d.value = l), this.addListeners(i);
   }
@@ -1287,7 +1332,7 @@ class y {
         n && clearTimeout(n), (n = setTimeout(() => e(...s), t));
       };
     })(() => {
-      w.historyManager.captureState();
+      b.historyManager.captureState();
     }, 300);
     null === (t = u.width) ||
       void 0 === t ||
@@ -1367,7 +1412,7 @@ class y {
     return this.layersViewController;
   }
 }
-class v {
+class w {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -1402,42 +1447,42 @@ class v {
     return this.cellSize;
   }
 }
-class w {
+class b {
   static getComponents() {
-    return w.components;
+    return b.components;
   }
   static setComponents(e) {
-    w.components = e;
+    b.components = e;
   }
   static init() {
-    (w.canvasElement = document.getElementById('canvas')),
-      (w.sidebarElement = document.getElementById('sidebar')),
-      w.canvasElement.addEventListener('drop', w.onDrop.bind(w)),
-      w.canvasElement.addEventListener('dragover', e => e.preventDefault()),
-      w.canvasElement.addEventListener('click', e => {
+    (b.canvasElement = document.getElementById('canvas')),
+      (b.sidebarElement = document.getElementById('sidebar')),
+      b.canvasElement.addEventListener('drop', b.onDrop.bind(b)),
+      b.canvasElement.addEventListener('dragover', e => e.preventDefault()),
+      b.canvasElement.addEventListener('click', e => {
         const t = e.target;
         console.log('this is my component,', t),
           console.log('this is component id ', t.id),
-          t && y.showSidebar(t.id);
+          t && v.showSidebar(t.id);
       }),
-      (w.canvasElement.style.position = 'relative'),
-      (w.historyManager = new c(w.canvasElement)),
-      (w.jsonStorage = new p()),
-      (w.controlsManager = new h(w)),
-      (w.gridManager = new v()),
-      w.gridManager.initializeDropPreview(w.canvasElement);
-    new e(w.canvasElement, w.sidebarElement).enable();
-    const t = w.jsonStorage.load();
-    t && w.restoreState(t);
+      (b.canvasElement.style.position = 'relative'),
+      (b.historyManager = new p(b.canvasElement)),
+      (b.jsonStorage = new h()),
+      (b.controlsManager = new m(b)),
+      (b.gridManager = new w()),
+      b.gridManager.initializeDropPreview(b.canvasElement);
+    new e(b.canvasElement, b.sidebarElement).enable();
+    const t = b.jsonStorage.load();
+    t && b.restoreState(t);
   }
   static clearCanvas() {
-    (w.canvasElement.innerHTML = ''),
-      (w.components = []),
-      w.historyManager.captureState(),
-      w.gridManager.initializeDropPreview(w.canvasElement);
+    (b.canvasElement.innerHTML = ''),
+      (b.components = []),
+      b.historyManager.captureState(),
+      b.gridManager.initializeDropPreview(b.canvasElement);
   }
   static getState() {
-    return w.components.map(e => {
+    return b.components.map(e => {
       const t = e.classList[0].split(/\d/)[0].replace('-component', ''),
         n = e.querySelector('img') ? e.querySelector('img').src : null,
         s = window.getComputedStyle(e),
@@ -1499,10 +1544,10 @@ class w {
     });
   }
   static restoreState(e) {
-    (w.canvasElement.innerHTML = ''),
-      (w.components = []),
+    (b.canvasElement.innerHTML = ''),
+      (b.components = []),
       e.forEach(e => {
-        const t = w.createComponent(e.type);
+        const t = b.createComponent(e.type);
         t &&
           ((t.innerHTML = e.content),
           (t.className = ''),
@@ -1518,17 +1563,17 @@ class w {
             Object.entries(e.dataAttributes).forEach(([e, n]) => {
               t.setAttribute(e, n);
             }),
-          w.controlsManager.addControlButtons(t),
-          w.addDraggableListeners(t),
-          t.classList.contains('container-component') && i.restoreContainer(t),
+          b.controlsManager.addControlButtons(t),
+          b.addDraggableListeners(t),
+          t.classList.contains('container-component') && a.restoreContainer(t),
           (t.classList.contains('twoCol-component') ||
             t.classList.contains('threeCol-component')) &&
-            a.restoreColumn(t),
+            r.restoreColumn(t),
           'image' === e.type && n.restoreImageUpload(t, e.imageSrc),
-          w.canvasElement.appendChild(t),
-          w.components.push(t));
+          b.canvasElement.appendChild(t),
+          b.components.push(t));
       }),
-      w.gridManager.initializeDropPreview(w.canvasElement);
+      b.gridManager.initializeDropPreview(b.canvasElement);
   }
   static onDrop(e) {
     var t;
@@ -1543,11 +1588,11 @@ class w {
     if ((console.log(`Dropped component type: ${n}`), !n)) return;
     const { gridX: s, gridY: o } = this.gridManager.mousePositionAtGridCorner(
         e,
-        w.canvasElement
+        b.canvasElement
       ),
-      i = w.createComponent(n);
+      i = b.createComponent(n);
     if (i) {
-      const t = w.generateUniqueClass(n);
+      const t = b.generateUniqueClass(n);
       (i.id = t),
         i.classList.add(t),
         (i.style.position = 'absolute'),
@@ -1560,11 +1605,11 @@ class w {
       (a.className = 'component-label'),
         (a.textContent = t),
         i.appendChild(a),
-        w.components.push(i),
-        w.canvasElement.appendChild(i),
-        w.addDraggableListeners(i),
-        y.updateLayersView(),
-        w.historyManager.captureState();
+        b.components.push(i),
+        b.canvasElement.appendChild(i),
+        b.addDraggableListeners(i),
+        v.updateLayersView(),
+        b.historyManager.captureState();
     }
   }
   static reorderComponent(e, t) {
@@ -1586,25 +1631,25 @@ class w {
       this.historyManager.captureState();
   }
   static createComponent(e) {
-    const t = w.componentFactory[e];
+    const t = b.componentFactory[e];
     if (!t) return console.warn(`Unknown component type: ${e}`), null;
     const n = t();
     if (n) {
       n.classList.add('editable-component'),
         'container' != e && n.classList.add('component-resizer');
-      const t = w.generateUniqueClass(e);
+      const t = b.generateUniqueClass(e);
       n.setAttribute('id', t),
         'image' === e
           ? n.setAttribute('contenteditable', 'false')
           : n.setAttribute('contenteditable', 'true'),
-        w.controlsManager.addControlButtons(n),
-        y.updateLayersView();
+        b.controlsManager.addControlButtons(n),
+        v.updateLayersView();
     }
     return n;
   }
   static generateUniqueClass(e, t = !1, n = null) {
     if (t && n) {
-      let t = w.components.find(e => e.classList.contains(n));
+      let t = b.components.find(e => e.classList.contains(n));
       if (!t && ((t = document.querySelector(`.${n}`)), !t))
         return (
           console.warn(`Container with class ${n} not found.`), `${n}-${e}1`
@@ -1629,7 +1674,7 @@ class w {
       const t = new RegExp(`${e}(\\d+)`);
       let n = 0;
       return (
-        w.components.forEach(e => {
+        b.components.forEach(e => {
           e.classList.forEach(e => {
             const s = e.match(t);
             if (s) {
@@ -1650,7 +1695,7 @@ class w {
       o = 0;
     e.addEventListener('dragstart', i => {
       if (i.dataTransfer) {
-        const a = w.canvasElement.getBoundingClientRect(),
+        const a = b.canvasElement.getBoundingClientRect(),
           r = e.getBoundingClientRect();
         (t = i.clientX),
           (n = i.clientY),
@@ -1666,33 +1711,34 @@ class w {
           r = i.clientY - n;
         let l = s + a,
           d = o + r;
-        const c = w.canvasElement.offsetWidth - e.offsetWidth,
-          p = w.canvasElement.offsetHeight - e.offsetHeight;
+        const c = b.canvasElement.offsetWidth - e.offsetWidth,
+          p = b.canvasElement.offsetHeight - e.offsetHeight;
         (l = Math.max(0, Math.min(l, c))),
           (d = Math.max(0, Math.min(d, p))),
           (e.style.left = `${l}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
-          w.historyManager.captureState();
+          b.historyManager.captureState();
       });
   }
   static exportLayout() {
-    return w.components.map(e => ({ type: e.className, content: e.innerHTML }));
+    return b.components.map(e => ({ type: e.className, content: e.innerHTML }));
   }
 }
-(w.components = []),
-  (w.componentFactory = {
-    button: () => new s().create(),
-    header: () => new o().create(),
+(b.components = []),
+  (b.componentFactory = {
+    button: () => new o().create(),
+    header: () => new i().create(),
     image: () => new n().create(),
+    video: () => new s().create(),
     text: () => new t().create(),
-    container: () => new i().create(),
-    twoCol: () => new r().create(),
-    threeCol: () => new l().create(),
-    landingpage: () => new d().create(),
+    container: () => new a().create(),
+    twoCol: () => new l().create(),
+    threeCol: () => new d().create(),
+    landingpage: () => new c().create(),
   });
-const b = document.getElementById('canvas'),
-  f = new (class {
+const f = document.getElementById('canvas'),
+  C = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -1710,12 +1756,12 @@ const b = document.getElementById('canvas'),
         this.selectedElement.classList.add('selected');
     }
   })();
-b &&
-  b.addEventListener('click', e => {
+f &&
+  f.addEventListener('click', e => {
     const t = e.target;
-    t !== b && f.selectElement(t);
+    t !== f && C.selectElement(t);
   });
-class C {
+class L {
   constructor(e) {
     this.canvas = e;
   }
@@ -1740,43 +1786,45 @@ class C {
       }
   }
 }
-const L = {
+const E = {
   desktop:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n            </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n                </svg>',
   tablet:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M19 12V11.988M4 19H20C21.1046 19 22 18.1046 22 17V7C22 5.89543 21.1046 5 20 5H4C2.89543 5 2 5.89543 2 7V17C2 18.1046 2.89543 19 4 19Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path d="M19 12V11.988M4 19H20C21.1046 19 22 18.1046 22 17V7C22 5.89543 21.1046 5 20 5H4C2.89543 5 2 5.89543 2 7V17C2 18.1046 2.89543 19 4 19Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                </svg>',
   mobile:
     '<svg fill="#000000" width="800px" height="800px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M22.461 5H9.539a1.6 1.6 0 0 0-1.601 1.603V25.4A1.6 1.6 0 0 0 9.539 27h12.922c.885 0 1.602-.718 1.602-1.602V6.603A1.603 1.603 0 0 0 22.461 5zm-6.46 20.418a1.022 1.022 0 1 1 1.021-1.021c-.001.634-.46 1.021-1.021 1.021zm6.862-3.501H9.138V7.704h13.725v14.213z"/></svg>',
-  save: '<svg fill="#000000" width="800px" height="800px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">\n                <path d="M790.706 338.824v112.94H395.412c-31.06 0-56.47 25.3-56.47 56.471v744.509c17.73-6.325 36.592-10.391 56.47-10.391h1129.412c19.877 0 38.738 4.066 56.47 10.39V508.236c0-31.171-25.412-56.47-56.47-56.47h-395.295V338.824h395.295c93.402 0 169.411 76.009 169.411 169.411v1242.353c0 93.403-76.01 169.412-169.411 169.412H395.412C302.009 1920 226 1843.99 226 1750.588V508.235c0-93.402 76.01-169.411 169.412-169.411h395.294Zm734.118 1016.47H395.412c-31.06 0-56.47 25.299-56.47 56.47v338.824c0 31.172 25.41 56.47 56.47 56.47h1129.412c31.058 0 56.47-25.298 56.47-56.47v-338.823c0-31.172-25.412-56.47-56.47-56.47ZM1016.622-.023v880.151l246.212-246.325 79.85 79.85-382.532 382.644-382.645-382.644 79.85-79.85L903.68 880.128V-.022h112.941ZM564.824 1468.235c-62.344 0-112.942 50.71-112.942 112.941s50.598 112.942 112.942 112.942c62.343 0 112.94-50.71 112.94-112.942 0-62.23-50.597-112.94-112.94-112.94Z" fill-rule="evenodd"/>\n            </svg>',
-  code: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M14.1809 4.2755C14.581 4.3827 14.8185 4.79396 14.7113 5.19406L10.7377 20.0238C10.6304 20.4239 10.2192 20.6613 9.81909 20.5541C9.41899 20.4469 9.18156 20.0356 9.28876 19.6355L13.2624 4.80583C13.3696 4.40573 13.7808 4.16829 14.1809 4.2755Z" fill="#1C274C"/>\n        <path d="M16.4425 7.32781C16.7196 7.01993 17.1938 6.99497 17.5017 7.27206L19.2392 8.8358C19.9756 9.49847 20.5864 10.0482 21.0058 10.5467C21.4468 11.071 21.7603 11.6342 21.7603 12.3295C21.7603 13.0248 21.4468 13.5881 21.0058 14.1123C20.5864 14.6109 19.9756 15.1606 19.2392 15.8233L17.5017 17.387C17.1938 17.6641 16.7196 17.6391 16.4425 17.3313C16.1654 17.0234 16.1904 16.5492 16.4983 16.2721L18.1947 14.7452C18.9826 14.0362 19.5138 13.5558 19.8579 13.1467C20.1882 12.7541 20.2603 12.525 20.2603 12.3295C20.2603 12.1341 20.1882 11.9049 19.8579 11.5123C19.5138 11.1033 18.9826 10.6229 18.1947 9.91383L16.4983 8.387C16.1904 8.10991 16.1654 7.63569 16.4425 7.32781Z" fill="#1C274C"/>\n        <path d="M7.50178 8.387C7.80966 8.10991 7.83462 7.63569 7.55752 7.32781C7.28043 7.01993 6.80621 6.99497 6.49833 7.27206L4.76084 8.8358C4.0245 9.49847 3.41369 10.0482 2.99428 10.5467C2.55325 11.071 2.23975 11.6342 2.23975 12.3295C2.23975 13.0248 2.55325 13.5881 2.99428 14.1123C3.41369 14.6109 4.02449 15.1606 4.76082 15.8232L6.49833 17.387C6.80621 17.6641 7.28043 17.6391 7.55752 17.3313C7.83462 17.0234 7.80966 16.5492 7.50178 16.2721L5.80531 14.7452C5.01743 14.0362 4.48623 13.5558 4.14213 13.1467C3.81188 12.7541 3.73975 12.525 3.73975 12.3295C3.73975 12.1341 3.81188 11.9049 4.14213 11.5123C4.48623 11.1033 5.01743 10.6229 5.80531 9.91383L7.50178 8.387Z" fill="#1C274C"/>\n        </svg>',
-  view: '<svg width="800px" height="800px" viewBox="0 -0.5 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M19.5 12.5C19.5 14.985 16.366 17 12.5 17C8.634 17 5.5 14.985 5.5 12.5C5.5 10.015 8.634 8 12.5 8C16.366 8 19.5 10.015 19.5 12.5Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.25 12.5C14.2716 13.1393 13.9429 13.7395 13.3925 14.0656C12.8422 14.3917 12.1578 14.3917 11.6075 14.0656C11.0571 13.7395 10.7284 13.1393 10.75 12.5C10.7284 11.8607 11.0571 11.2604 11.6075 10.9344C12.1578 10.6083 12.8422 10.6083 13.3925 10.9344C13.9429 11.2604 14.2716 11.8607 14.25 12.5V12.5Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n                </svg>',
-  undo: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.53033 3.46967C7.82322 3.76256 7.82322 4.23744 7.53033 4.53033L5.81066 6.25H15C18.1756 6.25 20.75 8.82436 20.75 12C20.75 15.1756 18.1756 17.75 15 17.75H8.00001C7.58579 17.75 7.25001 17.4142 7.25001 17C7.25001 16.5858 7.58579 16.25 8.00001 16.25H15C17.3472 16.25 19.25 14.3472 19.25 12C19.25 9.65279 17.3472 7.75 15 7.75H5.81066L7.53033 9.46967C7.82322 9.76256 7.82322 10.2374 7.53033 10.5303C7.23744 10.8232 6.76256 10.8232 6.46967 10.5303L3.46967 7.53033C3.17678 7.23744 3.17678 6.76256 3.46967 6.46967L6.46967 3.46967C6.76256 3.17678 7.23744 3.17678 7.53033 3.46967Z" fill="#1C274C"/>\n        </svg>',
-  redo: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M20 7H9.00001C6.23858 7 4 9.23857 4 12C4 14.7614 6.23858 17 9 17H16M20 7L17 4M20 7L17 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n        </svg>',
+  save: '<svg fill="#000000" width="800px" height="800px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">\n                    <path d="M790.706 338.824v112.94H395.412c-31.06 0-56.47 25.3-56.47 56.471v744.509c17.73-6.325 36.592-10.391 56.47-10.391h1129.412c19.877 0 38.738 4.066 56.47 10.39V508.236c0-31.171-25.412-56.47-56.47-56.47h-395.295V338.824h395.295c93.402 0 169.411 76.009 169.411 169.411v1242.353c0 93.403-76.01 169.412-169.411 169.412H395.412C302.009 1920 226 1843.99 226 1750.588V508.235c0-93.402 76.01-169.411 169.412-169.411h395.294Zm734.118 1016.47H395.412c-31.06 0-56.47 25.299-56.47 56.47v338.824c0 31.172 25.41 56.47 56.47 56.47h1129.412c31.058 0 56.47-25.298 56.47-56.47v-338.823c0-31.172-25.412-56.47-56.47-56.47ZM1016.622-.023v880.151l246.212-246.325 79.85 79.85-382.532 382.644-382.645-382.644 79.85-79.85L903.68 880.128V-.022h112.941ZM564.824 1468.235c-62.344 0-112.942 50.71-112.942 112.941s50.598 112.942 112.942 112.942c62.343 0 112.94-50.71 112.94-112.942 0-62.23-50.597-112.94-112.94-112.94Z" fill-rule="evenodd"/>\n                </svg>',
+  code: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M14.1809 4.2755C14.581 4.3827 14.8185 4.79396 14.7113 5.19406L10.7377 20.0238C10.6304 20.4239 10.2192 20.6613 9.81909 20.5541C9.41899 20.4469 9.18156 20.0356 9.28876 19.6355L13.2624 4.80583C13.3696 4.40573 13.7808 4.16829 14.1809 4.2755Z" fill="#1C274C"/>\n            <path d="M16.4425 7.32781C16.7196 7.01993 17.1938 6.99497 17.5017 7.27206L19.2392 8.8358C19.9756 9.49847 20.5864 10.0482 21.0058 10.5467C21.4468 11.071 21.7603 11.6342 21.7603 12.3295C21.7603 13.0248 21.4468 13.5881 21.0058 14.1123C20.5864 14.6109 19.9756 15.1606 19.2392 15.8233L17.5017 17.387C17.1938 17.6641 16.7196 17.6391 16.4425 17.3313C16.1654 17.0234 16.1904 16.5492 16.4983 16.2721L18.1947 14.7452C18.9826 14.0362 19.5138 13.5558 19.8579 13.1467C20.1882 12.7541 20.2603 12.525 20.2603 12.3295C20.2603 12.1341 20.1882 11.9049 19.8579 11.5123C19.5138 11.1033 18.9826 10.6229 18.1947 9.91383L16.4983 8.387C16.1904 8.10991 16.1654 7.63569 16.4425 7.32781Z" fill="#1C274C"/>\n            <path d="M7.50178 8.387C7.80966 8.10991 7.83462 7.63569 7.55752 7.32781C7.28043 7.01993 6.80621 6.99497 6.49833 7.27206L4.76084 8.8358C4.0245 9.49847 3.41369 10.0482 2.99428 10.5467C2.55325 11.071 2.23975 11.6342 2.23975 12.3295C2.23975 13.0248 2.55325 13.5881 2.99428 14.1123C3.41369 14.6109 4.02449 15.1606 4.76082 15.8232L6.49833 17.387C6.80621 17.6641 7.28043 17.6391 7.55752 17.3313C7.83462 17.0234 7.80966 16.5492 7.50178 16.2721L5.80531 14.7452C5.01743 14.0362 4.48623 13.5558 4.14213 13.1467C3.81188 12.7541 3.73975 12.525 3.73975 12.3295C3.73975 12.1341 3.81188 11.9049 4.14213 11.5123C4.48623 11.1033 5.01743 10.6229 5.80531 9.91383L7.50178 8.387Z" fill="#1C274C"/>\n            </svg>',
+  view: '<svg width="800px" height="800px" viewBox="0 -0.5 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">\n                    <path fill-rule="evenodd" clip-rule="evenodd" d="M19.5 12.5C19.5 14.985 16.366 17 12.5 17C8.634 17 5.5 14.985 5.5 12.5C5.5 10.015 8.634 8 12.5 8C16.366 8 19.5 10.015 19.5 12.5Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n                    <path fill-rule="evenodd" clip-rule="evenodd" d="M14.25 12.5C14.2716 13.1393 13.9429 13.7395 13.3925 14.0656C12.8422 14.3917 12.1578 14.3917 11.6075 14.0656C11.0571 13.7395 10.7284 13.1393 10.75 12.5C10.7284 11.8607 11.0571 11.2604 11.6075 10.9344C12.1578 10.6083 12.8422 10.6083 13.3925 10.9344C13.9429 11.2604 14.2716 11.8607 14.25 12.5V12.5Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n                    </svg>',
+  undo: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.53033 3.46967C7.82322 3.76256 7.82322 4.23744 7.53033 4.53033L5.81066 6.25H15C18.1756 6.25 20.75 8.82436 20.75 12C20.75 15.1756 18.1756 17.75 15 17.75H8.00001C7.58579 17.75 7.25001 17.4142 7.25001 17C7.25001 16.5858 7.58579 16.25 8.00001 16.25H15C17.3472 16.25 19.25 14.3472 19.25 12C19.25 9.65279 17.3472 7.75 15 7.75H5.81066L7.53033 9.46967C7.82322 9.76256 7.82322 10.2374 7.53033 10.5303C7.23744 10.8232 6.76256 10.8232 6.46967 10.5303L3.46967 7.53033C3.17678 7.23744 3.17678 6.76256 3.46967 6.46967L6.46967 3.46967C6.76256 3.17678 7.23744 3.17678 7.53033 3.46967Z" fill="#1C274C"/>\n            </svg>',
+  redo: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M20 7H9.00001C6.23858 7 4 9.23857 4 12C4 14.7614 6.23858 17 9 17H16M20 7L17 4M20 7L17 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n            </svg>',
   reset:
-    '<svg width="800px" height="800px" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">\n\n            <g fill="none" fill-rule="evenodd" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" transform="matrix(0 1 1 0 2.5 2.5)">\n\n            <path d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8"/>\n\n            <circle cx="8" cy="8" fill="#000000" r="2"/>\n\n            <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)"/>\n\n            </g>\n\n            </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">\n    \n                <g fill="none" fill-rule="evenodd" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" transform="matrix(0 1 1 0 2.5 2.5)">\n    \n                <path d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8"/>\n    \n                <circle cx="8" cy="8" fill="#000000" r="2"/>\n    \n                <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)"/>\n    \n                </g>\n    \n                </svg>',
   button:
-    '<svg width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">\n\n                <rect x="0" fill="none" width="20" height="20"/>\n\n                <g>\n\n                <path d="M17 5H3c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm1 7c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h14c.6 0 1 .4 1 1v5z"/>\n\n                </g>\n\n                </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">\n    \n                    <rect x="0" fill="none" width="20" height="20"/>\n    \n                    <g>\n    \n                    <path d="M17 5H3c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm1 7c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h14c.6 0 1 .4 1 1v5z"/>\n    \n                    </g>\n    \n                    </svg>',
   header:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7.55228 5 8 5.44772 8 6V11.5H16V6C16 5.44772 16.4477 5 17 5C17.5523 5 18 5.44772 18 6V12.5V19C18 19.5523 17.5523 20 17 20C16.4477 20 16 19.5523 16 19V13.5H8V19C8 19.5523 7.55228 20 7 20C6.44772 20 6 19.5523 6 19V12.5V6C6 5.44772 6.44772 5 7 5Z" fill="#000000"/>\n                    </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7 5C7.55228 5 8 5.44772 8 6V11.5H16V6C16 5.44772 16.4477 5 17 5C17.5523 5 18 5.44772 18 6V12.5V19C18 19.5523 17.5523 20 17 20C16.4477 20 16 19.5523 16 19V13.5H8V19C8 19.5523 7.55228 20 7 20C6.44772 20 6 19.5523 6 19V12.5V6C6 5.44772 6.44772 5 7 5Z" fill="#000000"/>\n                        </svg>',
   image:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <rect width="24" height="24" fill="white"/>\n        <path d="M21 16V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V18M21 16V4C21 3.44772 20.5523 3 20 3H4C3.44772 3 3 3.44772 3 4V18M21 16L15.4829 12.3219C15.1843 12.1228 14.8019 12.099 14.4809 12.2595L3 18" stroke="#000000" stroke-linejoin="round"/>\n        <circle cx="8" cy="9" r="2" stroke="#000000" stroke-linejoin="round"/>\n        </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <rect width="24" height="24" fill="white"/>\n            <path d="M21 16V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V18M21 16V4C21 3.44772 20.5523 3 20 3H4C3.44772 3 3 3.44772 3 4V18M21 16L15.4829 12.3219C15.1843 12.1228 14.8019 12.099 14.4809 12.2595L3 18" stroke="#000000" stroke-linejoin="round"/>\n            <circle cx="8" cy="9" r="2" stroke="#000000" stroke-linejoin="round"/>\n            </svg>',
+  video:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <circle cx="12" cy="12" r="10" fill="#000"/>\n                <polygon points="10,8 16,12 10,16" fill="#ffffff"/>\n                </svg>',
   container:
     '<svg fill="#000000" width="800px" height="800px" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" id="memory-box-outer-light-dashed-all"><path d="M4 0V2H2V4H0V0H4M2 6V10H0V6H2M2 12V16H0V12H2M2 18V20H4V22H0V18H2M6 0H10V2H6V0M12 0H16V2H12V0M18 0H22V4H20V2H18V0M18 22V20H20V18H22V22H18M16 22H12V20H16V22M10 22H6V20H10V22M20 6H22V10H20V6M20 12H22V16H20V12Z" /></svg>',
-  text: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M4 4C4 3.44772 4.44772 3 5 3H19C19.5523 3 20 3.44772 20 4V6C20 6.55228 19.5523 7 19 7C18.4477 7 18 6.55228 18 6V5H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V5H6V6C6 6.55228 5.55228 7 5 7C4.44772 7 4 6.55228 4 6V4Z" fill="#000000"/>\n        </svg>',
+  text: '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M4 4C4 3.44772 4.44772 3 5 3H19C19.5523 3 20 3.44772 20 4V6C20 6.55228 19.5523 7 19 7C18.4477 7 18 6.55228 18 6V5H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V5H6V6C6 6.55228 5.55228 7 5 7C4.44772 7 4 6.55228 4 6V4Z" fill="#000000"/>\n            </svg>',
   hyperlink:
-    '<svg \n                  xmlns="http://www.w3.org/2000/svg" \n                  width="18" \n                  height="18" \n                  viewBox="0 0 24 24">\n                  <title>Hyperlink</title>\n                  <path fill="currentColor" d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353a.75.75 0 0 0-1.18.928a5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061z"/>\n                  <path fill="currentColor" d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353a.75.75 0 0 0 1.18-.928a5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568z"/>\n              </svg>',
+    '<svg \n                      xmlns="http://www.w3.org/2000/svg" \n                      width="18" \n                      height="18" \n                      viewBox="0 0 24 24">\n                      <title>Hyperlink</title>\n                      <path fill="currentColor" d="M14.78 3.653a3.936 3.936 0 1 1 5.567 5.567l-3.627 3.627a3.936 3.936 0 0 1-5.88-.353a.75.75 0 0 0-1.18.928a5.436 5.436 0 0 0 8.12.486l3.628-3.628a5.436 5.436 0 1 0-7.688-7.688l-3 3a.75.75 0 0 0 1.06 1.061z"/>\n                      <path fill="currentColor" d="M7.28 11.153a3.936 3.936 0 0 1 5.88.353a.75.75 0 0 0 1.18-.928a5.436 5.436 0 0 0-8.12-.486L2.592 13.72a5.436 5.436 0 1 0 7.688 7.688l3-3a.75.75 0 1 0-1.06-1.06l-3 3a3.936 3.936 0 0 1-5.567-5.568z"/>\n                  </svg>',
   twocol:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n    <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H12M12 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H12M12 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n    </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H12M12 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H12M12 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n        </svg>',
   threecol:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M9.33333 20H5C4.44772 20 4 19.5523 4 19V5C4 4.44772 4.44772 4 5 4H9.33333M9.33333 20V4M9.33333 20H14.6667M9.33333 4H14.6667M14.6667 4H19C19.5523 4 20 4.44772 20 5V19C20 19.5523 19.5523 20 19 20H14.6667M14.6667 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n        </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M9.33333 20H5C4.44772 20 4 19.5523 4 19V5C4 4.44772 4.44772 4 5 4H9.33333M9.33333 20V4M9.33333 20H14.6667M9.33333 4H14.6667M14.6667 4H19C19.5523 4 20 4.44772 20 5V19C20 19.5523 19.5523 20 19 20H14.6667M14.6667 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            </svg>',
   landing:
-    '<svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" \n\t viewBox="0 0 32 32" xml:space="preserve">\n        <style type="text/css">\n            .st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}\n            .st1{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}\n            .st2{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5.2066,0;}\n        </style>\n        <line class="st0" x1="3" y1="11" x2="29" y2="11"/>\n        <line class="st0" x1="7" y1="8" x2="7" y2="8"/>\n        <line class="st0" x1="10" y1="8" x2="10" y2="8"/>\n        <line class="st0" x1="13" y1="8" x2="13" y2="8"/>\n        <rect x="3" y="5" class="st0" width="26" height="22"/>\n        <rect x="6" y="14" class="st0" width="10" height="10"/>\n        <rect x="19" y="21" class="st0" width="7" height="3"/>\n        <line class="st0" x1="20" y1="15" x2="26" y2="15"/>\n        <line class="st0" x1="23" y1="18" x2="26" y2="18"/>\n        <polyline class="st0" points="6,22 12,19 16,22 "/>\n        <line class="st0" x1="9" y1="17" x2="9" y2="17"/>\n        </svg>',
+    '<svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" \n           viewBox="0 0 32 32" xml:space="preserve">\n            <style type="text/css">\n                .st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}\n                .st1{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}\n                .st2{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5.2066,0;}\n            </style>\n            <line class="st0" x1="3" y1="11" x2="29" y2="11"/>\n            <line class="st0" x1="7" y1="8" x2="7" y2="8"/>\n            <line class="st0" x1="10" y1="8" x2="10" y2="8"/>\n            <line class="st0" x1="13" y1="8" x2="13" y2="8"/>\n            <rect x="3" y="5" class="st0" width="26" height="22"/>\n            <rect x="6" y="14" class="st0" width="10" height="10"/>\n            <rect x="19" y="21" class="st0" width="7" height="3"/>\n            <line class="st0" x1="20" y1="15" x2="26" y2="15"/>\n            <line class="st0" x1="23" y1="18" x2="26" y2="18"/>\n            <polyline class="st0" points="6,22 12,19 16,22 "/>\n            <line class="st0" x1="9" y1="17" x2="9" y2="17"/>\n            </svg>',
   delete:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M10 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            <path d="M14 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            <path d="M4 7H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path d="M10 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M14 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M4 7H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                </svg>',
   close:
-    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M6.99486 7.00636C6.60433 7.39689 6.60433 8.03005 6.99486 8.42058L10.58 12.0057L6.99486 15.5909C6.60433 15.9814 6.60433 16.6146 6.99486 17.0051C7.38538 17.3956 8.01855 17.3956 8.40907 17.0051L11.9942 13.4199L15.5794 17.0051C15.9699 17.3956 16.6031 17.3956 16.9936 17.0051C17.3841 16.6146 17.3841 15.9814 16.9936 15.5909L13.4084 12.0057L16.9936 8.42059C17.3841 8.03007 17.3841 7.3969 16.9936 7.00638C16.603 6.61585 15.9699 6.61585 15.5794 7.00638L11.9942 10.5915L8.40907 7.00636C8.01855 6.61584 7.38538 6.61584 6.99486 7.00636Z" fill="#0F0F0F"/>\n            </svg>',
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path d="M6.99486 7.00636C6.60433 7.39689 6.60433 8.03005 6.99486 8.42058L10.58 12.0057L6.99486 15.5909C6.60433 15.9814 6.60433 16.6146 6.99486 17.0051C7.38538 17.3956 8.01855 17.3956 8.40907 17.0051L11.9942 13.4199L15.5794 17.0051C15.9699 17.3956 16.6031 17.3956 16.9936 17.0051C17.3841 16.6146 17.3841 15.9814 16.9936 15.5909L13.4084 12.0057L16.9936 8.42059C17.3841 8.03007 17.3841 7.3969 16.9936 7.00638C16.603 6.61585 15.9699 6.61585 15.5794 7.00638L11.9942 10.5915L8.40907 7.00636C8.01855 6.61584 7.38538 6.61584 6.99486 7.00636Z" fill="#0F0F0F"/>\n                </svg>',
 };
-function E(e) {
+function x(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let s = 0;
@@ -1892,7 +1940,7 @@ function E(e) {
   const r = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
   return new Blob([r], { type: 'application/zip' });
 }
-class x {
+class k {
   static init() {
     document.addEventListener('keydown', this.handleKeydown);
   }
@@ -1900,14 +1948,14 @@ class x {
     if (e.ctrlKey || e.metaKey)
       switch (e.key.toLowerCase()) {
         case 'z':
-          e.preventDefault(), w.historyManager.undo();
+          e.preventDefault(), b.historyManager.undo();
           break;
         case 'y':
-          e.preventDefault(), w.historyManager.redo();
+          e.preventDefault(), b.historyManager.redo();
       }
   }
 }
-class k {
+class M {
   setPreviewMode(e) {
     const t = document.getElementById('canvas');
     t.classList.forEach(e => {
@@ -1918,27 +1966,29 @@ class k {
 }
 document.addEventListener('DOMContentLoaded', () => {
   var e, t, n, s, o, i, a, r, l;
-  const d = new w(),
-    c = new C(d),
-    h = new u(d),
-    g = new p(),
-    v = new k();
+  const d = new b(),
+    c = new L(d),
+    p = new g(d),
+    m = new h(),
+    y = new M();
   !(function () {
     const e = document.getElementById('sidebar'),
       t = {
-        button: L.button,
-        header: L.header,
-        image: L.image,
-        text: L.text,
-        container: L.container,
-        twoCol: L.twocol,
-        threeCol: L.threecol,
-        landingpage: L.landing,
+        button: E.button,
+        header: E.header,
+        image: E.image,
+        video: E.video,
+        text: E.text,
+        container: E.container,
+        twoCol: E.twocol,
+        threeCol: E.threecol,
+        landingpage: E.landing,
       },
       n = {
         button: 'Button',
         header: 'Header',
         image: 'Image',
+        video: 'Link Video',
         text: 'Text',
         container: 'Container',
         twoCol: 'Two Column Layout',
@@ -1953,6 +2003,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'header',
           'text',
           'image',
+          'video',
           'container',
           'twoCol',
           'threeCol',
@@ -1983,30 +2034,30 @@ document.addEventListener('DOMContentLoaded', () => {
       }),
       e.appendChild(s);
   })(),
-    w.init(),
+    b.init(),
     c.init(),
-    x.init(),
-    y.init();
-  const b = document.createElement('header');
+    k.init(),
+    v.init();
+  const w = document.createElement('header');
   function f(e) {
     e.classList.remove('show'),
       e.classList.add('hide'),
       setTimeout(() => e.remove(), 300);
   }
-  b.appendChild(
+  w.appendChild(
     (function () {
       const e = document.createElement('nav');
       e.id = 'preview-navbar';
       const t = {
-          desktop: L.desktop,
-          tablet: L.tablet,
-          mobile: L.mobile,
-          save: L.save,
-          export: L.code,
-          view: L.view,
-          undo: L.undo,
-          redo: L.redo,
-          reset: L.reset,
+          desktop: E.desktop,
+          tablet: E.tablet,
+          mobile: E.mobile,
+          save: E.save,
+          export: E.code,
+          view: E.view,
+          undo: E.undo,
+          redo: E.redo,
+          reset: E.reset,
         },
         n = [
           {
@@ -2057,12 +2108,12 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     })()
   ),
-    document.body.insertBefore(b, document.getElementById('app')),
+    document.body.insertBefore(w, document.getElementById('app')),
     null === (e = document.getElementById('save-btn')) ||
       void 0 === e ||
       e.addEventListener('click', () => {
-        const e = w.getState();
-        g.save(e), m('Saving progress...');
+        const e = b.getState();
+        m.save(e), u('Saving progress...');
       }),
     null === (t = document.getElementById('reset-btn')) ||
       void 0 === t ||
@@ -2085,9 +2136,9 @@ document.addEventListener('DOMContentLoaded', () => {
         })(
           'Are you sure you want to reset the layout?',
           () => {
-            g.remove(),
-              w.clearCanvas(),
-              m('The saved layout has been successfully reset.');
+            m.remove(),
+              b.clearCanvas(),
+              u('The saved layout has been successfully reset.');
           },
           () => {
             console.log('Layout reset canceled.');
@@ -2097,7 +2148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (n = document.getElementById('export-html-btn')) ||
       void 0 === n ||
       n.addEventListener('click', () => {
-        const e = new u(new w()),
+        const e = new g(new b()),
           t = e.generateHTML(),
           n = e.generateCSS();
         console.log('this is html', t);
@@ -2153,13 +2204,13 @@ document.addEventListener('DOMContentLoaded', () => {
           (m.innerHTML = o),
           p.appendChild(h),
           p.appendChild(m);
-        const g = document.createElement('div');
-        g.classList.add('button-wrapper');
+        const u = document.createElement('div');
+        u.classList.add('button-wrapper');
         const y = document.createElement('button');
         (y.textContent = 'Export to ZIP'),
           y.classList.add('export-btn'),
           y.addEventListener('click', () => {
-            const e = E([
+            const e = x([
                 { name: 'index.html', content: t },
                 { name: 'styles.css', content: n },
               ]),
@@ -2172,8 +2223,8 @@ document.addEventListener('DOMContentLoaded', () => {
           a.appendChild(l),
           a.appendChild(p),
           a.appendChild(y),
-          g.appendChild(a),
-          i.appendChild(g),
+          u.appendChild(a),
+          i.appendChild(u),
           document.body.appendChild(i),
           i.classList.add('show'),
           i.addEventListener('click', e => {
@@ -2186,7 +2237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (s = document.getElementById('view-btn')) ||
       void 0 === s ||
       s.addEventListener('click', () => {
-        const e = h.generateHTML(),
+        const e = p.generateHTML(),
           t = document.createElement('div');
         (t.id = 'preview-modal'),
           (t.style.cssText =
@@ -2207,9 +2258,9 @@ document.addEventListener('DOMContentLoaded', () => {
         o.style.cssText =
           '\n    display: flex;\n    gap: 10px;\n    margin-bottom: 10px;\n  ';
         [
-          { icon: L.mobile, title: 'Desktop', width: '375px', height: '90%' },
-          { icon: L.tablet, title: 'Tablet', width: '768px', height: '90%' },
-          { icon: L.desktop, title: 'Mobile', width: '97%', height: '90%' },
+          { icon: E.mobile, title: 'Desktop', width: '375px', height: '90%' },
+          { icon: E.tablet, title: 'Tablet', width: '768px', height: '90%' },
+          { icon: E.desktop, title: 'Mobile', width: '97%', height: '90%' },
         ].forEach(e => {
           const t = document.createElement('button');
           (t.style.cssText =
@@ -2243,26 +2294,26 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (o = document.getElementById('preview-desktop')) ||
       void 0 === o ||
       o.addEventListener('click', () => {
-        v.setPreviewMode('desktop');
+        y.setPreviewMode('desktop');
       }),
     null === (i = document.getElementById('preview-tablet')) ||
       void 0 === i ||
       i.addEventListener('click', () => {
-        v.setPreviewMode('tablet');
+        y.setPreviewMode('tablet');
       }),
     null === (a = document.getElementById('preview-mobile')) ||
       void 0 === a ||
       a.addEventListener('click', () => {
-        v.setPreviewMode('mobile');
+        y.setPreviewMode('mobile');
       }),
     null === (r = document.getElementById('undo-btn')) ||
       void 0 === r ||
       r.addEventListener('click', () => {
-        w.historyManager.undo();
+        b.historyManager.undo();
       }),
     null === (l = document.getElementById('redo-btn')) ||
       void 0 === l ||
       l.addEventListener('click', () => {
-        w.historyManager.redo();
+        b.historyManager.redo();
       });
 });

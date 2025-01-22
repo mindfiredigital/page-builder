@@ -762,3 +762,33 @@ ul {
   margin: 0%;
   text-align: center;
 }
+
+.video-container {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+}
+
+.video-container video {
+  display: none;
+}
+
+.pencil-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.upload-text {
+  color: #666;
+  text-align: center;
+}
