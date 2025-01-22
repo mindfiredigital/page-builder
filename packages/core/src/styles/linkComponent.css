@@ -12,13 +12,14 @@
     cursor: pointer;
   }
   
-  .edit-button {
+  .edit-link {
+    text-decoration: none;
     padding: 4px 8px;
     cursor: pointer;
     display: inline-flex;
   }
   
-  .edit-form {
+  .edit-link-form {
     display: none;
     flex-direction: column;
     gap: 8px;

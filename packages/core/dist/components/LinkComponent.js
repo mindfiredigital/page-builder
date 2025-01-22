@@ -3,27 +3,30 @@ export class LinkComponent {
     this.link = null;
     this.isEditing = false;
   }
+  /**
+   * Creates a link component with editing functionality.
+   * Users can edit the link's URL and choose whether it opens in the same tab or a new tab.
+   * @param href - The initial URL for the link (default: '#').
+   * @param label - The text displayed for the link (default: 'Click Here').
+   * @returns A div element containing the link, edit button, and edit form.
+   */
   create(href = '#', label = 'Click Here') {
     const container = document.createElement('div');
     container.classList.add('link-component-container');
-    // create link element
+    // Create the link element
     this.link = document.createElement('a');
     this.link.href = href;
     this.link.innerText = label;
     this.link.classList.add('link-component');
     const editButton = document.createElement('button');
-    editButton.innerText = 'Edit';
-    editButton.classList.add('edit-button');
+    editButton.innerText = '🖊️';
+    editButton.classList.add('edit-link');
     const editForm = document.createElement('div');
-    editForm.classList.add('edit-form');
+    editForm.classList.add('edit-link-form');
     const urlInput = document.createElement('input');
     urlInput.type = 'url';
     urlInput.value = href;
     urlInput.placeholder = 'Enter URL';
-    const labelInput = document.createElement('input');
-    labelInput.type = 'text';
-    labelInput.value = label;
-    labelInput.placeholder = 'Enter Label';
     // New checkbox for toggle
     const targetCheckbox = document.createElement('input');
     targetCheckbox.type = 'checkbox';
@@ -33,7 +36,6 @@ export class LinkComponent {
     const saveButton = document.createElement('button');
     saveButton.innerText = 'Save';
     editForm.appendChild(urlInput);
-    editForm.appendChild(labelInput);
     editForm.appendChild(checkboxLabel);
     editForm.appendChild(saveButton);
     editButton.addEventListener('click', e => {
@@ -50,7 +52,6 @@ export class LinkComponent {
       this.isEditing = false;
       if (this.link) {
         this.link.href = urlInput.value;
-        this.link.innerText = labelInput.value;
         this.link.style.display = 'inline';
         this.link.target = targetCheckbox.checked ? '_blank' : '_self';
       }
@@ -62,16 +63,29 @@ export class LinkComponent {
     container.appendChild(editForm);
     return container;
   }
+  /**
+   * Gets the current data of the link, including the URL, label, and target behavior.
+   * @returns An object containing href, label, and target.
+   */
   getLinkData() {
-    var _a, _b;
+    var _a, _b, _c;
     return {
       href:
         ((_a = this.link) === null || _a === void 0 ? void 0 : _a.href) || '#',
       label:
         ((_b = this.link) === null || _b === void 0 ? void 0 : _b.innerText) ||
         'Click Here',
+      target:
+        ((_c = this.link) === null || _c === void 0 ? void 0 : _c.target) ||
+        '_self',
     };
   }
+  /**
+   * Updates the link's URL, label, and target programmatically.
+   * @param href - The new URL for the link.
+   * @param label - The new text displayed for the link.
+   * @param target - The target behavior ('_self' for the same tab, '_blank' for a new tab).
+   */
   updateLink(href, label, target = '_self') {
     if (this.link) {
       this.link.href = href;
@@ -79,6 +93,10 @@ export class LinkComponent {
       this.link.target = target;
     }
   }
+  /**
+   * Checks if the component is currently in editing mode.
+   * @returns A boolean indicating whether the component is in editing mode.
+   */
   isInEditMode() {
     return this.isEditing;
   }
