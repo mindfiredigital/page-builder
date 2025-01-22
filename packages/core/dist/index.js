@@ -514,54 +514,25 @@ class c {
   create(e = '#', t = 'Click Here') {
     const n = document.createElement('div');
     n.classList.add('link-component-container'),
-      (n.style.display = 'flex'),
-      (n.style.gap = '8px'),
-      (n.style.alignItems = 'center'),
-      (n.style.padding = '8px'),
       (this.link = document.createElement('a')),
       (this.link.href = e),
       (this.link.innerText = t),
-      this.link.classList.add('link-component'),
-      (this.link.style.textDecoration = 'none'),
-      (this.link.style.color = 'blue'),
-      (this.link.style.fontSize = '14px'),
-      (this.link.style.cursor = 'pointer');
+      this.link.classList.add('link-component');
     const s = document.createElement('button');
-    (s.innerText = 'Edit'),
-      s.classList.add('edit-button'),
-      (s.style.padding = '4px 8px'),
-      (s.style.cursor = 'pointer'),
-      (s.style.display = 'inline-flex');
+    (s.innerText = 'Edit'), s.classList.add('edit-button');
     const i = document.createElement('div');
-    i.classList.add('edit-form'),
-      (i.style.display = 'none'),
-      (i.style.flexDirection = 'column'),
-      (i.style.gap = '8px'),
-      (i.style.padding = '8px');
+    i.classList.add('edit-form');
     const o = document.createElement('input');
-    (o.type = 'url'),
-      (o.value = e),
-      (o.placeholder = 'Enter URL'),
-      (o.style.padding = '4px'),
-      (o.style.marginBottom = '4px');
+    (o.type = 'url'), (o.value = e), (o.placeholder = 'Enter URL');
     const l = document.createElement('input');
-    (l.type = 'text'),
-      (l.value = t),
-      (l.placeholder = 'Enter Label'),
-      (l.style.padding = '4px'),
-      (l.style.marginBottom = '4px');
+    (l.type = 'text'), (l.value = t), (l.placeholder = 'Enter Label');
     const a = document.createElement('input');
-    (a.type = 'checkbox'), (a.style.marginBottom = '4px');
+    a.type = 'checkbox';
     const r = document.createElement('label');
-    (r.innerText = 'Open in new tab'),
-      (r.style.display = 'flex'),
-      (r.style.alignItems = 'center'),
-      r.appendChild(a);
+    (r.innerText = 'Open in new tab'), r.appendChild(a);
     const d = document.createElement('button');
     return (
       (d.innerText = 'Save'),
-      (d.style.padding = '4px 8px'),
-      (d.style.cursor = 'pointer'),
       i.appendChild(o),
       i.appendChild(l),
       i.appendChild(r),
@@ -1839,7 +1810,7 @@ class b {
     link: () => new c().create(),
   });
 const C = document.getElementById('canvas'),
-  x = new (class {
+  E = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -1860,9 +1831,9 @@ const C = document.getElementById('canvas'),
 C &&
   C.addEventListener('click', e => {
     const t = e.target;
-    t !== C && x.selectElement(t);
+    t !== C && E.selectElement(t);
   });
-class E {
+class L {
   constructor(e) {
     this.canvas = e;
   }
@@ -1887,7 +1858,7 @@ class E {
       }
   }
 }
-const L = {
+const x = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n                </svg>',
   tablet:
@@ -2068,23 +2039,23 @@ class S {
 document.addEventListener('DOMContentLoaded', () => {
   var e, t, n, s, i, o, l, a, r;
   const d = new b(),
-    c = new E(d),
+    c = new L(d),
     p = new y(d),
     h = new m(),
     u = new S();
   !(function () {
     const e = document.getElementById('sidebar'),
       t = {
-        button: L.button,
-        header: L.header,
-        image: L.image,
-        video: L.video,
-        text: L.text,
-        container: L.container,
-        twoCol: L.twocol,
-        threeCol: L.threecol,
-        landingpage: L.landing,
-        link: L.hyperlink,
+        button: x.button,
+        header: x.header,
+        image: x.image,
+        video: x.video,
+        text: x.text,
+        container: x.container,
+        twoCol: x.twocol,
+        threeCol: x.threecol,
+        landingpage: x.landing,
+        link: x.hyperlink,
       },
       n = {
         button: 'Button',
@@ -2153,15 +2124,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const e = document.createElement('nav');
       e.id = 'preview-navbar';
       const t = {
-          desktop: L.desktop,
-          tablet: L.tablet,
-          mobile: L.mobile,
-          save: L.save,
-          export: L.code,
-          view: L.view,
-          undo: L.undo,
-          redo: L.redo,
-          reset: L.reset,
+          desktop: x.desktop,
+          tablet: x.tablet,
+          mobile: x.mobile,
+          save: x.save,
+          export: x.code,
+          view: x.view,
+          undo: x.undo,
+          redo: x.redo,
+          reset: x.reset,
         },
         n = [
           {
@@ -2362,9 +2333,9 @@ document.addEventListener('DOMContentLoaded', () => {
         i.style.cssText =
           '\n    display: flex;\n    gap: 10px;\n    margin-bottom: 10px;\n  ';
         [
-          { icon: L.mobile, title: 'Desktop', width: '375px', height: '90%' },
-          { icon: L.tablet, title: 'Tablet', width: '768px', height: '90%' },
-          { icon: L.desktop, title: 'Mobile', width: '97%', height: '90%' },
+          { icon: x.mobile, title: 'Desktop', width: '375px', height: '90%' },
+          { icon: x.tablet, title: 'Tablet', width: '768px', height: '90%' },
+          { icon: x.desktop, title: 'Mobile', width: '97%', height: '90%' },
         ].forEach(e => {
           const t = document.createElement('button');
           (t.style.cssText =
