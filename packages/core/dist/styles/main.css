@@ -1,3 +1,5 @@
+/* Import the linkComponent.css file */
+@import url('./linkComponent.css');
 /* General Styles */
 body,
 html {

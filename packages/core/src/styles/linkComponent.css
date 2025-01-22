@@ -1,0 +1,43 @@
+.link-component-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px;
+  }
+  
+  .link-component {
+    text-decoration: none;
+    color: blue;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .edit-link {
+    text-decoration: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: inline-flex;
+  }
+  
+  .edit-link-form {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .input-field {
+    padding: 4px;
+    margin-bottom: 4px;
+  }
+  
+  .save-button {
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+  }
+  
