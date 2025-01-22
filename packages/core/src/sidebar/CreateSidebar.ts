@@ -14,7 +14,7 @@ export function createSidebar() {
     threeCol: svgs.threecol,
     // portfolio: 'dist/icons/portfolio.png',
     landingpage: svgs.landing,
-    // link: 'dist/icons/linkIcon.png'
+    link: svgs.hyperlink,
   };
 
   const titles: { [key: string]: string } = {
@@ -28,7 +28,7 @@ export function createSidebar() {
     threeCol: 'Three Column Layout',
     // portfolio: 'Portfolio Template',
     landingpage: 'Landing Page Template',
-    // link: 'Link',
+    link: 'Link',
   };
 
   // Create the Templates menu section
@@ -45,7 +45,7 @@ export function createSidebar() {
       'container',
       'twoCol',
       'threeCol',
-      // 'link'
+      'link',
     ],
     // Add portfolio for version 2
     Extra: ['landingpage'],

@@ -11,7 +11,7 @@ import {
   ContainerComponent,
   TwoColumnContainer,
   ThreeColumnContainer,
-  // LinkComponent
+  LinkComponent,
 } from '../components/index.js';
 import { HistoryManager } from '../services/HistoryManager.js';
 import { JSONStorage } from '../services/JSONStorage.js';
@@ -426,7 +426,7 @@ Canvas.componentFactory = {
   threeCol: () => new ThreeColumnContainer().create(),
   // portfolio: () => new UserPortfolioTemplate().create(),
   landingpage: () => new LandingPageTemplate().create(),
-  // link: ()=> new LinkComponent().create()
+  link: () => new LinkComponent().create(),
 };
 const canvas = document.getElementById('canvas');
 // Instantiate the DeleteElementHandler

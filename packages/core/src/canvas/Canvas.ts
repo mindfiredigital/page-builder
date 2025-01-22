@@ -12,7 +12,7 @@ import {
   ContainerComponent,
   TwoColumnContainer,
   ThreeColumnContainer,
-  // LinkComponent
+  LinkComponent,
 } from '../components/index';
 import { HistoryManager } from '../services/HistoryManager';
 import { JSONStorage } from '../services/JSONStorage';
@@ -53,7 +53,7 @@ export class Canvas {
       threeCol: () => new ThreeColumnContainer().create(),
       // portfolio: () => new UserPortfolioTemplate().create(),
       landingpage: () => new LandingPageTemplate().create(),
-      // link: ()=> new LinkComponent().create()
+      link: () => new LinkComponent().create(),
     };
 
   static init() {
