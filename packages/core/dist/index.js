@@ -513,13 +513,13 @@ class c {
   }
   create(e = '#', t = 'Click Here') {
     const n = document.createElement('div');
-    n.classList.add('link-component-container'),
+    n.classList.add('link-component'),
       (this.link = document.createElement('a')),
       (this.link.href = e),
       (this.link.innerText = t),
-      this.link.classList.add('link-component');
+      this.link.classList.add('link-component-label');
     const i = document.createElement('button');
-    (i.innerText = '🖊️'), i.classList.add('edit-link');
+    (i.innerHTML = '🖊️'), i.classList.add('edit-link');
     const s = document.createElement('div');
     s.classList.add('edit-link-form');
     const o = document.createElement('input');
@@ -527,10 +527,10 @@ class c {
     const l = document.createElement('input');
     l.type = 'checkbox';
     const a = document.createElement('label');
-    (a.innerText = 'Open in new tab'), a.appendChild(l);
+    (a.innerHTML = 'Open in new tab'), a.appendChild(l);
     const r = document.createElement('button');
     return (
-      (r.innerText = 'Save'),
+      (r.innerHTML = 'Save'),
       s.appendChild(o),
       s.appendChild(a),
       s.appendChild(r),
@@ -543,6 +543,7 @@ class c {
       }),
       r.addEventListener('click', e => {
         e.preventDefault(),
+          e.stopPropagation(),
           (this.isEditing = !1),
           this.link &&
             ((this.link.href = o.value),
@@ -1813,7 +1814,7 @@ class b {
     link: () => new c().create(),
   });
 const C = document.getElementById('canvas'),
-  E = new (class {
+  L = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -1834,9 +1835,9 @@ const C = document.getElementById('canvas'),
 C &&
   C.addEventListener('click', e => {
     const t = e.target;
-    t !== C && E.selectElement(t);
+    t !== C && L.selectElement(t);
   });
-class L {
+class E {
   constructor(e) {
     this.canvas = e;
   }
@@ -1898,6 +1899,7 @@ const x = {
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path d="M10 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M14 12V17" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M4 7H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                </svg>',
   close:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path d="M6.99486 7.00636C6.60433 7.39689 6.60433 8.03005 6.99486 8.42058L10.58 12.0057L6.99486 15.5909C6.60433 15.9814 6.60433 16.6146 6.99486 17.0051C7.38538 17.3956 8.01855 17.3956 8.40907 17.0051L11.9942 13.4199L15.5794 17.0051C15.9699 17.3956 16.6031 17.3956 16.9936 17.0051C17.3841 16.6146 17.3841 15.9814 16.9936 15.5909L13.4084 12.0057L16.9936 8.42059C17.3841 8.03007 17.3841 7.3969 16.9936 7.00638C16.603 6.61585 15.9699 6.61585 15.5794 7.00638L11.9942 10.5915L8.40907 7.00636C8.01855 6.61584 7.38538 6.61584 6.99486 7.00636Z" fill="#0F0F0F"/>\n                </svg>',
+  edit: '<svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" \n    viewBox="0 0 348.882 348.882" xml:space="preserve">\n<g>\n   <path d="M333.988,11.758l-0.42-0.383C325.538,4.04,315.129,0,304.258,0c-12.187,0-23.888,5.159-32.104,14.153L116.803,184.231\n       c-1.416,1.55-2.49,3.379-3.154,5.37l-18.267,54.762c-2.112,6.331-1.052,13.333,2.835,18.729c3.918,5.438,10.23,8.685,16.886,8.685\n       c0,0,0.001,0,0.001,0c2.879,0,5.693-0.592,8.362-1.76l52.89-23.138c1.923-0.841,3.648-2.076,5.063-3.626L336.771,73.176\n       C352.937,55.479,351.69,27.929,333.988,11.758z M130.381,234.247l10.719-32.134l0.904-0.99l20.316,18.556l-0.904,0.99\n       L130.381,234.247z M314.621,52.943L182.553,197.53l-20.316-18.556L294.305,34.386c2.583-2.828,6.118-4.386,9.954-4.386\n       c3.365,0,6.588,1.252,9.082,3.53l0.419,0.383C319.244,38.922,319.63,47.459,314.621,52.943z"/>\n   <path d="M303.85,138.388c-8.284,0-15,6.716-15,15v127.347c0,21.034-17.113,38.147-38.147,38.147H68.904\n       c-21.035,0-38.147-17.113-38.147-38.147V100.413c0-21.034,17.113-38.147,38.147-38.147h131.587c8.284,0,15-6.716,15-15\n       s-6.716-15-15-15H68.904c-37.577,0-68.147,30.571-68.147,68.147v180.321c0,37.576,30.571,68.147,68.147,68.147h181.798\n       c37.576,0,68.147-30.571,68.147-68.147V153.388C318.85,145.104,312.134,138.388,303.85,138.388z"/>\n</g>\n</svg>',
 };
 function k(e) {
   const t = e => new TextEncoder().encode(e),
@@ -2042,7 +2044,7 @@ class S {
 document.addEventListener('DOMContentLoaded', () => {
   var e, t, n, i, s, o, l, a, r;
   const d = new b(),
-    c = new L(d),
+    c = new E(d),
     p = new y(d),
     h = new m(),
     u = new S();
