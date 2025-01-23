@@ -11,16 +11,16 @@ export class LinkComponent {
    */
   create(href: string = '#', label: string = 'Click Here'): HTMLDivElement {
     const container = document.createElement('div');
-    container.classList.add('link-component-container');
+    container.classList.add('link-component');
 
     // Create the link element
     this.link = document.createElement('a');
     this.link.href = href;
     this.link.innerText = label;
-    this.link.classList.add('link-component');
+    this.link.classList.add('link-component-label');
 
     const editButton = document.createElement('button');
-    editButton.innerText = '🖊️';
+    editButton.innerHTML = '🖊️';
     editButton.classList.add('edit-link');
 
     const editForm = document.createElement('div');
@@ -35,11 +35,11 @@ export class LinkComponent {
     const targetCheckbox = document.createElement('input');
     targetCheckbox.type = 'checkbox';
     const checkboxLabel = document.createElement('label');
-    checkboxLabel.innerText = 'Open in new tab';
+    checkboxLabel.innerHTML = 'Open in new tab';
     checkboxLabel.appendChild(targetCheckbox);
 
     const saveButton = document.createElement('button');
-    saveButton.innerText = 'Save';
+    saveButton.innerHTML = 'Save';
 
     editForm.appendChild(urlInput);
     editForm.appendChild(checkboxLabel);
@@ -57,6 +57,7 @@ export class LinkComponent {
 
     saveButton.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       this.isEditing = false;
       if (this.link) {
         this.link.href = urlInput.value;

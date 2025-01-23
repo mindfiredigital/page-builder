@@ -20,4 +20,5 @@ export declare const svgs: {
   landing: string;
   delete: string;
   close: string;
+  edit: string;
 };
