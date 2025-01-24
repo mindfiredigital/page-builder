@@ -17,6 +17,7 @@ export declare const svgs: {
   hyperlink: string;
   twocol: string;
   threecol: string;
+  table: string;
   landing: string;
   delete: string;
   close: string;

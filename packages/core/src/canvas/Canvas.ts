@@ -12,6 +12,7 @@ import {
   ContainerComponent,
   TwoColumnContainer,
   ThreeColumnContainer,
+  TableComponent,
   LinkComponent,
 } from '../components/index';
 import { HistoryManager } from '../services/HistoryManager';
@@ -46,7 +47,9 @@ export class Canvas {
       button: () => new ButtonComponent().create(),
       header: () => new HeaderComponent().create(),
       image: () => new ImageComponent().create(),
-      video: () => new VideoComponent().create(),
+      video: () =>
+        new VideoComponent(() => Canvas.historyManager.captureState()).create(),
+      table: () => new TableComponent().create(),
       text: () => new TextComponent().create(),
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),
@@ -65,8 +68,8 @@ export class Canvas {
     );
     Canvas.canvasElement.addEventListener('click', (event: MouseEvent) => {
       const component = event.target as HTMLElement;
-      console.log('this is my component,', component);
-      console.log('this is component id ', component.id);
+      // console.log('this is my component,', component);
+      // console.log('this is component id ', component.id);
       if (component) {
         CustomizationSidebar.showSidebar(component.id);
       }
@@ -122,7 +125,6 @@ export class Canvas {
       const imageSrc = component.querySelector('img')
         ? (component.querySelector('img') as HTMLImageElement).src
         : null;
-
       // Capture all inline styles
       // Enhanced style capturing
       const computedStyles = window.getComputedStyle(component);
@@ -209,6 +211,19 @@ export class Canvas {
           component.classList.add(cls);
         });
 
+        if (componentData.type === 'video' && componentData.videoSrc) {
+          const videoElement = component.querySelector(
+            'video'
+          ) as HTMLVideoElement;
+          const uploadText = component.querySelector(
+            '.upload-text'
+          ) as HTMLElement;
+
+          videoElement.src = componentData.videoSrc;
+          videoElement.style.display = 'block';
+          uploadText.style.display = 'none';
+        }
+
         // Restore inline styles
         if (componentData.inlineStyle) {
           component.setAttribute('style', componentData.inlineStyle);
@@ -272,7 +287,7 @@ export class Canvas {
     }
 
     const componentType = event.dataTransfer?.getData('component-type');
-    console.log(`Dropped component type: ${componentType}`);
+    // console.log(`Dropped component type: ${componentType}`);
 
     if (!componentType) {
       return;

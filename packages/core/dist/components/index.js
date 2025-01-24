@@ -6,4 +6,5 @@ export { HeaderComponent } from './HeaderComponent.js';
 export { ContainerComponent } from './ContainerComponent.js';
 export { TwoColumnContainer } from './TwoColumnContainer.js';
 export { ThreeColumnContainer } from './ThreeColumnContainer.js';
+export { TableComponent } from './TableComponent.js';
 export { LinkComponent } from './LinkComponent.js';

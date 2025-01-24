@@ -11,6 +11,7 @@ export function createSidebar() {
     container: svgs.container,
     twoCol: svgs.twocol,
     threeCol: svgs.threecol,
+    table: svgs.table,
     // portfolio: 'dist/icons/portfolio.png',
     landingpage: svgs.landing,
     link: svgs.hyperlink,
@@ -24,6 +25,7 @@ export function createSidebar() {
     container: 'Container',
     twoCol: 'Two Column Layout',
     threeCol: 'Three Column Layout',
+    table: 'Table',
     // portfolio: 'Portfolio Template',
     landingpage: 'Landing Page Template',
     link: 'Link',
@@ -42,6 +44,7 @@ export function createSidebar() {
       'container',
       'twoCol',
       'threeCol',
+      'table',
       'link',
     ],
     // Add portfolio for version 2

@@ -7,9 +7,9 @@ class e {
     this.sidebar.querySelectorAll('.draggable').forEach(e => {
       e.addEventListener('dragstart', t => {
         var n;
-        const i = t;
+        const o = t;
         console.log(`Dragging component: ${e.id}`),
-          null === (n = i.dataTransfer) ||
+          null === (n = o.dataTransfer) ||
             void 0 === n ||
             n.setData('component-type', e.id);
       });
@@ -37,8 +37,8 @@ class n {
   create(e = null) {
     const t = document.createElement('div');
     t.classList.add('image-component');
-    const i = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
-    (t.id = i),
+    const o = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    (t.id = o),
       (t.style.width = '300px'),
       (t.style.height = '300px'),
       (t.style.position = 'relative'),
@@ -51,11 +51,11 @@ class n {
     (s.style.color = '#666666'),
       (s.style.border = 'none'),
       (s.style.display = e ? 'none' : 'block');
-    const o = document.createElement('input');
-    (o.type = 'file'),
-      (o.accept = 'image/*'),
-      (o.style.display = 'none'),
-      o.addEventListener('change', e => n.handleFileChange(e, t, s));
+    const i = document.createElement('input');
+    (i.type = 'file'),
+      (i.accept = 'image/*'),
+      (i.style.display = 'none'),
+      i.addEventListener('change', e => n.handleFileChange(e, t, s));
     const l = document.createElement('button');
     l.classList.add('upload-btn'),
       (l.innerHTML = '🖊️'),
@@ -70,9 +70,9 @@ class n {
       (l.style.top = '50%'),
       (l.style.transform = 'translate(-50%, -50%)'),
       (l.style.fontSize = '24px'),
-      l.addEventListener('click', () => o.click());
+      l.addEventListener('click', () => i.click());
     const a = document.createElement('img'),
-      r = `${i}-img`;
+      r = `${o}-img`;
     return (
       (a.id = r),
       (a.style.width = '100%'),
@@ -88,22 +88,22 @@ class n {
         l.style.opacity = '0';
       }),
       t.appendChild(s),
-      t.appendChild(o),
+      t.appendChild(i),
       t.appendChild(l),
       t.appendChild(a),
       t
     );
   }
   static handleFileChange(e, t, n) {
-    const i = e.target,
-      s = i.files ? i.files[0] : null;
+    const o = e.target,
+      s = o.files ? o.files[0] : null;
     if (s) {
       const e = new FileReader();
       (e.onload = function () {
-        const i = e.result,
+        const o = e.result,
           s = t.querySelector('img');
         s &&
-          ((s.src = i),
+          ((s.src = o),
           (s.style.display = 'block'),
           (n.style.display = 'none'),
           (t.style.backgroundColor = 'transparent'));
@@ -113,17 +113,17 @@ class n {
   }
   static restoreImageUpload(e, t) {
     const n = e.querySelector('div:not(.upload-btn)'),
-      i = e.querySelector('input[type="file"]'),
+      o = e.querySelector('input[type="file"]'),
       s = e.querySelector('.upload-btn'),
-      o = e.querySelector('img');
-    i.addEventListener('change', t => this.handleFileChange(t, e, n)),
-      s.addEventListener('click', () => i.click()),
+      i = e.querySelector('img');
+    o.addEventListener('change', t => this.handleFileChange(t, e, n)),
+      s.addEventListener('click', () => o.click()),
       t
-        ? ((o.src = t),
-          (o.style.display = 'block'),
+        ? ((i.src = t),
+          (i.style.display = 'block'),
           (n.style.display = 'none'),
           (e.style.backgroundColor = 'transparent'))
-        : ((o.style.display = 'none'),
+        : ((i.style.display = 'none'),
           (n.style.display = 'block'),
           (e.style.backgroundColor = '#f0f0f0')),
       e.addEventListener('mouseenter', () => {
@@ -134,48 +134,53 @@ class n {
       });
   }
 }
-class i {
+class o {
+  constructor(e) {
+    this.captureStateHandler = e;
+  }
   create(e = null) {
     const t = document.createElement('div');
-    t.classList.add('video-container');
+    t.classList.add('video-component');
     const n = document.createElement('input');
     (n.type = 'file'),
       (n.accept = 'video/*'),
       (n.style.display = 'none'),
-      n.addEventListener('change', e => this.handleFileChange(e, t));
-    const i = document.createElement('div');
-    i.classList.add('upload-text'), (i.innerText = e ? '' : 'Upload Video');
+      n.addEventListener('change', e => {
+        this.handleFileChange(e, t), this.captureStateHandler();
+      });
+    const o = document.createElement('div');
+    o.classList.add('upload-text'), (o.innerText = e ? '' : 'Upload Video');
     const s = document.createElement('video');
     (s.controls = !0),
       (s.style.width = '100%'),
       (s.style.height = '100%'),
       (s.style.display = e ? 'block' : 'none'),
       e && (s.src = e);
-    const o = document.createElement('button');
+    const i = document.createElement('button');
     return (
-      (o.innerHTML = '🖊️'),
-      o.classList.add('pencil-button'),
-      o.addEventListener('click', () => n.click()),
-      t.appendChild(i),
+      (i.innerHTML = '🖊️'),
+      i.classList.add('pencil-button'),
+      i.addEventListener('click', () => n.click()),
+      t.appendChild(o),
       t.appendChild(n),
       t.appendChild(s),
-      t.appendChild(o),
+      t.appendChild(i),
       t
     );
   }
   handleFileChange(e, t) {
     const n = e.target,
-      i = n.files ? n.files[0] : null;
-    if (i && i.type.startsWith('video/')) {
+      o = n.files ? n.files[0] : null;
+    if (o && o.type.startsWith('video/')) {
       const e = new FileReader();
       (e.onload = () => {
         const n = t.querySelector('video'),
-          i = t.querySelector('.upload-text');
+          o = t.querySelector('.upload-text');
         (n.src = e.result),
           (n.style.display = 'block'),
-          (i.style.display = 'none');
+          (o.style.display = 'none');
       }),
-        e.readAsDataURL(i);
+        e.readAsDataURL(o);
     } else alert('Please upload a valid video file.');
   }
 }
@@ -193,7 +198,7 @@ class s {
     );
   }
 }
-class o {
+class i {
   create(e = 1, t = 'Header') {
     const n = document.createElement(`h${e}`);
     return (n.innerText = t), n.classList.add('header-component'), n;
@@ -215,31 +220,31 @@ class l {
           n = e.pageY - this.originalMouseY;
         if (this.currentResizer.classList.contains('bottom-right')) {
           const e = this.originalWidth + t,
-            i = this.originalHeight + n;
+            o = this.originalHeight + n;
           e > this.MINIMUM_SIZE && (this.element.style.width = `${e}px`),
-            i > this.MINIMUM_SIZE && (this.element.style.height = `${i}px`);
+            o > this.MINIMUM_SIZE && (this.element.style.height = `${o}px`);
         } else if (this.currentResizer.classList.contains('bottom-left')) {
           const e = this.originalHeight + n,
-            i = this.originalWidth - t;
+            o = this.originalWidth - t;
           e > this.MINIMUM_SIZE && (this.element.style.height = `${e}px`),
-            i > this.MINIMUM_SIZE &&
-              ((this.element.style.width = `${i}px`),
+            o > this.MINIMUM_SIZE &&
+              ((this.element.style.width = `${o}px`),
               (this.element.style.left = `${this.originalX + t}px`));
         } else if (this.currentResizer.classList.contains('top-right')) {
           const e = this.originalWidth + t,
-            i = this.originalHeight - n;
+            o = this.originalHeight - n;
           e > this.MINIMUM_SIZE && (this.element.style.width = `${e}px`),
-            i > this.MINIMUM_SIZE &&
-              ((this.element.style.height = `${i}px`),
+            o > this.MINIMUM_SIZE &&
+              ((this.element.style.height = `${o}px`),
               (this.element.style.top = `${this.originalY + n}px`));
         } else if (this.currentResizer.classList.contains('top-left')) {
           const e = this.originalWidth - t,
-            i = this.originalHeight - n;
+            o = this.originalHeight - n;
           e > this.MINIMUM_SIZE &&
             ((this.element.style.width = `${e}px`),
             (this.element.style.left = `${this.originalX + t}px`)),
-            i > this.MINIMUM_SIZE &&
-              ((this.element.style.height = `${i}px`),
+            o > this.MINIMUM_SIZE &&
+              ((this.element.style.height = `${o}px`),
               (this.element.style.top = `${this.originalY + n}px`));
         }
       }),
@@ -247,7 +252,7 @@ class l {
         window.removeEventListener('mousemove', this.resize),
           window.removeEventListener('mouseup', this.stopResize),
           (this.currentResizer = null),
-          b.historyManager.captureState();
+          C.historyManager.captureState();
       }),
       (this.element = document.createElement('div')),
       this.element.classList.add('container-component'),
@@ -301,14 +306,14 @@ class l {
   makeDraggable(e) {
     let t = !1,
       n = 0,
-      i = 0,
+      o = 0,
       s = 0,
-      o = 0;
+      i = 0;
     const l = l => {
         if (!t) return;
         const a = l.clientX - n,
-          r = l.clientY - i;
-        e.style.transform = `translate(${s + a}px, ${o + r}px)`;
+          r = l.clientY - o;
+        e.style.transform = `translate(${s + a}px, ${i + r}px)`;
       },
       a = () => {
         (t = !1),
@@ -320,10 +325,10 @@ class l {
         r.stopPropagation(),
         (t = !0),
         (n = r.clientX),
-        (i = r.clientY);
+        (o = r.clientY);
       const d = e.getBoundingClientRect();
       (s = d.left),
-        (o = d.top),
+        (i = d.top),
         window.addEventListener('mousemove', l),
         window.addEventListener('mouseup', a);
     });
@@ -336,22 +341,22 @@ class l {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const i = b.createComponent(n);
-    if (!i) return;
+    const o = C.createComponent(n);
+    if (!o) return;
     const s = this.element.classList[2],
-      o = b.generateUniqueClass(n, !0, s);
-    i.classList.add(o);
+      i = C.generateUniqueClass(n, !0, s);
+    o.classList.add(i);
     const l = document.createElement('span');
     (l.className = 'component-label'),
-      (l.textContent = o),
-      (i.id = o),
+      (l.textContent = i),
+      (o.id = i),
       (l.style.display = 'none'),
-      i.appendChild(l),
-      i.addEventListener('mouseenter', e => this.showLabel(e, i)),
-      i.addEventListener('mouseleave', e => this.hideLabel(e, i)),
-      this.element.appendChild(i),
-      this.makeDraggable(i),
-      b.historyManager.captureState();
+      o.appendChild(l),
+      o.addEventListener('mouseenter', e => this.showLabel(e, o)),
+      o.addEventListener('mouseleave', e => this.hideLabel(e, o)),
+      this.element.appendChild(o),
+      this.makeDraggable(o),
+      C.historyManager.captureState();
   }
   showLabel(e, t) {
     e.stopPropagation();
@@ -389,26 +394,26 @@ class l {
     t && t.remove();
     const n = document.createElement('div');
     n.classList.add('resizers');
-    const i = new l();
-    (i.element = e), (i.resizers = n), i.addResizeHandles(), e.appendChild(n);
+    const o = new l();
+    (o.element = e), (o.resizers = n), o.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e) {
     l.restoreResizer(e);
     const t = new l();
     t.element = e;
     e.querySelectorAll('.editable-component').forEach(e => {
-      var i;
+      var o;
       if (
-        (b.controlsManager.addControlButtons(e),
-        b.addDraggableListeners(e),
+        (C.controlsManager.addControlButtons(e),
+        C.addDraggableListeners(e),
         e.addEventListener('mouseenter', n => t.showLabel(n, e)),
         e.addEventListener('mouseleave', n => t.hideLabel(n, e)),
         e.classList.contains('image-component'))
       ) {
         const t =
-          (null === (i = e.querySelector('img')) || void 0 === i
+          (null === (o = e.querySelector('img')) || void 0 === o
             ? void 0
-            : i.getAttribute('src')) || '';
+            : o.getAttribute('src')) || '';
         n.restoreImageUpload(e, t);
       }
       e.classList.contains('container-component') && this.restoreContainer(e);
@@ -448,11 +453,11 @@ class a {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const i = b.createComponent(n);
-    if (!i) return;
+    const o = C.createComponent(n);
+    if (!o) return;
     const s = e.target;
     if (s && s.classList.contains('column')) {
-      s.appendChild(i);
+      s.appendChild(o);
       const e = `${this.element.id}-${`c${Array.from(s.parentElement.children).indexOf(s) + 1}`}`;
       (s.id = e), s.classList.add(e);
       let t = s.querySelector('.column-label');
@@ -461,15 +466,15 @@ class a {
         (t.className = 'column-label'),
         s.appendChild(t)),
         (t.textContent = e);
-      const o = b.generateUniqueClass(n, !0, e);
-      i.classList.add(o), (i.id = o);
-      let l = i.querySelector('.component-label');
+      const i = C.generateUniqueClass(n, !0, e);
+      o.classList.add(i), (o.id = i);
+      let l = o.querySelector('.component-label');
       l ||
         ((l = document.createElement('span')),
         (l.className = 'component-label'),
-        i.appendChild(l)),
-        (l.textContent = o),
-        b.historyManager.captureState();
+        o.appendChild(l)),
+        (l.textContent = i),
+        C.historyManager.captureState();
     }
   }
   addStyles(e) {
@@ -484,15 +489,15 @@ class a {
     e.querySelectorAll('.editable-component').forEach(e => {
       var t;
       if (
-        (b.controlsManager.addControlButtons(e),
-        b.addDraggableListeners(e),
+        (C.controlsManager.addControlButtons(e),
+        C.addDraggableListeners(e),
         e.classList.contains('image-component'))
       ) {
-        const i =
+        const o =
           (null === (t = e.querySelector('img')) || void 0 === t
             ? void 0
             : t.getAttribute('src')) || '';
-        n.restoreImageUpload(e, i);
+        n.restoreImageUpload(e, o);
       }
     });
   }
@@ -509,6 +514,113 @@ class d extends a {
 }
 class c {
   constructor() {
+    (this.container = document.createElement('div')),
+      this.container.classList.add('table-component'),
+      (this.table = document.createElement('table')),
+      this.table.classList.add('custom-table'),
+      this.addStyles(),
+      this.openTableModal();
+  }
+  openTableModal() {
+    const e = document.createElement('div');
+    e.classList.add('table-modal');
+    const t = document.createElement('input');
+    (t.type = 'number'),
+      (t.placeholder = 'Enter No. of Rows'),
+      (t.min = '1'),
+      (t.style.marginRight = '2px'),
+      (t.style.padding = '5px');
+    const n = document.createElement('input');
+    (n.type = 'number'),
+      (n.placeholder = 'Enter No. of Columns'),
+      (n.min = '1'),
+      (n.style.padding = '5px');
+    const o = document.createElement('button');
+    (o.innerText = 'Insert Table'),
+      (o.onclick = () => {
+        const o = parseInt(t.value) || 1,
+          s = parseInt(n.value) || 1;
+        o <= 0 || s <= 0
+          ? alert('Please enter valid positive numbers for rows and columns.')
+          : (this.createTable(o, s), document.body.removeChild(e));
+      });
+    const s = document.createElement('button');
+    (s.innerText = 'Close'),
+      s.classList.add('close-button'),
+      (s.onclick = () => document.body.removeChild(e)),
+      e.appendChild(t),
+      e.appendChild(n),
+      e.appendChild(o),
+      e.appendChild(s),
+      (e.style.position = 'fixed'),
+      (e.style.top = '10%'),
+      (e.style.left = '50%'),
+      (e.style.transform = 'translate(-50%, -50%)'),
+      (e.style.padding = '10px'),
+      (e.style.backgroundColor = 'white'),
+      (e.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.1)'),
+      document.body.appendChild(e);
+  }
+  createTable(e, t) {
+    for (let n = 0; n < e; n++) {
+      const e = this.table.insertRow();
+      for (let o = 0; o < t; o++) {
+        const t = e.insertCell();
+        (t.textContent = `R${n + 1}C${o + 1}`),
+          (t.contentEditable = 'true'),
+          t.classList.add('table-cell');
+      }
+    }
+    this.container.appendChild(this.table), this.addTableControls();
+  }
+  addTableControls() {
+    const e = document.createElement('div');
+    e.classList.add('table-controls');
+    const t = document.createElement('button');
+    (t.textContent = 'Add Row'),
+      t.addEventListener('click', () => this.addRow());
+    const n = document.createElement('button');
+    (n.textContent = 'Add Column'),
+      n.addEventListener('click', () => this.addColumn()),
+      e.appendChild(t),
+      e.appendChild(n),
+      this.container.appendChild(e);
+  }
+  addRow() {
+    var e;
+    const t = this.table.insertRow(),
+      n =
+        (null === (e = this.table.rows[0]) || void 0 === e
+          ? void 0
+          : e.cells.length) || 0;
+    for (let e = 0; e < n; e++) {
+      const n = t.insertCell();
+      (n.textContent = `New R${this.table.rows.length}C${e + 1}`),
+        (n.contentEditable = 'true'),
+        n.classList.add('table-cell');
+    }
+  }
+  addColumn() {
+    const e = this.table.rows;
+    for (let t = 0; t < e.length; t++) {
+      const n = e[t].insertCell();
+      (n.textContent = `New R${t + 1}C${e[t].cells.length}`),
+        (n.contentEditable = 'true'),
+        n.classList.add('table-cell');
+    }
+  }
+  addStyles() {
+    const e = document.createElement('style');
+    (e.textContent =
+      '\n        .custom-table {\n            width: 100%;\n            border-collapse: collapse;\n            margin: 20px 0;\n        }\n        .custom-table th, .custom-table td {\n            border: 1px solid #ddd;\n            padding: 8px;\n            text-align: left;\n        }\n        .custom-table tr:nth-child(even) {\n            background-color: #f9f9f9;\n        }\n        .custom-table tr:hover {\n            background-color: #f1f1f1;\n        }\n        .custom-table .table-cell {\n            cursor: pointer;\n        }\n        .table-controls {\n            margin: 10px 0;\n        }\n        .table-controls button {\n            margin-right: 10px;\n            padding: 5px 10px;\n            background-color: #4286f4;\n            color: white;\n            border: none;\n            cursor: pointer;\n            border-radius: 3px;\n        }\n        .table-controls button:hover {\n            background-color: #306bc3;\n        }\n        .table-modal {\n            position: fixed;\n            top: 50% !important;\n            left: 50% !important;\n            transform: translate(-50%, -50%);\n            padding: 20px;\n            background-color: white;\n            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);\n            z-index: 1000;\n        }\n        '),
+      document.head.appendChild(e);
+  }
+  create() {
+    return this.container;
+  }
+}
+class p {
+  constructor() {
     (this.link = null), (this.isEditing = !1);
   }
   create(e = '#', t = 'Click Here') {
@@ -518,12 +630,12 @@ class c {
       (this.link.href = e),
       (this.link.innerText = t),
       this.link.classList.add('link-component-label');
-    const i = document.createElement('button');
-    (i.innerHTML = '🖊️'), i.classList.add('edit-link');
+    const o = document.createElement('button');
+    (o.innerHTML = '🖊️'), o.classList.add('edit-link');
     const s = document.createElement('div');
     s.classList.add('edit-link-form');
-    const o = document.createElement('input');
-    (o.type = 'url'), (o.value = e), (o.placeholder = 'Enter URL');
+    const i = document.createElement('input');
+    (i.type = 'url'), (i.value = e), (i.placeholder = 'Enter URL');
     const l = document.createElement('input');
     l.type = 'checkbox';
     const a = document.createElement('label');
@@ -531,14 +643,14 @@ class c {
     const r = document.createElement('button');
     return (
       (r.innerHTML = 'Save'),
-      s.appendChild(o),
+      s.appendChild(i),
       s.appendChild(a),
       s.appendChild(r),
-      i.addEventListener('click', e => {
+      o.addEventListener('click', e => {
         e.preventDefault(),
           (this.isEditing = !0),
           this.link && (this.link.style.display = 'none'),
-          (i.style.display = 'none'),
+          (o.style.display = 'none'),
           (s.style.display = 'flex');
       }),
       r.addEventListener('click', e => {
@@ -546,14 +658,14 @@ class c {
           e.stopPropagation(),
           (this.isEditing = !1),
           this.link &&
-            ((this.link.href = o.value),
+            ((this.link.href = i.value),
             (this.link.style.display = 'inline'),
             (this.link.target = l.checked ? '_blank' : '_self')),
-          (i.style.display = 'inline-flex'),
+          (o.style.display = 'inline-flex'),
           (s.style.display = 'none');
       }),
       n.appendChild(this.link),
-      n.appendChild(i),
+      n.appendChild(o),
       n.appendChild(s),
       n
     );
@@ -578,48 +690,48 @@ class c {
     return this.isEditing;
   }
 }
-class p {
+class h {
   create() {
     const e = e => {
         let t,
           n,
-          i,
+          o,
           s,
-          o = !1,
+          i = !1,
           l = !1,
           a = 0,
           r = 0;
         (e.style.position = 'relative'),
           (e.style.cursor = 'move'),
-          e.addEventListener('mousedown', i => {
+          e.addEventListener('mousedown', o => {
             l ||
-              ((o = !0),
-              (t = i.clientX),
-              (n = i.clientY),
+              ((i = !0),
+              (t = o.clientX),
+              (n = o.clientY),
               (a = parseFloat(e.getAttribute('data-x') || '0')),
               (r = parseFloat(e.getAttribute('data-y') || '0')),
               document.addEventListener('mousemove', d),
               document.addEventListener('mouseup', c));
           });
-        const d = i => {
-            if (o) {
-              const s = i.clientX - t,
-                o = i.clientY - n,
+        const d = o => {
+            if (i) {
+              const s = o.clientX - t,
+                i = o.clientY - n,
                 l = a + s,
-                d = r + o;
+                d = r + i;
               (e.style.transform = `translate(${l}px, ${d}px)`),
                 e.setAttribute('data-x', l.toString()),
                 e.setAttribute('data-y', d.toString());
             }
           },
           c = () => {
-            (o = !1),
+            (i = !1),
               document.removeEventListener('mousemove', d),
               document.removeEventListener('mouseup', c);
           };
         if (e.classList.contains('container')) {
-          const o = document.createElement('div');
-          Object.assign(o.style, {
+          const i = document.createElement('div');
+          Object.assign(i.style, {
             width: '10px',
             height: '10px',
             background: 'blue',
@@ -628,21 +740,21 @@ class p {
             bottom: '0',
             cursor: 'se-resize',
           }),
-            e.appendChild(o),
-            o.addEventListener('mousedown', o => {
-              o.stopPropagation(),
+            e.appendChild(i),
+            i.addEventListener('mousedown', i => {
+              i.stopPropagation(),
                 (l = !0),
-                (i = e.offsetWidth),
+                (o = e.offsetWidth),
                 (s = e.offsetHeight),
-                (t = o.clientX),
-                (n = o.clientY),
+                (t = i.clientX),
+                (n = i.clientY),
                 document.addEventListener('mousemove', a),
                 document.addEventListener('mouseup', r);
             });
-          const a = o => {
+          const a = i => {
               if (l) {
-                const l = i + (o.clientX - t),
-                  a = s + (o.clientY - n);
+                const l = o + (i.clientX - t),
+                  a = s + (i.clientY - n);
                 (e.style.width = `${l}px`), (e.style.height = `${a}px`);
               }
             },
@@ -663,18 +775,18 @@ class p {
         fontFamily: "'Roboto', sans-serif",
       }),
       e(n);
-    const i = new l().create();
-    i.classList.add('container'),
-      Object.assign(i.style, {
+    const o = new l().create();
+    o.classList.add('container'),
+      Object.assign(o.style, {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '40px',
         width: '100%',
       }),
-      e(i);
-    const o = new t('MyBrand').create();
-    Object.assign(o.style, {
+      e(o);
+    const i = new t('MyBrand').create();
+    Object.assign(i.style, {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333',
@@ -692,8 +804,8 @@ class p {
         }),
           a.appendChild(n);
       }),
-      i.appendChild(o),
-      i.appendChild(a);
+      o.appendChild(i),
+      o.appendChild(a);
     const r = new l().create();
     r.classList.add('container'),
       Object.assign(r.style, {
@@ -750,23 +862,23 @@ class p {
         borderTop: '1px solid #ddd',
       }),
       e(h);
-    const m = new t('© 2025 MyBrand. All rights reserved.').create();
+    const u = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
-      Object.assign(m.style, { fontSize: '14px', color: '#999' }),
-      h.appendChild(m),
-      n.appendChild(i),
+      Object.assign(u.style, { fontSize: '14px', color: '#999' }),
+      h.appendChild(u),
+      n.appendChild(o),
       n.appendChild(r),
       n.appendChild(h),
       n
     );
   }
 }
-class h {
+class u {
   constructor(e) {
     (this.undoStack = []), (this.redoStack = []), (this.canvas = e);
   }
   captureState() {
-    const e = b.getState();
+    const e = C.getState();
     if (e.length > 0) {
       const t = this.undoStack[this.undoStack.length - 1];
       JSON.stringify(e) !== JSON.stringify(t) &&
@@ -780,18 +892,18 @@ class h {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
       const t = this.undoStack[this.undoStack.length - 1];
-      b.restoreState(t);
+      C.restoreState(t);
     } else if (1 === this.undoStack.length) {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
-      const t = b.jsonStorage.load();
-      t ? b.restoreState(t) : b.restoreState([]);
+      const t = C.jsonStorage.load();
+      t ? C.restoreState(t) : C.restoreState([]);
     } else console.warn('No more actions to undo.');
   }
   redo() {
     if (this.redoStack.length > 0) {
       const e = this.redoStack.pop();
-      this.undoStack.push(e), b.restoreState(e);
+      this.undoStack.push(e), C.restoreState(e);
     } else console.warn('No more actions to redo.');
   }
 }
@@ -807,7 +919,7 @@ class m {
     localStorage.removeItem('pageLayout');
   }
 }
-class u {
+class g {
   constructor(e) {
     (this.icons = {
       delete:
@@ -822,8 +934,8 @@ class u {
       ((n = document.createElement('div')),
       (n.className = 'component-controls'),
       t ? e.appendChild(n) : e.prepend(n));
-    const i = this.createDeleteIcon(e);
-    n.appendChild(i);
+    const o = this.createDeleteIcon(e);
+    n.appendChild(o);
   }
   createDeleteIcon(e) {
     let t = e.querySelector('.delete-icon');
@@ -846,7 +958,7 @@ class u {
     this.canvas.setComponents(t), this.canvas.historyManager.captureState();
   }
 }
-function g(e) {
+function y(e) {
   const t = document.getElementById('notification');
   t &&
     ((t.innerHTML = e),
@@ -856,7 +968,7 @@ function g(e) {
       t.classList.remove('visible'), t.classList.add('hidden');
     }, 2e3));
 }
-class y {
+class v {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -888,8 +1000,8 @@ class y {
         'edit-link-form',
         'edit-link',
       ];
-    Array.from(e.children).forEach(i => {
-      const s = i;
+    Array.from(e.children).forEach(o => {
+      const s = o;
       t.forEach(e => {
         s.removeAttribute(e);
       }),
@@ -915,7 +1027,7 @@ class y {
     n.push(
       `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n      .home {\n          display: flex;\n          justify-content: center;\n          align-items: center;\n          width: 100%;\n          min-height:100vh;\n          background-color: ${t};\n          margin: 0;\n      }\n      `
     );
-    const i = e.querySelectorAll('*'),
+    const o = e.querySelectorAll('*'),
       s = [
         'position',
         'top',
@@ -949,7 +1061,7 @@ class y {
         'line-height',
         'font-family',
       ],
-      o = [
+      i = [
         'component-controls',
         'delete-icon',
         'component-label',
@@ -960,20 +1072,20 @@ class y {
         'edit-link',
       ];
     return (
-      i.forEach(e => {
-        if (o.some(t => e.classList.contains(t))) return;
+      o.forEach(e => {
+        if (i.some(t => e.classList.contains(t))) return;
         const t = window.getComputedStyle(e),
-          i = [];
+          o = [];
         s.forEach(e => {
           const n = t.getPropertyValue(e);
           if (n && 'none' !== n && '' !== n) {
             if ('resize' === e) return;
-            i.push(`${e}: ${n};`);
+            o.push(`${e}: ${n};`);
           }
         });
         const l = this.generateUniqueSelector(e);
-        i.length > 0 &&
-          n.push(`\n        ${l} {\n          ${i.join('\n  ')}\n        }`);
+        o.length > 0 &&
+          n.push(`\n        ${l} {\n          ${o.join('\n  ')}\n        }`);
       }),
       n.join('\n')
     );
@@ -992,31 +1104,31 @@ class y {
     this.styleElement.textContent = e;
   }
 }
-class v {
+class w {
   constructor(e = '#layers-view', t = '#page') {
     this.initializeElements(e, t);
   }
   initializeElements(e, t) {
-    (v.layersView = document.querySelector(e)),
-      v.layersView ||
-        ((v.layersView = document.createElement('div')),
-        (v.layersView.id = 'layers-view'),
-        (v.layersView.className = 'layers-view'),
-        document.body.appendChild(v.layersView),
+    (w.layersView = document.querySelector(e)),
+      w.layersView ||
+        ((w.layersView = document.createElement('div')),
+        (w.layersView.id = 'layers-view'),
+        (w.layersView.className = 'layers-view'),
+        document.body.appendChild(w.layersView),
         console.warn(`Layers view element created: ${e}`)),
-      (v.canvasRoot = document.querySelector(t)),
-      v.canvasRoot ||
+      (w.canvasRoot = document.querySelector(t)),
+      w.canvasRoot ||
         (console.error(`Canvas root element not found: ${t}`),
-        (v.canvasRoot = document.body));
+        (w.canvasRoot = document.body));
   }
   static buildLayerHierarchyFromDOM(e) {
-    const t = new y(new b()).generateHTML(),
+    const t = new v(new C()).generateHTML(),
       n = new DOMParser().parseFromString(t, 'text/html'),
-      i = (e, t = 0) => {
+      o = (e, t = 0) => {
         var n;
         const s = e;
         if (!s.id) return null;
-        const o = {
+        const i = {
           id: s.id,
           isVisible:
             'none' !==
@@ -1027,14 +1139,14 @@ class v {
         };
         return (
           Array.from(e.children).forEach(e => {
-            const n = i(e, t + 1);
-            n && o.children.push(n);
+            const n = o(e, t + 1);
+            n && i.children.push(n);
           }),
-          o
+          i
         );
       };
     return Array.from(n.body.children)
-      .map(e => i(e))
+      .map(e => o(e))
       .filter(e => null !== e);
   }
   static updateLayersView() {
@@ -1049,27 +1161,27 @@ class v {
   }
   static renderLayerItems(e, t, n = 0) {
     t.forEach(t => {
-      const i = this.createLayerItemElement(t);
+      const o = this.createLayerItemElement(t);
       if (
-        ((i.style.paddingLeft = 1 * n + 'px'),
+        ((o.style.paddingLeft = 1 * n + 'px'),
         t.children && t.children.length > 0)
       ) {
         const s = document.createElement('span');
         (s.className = 'layer-expand-toggle'), (s.textContent = '▶');
-        const o = document.createElement('ul');
-        (o.className = 'layer-children'),
-          (o.style.display = 'none'),
-          (o.style.paddingLeft = '0'),
-          this.renderLayerItems(o, t.children, n + 1),
+        const i = document.createElement('ul');
+        (i.className = 'layer-children'),
+          (i.style.display = 'none'),
+          (i.style.paddingLeft = '0'),
+          this.renderLayerItems(i, t.children, n + 1),
           s.addEventListener('click', () => {
-            'block' === o.style.display
-              ? ((o.style.display = 'none'), (s.textContent = '▶'))
-              : ((o.style.display = 'block'), (s.textContent = '▼'));
+            'block' === i.style.display
+              ? ((i.style.display = 'none'), (s.textContent = '▶'))
+              : ((i.style.display = 'block'), (s.textContent = '▼'));
           }),
-          i.appendChild(s),
-          e.appendChild(i),
-          e.appendChild(o);
-      } else e.appendChild(i);
+          o.appendChild(s),
+          e.appendChild(o),
+          e.appendChild(i);
+      } else e.appendChild(o);
     });
   }
   static createLayerItemElement(e) {
@@ -1079,10 +1191,10 @@ class v {
     (n.className = 'layer-visibility'),
       (n.innerHTML = e.isVisible ? '👁️' : '👁️‍🗨️'),
       n.addEventListener('click', () => this.toggleLayerVisibility(e));
-    const i = document.createElement('span');
-    (i.className = 'layer-name'),
-      (i.textContent = `${e.id}`),
-      i.addEventListener('click', () => this.selectLayer(e));
+    const o = document.createElement('span');
+    (o.className = 'layer-name'),
+      (o.textContent = `${e.id}`),
+      o.addEventListener('click', () => this.selectLayer(e));
     const s = document.createElement('span');
     return (
       (s.className = 'layer-lock'),
@@ -1093,7 +1205,7 @@ class v {
       t.addEventListener('dragover', this.handleDragOver),
       t.addEventListener('drop', t => this.handleDrop(t, e)),
       t.appendChild(n),
-      t.appendChild(i),
+      t.appendChild(o),
       t.appendChild(s),
       t
     );
@@ -1133,13 +1245,13 @@ class v {
   static handleDrop(e, t) {
     var n;
     if ((e.preventDefault(), e.stopPropagation(), !e.dataTransfer)) return;
-    const i = parseInt(
+    const o = parseInt(
         (null === (n = e.dataTransfer) || void 0 === n
           ? void 0
           : n.getData('text/plain')) || '-1'
       ),
       s = parseInt(t.id || '-1');
-    b.reorderComponent(i, s), this.updateLayersView();
+    C.reorderComponent(o, s), this.updateLayersView();
   }
   static switchToCustomizeMode(e) {
     const t = document.getElementById('customize-sidebar');
@@ -1153,8 +1265,8 @@ class v {
       (n.innerHTML = `\n        <h3>Layer Properties: ${e}</h3>\n        <div>Visibility: ${'none' !== t.style.display ? 'Visible' : 'Hidden'}</div>\n        <div>Locked: ${'true' === t.getAttribute('data-locked') ? 'Yes' : 'No'}</div>\n      `);
   }
 }
-(v.layersView = null), (v.canvasRoot = null), (v.draggedItem = null);
-class w {
+(w.layersView = null), (w.canvasRoot = null), (w.draggedItem = null);
+class b {
   static init() {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1166,7 +1278,7 @@ class w {
       return void console.error(
         'CustomizationSidebar: Required elements not found.'
       );
-    (this.layersViewController = new v()),
+    (this.layersViewController = new w()),
       (this.layersModeToggle = document.createElement('div')),
       (this.layersModeToggle.className = 'layers-mode-toggle'),
       (this.layersModeToggle.innerHTML =
@@ -1194,13 +1306,13 @@ class w {
     const e = document.getElementById('customize-tab'),
       t = document.getElementById('layers-tab'),
       n = document.getElementById('layers-view'),
-      i = document.getElementById('controls'),
+      o = document.getElementById('controls'),
       s = document.getElementById('component-name');
     e.classList.add('active'),
       t.classList.remove('active'),
       n.classList.add('hidden'),
-      i.classList.remove('hidden'),
-      (i.style.display = 'block'),
+      o.classList.remove('hidden'),
+      (o.style.display = 'block'),
       (n.style.display = 'none'),
       (s.style.display = 'block');
   }
@@ -1208,35 +1320,35 @@ class w {
     const e = document.getElementById('customize-tab'),
       t = document.getElementById('layers-tab'),
       n = document.getElementById('layers-view'),
-      i = document.getElementById('controls'),
+      o = document.getElementById('controls'),
       s = document.getElementById('component-name');
     t.classList.add('active'),
       e.classList.remove('active'),
-      (i.style.display = 'none'),
+      (o.style.display = 'none'),
       (n.style.display = 'block'),
       (s.style.display = 'none'),
-      v.updateLayersView();
+      w.updateLayersView();
   }
   static updateLayersView() {
-    v.updateLayersView();
+    w.updateLayersView();
   }
   static showSidebar(e) {
     const t = document.getElementById('customize-tab'),
       n = document.getElementById('layers-tab'),
-      i = document.getElementById('layers-view'),
+      o = document.getElementById('layers-view'),
       s = document.getElementById('controls');
     t.classList.add('active'),
       n.classList.remove('active'),
-      i.classList.add('hidden'),
+      o.classList.add('hidden'),
       s.classList.remove('hidden');
-    const o = document.getElementById(e);
-    if ((console.log(`Showing sidebar for: ${e}`), !o))
+    const i = document.getElementById(e);
+    if ((console.log(`Showing sidebar for: ${e}`), !i))
       return void console.error(`Component with ID "${e}" not found.`);
     const l = 'canvas' === e.toLowerCase();
     (this.sidebarElement.style.display = 'block'),
       (this.controlsContainer.innerHTML = ''),
       (this.componentNameHeader.textContent = `Component: ${e}`);
-    const a = getComputedStyle(o);
+    const a = getComputedStyle(i);
     this.createSelectControl('Display', 'display', a.display || 'block', [
       'block',
       'inline',
@@ -1246,12 +1358,12 @@ class w {
       'none',
     ]),
       l ||
-        (this.createControl('Width', 'width', 'number', o.offsetWidth, {
+        (this.createControl('Width', 'width', 'number', i.offsetWidth, {
           min: 0,
           max: 1e3,
           unit: 'px',
         }),
-        this.createControl('Height', 'height', 'number', o.offsetHeight, {
+        this.createControl('Height', 'height', 'number', i.offsetHeight, {
           min: 0,
           max: 1e3,
           unit: 'px',
@@ -1328,9 +1440,9 @@ class w {
         'color',
         a.borderColor || '#000000'
       );
-    const r = w.rgbToHex(a.backgroundColor),
+    const r = b.rgbToHex(a.backgroundColor),
       d = document.getElementById('color');
-    d && (d.value = r), this.addListeners(o);
+    d && (d.value = r), this.addListeners(i);
   }
   static hideSidebar() {
     this.sidebarElement && (this.sidebarElement.style.display = 'none');
@@ -1340,22 +1452,22 @@ class w {
     if (!t) return e;
     return `#${((1 << 24) | (parseInt(t[1], 10) << 16) | (parseInt(t[2], 10) << 8) | parseInt(t[3], 10)).toString(16).slice(1).toUpperCase()}`;
   }
-  static createControl(e, t, n, i, s = {}) {
-    const o = document.createElement('div');
-    o.classList.add('control-wrapper');
+  static createControl(e, t, n, o, s = {}) {
+    const i = document.createElement('div');
+    i.classList.add('control-wrapper');
     if ('number' === n && s.unit) {
       const l = s.unit;
-      o.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${i}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === l ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === l ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === l ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === l ? 'selected' : ''}>%</option>\n                  </select>\n              `;
+      i.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${o}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === l ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === l ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === l ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === l ? 'selected' : ''}>%</option>\n                  </select>\n              `;
     } else
-      o.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${i}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${i}">\n        `;
-    const l = o.querySelector('input'),
-      a = o.querySelector(`#${t}-unit`);
+      i.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${o}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${o}">\n        `;
+    const l = i.querySelector('input'),
+      a = i.querySelector(`#${t}-unit`);
     l &&
       Object.keys(s).forEach(e => {
         l.setAttribute(e, s[e].toString());
       });
-    const r = o.querySelector('input[type="color"]'),
-      d = o.querySelector('#color-value');
+    const r = i.querySelector('input[type="color"]'),
+      d = i.querySelector('#color-value');
     r &&
       r.addEventListener('input', () => {
         d && (d.value = r.value);
@@ -1364,7 +1476,7 @@ class w {
         d.addEventListener('input', () => {
           r && (r.value = d.value);
         }),
-      this.controlsContainer.appendChild(o),
+      this.controlsContainer.appendChild(i),
       a &&
         a.addEventListener('change', () => {
           const e = a.value,
@@ -1372,20 +1484,20 @@ class w {
           l.value = `${t}${e}`;
         });
   }
-  static createSelectControl(e, t, n, i) {
+  static createSelectControl(e, t, n, o) {
     const s = document.createElement('div');
     s.classList.add('control-wrapper');
-    const o = i
+    const i = o
       .map(
         e => `<option value="${e}" ${e === n ? 'selected' : ''}>${e}</option>`
       )
       .join('');
-    (s.innerHTML = `\n              <label for="${t}">${e}:</label>\n              <select id="${t}">${o}</select>\n          `),
+    (s.innerHTML = `\n              <label for="${t}">${e}:</label>\n              <select id="${t}">${i}</select>\n          `),
       this.controlsContainer.appendChild(s);
   }
   static addListeners(e) {
-    var t, n, i, s, o, l, a, r, d, c, p, h, m;
-    const u = {
+    var t, n, o, s, i, l, a, r, d, c, p, h, u;
+    const m = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
       color: document.getElementById('color'),
@@ -1400,87 +1512,87 @@ class w {
       display: document.getElementById('display'),
       fontFamily: document.getElementById('font-family'),
     };
-    if (!u) return;
+    if (!m) return;
     const g = (function (e, t) {
       let n = null;
-      return (...i) => {
-        n && clearTimeout(n), (n = setTimeout(() => e(...i), t));
+      return (...o) => {
+        n && clearTimeout(n), (n = setTimeout(() => e(...o), t));
       };
     })(() => {
-      b.historyManager.captureState();
+      C.historyManager.captureState();
     }, 300);
-    null === (t = u.width) ||
+    null === (t = m.width) ||
       void 0 === t ||
       t.addEventListener('input', () => {
         const t = document.getElementById('width-unit').value;
-        (e.style.width = `${u.width.value}${t}`), g();
+        (e.style.width = `${m.width.value}${t}`), g();
       }),
-      null === (n = u.height) ||
+      null === (n = m.height) ||
         void 0 === n ||
         n.addEventListener('input', () => {
           const t = document.getElementById('height-unit').value;
-          (e.style.height = `${u.height.value}${t}`), g();
+          (e.style.height = `${m.height.value}${t}`), g();
         }),
-      null === (i = u.color) ||
-        void 0 === i ||
-        i.addEventListener('input', () => {
-          e.style.backgroundColor = u.color.value;
+      null === (o = m.color) ||
+        void 0 === o ||
+        o.addEventListener('input', () => {
+          e.style.backgroundColor = m.color.value;
           const t = document.querySelector('#color-value');
-          t && (t.textContent = u.color.value), g();
+          t && (t.textContent = m.color.value), g();
         }),
-      null === (s = u.margin) ||
+      null === (s = m.margin) ||
         void 0 === s ||
         s.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
-          (e.style.margin = `${u.margin.value}${t}`), g();
+          (e.style.margin = `${m.margin.value}${t}`), g();
         }),
-      null === (o = u.padding) ||
-        void 0 === o ||
-        o.addEventListener('input', () => {
+      null === (i = m.padding) ||
+        void 0 === i ||
+        i.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
-          (e.style.padding = `${u.padding.value}${t}`), g();
+          (e.style.padding = `${m.padding.value}${t}`), g();
         }),
-      null === (l = u.alignment) ||
+      null === (l = m.alignment) ||
         void 0 === l ||
         l.addEventListener('change', () => {
-          (e.style.textAlign = u.alignment.value), g();
+          (e.style.textAlign = m.alignment.value), g();
         }),
-      null === (a = u.fontSize) ||
+      null === (a = m.fontSize) ||
         void 0 === a ||
         a.addEventListener('input', () => {
           const t = document.getElementById('font-size-unit').value;
-          (e.style.fontSize = `${u.fontSize.value}${t}`), g();
+          (e.style.fontSize = `${m.fontSize.value}${t}`), g();
         }),
-      null === (r = u.textColor) ||
+      null === (r = m.textColor) ||
         void 0 === r ||
         r.addEventListener('input', () => {
-          (e.style.color = u.textColor.value), g();
+          (e.style.color = m.textColor.value), g();
         }),
-      null === (d = u.borderWidth) ||
+      null === (d = m.borderWidth) ||
         void 0 === d ||
         d.addEventListener('input', () => {
           const t = document.getElementById('border-width-unit').value;
-          (e.style.borderWidth = `${u.borderWidth.value}${t}`), g();
+          (e.style.borderWidth = `${m.borderWidth.value}${t}`), g();
         }),
-      null === (c = u.borderStyle) ||
+      null === (c = m.borderStyle) ||
         void 0 === c ||
         c.addEventListener('change', () => {
-          (e.style.borderStyle = u.borderStyle.value), g();
+          (e.style.borderStyle = m.borderStyle.value), g();
         }),
-      null === (p = u.borderColor) ||
+      null === (p = m.borderColor) ||
         void 0 === p ||
         p.addEventListener('input', () => {
-          (e.style.borderColor = u.borderColor.value), g();
+          (e.style.borderColor = m.borderColor.value), g();
         }),
-      null === (h = u.display) ||
+      null === (h = m.display) ||
         void 0 === h ||
         h.addEventListener('change', () => {
-          (e.style.display = u.display.value), g();
+          (e.style.display = m.display.value), g();
         }),
-      null === (m = u.fontFamily) ||
-        void 0 === m ||
-        m.addEventListener('change', () => {
-          (e.style.fontFamily = u.fontFamily.value), g();
+      null === (u = m.fontFamily) ||
+        void 0 === u ||
+        u.addEventListener('change', () => {
+          (e.style.fontFamily = m.fontFamily.value), g();
         });
   }
   static getLayersViewController() {
@@ -1505,8 +1617,8 @@ class f {
       });
   }
   showGridCornerHighlight(e, t, n) {
-    const { gridX: i, gridY: s } = this.mousePositionAtGridCorner(e, n);
-    (t.style.left = `${i}px`),
+    const { gridX: o, gridY: s } = this.mousePositionAtGridCorner(e, n);
+    (t.style.left = `${o}px`),
       (t.style.top = `${s}px`),
       (t.style.width = '20px'),
       (t.style.height = '20px'),
@@ -1514,53 +1626,51 @@ class f {
   }
   mousePositionAtGridCorner(e, t) {
     const n = t.getBoundingClientRect(),
-      i = e.clientX - n.left,
+      o = e.clientX - n.left,
       s = e.clientY - n.top;
-    return { gridX: 20 * Math.floor(i / 20), gridY: 20 * Math.floor(s / 20) };
+    return { gridX: 20 * Math.floor(o / 20), gridY: 20 * Math.floor(s / 20) };
   }
   getCellSize() {
     return this.cellSize;
   }
 }
-class b {
+class C {
   static getComponents() {
-    return b.components;
+    return C.components;
   }
   static setComponents(e) {
-    b.components = e;
+    C.components = e;
   }
   static init() {
-    (b.canvasElement = document.getElementById('canvas')),
-      (b.sidebarElement = document.getElementById('sidebar')),
-      b.canvasElement.addEventListener('drop', b.onDrop.bind(b)),
-      b.canvasElement.addEventListener('dragover', e => e.preventDefault()),
-      b.canvasElement.addEventListener('click', e => {
+    (C.canvasElement = document.getElementById('canvas')),
+      (C.sidebarElement = document.getElementById('sidebar')),
+      C.canvasElement.addEventListener('drop', C.onDrop.bind(C)),
+      C.canvasElement.addEventListener('dragover', e => e.preventDefault()),
+      C.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        console.log('this is my component,', t),
-          console.log('this is component id ', t.id),
-          t && w.showSidebar(t.id);
+        t && b.showSidebar(t.id);
       }),
-      (b.canvasElement.style.position = 'relative'),
-      (b.historyManager = new h(b.canvasElement)),
-      (b.jsonStorage = new m()),
-      (b.controlsManager = new u(b)),
-      (b.gridManager = new f()),
-      b.gridManager.initializeDropPreview(b.canvasElement);
-    new e(b.canvasElement, b.sidebarElement).enable();
-    const t = b.jsonStorage.load();
-    t && b.restoreState(t);
+      (C.canvasElement.style.position = 'relative'),
+      (C.historyManager = new u(C.canvasElement)),
+      (C.jsonStorage = new m()),
+      (C.controlsManager = new g(C)),
+      (C.gridManager = new f()),
+      C.gridManager.initializeDropPreview(C.canvasElement);
+    new e(C.canvasElement, C.sidebarElement).enable();
+    const t = C.jsonStorage.load();
+    t && C.restoreState(t);
   }
   static clearCanvas() {
-    (b.canvasElement.innerHTML = ''),
-      (b.components = []),
-      b.historyManager.captureState(),
-      b.gridManager.initializeDropPreview(b.canvasElement);
+    (C.canvasElement.innerHTML = ''),
+      (C.components = []),
+      C.historyManager.captureState(),
+      C.gridManager.initializeDropPreview(C.canvasElement);
   }
   static getState() {
-    return b.components.map(e => {
+    return C.components.map(e => {
       const t = e.classList[0].split(/\d/)[0].replace('-component', ''),
         n = e.querySelector('img') ? e.querySelector('img').src : null,
-        i = window.getComputedStyle(e),
+        o = window.getComputedStyle(e),
         s = {};
       [
         'position',
@@ -1594,14 +1704,14 @@ class b {
         'text-align',
         'line-height',
       ].forEach(e => {
-        s[e] = i.getPropertyValue(e);
+        s[e] = o.getPropertyValue(e);
       });
-      const o = {};
+      const i = {};
       return (
         Array.from(e.attributes)
           .filter(e => e.name.startsWith('data-'))
           .forEach(e => {
-            o[e.name] = e.value;
+            i[e.name] = e.value;
           }),
         {
           id: e.id,
@@ -1612,43 +1722,54 @@ class b {
           style: s,
           inlineStyle: e.getAttribute('style') || '',
           classes: Array.from(e.classList),
-          dataAttributes: o,
+          dataAttributes: i,
           imageSrc: n,
         }
       );
     });
   }
   static restoreState(e) {
-    (b.canvasElement.innerHTML = ''),
-      (b.components = []),
+    (C.canvasElement.innerHTML = ''),
+      (C.components = []),
       e.forEach(e => {
-        const t = b.createComponent(e.type);
-        t &&
-          ((t.innerHTML = e.content),
-          (t.className = ''),
-          e.classes.forEach(e => {
-            t.classList.add(e);
-          }),
+        const t = C.createComponent(e.type);
+        if (t) {
+          if (
+            ((t.innerHTML = e.content),
+            (t.className = ''),
+            e.classes.forEach(e => {
+              t.classList.add(e);
+            }),
+            'video' === e.type && e.videoSrc)
+          ) {
+            const n = t.querySelector('video'),
+              o = t.querySelector('.upload-text');
+            (n.src = e.videoSrc),
+              (n.style.display = 'block'),
+              (o.style.display = 'none');
+          }
           e.inlineStyle && t.setAttribute('style', e.inlineStyle),
-          e.computedStyle &&
-            Object.keys(e.computedStyle).forEach(n => {
-              t.style.setProperty(n, e.computedStyle[n]);
-            }),
-          e.dataAttributes &&
-            Object.entries(e.dataAttributes).forEach(([e, n]) => {
-              t.setAttribute(e, n);
-            }),
-          b.controlsManager.addControlButtons(t),
-          b.addDraggableListeners(t),
-          t.classList.contains('container-component') && l.restoreContainer(t),
-          (t.classList.contains('twoCol-component') ||
-            t.classList.contains('threeCol-component')) &&
-            a.restoreColumn(t),
-          'image' === e.type && n.restoreImageUpload(t, e.imageSrc),
-          b.canvasElement.appendChild(t),
-          b.components.push(t));
+            e.computedStyle &&
+              Object.keys(e.computedStyle).forEach(n => {
+                t.style.setProperty(n, e.computedStyle[n]);
+              }),
+            e.dataAttributes &&
+              Object.entries(e.dataAttributes).forEach(([e, n]) => {
+                t.setAttribute(e, n);
+              }),
+            C.controlsManager.addControlButtons(t),
+            C.addDraggableListeners(t),
+            t.classList.contains('container-component') &&
+              l.restoreContainer(t),
+            (t.classList.contains('twoCol-component') ||
+              t.classList.contains('threeCol-component')) &&
+              a.restoreColumn(t),
+            'image' === e.type && n.restoreImageUpload(t, e.imageSrc),
+            C.canvasElement.appendChild(t),
+            C.components.push(t);
+        }
       }),
-      b.gridManager.initializeDropPreview(b.canvasElement);
+      C.gridManager.initializeDropPreview(C.canvasElement);
   }
   static onDrop(e) {
     var t;
@@ -1660,31 +1781,31 @@ class b {
       null === (t = e.dataTransfer) || void 0 === t
         ? void 0
         : t.getData('component-type');
-    if ((console.log(`Dropped component type: ${n}`), !n)) return;
-    const { gridX: i, gridY: s } = this.gridManager.mousePositionAtGridCorner(
+    if (!n) return;
+    const { gridX: o, gridY: s } = this.gridManager.mousePositionAtGridCorner(
         e,
-        b.canvasElement
+        C.canvasElement
       ),
-      o = b.createComponent(n);
-    if (o) {
-      const t = b.generateUniqueClass(n);
-      (o.id = t),
-        o.classList.add(t),
-        (o.style.position = 'absolute'),
+      i = C.createComponent(n);
+    if (i) {
+      const t = C.generateUniqueClass(n);
+      (i.id = t),
+        i.classList.add(t),
+        (i.style.position = 'absolute'),
         'container' === n || 'twoCol' === n || 'threeCol' === n
-          ? (o.style.top = `${e.offsetY}px`)
-          : ((o.style.position = 'absolute'),
-            (o.style.left = `${i}px`),
-            (o.style.top = `${s}px`));
+          ? (i.style.top = `${e.offsetY}px`)
+          : ((i.style.position = 'absolute'),
+            (i.style.left = `${o}px`),
+            (i.style.top = `${s}px`));
       const l = document.createElement('span');
       (l.className = 'component-label'),
         (l.textContent = t),
-        o.appendChild(l),
-        b.components.push(o),
-        b.canvasElement.appendChild(o),
-        b.addDraggableListeners(o),
-        w.updateLayersView(),
-        b.historyManager.captureState();
+        i.appendChild(l),
+        C.components.push(i),
+        C.canvasElement.appendChild(i),
+        C.addDraggableListeners(i),
+        b.updateLayersView(),
+        C.historyManager.captureState();
     }
   }
   static reorderComponent(e, t) {
@@ -1697,63 +1818,63 @@ class b {
       return void console.error('Invalid indices for reordering');
     const [n] = this.components.splice(e, 1);
     this.components.splice(t, 0, n);
-    const i = document.getElementById('canvas-container');
-    i &&
-      ((i.innerHTML = ''),
+    const o = document.getElementById('canvas-container');
+    o &&
+      ((o.innerHTML = ''),
       this.components.forEach(e => {
-        i.appendChild(e);
+        o.appendChild(e);
       })),
       this.historyManager.captureState();
   }
   static createComponent(e) {
-    const t = b.componentFactory[e];
+    const t = C.componentFactory[e];
     if (!t) return console.warn(`Unknown component type: ${e}`), null;
     const n = t();
     if (n) {
       n.classList.add('editable-component'),
         'container' != e && n.classList.add('component-resizer');
-      const t = b.generateUniqueClass(e);
+      const t = C.generateUniqueClass(e);
       n.setAttribute('id', t),
         'image' === e
           ? n.setAttribute('contenteditable', 'false')
           : n.setAttribute('contenteditable', 'true'),
-        b.controlsManager.addControlButtons(n),
-        w.updateLayersView();
+        C.controlsManager.addControlButtons(n),
+        b.updateLayersView();
     }
     return n;
   }
   static generateUniqueClass(e, t = !1, n = null) {
     if (t && n) {
-      let t = b.components.find(e => e.classList.contains(n));
+      let t = C.components.find(e => e.classList.contains(n));
       if (!t && ((t = document.querySelector(`.${n}`)), !t))
         return (
           console.warn(`Container with class ${n} not found.`), `${n}-${e}1`
         );
-      const i = Array.from(t.children),
+      const o = Array.from(t.children),
         s = new RegExp(`${n}-${e}(\\d+)`);
-      let o = 0;
+      let i = 0;
       return (
-        i.forEach(e => {
+        o.forEach(e => {
           e.classList.forEach(e => {
             const t = e.match(s);
             if (t) {
               const e = parseInt(t[1]);
-              o = Math.max(o, e);
+              i = Math.max(i, e);
             }
           });
         }),
-        `${n}-${e}${o + 1}`
+        `${n}-${e}${i + 1}`
       );
     }
     {
       const t = new RegExp(`${e}(\\d+)`);
       let n = 0;
       return (
-        b.components.forEach(e => {
+        C.components.forEach(e => {
           e.classList.forEach(e => {
-            const i = e.match(t);
-            if (i) {
-              const e = parseInt(i[1]);
+            const o = e.match(t);
+            if (o) {
+              const e = parseInt(o[1]);
               n = Math.max(n, e);
             }
           });
@@ -1766,55 +1887,56 @@ class b {
     e.setAttribute('draggable', 'true'), (e.style.cursor = 'grab');
     let t = 0,
       n = 0,
-      i = 0,
+      o = 0,
       s = 0;
-    e.addEventListener('dragstart', o => {
-      if (o.dataTransfer) {
-        const l = b.canvasElement.getBoundingClientRect(),
+    e.addEventListener('dragstart', i => {
+      if (i.dataTransfer) {
+        const l = C.canvasElement.getBoundingClientRect(),
           a = e.getBoundingClientRect();
-        (t = o.clientX),
-          (n = o.clientY),
-          (i = a.left - l.left),
+        (t = i.clientX),
+          (n = i.clientY),
+          (o = a.left - l.left),
           (s = a.top - l.top),
-          (o.dataTransfer.effectAllowed = 'move'),
+          (i.dataTransfer.effectAllowed = 'move'),
           (e.style.cursor = 'grabbing');
       }
     }),
-      e.addEventListener('dragend', o => {
-        o.preventDefault();
-        const l = o.clientX - t,
-          a = o.clientY - n;
-        let r = i + l,
+      e.addEventListener('dragend', i => {
+        i.preventDefault();
+        const l = i.clientX - t,
+          a = i.clientY - n;
+        let r = o + l,
           d = s + a;
-        const c = b.canvasElement.offsetWidth - e.offsetWidth,
-          p = b.canvasElement.offsetHeight - e.offsetHeight;
+        const c = C.canvasElement.offsetWidth - e.offsetWidth,
+          p = C.canvasElement.offsetHeight - e.offsetHeight;
         (r = Math.max(0, Math.min(r, c))),
           (d = Math.max(0, Math.min(d, p))),
           (e.style.left = `${r}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
-          b.historyManager.captureState();
+          C.historyManager.captureState();
       });
   }
   static exportLayout() {
-    return b.components.map(e => ({ type: e.className, content: e.innerHTML }));
+    return C.components.map(e => ({ type: e.className, content: e.innerHTML }));
   }
 }
-(b.components = []),
-  (b.componentFactory = {
+(C.components = []),
+  (C.componentFactory = {
     button: () => new s().create(),
-    header: () => new o().create(),
+    header: () => new i().create(),
     image: () => new n().create(),
-    video: () => new i().create(),
+    video: () => new o(() => C.historyManager.captureState()).create(),
+    table: () => new c().create(),
     text: () => new t().create(),
     container: () => new l().create(),
     twoCol: () => new r().create(),
     threeCol: () => new d().create(),
-    landingpage: () => new p().create(),
-    link: () => new c().create(),
+    landingpage: () => new h().create(),
+    link: () => new p().create(),
   });
-const C = document.getElementById('canvas'),
-  L = new (class {
+const x = document.getElementById('canvas'),
+  E = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -1832,12 +1954,12 @@ const C = document.getElementById('canvas'),
         this.selectedElement.classList.add('selected');
     }
   })();
-C &&
-  C.addEventListener('click', e => {
+x &&
+  x.addEventListener('click', e => {
     const t = e.target;
-    t !== C && L.selectElement(t);
+    t !== x && E.selectElement(t);
   });
-class E {
+class L {
   constructor(e) {
     this.canvas = e;
   }
@@ -1862,7 +1984,7 @@ class E {
       }
   }
 }
-const x = {
+const k = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n                </svg>',
   tablet:
@@ -1893,6 +2015,8 @@ const x = {
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n        <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H12M12 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H12M12 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n        </svg>',
   threecol:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M9.33333 20H5C4.44772 20 4 19.5523 4 19V5C4 4.44772 4.44772 4 5 4H9.33333M9.33333 20V4M9.33333 20H14.6667M9.33333 4H14.6667M14.6667 4H19C19.5523 4 20 4.44772 20 5V19C20 19.5523 19.5523 20 19 20H14.6667M14.6667 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            </svg>',
+  table:
+    '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path d="M4 5C4 4.44772 4.44772 4 5 4H19C19.5523 4 20 4.44772 20 5V19C20 19.5523 19.5523 20 19 20H5C4.44772 20 4 19.5523 4 19V5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M9 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M15 4V20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M4 9H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n                <path d="M4 15H20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>\n            </svg>',
   landing:
     '<svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" \n           viewBox="0 0 32 32" xml:space="preserve">\n            <style type="text/css">\n                .st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}\n                .st1{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}\n                .st2{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5.2066,0;}\n            </style>\n            <line class="st0" x1="3" y1="11" x2="29" y2="11"/>\n            <line class="st0" x1="7" y1="8" x2="7" y2="8"/>\n            <line class="st0" x1="10" y1="8" x2="10" y2="8"/>\n            <line class="st0" x1="13" y1="8" x2="13" y2="8"/>\n            <rect x="3" y="5" class="st0" width="26" height="22"/>\n            <rect x="6" y="14" class="st0" width="10" height="10"/>\n            <rect x="19" y="21" class="st0" width="7" height="3"/>\n            <line class="st0" x1="20" y1="15" x2="26" y2="15"/>\n            <line class="st0" x1="23" y1="18" x2="26" y2="18"/>\n            <polyline class="st0" points="6,22 12,19 16,22 "/>\n            <line class="st0" x1="9" y1="17" x2="9" y2="17"/>\n            </svg>',
   delete:
@@ -1901,13 +2025,13 @@ const x = {
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path d="M6.99486 7.00636C6.60433 7.39689 6.60433 8.03005 6.99486 8.42058L10.58 12.0057L6.99486 15.5909C6.60433 15.9814 6.60433 16.6146 6.99486 17.0051C7.38538 17.3956 8.01855 17.3956 8.40907 17.0051L11.9942 13.4199L15.5794 17.0051C15.9699 17.3956 16.6031 17.3956 16.9936 17.0051C17.3841 16.6146 17.3841 15.9814 16.9936 15.5909L13.4084 12.0057L16.9936 8.42059C17.3841 8.03007 17.3841 7.3969 16.9936 7.00638C16.603 6.61585 15.9699 6.61585 15.5794 7.00638L11.9942 10.5915L8.40907 7.00636C8.01855 6.61584 7.38538 6.61584 6.99486 7.00636Z" fill="#0F0F0F"/>\n                </svg>',
   edit: '<svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" \n    viewBox="0 0 348.882 348.882" xml:space="preserve">\n<g>\n   <path d="M333.988,11.758l-0.42-0.383C325.538,4.04,315.129,0,304.258,0c-12.187,0-23.888,5.159-32.104,14.153L116.803,184.231\n       c-1.416,1.55-2.49,3.379-3.154,5.37l-18.267,54.762c-2.112,6.331-1.052,13.333,2.835,18.729c3.918,5.438,10.23,8.685,16.886,8.685\n       c0,0,0.001,0,0.001,0c2.879,0,5.693-0.592,8.362-1.76l52.89-23.138c1.923-0.841,3.648-2.076,5.063-3.626L336.771,73.176\n       C352.937,55.479,351.69,27.929,333.988,11.758z M130.381,234.247l10.719-32.134l0.904-0.99l20.316,18.556l-0.904,0.99\n       L130.381,234.247z M314.621,52.943L182.553,197.53l-20.316-18.556L294.305,34.386c2.583-2.828,6.118-4.386,9.954-4.386\n       c3.365,0,6.588,1.252,9.082,3.53l0.419,0.383C319.244,38.922,319.63,47.459,314.621,52.943z"/>\n   <path d="M303.85,138.388c-8.284,0-15,6.716-15,15v127.347c0,21.034-17.113,38.147-38.147,38.147H68.904\n       c-21.035,0-38.147-17.113-38.147-38.147V100.413c0-21.034,17.113-38.147,38.147-38.147h131.587c8.284,0,15-6.716,15-15\n       s-6.716-15-15-15H68.904c-37.577,0-68.147,30.571-68.147,68.147v180.321c0,37.576,30.571,68.147,68.147,68.147h181.798\n       c37.576,0,68.147-30.571,68.147-68.147V153.388C318.85,145.104,312.134,138.388,303.85,138.388z"/>\n</g>\n</svg>',
 };
-function k(e) {
+function M(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
-  let i = 0;
+  let o = 0;
   const s = [];
   e.forEach(e => {
-    const o = t(e.name),
+    const i = t(e.name),
       l = t(e.content),
       a = (function (e) {
         let t = 4294967295;
@@ -1918,19 +2042,19 @@ function k(e) {
         return 4294967295 ^ t;
       })(l),
       r = ((e, t, n) => {
-        const i = new Uint8Array(30 + e.length);
+        const o = new Uint8Array(30 + e.length);
         return (
-          i.set([80, 75, 3, 4]),
-          i.set([20, 0], 4),
-          i.set([0, 0], 6),
-          i.set([0, 0], 8),
-          i.set([0, 0], 10),
-          i.set([0, 0], 12),
-          i.set(
+          o.set([80, 75, 3, 4]),
+          o.set([20, 0], 4),
+          o.set([0, 0], 6),
+          o.set([0, 0], 8),
+          o.set([0, 0], 10),
+          o.set([0, 0], 12),
+          o.set(
             [255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255],
             14
           ),
-          i.set(
+          o.set(
             [
               255 & t.length,
               (t.length >> 8) & 255,
@@ -1939,7 +2063,7 @@ function k(e) {
             ],
             18
           ),
-          i.set(
+          o.set(
             [
               255 & t.length,
               (t.length >> 8) & 255,
@@ -1948,14 +2072,14 @@ function k(e) {
             ],
             22
           ),
-          i.set([255 & e.length, (e.length >> 8) & 255], 26),
-          i.set([0, 0], 28),
-          i.set(e, 30),
-          i
+          o.set([255 & e.length, (e.length >> 8) & 255], 26),
+          o.set([0, 0], 28),
+          o.set(e, 30),
+          o
         );
-      })(o, l, a);
+      })(i, l, a);
     n.push(r), n.push(l);
-    const d = ((e, t, n, i) => {
+    const d = ((e, t, n, o) => {
       const s = new Uint8Array(46 + e.length);
       return (
         s.set([80, 75, 1, 2]),
@@ -1990,34 +2114,34 @@ function k(e) {
         s.set([0, 0], 34),
         s.set([0, 0], 36),
         s.set([0, 0, 0, 0], 38),
-        s.set([255 & i, (i >> 8) & 255, (i >> 16) & 255, (i >> 24) & 255], 42),
+        s.set([255 & o, (o >> 8) & 255, (o >> 16) & 255, (o >> 24) & 255], 42),
         s.set(e, 46),
         s
       );
-    })(o, l, a, i);
-    s.push(d), (i += r.length + l.length);
+    })(i, l, a, o);
+    s.push(d), (o += r.length + l.length);
   }),
     n.push(...s);
-  const o = s.reduce((e, t) => e + t.length, 0),
+  const i = s.reduce((e, t) => e + t.length, 0),
     l = ((e, t, n) => {
-      const i = new Uint8Array(22);
+      const o = new Uint8Array(22);
       return (
-        i.set([80, 75, 5, 6]),
-        i.set([0, 0], 4),
-        i.set([0, 0], 6),
-        i.set([255 & e, (e >> 8) & 255], 8),
-        i.set([255 & e, (e >> 8) & 255], 10),
-        i.set([255 & t, (t >> 8) & 255, (t >> 16) & 255, (t >> 24) & 255], 12),
-        i.set([255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255], 16),
-        i.set([0, 0], 20),
-        i
+        o.set([80, 75, 5, 6]),
+        o.set([0, 0], 4),
+        o.set([0, 0], 6),
+        o.set([255 & e, (e >> 8) & 255], 8),
+        o.set([255 & e, (e >> 8) & 255], 10),
+        o.set([255 & t, (t >> 8) & 255, (t >> 16) & 255, (t >> 24) & 255], 12),
+        o.set([255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255], 16),
+        o.set([0, 0], 20),
+        o
       );
-    })(e.length, o, i);
+    })(e.length, i, o);
   n.push(l);
   const a = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
   return new Blob([a], { type: 'application/zip' });
 }
-class M {
+class S {
   static init() {
     document.addEventListener('keydown', this.handleKeydown);
   }
@@ -2025,14 +2149,14 @@ class M {
     if (e.ctrlKey || e.metaKey)
       switch (e.key.toLowerCase()) {
         case 'z':
-          e.preventDefault(), b.historyManager.undo();
+          e.preventDefault(), C.historyManager.undo();
           break;
         case 'y':
-          e.preventDefault(), b.historyManager.redo();
+          e.preventDefault(), C.historyManager.redo();
       }
   }
 }
-class S {
+class H {
   setPreviewMode(e) {
     const t = document.getElementById('canvas');
     t.classList.forEach(e => {
@@ -2042,25 +2166,26 @@ class S {
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
-  var e, t, n, i, s, o, l, a, r;
-  const d = new b(),
-    c = new E(d),
-    p = new y(d),
+  var e, t, n, o, s, i, l, a, r;
+  const d = new C(),
+    c = new L(d),
+    p = new v(d),
     h = new m(),
-    u = new S();
+    u = new H();
   !(function () {
     const e = document.getElementById('sidebar'),
       t = {
-        button: x.button,
-        header: x.header,
-        image: x.image,
-        video: x.video,
-        text: x.text,
-        container: x.container,
-        twoCol: x.twocol,
-        threeCol: x.threecol,
-        landingpage: x.landing,
-        link: x.hyperlink,
+        button: k.button,
+        header: k.header,
+        image: k.image,
+        video: k.video,
+        text: k.text,
+        container: k.container,
+        twoCol: k.twocol,
+        threeCol: k.threecol,
+        table: k.table,
+        landingpage: k.landing,
+        link: k.hyperlink,
       },
       n = {
         button: 'Button',
@@ -2071,11 +2196,12 @@ document.addEventListener('DOMContentLoaded', () => {
         container: 'Container',
         twoCol: 'Two Column Layout',
         threeCol: 'Three Column Layout',
+        table: 'Table',
         landingpage: 'Landing Page Template',
         link: 'Link',
       },
-      i = document.createElement('div');
-    i.classList.add('menu'),
+      o = document.createElement('div');
+    o.classList.add('menu'),
       Object.entries({
         Basic: [
           'button',
@@ -2086,58 +2212,59 @@ document.addEventListener('DOMContentLoaded', () => {
           'container',
           'twoCol',
           'threeCol',
+          'table',
           'link',
         ],
         Extra: ['landingpage'],
       }).forEach(([e, s]) => {
-        const o = document.createElement('div');
-        o.classList.add('category');
+        const i = document.createElement('div');
+        i.classList.add('category');
         const l = document.createElement('h4');
         l.classList.add('categoryHeading'),
           (l.innerHTML = e),
-          o.prepend(l),
+          i.prepend(l),
           s.forEach(e => {
-            const i = document.createElement('div');
-            i.classList.add('draggable'),
-              (i.id = e),
-              i.setAttribute('draggable', 'true'),
-              i.setAttribute('data-component', e);
+            const o = document.createElement('div');
+            o.classList.add('draggable'),
+              (o.id = e),
+              o.setAttribute('draggable', 'true'),
+              o.setAttribute('data-component', e);
             const s = n[e] || `Drag to add ${e}`;
-            if ((i.setAttribute('title', s), t[e])) {
-              i.innerHTML = t[e];
-              const n = i.querySelector('svg');
+            if ((o.setAttribute('title', s), t[e])) {
+              o.innerHTML = t[e];
+              const n = o.querySelector('svg');
               n && n.classList.add('component-icon');
             } else console.warn(`Icon not found for component: ${e}`);
-            o.appendChild(i);
+            i.appendChild(o);
           }),
-          i.appendChild(o);
+          o.appendChild(i);
       }),
-      e.appendChild(i);
+      e.appendChild(o);
   })(),
-    b.init(),
+    C.init(),
     c.init(),
-    M.init(),
-    w.init();
-  const v = document.createElement('header');
-  function f(e) {
+    S.init(),
+    b.init();
+  const g = document.createElement('header');
+  function w(e) {
     e.classList.remove('show'),
       e.classList.add('hide'),
       setTimeout(() => e.remove(), 300);
   }
-  v.appendChild(
+  g.appendChild(
     (function () {
       const e = document.createElement('nav');
       e.id = 'preview-navbar';
       const t = {
-          desktop: x.desktop,
-          tablet: x.tablet,
-          mobile: x.mobile,
-          save: x.save,
-          export: x.code,
-          view: x.view,
-          undo: x.undo,
-          redo: x.redo,
-          reset: x.reset,
+          desktop: k.desktop,
+          tablet: k.tablet,
+          mobile: k.mobile,
+          save: k.save,
+          export: k.code,
+          view: k.view,
+          undo: k.undo,
+          redo: k.redo,
+          reset: k.reset,
         },
         n = [
           {
@@ -2150,7 +2277,7 @@ document.addEventListener('DOMContentLoaded', () => {
           { id: 'undo-btn', icon: t.undo, title: 'Undo button' },
           { id: 'redo-btn', icon: t.redo, title: 'Redo button' },
         ],
-        i = [
+        o = [
           { id: 'view-btn', icon: t.view, title: 'View' },
           { id: 'save-btn', icon: t.save, title: 'Save Layout' },
           { id: 'reset-btn', icon: t.reset, title: 'Reset' },
@@ -2159,66 +2286,66 @@ document.addEventListener('DOMContentLoaded', () => {
         s = document.createElement('div');
       s.classList.add('left-buttons'),
         n.forEach(({ id: e, icon: t, title: n }) => {
-          const i = document.createElement('button');
-          (i.id = e),
-            i.classList.add('preview-btn'),
-            (i.title = n),
-            (i.innerHTML = t);
-          const o = i.querySelector('svg');
-          o && o.classList.add('nav-icon'), s.appendChild(i);
+          const o = document.createElement('button');
+          (o.id = e),
+            o.classList.add('preview-btn'),
+            (o.title = n),
+            (o.innerHTML = t);
+          const i = o.querySelector('svg');
+          i && i.classList.add('nav-icon'), s.appendChild(o);
         });
-      const o = document.createElement('div');
-      o.classList.add('center-text'), (o.textContent = 'Page Builder');
+      const i = document.createElement('div');
+      i.classList.add('center-text'), (i.textContent = 'Page Builder');
       const l = document.createElement('div');
       return (
         l.classList.add('right-buttons'),
-        i.forEach(({ id: e, icon: t, title: n }) => {
-          const i = document.createElement('button');
-          (i.id = e),
-            i.classList.add('preview-btn'),
-            (i.title = n),
-            (i.innerHTML = t);
-          const s = i.querySelector('svg');
-          s && s.classList.add('nav-icon'), l.appendChild(i);
+        o.forEach(({ id: e, icon: t, title: n }) => {
+          const o = document.createElement('button');
+          (o.id = e),
+            o.classList.add('preview-btn'),
+            (o.title = n),
+            (o.innerHTML = t);
+          const s = o.querySelector('svg');
+          s && s.classList.add('nav-icon'), l.appendChild(o);
         }),
         e.appendChild(s),
-        e.appendChild(o),
+        e.appendChild(i),
         e.appendChild(l),
         e
       );
     })()
   ),
-    document.body.insertBefore(v, document.getElementById('app')),
+    document.body.insertBefore(g, document.getElementById('app')),
     null === (e = document.getElementById('save-btn')) ||
       void 0 === e ||
       e.addEventListener('click', () => {
-        const e = b.getState();
-        h.save(e), g('Saving progress...');
+        const e = C.getState();
+        h.save(e), y('Saving progress...');
       }),
     null === (t = document.getElementById('reset-btn')) ||
       void 0 === t ||
       t.addEventListener('click', () => {
         !(function (e, t, n) {
-          const i = document.getElementById('dialog'),
+          const o = document.getElementById('dialog'),
             s = document.getElementById('dialog-yes'),
-            o = document.getElementById('dialog-no'),
+            i = document.getElementById('dialog-no'),
             l = document.getElementById('dialog-message');
           l && (l.innerHTML = e),
-            null == i || i.classList.remove('hidden'),
+            null == o || o.classList.remove('hidden'),
             null == s ||
               s.addEventListener('click', () => {
-                t(), null == i || i.classList.add('hidden');
+                t(), null == o || o.classList.add('hidden');
               }),
-            null == o ||
-              o.addEventListener('click', () => {
-                n(), null == i || i.classList.add('hidden');
+            null == i ||
+              i.addEventListener('click', () => {
+                n(), null == o || o.classList.add('hidden');
               });
         })(
           'Are you sure you want to reset the layout?',
           () => {
             h.remove(),
-              b.clearCanvas(),
-              g('The saved layout has been successfully reset.');
+              C.clearCanvas(),
+              y('The saved layout has been successfully reset.');
           },
           () => {
             console.log('Layout reset canceled.');
@@ -2228,11 +2355,11 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (n = document.getElementById('export-html-btn')) ||
       void 0 === n ||
       n.addEventListener('click', () => {
-        const e = new y(new b()),
+        const e = new v(new C()),
           t = e.generateHTML(),
           n = e.generateCSS();
         console.log('this is html', t);
-        const i = (function (e) {
+        const o = (function (e) {
             return e
               .replace(/&/g, '&amp;')
               .replace(/</g, '&lt;')
@@ -2253,15 +2380,15 @@ document.addEventListener('DOMContentLoaded', () => {
               .replace(/(:\s*[^;]+;)/g, '<span class="value">$1</span>')
               .replace(/({|})/g, '<span class="bracket">$1</span>');
           })(n),
-          o = document.createElement('div');
-        (o.id = 'export-dialog'), o.classList.add('modal');
+          i = document.createElement('div');
+        (i.id = 'export-dialog'), i.classList.add('modal');
         const l = document.createElement('div');
         l.classList.add('modal-content');
         const a = document.createElement('button');
         (a.textContent = '×'),
           a.classList.add('close-btn'),
           a.addEventListener('click', () => {
-            f(o);
+            w(i);
           }),
           l.appendChild(a);
         const r = document.createElement('div');
@@ -2271,52 +2398,52 @@ document.addEventListener('DOMContentLoaded', () => {
         const c = document.createElement('div');
         c.classList.add('code-block'),
           c.setAttribute('contenteditable', 'true'),
-          (c.innerHTML = i),
+          (c.innerHTML = o),
           r.appendChild(d),
           r.appendChild(c);
         const p = document.createElement('div');
         p.classList.add('modal-section');
         const h = document.createElement('h2');
         h.textContent = 'CSS';
-        const m = document.createElement('div');
-        m.classList.add('code-block'),
-          m.setAttribute('contenteditable', 'true'),
-          (m.innerHTML = s),
-          p.appendChild(h),
-          p.appendChild(m);
         const u = document.createElement('div');
-        u.classList.add('button-wrapper');
+        u.classList.add('code-block'),
+          u.setAttribute('contenteditable', 'true'),
+          (u.innerHTML = s),
+          p.appendChild(h),
+          p.appendChild(u);
+        const m = document.createElement('div');
+        m.classList.add('button-wrapper');
         const g = document.createElement('button');
         (g.textContent = 'Export to ZIP'),
           g.classList.add('export-btn'),
           g.addEventListener('click', () => {
-            const e = k([
+            const e = M([
                 { name: 'index.html', content: t },
                 { name: 'styles.css', content: n },
               ]),
-              i = document.createElement('a');
-            (i.href = URL.createObjectURL(e)),
-              (i.download = 'exported-files.zip'),
-              i.click(),
-              URL.revokeObjectURL(i.href);
+              o = document.createElement('a');
+            (o.href = URL.createObjectURL(e)),
+              (o.download = 'exported-files.zip'),
+              o.click(),
+              URL.revokeObjectURL(o.href);
           }),
           l.appendChild(r),
           l.appendChild(p),
           l.appendChild(g),
-          u.appendChild(l),
-          o.appendChild(u),
-          document.body.appendChild(o),
-          o.classList.add('show'),
-          o.addEventListener('click', e => {
-            e.target === o && f(o);
+          m.appendChild(l),
+          i.appendChild(m),
+          document.body.appendChild(i),
+          i.classList.add('show'),
+          i.addEventListener('click', e => {
+            e.target === i && w(i);
           }),
           document.addEventListener('keydown', e => {
-            'Escape' === e.key && f(o);
+            'Escape' === e.key && w(i);
           });
       }),
-    null === (i = document.getElementById('view-btn')) ||
-      void 0 === i ||
-      i.addEventListener('click', () => {
+    null === (o = document.getElementById('view-btn')) ||
+      void 0 === o ||
+      o.addEventListener('click', () => {
         const e = p.generateHTML(),
           t = document.createElement('div');
         (t.id = 'preview-modal'),
@@ -2328,32 +2455,32 @@ document.addEventListener('DOMContentLoaded', () => {
             '\n    width: 97%;\n    height: 90%;\n    border: none;\n    background: #fff;\n    margin-right: 20px;\n  '),
           (n.srcdoc = e),
           t.appendChild(n);
-        const i = document.createElement('button');
-        (i.id = 'close-modal-btn'),
-          (i.textContent = '✕'),
-          (i.style.cssText =
+        const o = document.createElement('button');
+        (o.id = 'close-modal-btn'),
+          (o.textContent = '✕'),
+          (o.style.cssText =
             '\n    position: absolute;\n    top: 10px;\n    right: 20px;\n    font-size: 20px;\n    border: none;\n    background: none;\n    cursor: pointer;\n  '),
-          t.appendChild(i);
+          t.appendChild(o);
         const s = document.createElement('div');
         s.style.cssText =
           '\n    display: flex;\n    gap: 10px;\n    margin-bottom: 10px;\n  ';
         [
-          { icon: x.mobile, title: 'Desktop', width: '375px', height: '90%' },
-          { icon: x.tablet, title: 'Tablet', width: '768px', height: '90%' },
-          { icon: x.desktop, title: 'Mobile', width: '97%', height: '90%' },
+          { icon: k.mobile, title: 'Desktop', width: '375px', height: '90%' },
+          { icon: k.tablet, title: 'Tablet', width: '768px', height: '90%' },
+          { icon: k.desktop, title: 'Mobile', width: '97%', height: '90%' },
         ].forEach(e => {
           const t = document.createElement('button');
           (t.style.cssText =
             '\n        padding: 5px;\n        border: none;\n        background: none;\n        cursor: pointer;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n      '),
             (t.title = e.title);
-          const i = document.createElement('div');
-          i.innerHTML = e.icon;
-          const o = i.querySelector('svg');
-          o &&
-            ((o.style.width = '24px'),
-            (o.style.height = '24px'),
-            o.classList.add('component-icon')),
-            t.appendChild(i),
+          const o = document.createElement('div');
+          o.innerHTML = e.icon;
+          const i = o.querySelector('svg');
+          i &&
+            ((i.style.width = '24px'),
+            (i.style.height = '24px'),
+            i.classList.add('component-icon')),
+            t.appendChild(o),
             t.addEventListener('click', () => {
               (n.style.width = e.width), (n.style.height = e.height);
             }),
@@ -2361,13 +2488,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }),
           t.insertBefore(s, n),
           document.body.appendChild(t);
-        const o = () => {
+        const i = () => {
           setTimeout(() => t.remove(), 300),
             document.removeEventListener('keydown', l);
         };
-        i.addEventListener('click', o);
+        o.addEventListener('click', i);
         const l = e => {
-          'Escape' === e.key && o();
+          'Escape' === e.key && i();
         };
         document.addEventListener('keydown', l);
       }),
@@ -2376,9 +2503,9 @@ document.addEventListener('DOMContentLoaded', () => {
       s.addEventListener('click', () => {
         u.setPreviewMode('desktop');
       }),
-    null === (o = document.getElementById('preview-tablet')) ||
-      void 0 === o ||
-      o.addEventListener('click', () => {
+    null === (i = document.getElementById('preview-tablet')) ||
+      void 0 === i ||
+      i.addEventListener('click', () => {
         u.setPreviewMode('tablet');
       }),
     null === (l = document.getElementById('preview-mobile')) ||
@@ -2389,11 +2516,11 @@ document.addEventListener('DOMContentLoaded', () => {
     null === (a = document.getElementById('undo-btn')) ||
       void 0 === a ||
       a.addEventListener('click', () => {
-        b.historyManager.undo();
+        C.historyManager.undo();
       }),
     null === (r = document.getElementById('redo-btn')) ||
       void 0 === r ||
       r.addEventListener('click', () => {
-        b.historyManager.redo();
+        C.historyManager.redo();
       });
 });
