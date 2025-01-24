@@ -56,41 +56,41 @@ class n {
       (i.accept = 'image/*'),
       (i.style.display = 'none'),
       i.addEventListener('change', e => n.handleFileChange(e, t, o));
-    const a = document.createElement('button');
-    a.classList.add('upload-btn'),
-      (a.innerHTML = '🖊️'),
-      (a.style.position = 'absolute'),
-      (a.style.padding = '8px'),
-      (a.style.background = 'transparent'),
-      (a.style.border = 'none'),
-      (a.style.cursor = 'pointer'),
-      (a.style.opacity = '0'),
-      (a.style.transition = 'opacity 0.2s'),
-      (a.style.left = '50%'),
-      (a.style.top = '50%'),
-      (a.style.transform = 'translate(-50%, -50%)'),
-      (a.style.fontSize = '24px'),
-      a.addEventListener('click', () => i.click());
-    const r = document.createElement('img'),
+    const r = document.createElement('button');
+    r.classList.add('upload-btn'),
+      (r.innerHTML = '🖊️'),
+      (r.style.position = 'absolute'),
+      (r.style.padding = '8px'),
+      (r.style.background = 'transparent'),
+      (r.style.border = 'none'),
+      (r.style.cursor = 'pointer'),
+      (r.style.opacity = '0'),
+      (r.style.transition = 'opacity 0.2s'),
+      (r.style.left = '50%'),
+      (r.style.top = '50%'),
+      (r.style.transform = 'translate(-50%, -50%)'),
+      (r.style.fontSize = '24px'),
+      r.addEventListener('click', () => i.click());
+    const a = document.createElement('img'),
       l = `${s}-img`;
     return (
-      (r.id = l),
-      (r.style.width = '100%'),
-      (r.style.height = '100%'),
-      (r.style.objectFit = 'contain'),
-      (r.style.border = 'none'),
-      (r.style.display = 'none'),
-      e && ((r.src = e), (r.style.display = 'block')),
+      (a.id = l),
+      (a.style.width = '100%'),
+      (a.style.height = '100%'),
+      (a.style.objectFit = 'contain'),
+      (a.style.border = 'none'),
+      (a.style.display = 'none'),
+      e && ((a.src = e), (a.style.display = 'block')),
       t.addEventListener('mouseenter', () => {
-        a.style.opacity = '1';
+        r.style.opacity = '1';
       }),
       t.addEventListener('mouseleave', () => {
-        a.style.opacity = '0';
+        r.style.opacity = '0';
       }),
       t.appendChild(o),
       t.appendChild(i),
-      t.appendChild(a),
       t.appendChild(r),
+      t.appendChild(a),
       t
     );
   }
@@ -259,16 +259,16 @@ class i {
       s = 0,
       o = 0,
       i = 0;
-    const a = a => {
+    const r = r => {
         if (!t) return;
-        const r = a.clientX - n,
-          l = a.clientY - s;
-        e.style.transform = `translate(${o + r}px, ${i + l}px)`;
+        const a = r.clientX - n,
+          l = r.clientY - s;
+        e.style.transform = `translate(${o + a}px, ${i + l}px)`;
       },
-      r = () => {
+      a = () => {
         (t = !1),
-          window.removeEventListener('mousemove', a),
-          window.removeEventListener('mouseup', r);
+          window.removeEventListener('mousemove', r),
+          window.removeEventListener('mouseup', a);
       };
     e.addEventListener('mousedown', l => {
       l.preventDefault(),
@@ -279,8 +279,8 @@ class i {
       const d = e.getBoundingClientRect();
       (o = d.left),
         (i = d.top),
-        window.addEventListener('mousemove', a),
-        window.addEventListener('mouseup', r);
+        window.addEventListener('mousemove', r),
+        window.addEventListener('mouseup', a);
     });
   }
   onDrop(e) {
@@ -296,12 +296,12 @@ class i {
     const o = this.element.classList[2],
       i = w.generateUniqueClass(n, !0, o);
     s.classList.add(i);
-    const a = document.createElement('span');
-    (a.className = 'component-label'),
-      (a.textContent = i),
+    const r = document.createElement('span');
+    (r.className = 'component-label'),
+      (r.textContent = i),
       (s.id = i),
-      (a.style.display = 'none'),
-      s.appendChild(a),
+      (r.style.display = 'none'),
+      s.appendChild(r),
       s.addEventListener('mouseenter', e => this.showLabel(e, s)),
       s.addEventListener('mouseleave', e => this.hideLabel(e, s)),
       this.element.appendChild(s),
@@ -370,7 +370,7 @@ class i {
     });
   }
 }
-class a {
+class r {
   constructor(e, t = `${e}Col-component`) {
     (this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -418,12 +418,12 @@ class a {
         (t.textContent = e);
       const i = w.generateUniqueClass(n, !0, e);
       s.classList.add(i), (s.id = i);
-      let a = s.querySelector('.component-label');
-      a ||
-        ((a = document.createElement('span')),
-        (a.className = 'component-label'),
-        s.appendChild(a)),
-        (a.textContent = i),
+      let r = s.querySelector('.component-label');
+      r ||
+        ((r = document.createElement('span')),
+        (r.className = 'component-label'),
+        s.appendChild(r)),
+        (r.textContent = i),
         w.historyManager.captureState();
     }
   }
@@ -452,12 +452,12 @@ class a {
     });
   }
 }
-class r extends a {
+class a extends r {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class l extends a {
+class l extends r {
   constructor() {
     super(3, 'threeCol-component');
   }
@@ -470,17 +470,17 @@ class d {
           s,
           o,
           i = !1,
-          a = !1,
-          r = 0,
+          r = !1,
+          a = 0,
           l = 0;
         (e.style.position = 'relative'),
           (e.style.cursor = 'move'),
           e.addEventListener('mousedown', s => {
-            a ||
+            r ||
               ((i = !0),
               (t = s.clientX),
               (n = s.clientY),
-              (r = parseFloat(e.getAttribute('data-x') || '0')),
+              (a = parseFloat(e.getAttribute('data-x') || '0')),
               (l = parseFloat(e.getAttribute('data-y') || '0')),
               document.addEventListener('mousemove', d),
               document.addEventListener('mouseup', c));
@@ -489,10 +489,10 @@ class d {
             if (i) {
               const o = s.clientX - t,
                 i = s.clientY - n,
-                a = r + o,
+                r = a + o,
                 d = l + i;
-              (e.style.transform = `translate(${a}px, ${d}px)`),
-                e.setAttribute('data-x', a.toString()),
+              (e.style.transform = `translate(${r}px, ${d}px)`),
+                e.setAttribute('data-x', r.toString()),
                 e.setAttribute('data-y', d.toString());
             }
           },
@@ -515,24 +515,24 @@ class d {
             e.appendChild(i),
             i.addEventListener('mousedown', i => {
               i.stopPropagation(),
-                (a = !0),
+                (r = !0),
                 (s = e.offsetWidth),
                 (o = e.offsetHeight),
                 (t = i.clientX),
                 (n = i.clientY),
-                document.addEventListener('mousemove', r),
+                document.addEventListener('mousemove', a),
                 document.addEventListener('mouseup', l);
             });
-          const r = i => {
-              if (a) {
-                const a = s + (i.clientX - t),
-                  r = o + (i.clientY - n);
-                (e.style.width = `${a}px`), (e.style.height = `${r}px`);
+          const a = i => {
+              if (r) {
+                const r = s + (i.clientX - t),
+                  a = o + (i.clientY - n);
+                (e.style.width = `${r}px`), (e.style.height = `${a}px`);
               }
             },
             l = () => {
-              (a = !1),
-                document.removeEventListener('mousemove', r),
+              (r = !1),
+                document.removeEventListener('mousemove', a),
                 document.removeEventListener('mouseup', l);
             };
         }
@@ -557,16 +557,16 @@ class d {
         width: '100%',
       }),
       e(o);
-    const a = new t('MyBrand').create();
-    Object.assign(a.style, {
+    const r = new t('MyBrand').create();
+    Object.assign(r.style, {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333',
     });
-    const r = new i().create();
-    r.classList.add('container'),
-      Object.assign(r.style, { display: 'flex', gap: '20px' }),
-      e(r),
+    const a = new i().create();
+    a.classList.add('container'),
+      Object.assign(a.style, { display: 'flex', gap: '20px' }),
+      e(a),
       ['Home', 'Features', 'Contact'].forEach(e => {
         const n = new t(e).create();
         Object.assign(n.style, {
@@ -574,10 +574,10 @@ class d {
           color: '#555',
           textDecoration: 'none',
         }),
-          r.appendChild(n);
+          a.appendChild(n);
       }),
-      o.appendChild(a),
-      o.appendChild(r);
+      o.appendChild(r),
+      o.appendChild(a);
     const l = new i().create();
     l.classList.add('container'),
       Object.assign(l.style, {
@@ -605,8 +605,8 @@ class d {
       color: '#666',
       marginBottom: '30px',
     });
-    const p = new s().create();
-    Object.assign(p.style, {
+    const h = new s().create();
+    Object.assign(h.style, {
       padding: '12px 24px',
       fontSize: '16px',
       color: '#fff',
@@ -616,31 +616,31 @@ class d {
       cursor: 'pointer',
       transition: 'background-color 0.3s',
     }),
-      p.addEventListener('mouseenter', () => {
-        p.style.backgroundColor = '#0056b3';
+      h.addEventListener('mouseenter', () => {
+        h.style.backgroundColor = '#0056b3';
       }),
-      p.addEventListener('mouseleave', () => {
-        p.style.backgroundColor = '#007bff';
+      h.addEventListener('mouseleave', () => {
+        h.style.backgroundColor = '#007bff';
       }),
       l.appendChild(d),
       l.appendChild(c),
-      l.appendChild(p);
-    const h = new i().create();
-    h.classList.add('container'),
-      Object.assign(h.style, {
+      l.appendChild(h);
+    const p = new i().create();
+    p.classList.add('container'),
+      Object.assign(p.style, {
         textAlign: 'center',
         padding: '20px',
         marginTop: '40px',
         borderTop: '1px solid #ddd',
       }),
-      e(h);
-    const m = new t('© 2025 MyBrand. All rights reserved.').create();
+      e(p);
+    const u = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
-      Object.assign(m.style, { fontSize: '14px', color: '#999' }),
-      h.appendChild(m),
+      Object.assign(u.style, { fontSize: '14px', color: '#999' }),
+      p.appendChild(u),
       n.appendChild(o),
       n.appendChild(l),
-      n.appendChild(h),
+      n.appendChild(p),
       n
     );
   }
@@ -679,7 +679,7 @@ class c {
     } else console.warn('No more actions to redo.');
   }
 }
-class p {
+class h {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -691,7 +691,7 @@ class p {
     localStorage.removeItem('pageLayout');
   }
 }
-class h {
+class p {
   constructor(e) {
     (this.icons = {
       delete:
@@ -730,7 +730,7 @@ class h {
     this.canvas.setComponents(t), this.canvas.historyManager.captureState();
   }
 }
-function m(e) {
+function u(e) {
   const t = document.getElementById('notification');
   t &&
     ((t.innerHTML = e),
@@ -740,7 +740,7 @@ function m(e) {
       t.classList.remove('visible'), t.classList.add('hidden');
     }, 2e3));
 }
-class u {
+class m {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -851,9 +851,9 @@ class u {
             s.push(`${e}: ${n};`);
           }
         });
-        const a = this.generateUniqueSelector(e);
+        const r = this.generateUniqueSelector(e);
         s.length > 0 &&
-          n.push(`\n        ${a} {\n          ${s.join('\n  ')}\n        }`);
+          n.push(`\n        ${r} {\n          ${s.join('\n  ')}\n        }`);
       }),
       n.join('\n')
     );
@@ -890,7 +890,7 @@ class g {
         (g.canvasRoot = document.body));
   }
   static buildLayerHierarchyFromDOM(e) {
-    const t = new u(new w()).generateHTML(),
+    const t = new m(new w()).generateHTML(),
       n = new DOMParser().parseFromString(t, 'text/html'),
       s = (e, t = 0) => {
         var n;
@@ -1112,12 +1112,12 @@ class y {
     const i = document.getElementById(e);
     if ((console.log(`Showing sidebar for: ${e}`), !i))
       return void console.error(`Component with ID "${e}" not found.`);
-    const a = 'canvas' === e.toLowerCase();
+    const r = 'canvas' === e.toLowerCase();
     (this.sidebarElement.style.display = 'block'),
       (this.controlsContainer.innerHTML = ''),
       (this.componentNameHeader.textContent = `Component: ${e}`);
-    const r = getComputedStyle(i);
-    this.createSelectControl('Display', 'display', r.display || 'block', [
+    const a = getComputedStyle(i);
+    this.createSelectControl('Display', 'display', a.display || 'block', [
       'block',
       'inline',
       'inline-block',
@@ -1125,7 +1125,7 @@ class y {
       'grid',
       'none',
     ]),
-      a ||
+      r ||
         (this.createControl('Width', 'width', 'number', i.offsetWidth, {
           min: 0,
           max: 1e3,
@@ -1140,23 +1140,23 @@ class y {
           'Margin',
           'margin',
           'number',
-          parseInt(r.margin) || 0,
+          parseInt(a.margin) || 0,
           { min: 0, max: 1e3, unit: 'px' }
         ),
         this.createControl(
           'Padding',
           'padding',
           'number',
-          parseInt(r.padding) || 0,
+          parseInt(a.padding) || 0,
           { min: 0, max: 1e3, unit: 'px' }
         )),
-      this.createControl('Color', 'color', 'color', r.backgroundColor),
-      this.createSelectControl('Text Alignment', 'alignment', r.textAlign, [
+      this.createControl('Color', 'color', 'color', a.backgroundColor),
+      this.createSelectControl('Text Alignment', 'alignment', a.textAlign, [
         'left',
         'center',
         'right',
       ]),
-      this.createSelectControl('Font Family', 'font-family', r.fontFamily, [
+      this.createSelectControl('Font Family', 'font-family', a.fontFamily, [
         'Arial',
         'Verdana',
         'Helvetica',
@@ -1170,26 +1170,26 @@ class y {
         'Font Size',
         'font-size',
         'number',
-        parseInt(r.fontSize) || 16,
+        parseInt(a.fontSize) || 16,
         { min: 0, max: 100, unit: 'px' }
       ),
       this.createControl(
         'Text Color',
         'text-color',
         'color',
-        r.color || '#000000'
+        a.color || '#000000'
       ),
       this.createControl(
         'Border Width',
         'border-width',
         'number',
-        parseInt(r.borderWidth) || 0,
+        parseInt(a.borderWidth) || 0,
         { min: 0, max: 20, unit: 'px' }
       ),
       this.createSelectControl(
         'Border Style',
         'border-style',
-        r.borderStyle || 'none',
+        a.borderStyle || 'none',
         [
           'none',
           'solid',
@@ -1206,9 +1206,9 @@ class y {
         'Border Color',
         'border-color',
         'color',
-        r.borderColor || '#000000'
+        a.borderColor || '#000000'
       );
-    const l = y.rgbToHex(r.backgroundColor),
+    const l = y.rgbToHex(a.backgroundColor),
       d = document.getElementById('color');
     d && (d.value = l), this.addListeners(i);
   }
@@ -1224,15 +1224,15 @@ class y {
     const i = document.createElement('div');
     i.classList.add('control-wrapper');
     if ('number' === n && o.unit) {
-      const a = o.unit;
-      i.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${s}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === a ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === a ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === a ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === a ? 'selected' : ''}>%</option>\n                  </select>\n              `;
+      const r = o.unit;
+      i.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${s}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === r ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === r ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === r ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === r ? 'selected' : ''}>%</option>\n                  </select>\n              `;
     } else
       i.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${s}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${s}">\n        `;
-    const a = i.querySelector('input'),
-      r = i.querySelector(`#${t}-unit`);
-    a &&
+    const r = i.querySelector('input'),
+      a = i.querySelector(`#${t}-unit`);
+    r &&
       Object.keys(o).forEach(e => {
-        a.setAttribute(e, o[e].toString());
+        r.setAttribute(e, o[e].toString());
       });
     const l = i.querySelector('input[type="color"]'),
       d = i.querySelector('#color-value');
@@ -1245,11 +1245,11 @@ class y {
           l && (l.value = d.value);
         }),
       this.controlsContainer.appendChild(i),
-      r &&
-        r.addEventListener('change', () => {
-          const e = r.value,
-            t = parseInt(a.value);
-          a.value = `${t}${e}`;
+      a &&
+        a.addEventListener('change', () => {
+          const e = a.value,
+            t = parseInt(r.value);
+          r.value = `${t}${e}`;
         });
   }
   static createSelectControl(e, t, n, s) {
@@ -1264,8 +1264,8 @@ class y {
       this.controlsContainer.appendChild(o);
   }
   static addListeners(e) {
-    var t, n, s, o, i, a, r, l, d, c, p, h, m;
-    const u = {
+    var t, n, s, o, i, r, a, l, d, c, h, p, u;
+    const m = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
       color: document.getElementById('color'),
@@ -1280,7 +1280,7 @@ class y {
       display: document.getElementById('display'),
       fontFamily: document.getElementById('font-family'),
     };
-    if (!u) return;
+    if (!m) return;
     const g = (function (e, t) {
       let n = null;
       return (...s) => {
@@ -1289,78 +1289,78 @@ class y {
     })(() => {
       w.historyManager.captureState();
     }, 300);
-    null === (t = u.width) ||
+    null === (t = m.width) ||
       void 0 === t ||
       t.addEventListener('input', () => {
         const t = document.getElementById('width-unit').value;
-        (e.style.width = `${u.width.value}${t}`), g();
+        (e.style.width = `${m.width.value}${t}`), g();
       }),
-      null === (n = u.height) ||
+      null === (n = m.height) ||
         void 0 === n ||
         n.addEventListener('input', () => {
           const t = document.getElementById('height-unit').value;
-          (e.style.height = `${u.height.value}${t}`), g();
+          (e.style.height = `${m.height.value}${t}`), g();
         }),
-      null === (s = u.color) ||
+      null === (s = m.color) ||
         void 0 === s ||
         s.addEventListener('input', () => {
-          e.style.backgroundColor = u.color.value;
+          e.style.backgroundColor = m.color.value;
           const t = document.querySelector('#color-value');
-          t && (t.textContent = u.color.value), g();
+          t && (t.textContent = m.color.value), g();
         }),
-      null === (o = u.margin) ||
+      null === (o = m.margin) ||
         void 0 === o ||
         o.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
-          (e.style.margin = `${u.margin.value}${t}`), g();
+          (e.style.margin = `${m.margin.value}${t}`), g();
         }),
-      null === (i = u.padding) ||
+      null === (i = m.padding) ||
         void 0 === i ||
         i.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
-          (e.style.padding = `${u.padding.value}${t}`), g();
+          (e.style.padding = `${m.padding.value}${t}`), g();
         }),
-      null === (a = u.alignment) ||
-        void 0 === a ||
-        a.addEventListener('change', () => {
-          (e.style.textAlign = u.alignment.value), g();
-        }),
-      null === (r = u.fontSize) ||
+      null === (r = m.alignment) ||
         void 0 === r ||
-        r.addEventListener('input', () => {
-          const t = document.getElementById('font-size-unit').value;
-          (e.style.fontSize = `${u.fontSize.value}${t}`), g();
+        r.addEventListener('change', () => {
+          (e.style.textAlign = m.alignment.value), g();
         }),
-      null === (l = u.textColor) ||
+      null === (a = m.fontSize) ||
+        void 0 === a ||
+        a.addEventListener('input', () => {
+          const t = document.getElementById('font-size-unit').value;
+          (e.style.fontSize = `${m.fontSize.value}${t}`), g();
+        }),
+      null === (l = m.textColor) ||
         void 0 === l ||
         l.addEventListener('input', () => {
-          (e.style.color = u.textColor.value), g();
+          (e.style.color = m.textColor.value), g();
         }),
-      null === (d = u.borderWidth) ||
+      null === (d = m.borderWidth) ||
         void 0 === d ||
         d.addEventListener('input', () => {
           const t = document.getElementById('border-width-unit').value;
-          (e.style.borderWidth = `${u.borderWidth.value}${t}`), g();
+          (e.style.borderWidth = `${m.borderWidth.value}${t}`), g();
         }),
-      null === (c = u.borderStyle) ||
+      null === (c = m.borderStyle) ||
         void 0 === c ||
         c.addEventListener('change', () => {
-          (e.style.borderStyle = u.borderStyle.value), g();
+          (e.style.borderStyle = m.borderStyle.value), g();
         }),
-      null === (p = u.borderColor) ||
-        void 0 === p ||
-        p.addEventListener('input', () => {
-          (e.style.borderColor = u.borderColor.value), g();
-        }),
-      null === (h = u.display) ||
+      null === (h = m.borderColor) ||
         void 0 === h ||
-        h.addEventListener('change', () => {
-          (e.style.display = u.display.value), g();
+        h.addEventListener('input', () => {
+          (e.style.borderColor = m.borderColor.value), g();
         }),
-      null === (m = u.fontFamily) ||
-        void 0 === m ||
-        m.addEventListener('change', () => {
-          (e.style.fontFamily = u.fontFamily.value), g();
+      null === (p = m.display) ||
+        void 0 === p ||
+        p.addEventListener('change', () => {
+          (e.style.display = m.display.value), g();
+        }),
+      null === (u = m.fontFamily) ||
+        void 0 === u ||
+        u.addEventListener('change', () => {
+          (e.style.fontFamily = m.fontFamily.value), g();
         });
   }
   static getLayersViewController() {
@@ -1422,8 +1422,8 @@ class w {
       }),
       (w.canvasElement.style.position = 'relative'),
       (w.historyManager = new c(w.canvasElement)),
-      (w.jsonStorage = new p()),
-      (w.controlsManager = new h(w)),
+      (w.jsonStorage = new h()),
+      (w.controlsManager = new p(w)),
       (w.gridManager = new v()),
       w.gridManager.initializeDropPreview(w.canvasElement);
     new e(w.canvasElement, w.sidebarElement).enable();
@@ -1523,7 +1523,7 @@ class w {
           t.classList.contains('container-component') && i.restoreContainer(t),
           (t.classList.contains('twoCol-component') ||
             t.classList.contains('threeCol-component')) &&
-            a.restoreColumn(t),
+            r.restoreColumn(t),
           'image' === e.type && n.restoreImageUpload(t, e.imageSrc),
           w.canvasElement.appendChild(t),
           w.components.push(t));
@@ -1556,10 +1556,10 @@ class w {
           : ((i.style.position = 'absolute'),
             (i.style.left = `${s}px`),
             (i.style.top = `${o}px`));
-      const a = document.createElement('span');
-      (a.className = 'component-label'),
-        (a.textContent = t),
-        i.appendChild(a),
+      const r = document.createElement('span');
+      (r.className = 'component-label'),
+        (r.textContent = t),
+        i.appendChild(r),
         w.components.push(i),
         w.canvasElement.appendChild(i),
         w.addDraggableListeners(i),
@@ -1650,26 +1650,26 @@ class w {
       o = 0;
     e.addEventListener('dragstart', i => {
       if (i.dataTransfer) {
-        const a = w.canvasElement.getBoundingClientRect(),
-          r = e.getBoundingClientRect();
+        const r = w.canvasElement.getBoundingClientRect(),
+          a = e.getBoundingClientRect();
         (t = i.clientX),
           (n = i.clientY),
-          (s = r.left - a.left),
-          (o = r.top - a.top),
+          (s = a.left - r.left),
+          (o = a.top - r.top),
           (i.dataTransfer.effectAllowed = 'move'),
           (e.style.cursor = 'grabbing');
       }
     }),
       e.addEventListener('dragend', i => {
         i.preventDefault();
-        const a = i.clientX - t,
-          r = i.clientY - n;
-        let l = s + a,
-          d = o + r;
+        const r = i.clientX - t,
+          a = i.clientY - n;
+        let l = s + r,
+          d = o + a;
         const c = w.canvasElement.offsetWidth - e.offsetWidth,
-          p = w.canvasElement.offsetHeight - e.offsetHeight;
+          h = w.canvasElement.offsetHeight - e.offsetHeight;
         (l = Math.max(0, Math.min(l, c))),
-          (d = Math.max(0, Math.min(d, p))),
+          (d = Math.max(0, Math.min(d, h))),
           (e.style.left = `${l}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
@@ -1687,12 +1687,12 @@ class w {
     image: () => new n().create(),
     text: () => new t().create(),
     container: () => new i().create(),
-    twoCol: () => new r().create(),
+    twoCol: () => new a().create(),
     threeCol: () => new l().create(),
     landingpage: () => new d().create(),
   });
 const b = document.getElementById('canvas'),
-  f = new (class {
+  C = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -1713,9 +1713,9 @@ const b = document.getElementById('canvas'),
 b &&
   b.addEventListener('click', e => {
     const t = e.target;
-    t !== b && f.selectElement(t);
+    t !== b && C.selectElement(t);
   });
-class C {
+class f {
   constructor(e) {
     this.canvas = e;
   }
@@ -1740,7 +1740,7 @@ class C {
       }
   }
 }
-const L = {
+const E = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n            </svg>',
   tablet:
@@ -1776,22 +1776,22 @@ const L = {
   close:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n            <path d="M6.99486 7.00636C6.60433 7.39689 6.60433 8.03005 6.99486 8.42058L10.58 12.0057L6.99486 15.5909C6.60433 15.9814 6.60433 16.6146 6.99486 17.0051C7.38538 17.3956 8.01855 17.3956 8.40907 17.0051L11.9942 13.4199L15.5794 17.0051C15.9699 17.3956 16.6031 17.3956 16.9936 17.0051C17.3841 16.6146 17.3841 15.9814 16.9936 15.5909L13.4084 12.0057L16.9936 8.42059C17.3841 8.03007 17.3841 7.3969 16.9936 7.00638C16.603 6.61585 15.9699 6.61585 15.5794 7.00638L11.9942 10.5915L8.40907 7.00636C8.01855 6.61584 7.38538 6.61584 6.99486 7.00636Z" fill="#0F0F0F"/>\n            </svg>',
 };
-function E(e) {
+function L(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let s = 0;
   const o = [];
   e.forEach(e => {
     const i = t(e.name),
-      a = t(e.content),
-      r = (function (e) {
+      r = t(e.content),
+      a = (function (e) {
         let t = 4294967295;
         for (let n = 0; n < e.length; n++) {
           t ^= e[n];
           for (let e = 0; e < 8; e++) t = (t >>> 1) ^ (1 & t ? 3988292384 : 0);
         }
         return 4294967295 ^ t;
-      })(a),
+      })(r),
       l = ((e, t, n) => {
         const s = new Uint8Array(30 + e.length);
         return (
@@ -1828,8 +1828,8 @@ function E(e) {
           s.set(e, 30),
           s
         );
-      })(i, a, r);
-    n.push(l), n.push(a);
+      })(i, r, a);
+    n.push(l), n.push(r);
     const d = ((e, t, n, s) => {
       const o = new Uint8Array(46 + e.length);
       return (
@@ -1869,12 +1869,12 @@ function E(e) {
         o.set(e, 46),
         o
       );
-    })(i, a, r, s);
-    o.push(d), (s += l.length + a.length);
+    })(i, r, a, s);
+    o.push(d), (s += l.length + r.length);
   }),
     n.push(...o);
   const i = o.reduce((e, t) => e + t.length, 0),
-    a = ((e, t, n) => {
+    r = ((e, t, n) => {
       const s = new Uint8Array(22);
       return (
         s.set([80, 75, 5, 6]),
@@ -1888,9 +1888,9 @@ function E(e) {
         s
       );
     })(e.length, i, s);
-  n.push(a);
-  const r = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
-  return new Blob([r], { type: 'application/zip' });
+  n.push(r);
+  const a = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
+  return new Blob([a], { type: 'application/zip' });
 }
 class x {
   static init() {
@@ -1916,163 +1916,190 @@ class k {
       t.classList.add(`preview-${e}`);
   }
 }
-document.addEventListener('DOMContentLoaded', () => {
-  var e, t, n, s, o, i, a, r, l;
-  const d = new w(),
-    c = new C(d),
-    h = new u(d),
-    g = new p(),
-    v = new k();
-  !(function () {
-    const e = document.getElementById('sidebar'),
-      t = {
-        button: L.button,
-        header: L.header,
-        image: L.image,
-        text: L.text,
-        container: L.container,
-        twoCol: L.twocol,
-        threeCol: L.threecol,
-        landingpage: L.landing,
-      },
-      n = {
-        button: 'Button',
-        header: 'Header',
-        image: 'Image',
-        text: 'Text',
-        container: 'Container',
-        twoCol: 'Two Column Layout',
-        threeCol: 'Three Column Layout',
-        landingpage: 'Landing Page Template',
-      },
-      s = document.createElement('div');
-    s.classList.add('menu'),
-      Object.entries({
-        Basic: [
-          'button',
-          'header',
-          'text',
-          'image',
-          'container',
-          'twoCol',
-          'threeCol',
-        ],
-        Extra: ['landingpage'],
-      }).forEach(([e, o]) => {
-        const i = document.createElement('div');
-        i.classList.add('category');
-        const a = document.createElement('h4');
-        a.classList.add('categoryHeading'),
-          (a.innerHTML = e),
-          i.prepend(a),
-          o.forEach(e => {
-            const s = document.createElement('div');
-            s.classList.add('draggable'),
-              (s.id = e),
-              s.setAttribute('draggable', 'true'),
-              s.setAttribute('data-component', e);
-            const o = n[e] || `Drag to add ${e}`;
-            if ((s.setAttribute('title', o), t[e])) {
-              s.innerHTML = t[e];
-              const n = s.querySelector('svg');
-              n && n.classList.add('component-icon');
-            } else console.warn(`Icon not found for component: ${e}`);
-            i.appendChild(s);
-          }),
-          s.appendChild(i);
-      }),
-      e.appendChild(s);
-  })(),
-    w.init(),
-    c.init(),
-    x.init(),
-    y.init();
-  const b = document.createElement('header');
-  function f(e) {
-    e.classList.remove('show'),
-      e.classList.add('hide'),
-      setTimeout(() => e.remove(), 300);
+const M = new (class {
+  constructor() {
+    (this.canvas = new w()),
+      (this.sidebar = new f(this.canvas)),
+      (this.htmlGenerator = new m(this.canvas)),
+      (this.jsonStorage = new h()),
+      (this.previewPanel = new k()),
+      this.initializeEventListeners();
   }
-  b.appendChild(
-    (function () {
-      const e = document.createElement('nav');
-      e.id = 'preview-navbar';
+  initializeEventListeners() {
+    document.addEventListener('DOMContentLoaded', () => {
+      (this.canvas = new w()),
+        (this.sidebar = new f(this.canvas)),
+        (this.htmlGenerator = new m(this.canvas)),
+        (this.jsonStorage = new h()),
+        (this.previewPanel = new k()),
+        this.setupInitialComponents(),
+        this.setupSaveButton(),
+        this.setupResetButton(),
+        this.setupExportHTMLButton(),
+        this.setupViewButton(),
+        this.setupPreviewModeButtons(),
+        this.setupUndoRedoButtons();
+    });
+  }
+  setupInitialComponents() {
+    !(function () {
+      const e = document.getElementById('sidebar');
+      if (!e) return void console.error('Sidebar element not found');
       const t = {
-          desktop: L.desktop,
-          tablet: L.tablet,
-          mobile: L.mobile,
-          save: L.save,
-          export: L.code,
-          view: L.view,
-          undo: L.undo,
-          redo: L.redo,
-          reset: L.reset,
+          button: E.button,
+          header: E.header,
+          image: E.image,
+          text: E.text,
+          container: E.container,
+          twoCol: E.twocol,
+          threeCol: E.threecol,
+          landingpage: E.landing,
         },
-        n = [
-          {
-            id: 'preview-desktop',
-            icon: t.desktop,
-            title: 'Preview in Desktop',
-          },
-          { id: 'preview-tablet', icon: t.tablet, title: 'Preview in Tablet' },
-          { id: 'preview-mobile', icon: t.mobile, title: 'Preview in Mobile' },
-          { id: 'undo-btn', icon: t.undo, title: 'Undo button' },
-          { id: 'redo-btn', icon: t.redo, title: 'Redo button' },
-        ],
-        s = [
-          { id: 'view-btn', icon: t.view, title: 'View' },
-          { id: 'save-btn', icon: t.save, title: 'Save Layout' },
-          { id: 'reset-btn', icon: t.reset, title: 'Reset' },
-          { id: 'export-html-btn', icon: t.export, title: 'Export HTML' },
-        ],
-        o = document.createElement('div');
-      o.classList.add('left-buttons'),
-        n.forEach(({ id: e, icon: t, title: n }) => {
-          const s = document.createElement('button');
-          (s.id = e),
-            s.classList.add('preview-btn'),
-            (s.title = n),
-            (s.innerHTML = t);
-          const i = s.querySelector('svg');
-          i && i.classList.add('nav-icon'), o.appendChild(s);
-        });
-      const i = document.createElement('div');
-      i.classList.add('center-text'), (i.textContent = 'Page Builder');
-      const a = document.createElement('div');
-      return (
-        a.classList.add('right-buttons'),
-        s.forEach(({ id: e, icon: t, title: n }) => {
-          const s = document.createElement('button');
-          (s.id = e),
-            s.classList.add('preview-btn'),
-            (s.title = n),
-            (s.innerHTML = t);
-          const o = s.querySelector('svg');
-          o && o.classList.add('nav-icon'), a.appendChild(s);
+        n = {
+          button: 'Button',
+          header: 'Header',
+          image: 'Image',
+          text: 'Text',
+          container: 'Container',
+          twoCol: 'Two Column Layout',
+          threeCol: 'Three Column Layout',
+          landingpage: 'Landing Page Template',
+        },
+        s = document.createElement('div');
+      s.classList.add('menu'),
+        Object.entries({
+          Basic: [
+            'button',
+            'header',
+            'text',
+            'image',
+            'container',
+            'twoCol',
+            'threeCol',
+          ],
+          Extra: ['landingpage'],
+        }).forEach(([e, o]) => {
+          const i = document.createElement('div');
+          i.classList.add('category');
+          const r = document.createElement('h4');
+          r.classList.add('categoryHeading'),
+            (r.innerHTML = e),
+            i.prepend(r),
+            o.forEach(e => {
+              const s = document.createElement('div');
+              s.classList.add('draggable'),
+                (s.id = e),
+                s.setAttribute('draggable', 'true'),
+                s.setAttribute('data-component', e);
+              const o = n[e] || `Drag to add ${e}`;
+              if ((s.setAttribute('title', o), t[e])) {
+                s.innerHTML = t[e];
+                const n = s.querySelector('svg');
+                n && n.classList.add('component-icon');
+              } else console.warn(`Icon not found for component: ${e}`);
+              i.appendChild(s);
+            }),
+            s.appendChild(i);
         }),
-        e.appendChild(o),
-        e.appendChild(i),
-        e.appendChild(a),
-        e
-      );
-    })()
-  ),
-    document.body.insertBefore(b, document.getElementById('app')),
-    null === (e = document.getElementById('save-btn')) ||
-      void 0 === e ||
+        e.appendChild(s);
+    })(),
+      w.init(),
+      this.sidebar.init(),
+      x.init(),
+      y.init();
+    const e = document.createElement('header');
+    e.appendChild(
+      (function () {
+        const e = document.createElement('nav');
+        e.id = 'preview-navbar';
+        const t = {
+            desktop: E.desktop,
+            tablet: E.tablet,
+            mobile: E.mobile,
+            save: E.save,
+            export: E.code,
+            view: E.view,
+            undo: E.undo,
+            redo: E.redo,
+            reset: E.reset,
+          },
+          n = [
+            {
+              id: 'preview-desktop',
+              icon: t.desktop,
+              title: 'Preview in Desktop',
+            },
+            {
+              id: 'preview-tablet',
+              icon: t.tablet,
+              title: 'Preview in Tablet',
+            },
+            {
+              id: 'preview-mobile',
+              icon: t.mobile,
+              title: 'Preview in Mobile',
+            },
+            { id: 'undo-btn', icon: t.undo, title: 'Undo button' },
+            { id: 'redo-btn', icon: t.redo, title: 'Redo button' },
+          ],
+          s = [
+            { id: 'view-btn', icon: t.view, title: 'View' },
+            { id: 'save-btn', icon: t.save, title: 'Save Layout' },
+            { id: 'reset-btn', icon: t.reset, title: 'Reset' },
+            { id: 'export-html-btn', icon: t.export, title: 'Export HTML' },
+          ],
+          o = document.createElement('div');
+        o.classList.add('left-buttons'),
+          n.forEach(({ id: e, icon: t, title: n }) => {
+            const s = document.createElement('button');
+            (s.id = e),
+              s.classList.add('preview-btn'),
+              (s.title = n),
+              (s.innerHTML = t);
+            const i = s.querySelector('svg');
+            i && i.classList.add('nav-icon'), o.appendChild(s);
+          });
+        const i = document.createElement('div');
+        i.classList.add('center-text'), (i.textContent = 'Page Builder');
+        const r = document.createElement('div');
+        return (
+          r.classList.add('right-buttons'),
+          s.forEach(({ id: e, icon: t, title: n }) => {
+            const s = document.createElement('button');
+            (s.id = e),
+              s.classList.add('preview-btn'),
+              (s.title = n),
+              (s.innerHTML = t);
+            const o = s.querySelector('svg');
+            o && o.classList.add('nav-icon'), r.appendChild(s);
+          }),
+          e.appendChild(o),
+          e.appendChild(i),
+          e.appendChild(r),
+          e
+        );
+      })()
+    ),
+      document.body.insertBefore(e, document.getElementById('app'));
+  }
+  setupSaveButton() {
+    const e = document.getElementById('save-btn');
+    e &&
       e.addEventListener('click', () => {
         const e = w.getState();
-        g.save(e), m('Saving progress...');
-      }),
-    null === (t = document.getElementById('reset-btn')) ||
-      void 0 === t ||
-      t.addEventListener('click', () => {
+        this.jsonStorage.save(e), u('Saving progress...');
+      });
+  }
+  setupResetButton() {
+    const e = document.getElementById('reset-btn');
+    e &&
+      e.addEventListener('click', () => {
         !(function (e, t, n) {
           const s = document.getElementById('dialog'),
             o = document.getElementById('dialog-yes'),
             i = document.getElementById('dialog-no'),
-            a = document.getElementById('dialog-message');
-          a && (a.innerHTML = e),
+            r = document.getElementById('dialog-message');
+          r && (r.innerHTML = e),
             null == s || s.classList.remove('hidden'),
             null == o ||
               o.addEventListener('click', () => {
@@ -2085,23 +2112,24 @@ document.addEventListener('DOMContentLoaded', () => {
         })(
           'Are you sure you want to reset the layout?',
           () => {
-            g.remove(),
+            this.jsonStorage.remove(),
               w.clearCanvas(),
-              m('The saved layout has been successfully reset.');
+              u('The saved layout has been successfully reset.');
           },
           () => {
             console.log('Layout reset canceled.');
           }
         );
-      }),
-    null === (n = document.getElementById('export-html-btn')) ||
-      void 0 === n ||
-      n.addEventListener('click', () => {
-        const e = new u(new w()),
+      });
+  }
+  setupExportHTMLButton() {
+    const e = document.getElementById('export-html-btn');
+    e &&
+      e.addEventListener('click', () => {
+        const e = new m(new w()),
           t = e.generateHTML(),
-          n = e.generateCSS();
-        console.log('this is html', t);
-        const s = (function (e) {
+          n = e.generateCSS(),
+          s = (function (e) {
             return e
               .replace(/&/g, '&amp;')
               .replace(/</g, '&lt;')
@@ -2122,147 +2150,185 @@ document.addEventListener('DOMContentLoaded', () => {
               .replace(/(:\s*[^;]+;)/g, '<span class="value">$1</span>')
               .replace(/({|})/g, '<span class="bracket">$1</span>');
           })(n),
-          i = document.createElement('div');
-        (i.id = 'export-dialog'), i.classList.add('modal');
-        const a = document.createElement('div');
-        a.classList.add('modal-content');
-        const r = document.createElement('button');
-        (r.textContent = '×'),
-          r.classList.add('close-btn'),
-          r.addEventListener('click', () => {
-            f(i);
-          }),
-          a.appendChild(r);
-        const l = document.createElement('div');
-        l.classList.add('modal-section');
-        const d = document.createElement('h2');
-        d.textContent = 'HTML';
-        const c = document.createElement('div');
-        c.classList.add('code-block'),
-          c.setAttribute('contenteditable', 'true'),
-          (c.innerHTML = s),
-          l.appendChild(d),
-          l.appendChild(c);
-        const p = document.createElement('div');
-        p.classList.add('modal-section');
-        const h = document.createElement('h2');
-        h.textContent = 'CSS';
-        const m = document.createElement('div');
-        m.classList.add('code-block'),
-          m.setAttribute('contenteditable', 'true'),
-          (m.innerHTML = o),
-          p.appendChild(h),
-          p.appendChild(m);
-        const g = document.createElement('div');
-        g.classList.add('button-wrapper');
-        const y = document.createElement('button');
-        (y.textContent = 'Export to ZIP'),
-          y.classList.add('export-btn'),
-          y.addEventListener('click', () => {
-            const e = E([
-                { name: 'index.html', content: t },
-                { name: 'styles.css', content: n },
-              ]),
-              s = document.createElement('a');
-            (s.href = URL.createObjectURL(e)),
-              (s.download = 'exported-files.zip'),
-              s.click(),
-              URL.revokeObjectURL(s.href);
-          }),
-          a.appendChild(l),
-          a.appendChild(p),
-          a.appendChild(y),
-          g.appendChild(a),
-          i.appendChild(g),
-          document.body.appendChild(i),
-          i.classList.add('show'),
-          i.addEventListener('click', e => {
-            e.target === i && f(i);
-          }),
-          document.addEventListener('keydown', e => {
-            'Escape' === e.key && f(i);
-          });
+          i = this.createExportModal(s, o, t, n);
+        document.body.appendChild(i), i.classList.add('show');
+      });
+  }
+  createExportModal(e, t, n, s) {
+    const o = document.createElement('div');
+    (o.id = 'export-dialog'), o.classList.add('modal');
+    const i = document.createElement('div');
+    i.classList.add('modal-content');
+    const r = this.createCloseButton(o);
+    i.appendChild(r);
+    const a = this.createCodeSection('HTML', e),
+      l = this.createCodeSection('CSS', t),
+      d = this.createExportToZipButton(n, s);
+    i.appendChild(a), i.appendChild(l), i.appendChild(d);
+    const c = document.createElement('div');
+    return (
+      c.classList.add('button-wrapper'),
+      c.appendChild(i),
+      o.appendChild(c),
+      this.setupModalEventListeners(o),
+      o
+    );
+  }
+  createCloseButton(e) {
+    const t = document.createElement('button');
+    return (
+      (t.textContent = '×'),
+      t.classList.add('close-btn'),
+      t.addEventListener('click', () => this.closeModal(e)),
+      t
+    );
+  }
+  createCodeSection(e, t) {
+    const n = document.createElement('div');
+    n.classList.add('modal-section');
+    const s = document.createElement('h2');
+    s.textContent = e;
+    const o = document.createElement('div');
+    return (
+      o.classList.add('code-block'),
+      o.setAttribute('contenteditable', 'true'),
+      (o.innerHTML = t),
+      n.appendChild(s),
+      n.appendChild(o),
+      n
+    );
+  }
+  createExportToZipButton(e, t) {
+    const n = document.createElement('button');
+    return (
+      (n.textContent = 'Export to ZIP'),
+      n.classList.add('export-btn'),
+      n.addEventListener('click', () => {
+        const n = L([
+            { name: 'index.html', content: e },
+            { name: 'styles.css', content: t },
+          ]),
+          s = document.createElement('a');
+        (s.href = URL.createObjectURL(n)),
+          (s.download = 'exported-files.zip'),
+          s.click(),
+          URL.revokeObjectURL(s.href);
       }),
-    null === (s = document.getElementById('view-btn')) ||
-      void 0 === s ||
-      s.addEventListener('click', () => {
-        const e = h.generateHTML(),
-          t = document.createElement('div');
-        (t.id = 'preview-modal'),
-          (t.style.cssText =
-            '\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    background: #f5f5f5;\n    z-index: 1000;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: flex-start;\n    padding: 10px;\n  ');
-        const n = document.createElement('iframe');
-        (n.id = 'preview-iframe'),
-          (n.style.cssText =
-            '\n    width: 97%;\n    height: 90%;\n    border: none;\n    background: #fff;\n    margin-right: 20px;\n  '),
-          (n.srcdoc = e),
-          t.appendChild(n);
+      n
+    );
+  }
+  setupModalEventListeners(e) {
+    e.addEventListener('click', t => {
+      t.target === e && this.closeModal(e);
+    }),
+      document.addEventListener('keydown', t => {
+        'Escape' === t.key && this.closeModal(e);
+      });
+  }
+  closeModal(e) {
+    e.classList.remove('show'),
+      e.classList.add('hide'),
+      setTimeout(() => e.remove(), 300);
+  }
+  setupViewButton() {
+    const e = document.getElementById('view-btn');
+    e &&
+      e.addEventListener('click', () => {
+        const e = this.htmlGenerator.generateHTML(),
+          t = this.createFullScreenPreviewModal(e);
+        document.body.appendChild(t);
+      });
+  }
+  createFullScreenPreviewModal(e) {
+    const t = document.createElement('div');
+    (t.id = 'preview-modal'),
+      (t.style.cssText =
+        '\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100vw;\n      height: 100vh;\n      background: #f5f5f5;\n      z-index: 1000;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n      padding: 10px;\n    ');
+    const n = document.createElement('iframe');
+    (n.id = 'preview-iframe'),
+      (n.style.cssText =
+        '\n      width: 97%;\n      height: 90%;\n      border: none;\n      background: #fff;\n      margin-right: 20px;\n    '),
+      (n.srcdoc = e),
+      t.appendChild(n);
+    const s = this.createPreviewCloseButton(t);
+    t.appendChild(s);
+    const o = this.createResponsivenessControls(n);
+    return t.insertBefore(o, n), t;
+  }
+  createPreviewCloseButton(e) {
+    const t = document.createElement('button');
+    (t.id = 'close-modal-btn'),
+      (t.textContent = '✕'),
+      (t.style.cssText =
+        '\n      position: absolute;\n      top: 10px;\n      right: 20px;\n      font-size: 20px;\n      border: none;\n      background: none;\n      cursor: pointer;\n    ');
+    const n = () => {
+      setTimeout(() => e.remove(), 300),
+        document.removeEventListener('keydown', s);
+    };
+    t.addEventListener('click', n);
+    const s = e => {
+      'Escape' === e.key && n();
+    };
+    return document.addEventListener('keydown', s), t;
+  }
+  createResponsivenessControls(e) {
+    const t = document.createElement('div');
+    t.style.cssText =
+      '\n      display: flex;\n      gap: 10px;\n      margin-bottom: 10px;\n    ';
+    return (
+      [
+        { icon: E.mobile, title: 'Desktop', width: '375px', height: '90%' },
+        { icon: E.tablet, title: 'Tablet', width: '768px', height: '90%' },
+        { icon: E.desktop, title: 'Mobile', width: '97%', height: '90%' },
+      ].forEach(n => {
         const s = document.createElement('button');
-        (s.id = 'close-modal-btn'),
-          (s.textContent = '✕'),
-          (s.style.cssText =
-            '\n    position: absolute;\n    top: 10px;\n    right: 20px;\n    font-size: 20px;\n    border: none;\n    background: none;\n    cursor: pointer;\n  '),
-          t.appendChild(s);
+        (s.style.cssText =
+          '\n        padding: 5px;\n        border: none;\n        background: none;\n        cursor: pointer;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n      '),
+          (s.title = n.title);
         const o = document.createElement('div');
-        o.style.cssText =
-          '\n    display: flex;\n    gap: 10px;\n    margin-bottom: 10px;\n  ';
-        [
-          { icon: L.mobile, title: 'Desktop', width: '375px', height: '90%' },
-          { icon: L.tablet, title: 'Tablet', width: '768px', height: '90%' },
-          { icon: L.desktop, title: 'Mobile', width: '97%', height: '90%' },
-        ].forEach(e => {
-          const t = document.createElement('button');
-          (t.style.cssText =
-            '\n        padding: 5px;\n        border: none;\n        background: none;\n        cursor: pointer;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n      '),
-            (t.title = e.title);
-          const s = document.createElement('div');
-          s.innerHTML = e.icon;
-          const i = s.querySelector('svg');
-          i &&
-            ((i.style.width = '24px'),
-            (i.style.height = '24px'),
-            i.classList.add('component-icon')),
-            t.appendChild(s),
-            t.addEventListener('click', () => {
-              (n.style.width = e.width), (n.style.height = e.height);
-            }),
-            o.appendChild(t);
+        o.innerHTML = n.icon;
+        const i = o.querySelector('svg');
+        i &&
+          ((i.style.width = '24px'),
+          (i.style.height = '24px'),
+          i.classList.add('component-icon')),
+          s.appendChild(o),
+          s.addEventListener('click', () => {
+            (e.style.width = n.width), (e.style.height = n.height);
+          }),
+          t.appendChild(s);
+      }),
+      t
+    );
+  }
+  setupPreviewModeButtons() {
+    const e = document.getElementById('preview-desktop'),
+      t = document.getElementById('preview-tablet'),
+      n = document.getElementById('preview-mobile');
+    e &&
+      e.addEventListener('click', () => {
+        this.previewPanel.setPreviewMode('desktop');
+      }),
+      t &&
+        t.addEventListener('click', () => {
+          this.previewPanel.setPreviewMode('tablet');
         }),
-          t.insertBefore(o, n),
-          document.body.appendChild(t);
-        const i = () => {
-          setTimeout(() => t.remove(), 300),
-            document.removeEventListener('keydown', a);
-        };
-        s.addEventListener('click', i);
-        const a = e => {
-          'Escape' === e.key && i();
-        };
-        document.addEventListener('keydown', a);
-      }),
-    null === (o = document.getElementById('preview-desktop')) ||
-      void 0 === o ||
-      o.addEventListener('click', () => {
-        v.setPreviewMode('desktop');
-      }),
-    null === (i = document.getElementById('preview-tablet')) ||
-      void 0 === i ||
-      i.addEventListener('click', () => {
-        v.setPreviewMode('tablet');
-      }),
-    null === (a = document.getElementById('preview-mobile')) ||
-      void 0 === a ||
-      a.addEventListener('click', () => {
-        v.setPreviewMode('mobile');
-      }),
-    null === (r = document.getElementById('undo-btn')) ||
-      void 0 === r ||
-      r.addEventListener('click', () => {
+      n &&
+        n.addEventListener('click', () => {
+          this.previewPanel.setPreviewMode('mobile');
+        });
+  }
+  setupUndoRedoButtons() {
+    const e = document.getElementById('undo-btn'),
+      t = document.getElementById('redo-btn');
+    e &&
+      e.addEventListener('click', () => {
         w.historyManager.undo();
       }),
-    null === (l = document.getElementById('redo-btn')) ||
-      void 0 === l ||
-      l.addEventListener('click', () => {
-        w.historyManager.redo();
-      });
-});
+      t &&
+        t.addEventListener('click', () => {
+          w.historyManager.redo();
+        });
+  }
+})();
+exports.PageBuilderCore = M;

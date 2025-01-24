@@ -1,6 +1,10 @@
 import { svgs } from '../icons/svgs';
 export function createSidebar() {
   const sidebar = document.getElementById('sidebar')!;
+  if (!sidebar) {
+    console.error('Sidebar element not found');
+    return;
+  }
 
   // Define your components, icons, and titles as before
   const icons: { [key: string]: string } = {

@@ -1,4 +1,5 @@
-declare class PageBuilder {
+import './styles/main.css';
+export declare class PageBuilder {
   private canvas;
   private sidebar;
   private htmlGenerator;
@@ -23,7 +24,3 @@ declare class PageBuilder {
   private setupPreviewModeButtons;
   private setupUndoRedoButtons;
 }
-
-declare const PageBuilderCore: PageBuilder;
-
-export { PageBuilderCore };

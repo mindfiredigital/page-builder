@@ -1,149 +1,130 @@
 'use strict';
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if ((from && typeof from === 'object') || typeof from === 'function') {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, {
+          get: () => from[key],
+          enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+        });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (
+  (target = mod != null ? __create(__getProtoOf(mod)) : {}),
+  __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule
+      ? __defProp(target, 'default', { value: mod, enumerable: true })
+      : target,
+    mod
+  )
+);
+var __toCommonJS = mod =>
+  __copyProps(__defProp({}, '__esModule', { value: true }), mod);
 
-var React = require('react');
-var Canvas_js = require('@mindfiredigital/page-builder-core/dist/canvas/Canvas.js');
-var ConfigSidebar_js = require('@mindfiredigital/page-builder-core/dist/sidebar/ConfigSidebar.js');
-var CustomizationSidebar_js = require('@mindfiredigital/page-builder-core/dist/sidebar/CustomizationSidebar.js');
-var CreateSidebar_js = require('@mindfiredigital/page-builder-core/dist/sidebar/CreateSidebar.js');
-var CreateNavbar_js = require('@mindfiredigital/page-builder-core/dist/navbar/CreateNavbar.js');
-var HTMLGenerator_js = require('@mindfiredigital/page-builder-core/dist/services/HTMLGenerator.js');
-var JSONStorage_js = require('@mindfiredigital/page-builder-core/dist/services/JSONStorage.js');
-var ShortcutManager_js = require('@mindfiredigital/page-builder-core/dist/services/ShortcutManager.js');
-var PreviewPanel_js = require('@mindfiredigital/page-builder-core/dist/canvas/PreviewPanel.js');
-var utilityFunctions_js = require('@mindfiredigital/page-builder-core/dist/utils/utilityFunctions.js');
-var zipGenerator_js = require('@mindfiredigital/page-builder-core/dist/utils/zipGenerator.js');
-require('@mindfiredigital/page-builder-core/dist/styles/main.css');
+// src/index.tsx
+var src_exports = {};
+__export(src_exports, {
+  PageBuilderWrapper: () => PageBuilderWrapper,
+});
+module.exports = __toCommonJS(src_exports);
 
-function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
-
-var React__default = /*#__PURE__*/_interopDefault(React);
-
-var PageBuilder = ({
-  className,
-  initialContent,
-  onSave,
-  onReset,
-  onExport,
-  onStateChange,
-  onError
-}) => {
-  const containerRef = React.useRef(null);
-  const canvasRef = React.useRef(null);
-  const sidebarRef = React.useRef(null);
-  const previewPanelRef = React.useRef(null);
-  const htmlGeneratorRef = React.useRef(null);
-  const jsonStorageRef = React.useRef(null);
-  React.useEffect(() => {
-    try {
-      if (!containerRef.current)
-        return;
-      canvasRef.current = new Canvas_js.Canvas();
-      const canvas = canvasRef.current;
-      sidebarRef.current = new ConfigSidebar_js.Sidebar(canvas);
-      previewPanelRef.current = new PreviewPanel_js.PreviewPanel();
-      htmlGeneratorRef.current = new HTMLGenerator_js.HTMLGenerator(canvas);
-      jsonStorageRef.current = new JSONStorage_js.JSONStorage();
-      CreateSidebar_js.createSidebar();
-      Canvas_js.Canvas.init();
-      sidebarRef.current.init();
-      ShortcutManager_js.ShortcutManager.init();
-      CustomizationSidebar_js.CustomizationSidebar.init();
-      const header = document.createElement("header");
-      header.appendChild(CreateNavbar_js.createNavbar());
-      containerRef.current.insertBefore(header, containerRef.current.firstChild);
-      if (initialContent) {
-        jsonStorageRef.current.save(JSON.parse(initialContent));
-      }
-    } catch (error) {
-      onError == null ? void 0 : onError(error);
+// src/components/PageBuilder.tsx
+var import_react = __toESM(require('react'));
+var import_PageBuilder = require('@mindfiredigital/page-builder-core/dist/PageBuilder.js');
+var PageBuilderWrapper = ({ onInitialize }) => {
+  const pageBuilderRef = (0, import_react.useRef)(null);
+  (0, import_react.useEffect)(() => {
+    const pageBuilder = new import_PageBuilder.PageBuilder();
+    pageBuilderRef.current = pageBuilder;
+    if (onInitialize) {
+      onInitialize(pageBuilder);
     }
     return () => {
-      try {
-        canvasRef.current = null;
-        sidebarRef.current = null;
-        previewPanelRef.current = null;
-        htmlGeneratorRef.current = null;
-        jsonStorageRef.current = null;
-      } catch (error) {
-        onError == null ? void 0 : onError(error);
-      }
+      pageBuilderRef.current = null;
     };
-  }, [initialContent, onStateChange, onError]);
-  const handleSave = React.useCallback(() => {
-    var _a;
-    try {
-      const layoutJSON = Canvas_js.Canvas.getState();
-      (_a = jsonStorageRef.current) == null ? void 0 : _a.save(layoutJSON);
-      utilityFunctions_js.showNotification("Saving progress...");
-      onSave == null ? void 0 : onSave(layoutJSON);
-    } catch (error) {
-      onError == null ? void 0 : onError(error);
-    }
-  }, [onSave, onError]);
-  const handleReset = React.useCallback(() => {
-    utilityFunctions_js.showDialogBox(
-      "Are you sure you want to reset the layout?",
-      () => {
-        var _a;
-        try {
-          (_a = jsonStorageRef.current) == null ? void 0 : _a.remove();
-          Canvas_js.Canvas.clearCanvas();
-          utilityFunctions_js.showNotification("The saved layout has been successfully reset.");
-          onReset == null ? void 0 : onReset();
-        } catch (error) {
-          onError == null ? void 0 : onError(error);
-        }
-      },
-      () => {
-        console.log("Layout reset canceled.");
-      }
-    );
-  }, [onReset, onError]);
-  const handleExport = React.useCallback(() => {
-    try {
-      if (!htmlGeneratorRef.current)
-        return;
-      const html = htmlGeneratorRef.current.generateHTML();
-      const css = htmlGeneratorRef.current.generateCSS();
-      const zipFile = zipGenerator_js.createZipFile([
-        { name: "index.html", content: html },
-        { name: "styles.css", content: css }
-      ]);
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(zipFile);
-      link.download = "exported-files.zip";
-      link.click();
-      URL.revokeObjectURL(link.href);
-      onExport == null ? void 0 : onExport(html, css);
-    } catch (error) {
-      onError == null ? void 0 : onError(error);
-    }
-  }, [onExport, onError]);
-  const setPreviewMode = React.useCallback((mode) => {
-    var _a;
-    try {
-      (_a = previewPanelRef.current) == null ? void 0 : _a.setPreviewMode(mode);
-    } catch (error) {
-      onError == null ? void 0 : onError(error);
-    }
-  }, [onError]);
-  const handleUndo = React.useCallback(() => {
-    try {
-      Canvas_js.Canvas.historyManager.undo();
-    } catch (error) {
-      onError == null ? void 0 : onError(error);
-    }
-  }, [onError]);
-  const handleRedo = React.useCallback(() => {
-    try {
-      Canvas_js.Canvas.historyManager.redo();
-    } catch (error) {
-      onError == null ? void 0 : onError(error);
-    }
-  }, [onError]);
-  return /* @__PURE__ */ React__default.default.createElement("div", { className: `page-builder-wrapper ${className || ""}`, ref: containerRef }, /* @__PURE__ */ React__default.default.createElement("div", { className: "page-builder-toolbar" }, /* @__PURE__ */ React__default.default.createElement("button", { onClick: handleSave, id: "save-btn" }, "Save"), /* @__PURE__ */ React__default.default.createElement("button", { onClick: handleReset, id: "reset-btn" }, "Reset"), /* @__PURE__ */ React__default.default.createElement("button", { onClick: handleExport, id: "export-html-btn" }, "Export"), /* @__PURE__ */ React__default.default.createElement("div", { className: "history-controls" }, /* @__PURE__ */ React__default.default.createElement("button", { onClick: handleUndo, id: "undo-btn" }, "Undo"), /* @__PURE__ */ React__default.default.createElement("button", { onClick: handleRedo, id: "redo-btn" }, "Redo")), /* @__PURE__ */ React__default.default.createElement("div", { className: "preview-controls" }, /* @__PURE__ */ React__default.default.createElement("button", { onClick: () => setPreviewMode("desktop"), id: "preview-desktop" }, "Desktop"), /* @__PURE__ */ React__default.default.createElement("button", { onClick: () => setPreviewMode("tablet"), id: "preview-tablet" }, "Tablet"), /* @__PURE__ */ React__default.default.createElement("button", { onClick: () => setPreviewMode("mobile"), id: "preview-mobile" }, "Mobile"))), /* @__PURE__ */ React__default.default.createElement("div", { id: "app" }));
+  }, [onInitialize]);
+  return /* @__PURE__ */ import_react.default.createElement(
+    'div',
+    { style: { margin: 'auto', width: '100%', height: '100%' } },
+    /* @__PURE__ */ import_react.default.createElement(
+      'header',
+      null,
+      /* @__PURE__ */ import_react.default.createElement('nav', {
+        id: 'preview-navbar',
+      })
+    ),
+    /* @__PURE__ */ import_react.default.createElement(
+      'div',
+      { id: 'app' },
+      /* @__PURE__ */ import_react.default.createElement('div', {
+        id: 'sidebar',
+      }),
+      /* @__PURE__ */ import_react.default.createElement('div', {
+        id: 'canvas',
+        className: 'canvas',
+      }),
+      /* @__PURE__ */ import_react.default.createElement(
+        'div',
+        { id: 'customization' },
+        /* @__PURE__ */ import_react.default.createElement(
+          'h4',
+          { id: 'component-name' },
+          'Component: None'
+        ),
+        /* @__PURE__ */ import_react.default.createElement('div', {
+          id: 'controls',
+        }),
+        /* @__PURE__ */ import_react.default.createElement('div', {
+          id: 'layers-view',
+          className: 'hidden',
+        })
+      ),
+      /* @__PURE__ */ import_react.default.createElement('div', {
+        id: 'notification',
+        className: 'notification hidden',
+      }),
+      /* @__PURE__ */ import_react.default.createElement(
+        'div',
+        { id: 'dialog', className: 'dialog hidden' },
+        /* @__PURE__ */ import_react.default.createElement(
+          'div',
+          { className: 'dialog-content' },
+          /* @__PURE__ */ import_react.default.createElement('p', {
+            id: 'dialog-message',
+          }),
+          /* @__PURE__ */ import_react.default.createElement(
+            'button',
+            { id: 'dialog-yes', className: 'dialog-btn' },
+            'Yes'
+          ),
+          /* @__PURE__ */ import_react.default.createElement(
+            'button',
+            { id: 'dialog-no', className: 'dialog-btn' },
+            'No'
+          )
+        )
+      )
+    )
+  );
 };
-
-exports.PageBuilder = PageBuilder;
-//# sourceMappingURL=out.js.map
+// Annotate the CommonJS export names for ESM import in node:
+0 &&
+  (module.exports = {
+    PageBuilderWrapper,
+  });
 //# sourceMappingURL=index.js.map

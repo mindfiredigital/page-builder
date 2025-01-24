@@ -1,14 +1,9 @@
 import React from 'react';
+import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
 
-interface PageBuilderProps {
-  className?: string;
-  initialContent?: string;
-  onSave?: (layoutJSON: any) => void;
-  onReset?: () => void;
-  onExport?: (html: string, css: string) => void;
-  onStateChange?: (state: any) => void;
-  onError?: (error: Error) => void;
+interface PageBuilderWrapperProps {
+  onInitialize?: (pageBuilder: PageBuilder) => void;
 }
-declare const PageBuilder: React.FC<PageBuilderProps>;
+declare const PageBuilderWrapper: React.FC<PageBuilderWrapperProps>;
 
-export { PageBuilder };
+export { PageBuilderWrapper, PageBuilderWrapperProps };

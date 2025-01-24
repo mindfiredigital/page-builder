@@ -2,6 +2,7 @@ packages:
   # Core packages
   - 'packages/*'            # All packages in the packages directory
   - 'packages/core'         # Core animation library
+  - 'packages/example/*'
   
   # Applications
   - 'apps/*'               # All applications

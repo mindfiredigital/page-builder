@@ -7,12 +7,6 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  treeshake: true,
-  external: ['react', 'react-dom', '@mindfiredigital/page-builder-core'],
-  inject: ['./react-shim.js'],
-  esbuildOptions(options) {
-    options.banner = {
-      js: '"use client";',
-    };
-  },
+  external: ['react', 'react-dom'],
+  injectStyle: true,
 });

@@ -1,2 +1,2 @@
-import { PageBuilder } from "./components/PageBuilder";
-export {PageBuilder};
+export { PageBuilderWrapper } from './components/PageBuilder';
+export type { PageBuilderWrapperProps } from './components/PageBuilder';
