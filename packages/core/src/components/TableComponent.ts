@@ -1,178 +1,85 @@
 export class TableComponent {
-  private table: HTMLTableElement;
-  private container: HTMLDivElement;
+  create(
+    rowCount: number,
+    columnCount: number,
+    isPreview: boolean = false
+  ): HTMLElement {
+    // Create a container for the table
+    const container = document.createElement('div');
+    container.classList.add('table-component');
 
-  constructor() {
-    this.container = document.createElement('div');
-    this.container.classList.add('table-component');
-    this.table = document.createElement('table');
-    this.table.classList.add('custom-table');
-    this.addStyles();
-    // Initialize the table modal
-    this.openTableModal();
-  }
+    // Create the table element
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
 
-  private openTableModal(): void {
-    const modal = document.createElement('div');
-    modal.classList.add('table-modal');
-
-    const rowInput = document.createElement('input');
-    rowInput.type = 'number';
-    rowInput.placeholder = 'Enter No. of Rows';
-    rowInput.min = '1';
-    rowInput.style.marginRight = '2px';
-    rowInput.style.padding = '5px';
-
-    const colInput = document.createElement('input');
-    colInput.type = 'number';
-    colInput.placeholder = 'Enter No. of Columns';
-    colInput.min = '1';
-    colInput.style.padding = '5px';
-
-    const insertButton = document.createElement('button');
-    insertButton.innerText = 'Insert Table';
-    insertButton.onclick = () => {
-      const rows = parseInt(rowInput.value) || 1;
-      const cols = parseInt(colInput.value) || 1;
-
-      if (rows <= 0 || cols <= 0) {
-        alert('Please enter valid positive numbers for rows and columns.');
-        return;
+    // Generate table rows and cells
+    for (let i = 0; i < rowCount; i++) {
+      const row = document.createElement('tr');
+      for (let j = 0; j < columnCount; j++) {
+        const cell = document.createElement('td');
+        cell.textContent = `Row ${i + 1}, Col ${j + 1}`;
+        cell.style.border = '1px solid #000';
+        cell.style.padding = '8px';
+        row.appendChild(cell);
       }
-
-      this.createTable(rows, cols);
-      document.body.removeChild(modal);
-    };
-
-    const closeButton = document.createElement('button');
-    closeButton.innerText = 'Close';
-    closeButton.classList.add('close-button');
-    closeButton.onclick = () => document.body.removeChild(modal);
-
-    modal.appendChild(rowInput);
-    modal.appendChild(colInput);
-    modal.appendChild(insertButton);
-    modal.appendChild(closeButton);
-
-    modal.style.position = 'fixed';
-    modal.style.top = '10%';
-    modal.style.left = '50%';
-    modal.style.transform = 'translate(-50%, -50%)';
-    modal.style.padding = '10px';
-    modal.style.backgroundColor = 'white';
-    modal.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.1)';
-
-    document.body.appendChild(modal);
-  }
-
-  private createTable(rows: number, columns: number): void {
-    for (let i = 0; i < rows; i++) {
-      const row = this.table.insertRow();
-      for (let j = 0; j < columns; j++) {
-        const cell = row.insertCell();
-        cell.textContent = `R${i + 1}C${j + 1}`;
-        cell.contentEditable = 'true'; // Make cells editable
-        cell.classList.add('table-cell');
-      }
+      table.appendChild(row);
     }
 
-    this.container.appendChild(this.table);
-    this.addTableControls();
+    // Add table to container
+    container.appendChild(table);
+
+    // Add buttons only if not in preview mode
+    if (!isPreview) {
+      const buttonContainer = document.createElement('div');
+      buttonContainer.classList.add('button-container'); // Add a class for styling
+      buttonContainer.style.marginTop = '10px';
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.gap = '10px';
+
+      // Add Row button
+      const addRowButton = document.createElement('button');
+      addRowButton.textContent = 'Add Row';
+      addRowButton.addEventListener('click', () => this.addRow(table));
+      buttonContainer.appendChild(addRowButton);
+
+      // Add Column button
+      const addColumnButton = document.createElement('button');
+      addColumnButton.textContent = 'Add Column';
+      addColumnButton.addEventListener('click', () => this.addColumn(table));
+      buttonContainer.appendChild(addColumnButton);
+
+      container.appendChild(buttonContainer);
+    }
+
+    return container;
   }
 
-  private addTableControls(): void {
-    const controlsContainer = document.createElement('div');
-    controlsContainer.classList.add('table-controls');
-
-    const addRowButton = document.createElement('button');
-    addRowButton.textContent = 'Add Row';
-    addRowButton.addEventListener('click', () => this.addRow());
-
-    const addColumnButton = document.createElement('button');
-    addColumnButton.textContent = 'Add Column';
-    addColumnButton.addEventListener('click', () => this.addColumn());
-
-    controlsContainer.appendChild(addRowButton);
-    controlsContainer.appendChild(addColumnButton);
-
-    this.container.appendChild(controlsContainer);
-  }
-
-  private addRow(): void {
-    const row = this.table.insertRow();
-    const columnCount = this.table.rows[0]?.cells.length || 0;
+  addRow(table: HTMLTableElement): void {
+    const rowCount = table.rows.length;
+    const columnCount = table.rows[0]?.cells.length || 0;
+    const row = document.createElement('tr');
 
     for (let i = 0; i < columnCount; i++) {
-      const cell = row.insertCell();
-      cell.textContent = `New R${this.table.rows.length}C${i + 1}`;
-      cell.contentEditable = 'true';
-      cell.classList.add('table-cell');
+      const cell = document.createElement('td');
+      cell.textContent = `Row ${rowCount + 1}, Col ${i + 1}`;
+      cell.style.border = '1px solid #000';
+      cell.style.padding = '8px';
+      row.appendChild(cell);
     }
+
+    table.appendChild(row);
   }
 
-  private addColumn(): void {
-    const rows = this.table.rows;
+  addColumn(table: HTMLTableElement): void {
+    const rowCount = table.rows.length;
 
-    for (let i = 0; i < rows.length; i++) {
-      const cell = rows[i].insertCell();
-      cell.textContent = `New R${i + 1}C${rows[i].cells.length}`;
-      cell.contentEditable = 'true';
-      cell.classList.add('table-cell');
+    for (let i = 0; i < rowCount; i++) {
+      const cell = document.createElement('td');
+      cell.textContent = `Row ${i + 1}, Col ${table.rows[i].cells.length + 1}`;
+      cell.style.border = '1px solid #000';
+      cell.style.padding = '8px';
+      table.rows[i].appendChild(cell);
     }
-  }
-
-  private addStyles(): void {
-    const style = document.createElement('style');
-    style.textContent = `
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .custom-table th, .custom-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .custom-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .custom-table tr:hover {
-            background-color: #f1f1f1;
-        }
-        .custom-table .table-cell {
-            cursor: pointer;
-        }
-        .table-controls {
-            margin: 10px 0;
-        }
-        .table-controls button {
-            margin-right: 10px;
-            padding: 5px 10px;
-            background-color: #4286f4;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .table-controls button:hover {
-            background-color: #306bc3;
-        }
-        .table-modal {
-            position: fixed;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        `;
-    document.head.appendChild(style);
-  }
-
-  public create(): HTMLElement {
-    return this.container;
   }
 }

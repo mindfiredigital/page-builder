@@ -1,12 +1,9 @@
 export declare class TableComponent {
-  private table;
-  private container;
-  constructor();
-  private openTableModal;
-  private createTable;
-  private addTableControls;
-  private addRow;
-  private addColumn;
-  private addStyles;
-  create(): HTMLElement;
+  create(
+    rowCount: number,
+    columnCount: number,
+    isPreview?: boolean
+  ): HTMLElement;
+  addRow(table: HTMLTableElement): void;
+  addColumn(table: HTMLTableElement): void;
 }

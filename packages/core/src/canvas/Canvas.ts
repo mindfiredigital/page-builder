@@ -49,7 +49,7 @@ export class Canvas {
       image: () => new ImageComponent().create(),
       video: () =>
         new VideoComponent(() => Canvas.historyManager.captureState()).create(),
-      table: () => new TableComponent().create(),
+      table: () => new TableComponent().create(2, 2),
       text: () => new TextComponent().create(),
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),

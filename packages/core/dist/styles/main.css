@@ -794,3 +794,15 @@ ul {
   color: #666;
   text-align: center;
 }
+
+.table-component .button-container {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Prevent interaction when hidden */
+}
+
+/* Show buttons on hover of the table-component */
+.table-component:hover .button-container {
+  opacity: 1;
+  pointer-events: auto; /* Allow interaction when visible */
+}
