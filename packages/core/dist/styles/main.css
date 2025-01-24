@@ -765,7 +765,7 @@ ul {
   text-align: center;
 }
 
-.video-container {
+.video-component {
   width: 300px;
   height: 300px;
   position: relative;
@@ -776,7 +776,7 @@ ul {
   border: 1px solid #ccc;
 }
 
-.video-container video {
+.video-component video {
   display: none;
 }
 

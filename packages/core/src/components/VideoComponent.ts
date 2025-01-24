@@ -1,15 +1,20 @@
 export class VideoComponent {
+  private captureStateHandler: () => void;
+  constructor(captureStateHandler: () => void) {
+    this.captureStateHandler = captureStateHandler;
+  }
   create(src: string | null = null): HTMLElement {
     const container = document.createElement('div');
-    container.classList.add('video-container');
+    container.classList.add('video-component');
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'video/*';
     fileInput.style.display = 'none';
-    fileInput.addEventListener('change', event =>
-      this.handleFileChange(event, container)
-    );
+    fileInput.addEventListener('change', event => {
+      this.handleFileChange(event, container);
+      this.captureStateHandler();
+    });
 
     const uploadText = document.createElement('div');
     uploadText.classList.add('upload-text');

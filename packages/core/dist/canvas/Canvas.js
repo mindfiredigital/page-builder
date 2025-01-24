@@ -11,6 +11,7 @@ import {
   ContainerComponent,
   TwoColumnContainer,
   ThreeColumnContainer,
+  TableComponent,
   LinkComponent,
 } from '../components/index.js';
 import { HistoryManager } from '../services/HistoryManager.js';
@@ -36,8 +37,8 @@ export class Canvas {
     );
     Canvas.canvasElement.addEventListener('click', event => {
       const component = event.target;
-      console.log('this is my component,', component);
-      console.log('this is component id ', component.id);
+      // console.log('this is my component,', component);
+      // console.log('this is component id ', component.id);
       if (component) {
         CustomizationSidebar.showSidebar(component.id);
       }
@@ -165,6 +166,13 @@ export class Canvas {
         componentData.classes.forEach(cls => {
           component.classList.add(cls);
         });
+        if (componentData.type === 'video' && componentData.videoSrc) {
+          const videoElement = component.querySelector('video');
+          const uploadText = component.querySelector('.upload-text');
+          videoElement.src = componentData.videoSrc;
+          videoElement.style.display = 'block';
+          uploadText.style.display = 'none';
+        }
         // Restore inline styles
         if (componentData.inlineStyle) {
           component.setAttribute('style', componentData.inlineStyle);
@@ -221,7 +229,7 @@ export class Canvas {
       (_a = event.dataTransfer) === null || _a === void 0
         ? void 0
         : _a.getData('component-type');
-    console.log(`Dropped component type: ${componentType}`);
+    // console.log(`Dropped component type: ${componentType}`);
     if (!componentType) {
       return;
     }
@@ -419,7 +427,9 @@ Canvas.componentFactory = {
   button: () => new ButtonComponent().create(),
   header: () => new HeaderComponent().create(),
   image: () => new ImageComponent().create(),
-  video: () => new VideoComponent().create(),
+  video: () =>
+    new VideoComponent(() => Canvas.historyManager.captureState()).create(),
+  table: () => new TableComponent().create(),
   text: () => new TextComponent().create(),
   container: () => new ContainerComponent().create(),
   twoCol: () => new TwoColumnContainer().create(),

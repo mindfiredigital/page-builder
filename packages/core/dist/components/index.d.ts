@@ -6,4 +6,5 @@ export { HeaderComponent } from './HeaderComponent';
 export { ContainerComponent } from './ContainerComponent';
 export { TwoColumnContainer } from './TwoColumnContainer';
 export { ThreeColumnContainer } from './ThreeColumnContainer';
+export { TableComponent } from './TableComponent';
 export { LinkComponent } from './LinkComponent';
