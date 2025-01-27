@@ -211,6 +211,9 @@ export class Canvas {
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
+        if (componentData.type === 'table') {
+          TableComponent.restore(component);
+        }
         // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
