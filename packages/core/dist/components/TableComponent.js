@@ -12,7 +12,7 @@ export class TableComponent {
       const row = document.createElement('tr');
       for (let j = 0; j < columnCount; j++) {
         const cell = document.createElement('td');
-        cell.textContent = `Row ${i + 1}, Col ${j + 1}`;
+        cell.textContent = `R${i + 1}C${j + 1}`;
         cell.style.border = '1px solid #000';
         cell.style.padding = '8px';
         row.appendChild(cell);
@@ -52,7 +52,7 @@ export class TableComponent {
     const row = document.createElement('tr');
     for (let i = 0; i < columnCount; i++) {
       const cell = document.createElement('td');
-      cell.textContent = `Row ${rowCount + 1}, Col ${i + 1}`;
+      cell.textContent = `R${rowCount + 1}C${i + 1}`;
       cell.style.border = '1px solid #000';
       cell.style.padding = '8px';
       row.appendChild(cell);
@@ -63,10 +63,49 @@ export class TableComponent {
     const rowCount = table.rows.length;
     for (let i = 0; i < rowCount; i++) {
       const cell = document.createElement('td');
-      cell.textContent = `Row ${i + 1}, Col ${table.rows[i].cells.length + 1}`;
+      cell.textContent = `R${i + 1}C${table.rows[i].cells.length + 1}`;
       cell.style.border = '1px solid #000';
       cell.style.padding = '8px';
       table.rows[i].appendChild(cell);
     }
+  }
+  /**
+   * This method helps to restore the functionality of the buttons present within
+   * table component container
+   * This method comes to handy when you need to restore the saved page or doing
+   * undo redo frequently.
+   * @param container
+   * @returns void
+   */
+  static restore(container) {
+    const instance = new TableComponent();
+    // Find the table element
+    const table = container.querySelector('table');
+    if (!table) {
+      console.error('No table found in container');
+      return;
+    }
+    // Find existing buttons
+    const buttonContainer = container.querySelector('.button-container');
+    if (!buttonContainer) {
+      console.error('No button container found');
+      return;
+    }
+    // Get the buttons
+    const buttons = buttonContainer.querySelectorAll('button');
+    buttons.forEach(button => {
+      var _a;
+      // Remove existing event listeners
+      const newButton = button.cloneNode(true);
+      (_a = button.parentNode) === null || _a === void 0
+        ? void 0
+        : _a.replaceChild(newButton, button);
+      // Add new event listeners based on button text
+      if (newButton.textContent === 'Add Row') {
+        newButton.addEventListener('click', () => instance.addRow(table));
+      } else if (newButton.textContent === 'Add Column') {
+        newButton.addEventListener('click', () => instance.addColumn(table));
+      }
+    });
   }
 }

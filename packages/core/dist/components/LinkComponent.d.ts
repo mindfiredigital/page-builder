@@ -30,4 +30,9 @@ export declare class LinkComponent {
    * @returns A boolean indicating whether the component is in editing mode.
    */
   isInEditMode(): boolean;
+  /**
+   * Restores the edit functionality for an existing link component
+   * @param container - The container element of the link component
+   */
+  static restore(container: HTMLElement): void;
 }

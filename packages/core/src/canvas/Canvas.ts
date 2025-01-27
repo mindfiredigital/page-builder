@@ -269,6 +269,14 @@ export class Canvas {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
 
+        if (componentData.type === 'table') {
+          TableComponent.restore(component);
+        }
+
+        if (componentData.type === 'link') {
+          LinkComponent.restore(component);
+        }
+
         // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);

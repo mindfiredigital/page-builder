@@ -101,4 +101,59 @@ export class LinkComponent {
   isInEditMode() {
     return this.isEditing;
   }
+  /**
+   * Restores the edit functionality for an existing link component
+   * @param container - The container element of the link component
+   */
+  static restore(container) {
+    var _a, _b;
+    // Find necessary elements
+    const link = container.querySelector('.link-component-label');
+    const editButton = container.querySelector('.edit-link');
+    const editForm = container.querySelector('.edit-link-form');
+    const saveButton = editForm.querySelector('button');
+    const urlInput = editForm.querySelector('input[type="url"]');
+    const targetCheckbox = editForm.querySelector('input[type="checkbox"]');
+    if (
+      !link ||
+      !editButton ||
+      !editForm ||
+      !saveButton ||
+      !urlInput ||
+      !targetCheckbox
+    ) {
+      console.error('Required elements not found');
+      return;
+    }
+    // Set initial display states
+    link.style.display = 'inline';
+    editButton.style.display = 'inline-flex';
+    editForm.style.display = 'none';
+    // Clone and replace the edit button to remove existing listeners
+    const newEditButton = editButton.cloneNode(true);
+    const newSaveButton = saveButton.cloneNode(true);
+    (_a = editButton.parentNode) === null || _a === void 0
+      ? void 0
+      : _a.replaceChild(newEditButton, editButton);
+    (_b = saveButton.parentNode) === null || _b === void 0
+      ? void 0
+      : _b.replaceChild(newSaveButton, saveButton);
+    // Add new click event listener
+    newEditButton.addEventListener('click', e => {
+      e.preventDefault();
+      link.style.display = 'none';
+      newEditButton.style.display = 'none';
+      editForm.style.display = 'flex';
+    });
+    // Add new save button click event listener
+    newSaveButton.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      link.href = urlInput.value;
+      link.style.display = 'inline';
+      link.target = targetCheckbox.checked ? '_blank' : '_self';
+      newEditButton.style.display = 'inline-flex';
+      editForm.style.display = 'none';
+    });
+  }
 }

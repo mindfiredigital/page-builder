@@ -7,9 +7,9 @@ class e {
     this.sidebar.querySelectorAll('.draggable').forEach(e => {
       e.addEventListener('dragstart', t => {
         var n;
-        const s = t;
+        const o = t;
         console.log(`Dragging component: ${e.id}`),
-          null === (n = s.dataTransfer) ||
+          null === (n = o.dataTransfer) ||
             void 0 === n ||
             n.setData('component-type', e.id);
       });
@@ -37,8 +37,8 @@ class n {
   create(e = null) {
     const t = document.createElement('div');
     t.classList.add('image-component');
-    const s = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
-    (t.id = s),
+    const o = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    (t.id = o),
       (t.style.width = '300px'),
       (t.style.height = '300px'),
       (t.style.position = 'relative'),
@@ -51,11 +51,11 @@ class n {
     (i.style.color = '#666666'),
       (i.style.border = 'none'),
       (i.style.display = e ? 'none' : 'block');
-    const o = document.createElement('input');
-    (o.type = 'file'),
-      (o.accept = 'image/*'),
-      (o.style.display = 'none'),
-      o.addEventListener('change', e => n.handleFileChange(e, t, i));
+    const s = document.createElement('input');
+    (s.type = 'file'),
+      (s.accept = 'image/*'),
+      (s.style.display = 'none'),
+      s.addEventListener('change', e => n.handleFileChange(e, t, i));
     const l = document.createElement('button');
     l.classList.add('upload-btn'),
       (l.innerHTML = '🖊️'),
@@ -70,17 +70,17 @@ class n {
       (l.style.top = '50%'),
       (l.style.transform = 'translate(-50%, -50%)'),
       (l.style.fontSize = '24px'),
-      l.addEventListener('click', () => o.click());
-    const a = document.createElement('img'),
-      r = `${s}-img`;
+      l.addEventListener('click', () => s.click());
+    const r = document.createElement('img'),
+      a = `${o}-img`;
     return (
-      (a.id = r),
-      (a.style.width = '100%'),
-      (a.style.height = '100%'),
-      (a.style.objectFit = 'contain'),
-      (a.style.border = 'none'),
-      (a.style.display = 'none'),
-      e && ((a.src = e), (a.style.display = 'block')),
+      (r.id = a),
+      (r.style.width = '100%'),
+      (r.style.height = '100%'),
+      (r.style.objectFit = 'contain'),
+      (r.style.border = 'none'),
+      (r.style.display = 'none'),
+      e && ((r.src = e), (r.style.display = 'block')),
       t.addEventListener('mouseenter', () => {
         l.style.opacity = '1';
       }),
@@ -88,22 +88,22 @@ class n {
         l.style.opacity = '0';
       }),
       t.appendChild(i),
-      t.appendChild(o),
+      t.appendChild(s),
       t.appendChild(l),
-      t.appendChild(a),
+      t.appendChild(r),
       t
     );
   }
   static handleFileChange(e, t, n) {
-    const s = e.target,
-      i = s.files ? s.files[0] : null;
+    const o = e.target,
+      i = o.files ? o.files[0] : null;
     if (i) {
       const e = new FileReader();
       (e.onload = function () {
-        const s = e.result,
+        const o = e.result,
           i = t.querySelector('img');
         i &&
-          ((i.src = s),
+          ((i.src = o),
           (i.style.display = 'block'),
           (n.style.display = 'none'),
           (t.style.backgroundColor = 'transparent'));
@@ -113,17 +113,17 @@ class n {
   }
   static restoreImageUpload(e, t) {
     const n = e.querySelector('div:not(.upload-btn)'),
-      s = e.querySelector('input[type="file"]'),
+      o = e.querySelector('input[type="file"]'),
       i = e.querySelector('.upload-btn'),
-      o = e.querySelector('img');
-    s.addEventListener('change', t => this.handleFileChange(t, e, n)),
-      i.addEventListener('click', () => s.click()),
+      s = e.querySelector('img');
+    o.addEventListener('change', t => this.handleFileChange(t, e, n)),
+      i.addEventListener('click', () => o.click()),
       t
-        ? ((o.src = t),
-          (o.style.display = 'block'),
+        ? ((s.src = t),
+          (s.style.display = 'block'),
           (n.style.display = 'none'),
           (e.style.backgroundColor = 'transparent'))
-        : ((o.style.display = 'none'),
+        : ((s.style.display = 'none'),
           (n.style.display = 'block'),
           (e.style.backgroundColor = '#f0f0f0')),
       e.addEventListener('mouseenter', () => {
@@ -134,7 +134,7 @@ class n {
       });
   }
 }
-class s {
+class o {
   constructor(e) {
     this.captureStateHandler = e;
   }
@@ -148,39 +148,39 @@ class s {
       n.addEventListener('change', e => {
         this.handleFileChange(e, t), this.captureStateHandler();
       });
-    const s = document.createElement('div');
-    s.classList.add('upload-text'), (s.innerText = e ? '' : 'Upload Video');
+    const o = document.createElement('div');
+    o.classList.add('upload-text'), (o.innerText = e ? '' : 'Upload Video');
     const i = document.createElement('video');
     (i.controls = !0),
       (i.style.width = '100%'),
       (i.style.height = '100%'),
       (i.style.display = e ? 'block' : 'none'),
       e && (i.src = e);
-    const o = document.createElement('button');
+    const s = document.createElement('button');
     return (
-      (o.innerHTML = '🖊️'),
-      o.classList.add('pencil-button'),
-      o.addEventListener('click', () => n.click()),
-      t.appendChild(s),
+      (s.innerHTML = '🖊️'),
+      s.classList.add('pencil-button'),
+      s.addEventListener('click', () => n.click()),
+      t.appendChild(o),
       t.appendChild(n),
       t.appendChild(i),
-      t.appendChild(o),
+      t.appendChild(s),
       t
     );
   }
   handleFileChange(e, t) {
     const n = e.target,
-      s = n.files ? n.files[0] : null;
-    if (s && s.type.startsWith('video/')) {
+      o = n.files ? n.files[0] : null;
+    if (o && o.type.startsWith('video/')) {
       const e = new FileReader();
       (e.onload = () => {
         const n = t.querySelector('video'),
-          s = t.querySelector('.upload-text');
+          o = t.querySelector('.upload-text');
         (n.src = e.result),
           (n.style.display = 'block'),
-          (s.style.display = 'none');
+          (o.style.display = 'none');
       }),
-        e.readAsDataURL(s);
+        e.readAsDataURL(o);
     } else alert('Please upload a valid video file.');
   }
 }
@@ -198,7 +198,7 @@ class i {
     );
   }
 }
-class o {
+class s {
   create(e = 1, t = 'Header') {
     const n = document.createElement(`h${e}`);
     return (n.innerText = t), n.classList.add('header-component'), n;
@@ -220,31 +220,31 @@ class l {
           n = e.pageY - this.originalMouseY;
         if (this.currentResizer.classList.contains('bottom-right')) {
           const e = this.originalWidth + t,
-            s = this.originalHeight + n;
+            o = this.originalHeight + n;
           e > this.MINIMUM_SIZE && (this.element.style.width = `${e}px`),
-            s > this.MINIMUM_SIZE && (this.element.style.height = `${s}px`);
+            o > this.MINIMUM_SIZE && (this.element.style.height = `${o}px`);
         } else if (this.currentResizer.classList.contains('bottom-left')) {
           const e = this.originalHeight + n,
-            s = this.originalWidth - t;
+            o = this.originalWidth - t;
           e > this.MINIMUM_SIZE && (this.element.style.height = `${e}px`),
-            s > this.MINIMUM_SIZE &&
-              ((this.element.style.width = `${s}px`),
+            o > this.MINIMUM_SIZE &&
+              ((this.element.style.width = `${o}px`),
               (this.element.style.left = `${this.originalX + t}px`));
         } else if (this.currentResizer.classList.contains('top-right')) {
           const e = this.originalWidth + t,
-            s = this.originalHeight - n;
+            o = this.originalHeight - n;
           e > this.MINIMUM_SIZE && (this.element.style.width = `${e}px`),
-            s > this.MINIMUM_SIZE &&
-              ((this.element.style.height = `${s}px`),
+            o > this.MINIMUM_SIZE &&
+              ((this.element.style.height = `${o}px`),
               (this.element.style.top = `${this.originalY + n}px`));
         } else if (this.currentResizer.classList.contains('top-left')) {
           const e = this.originalWidth - t,
-            s = this.originalHeight - n;
+            o = this.originalHeight - n;
           e > this.MINIMUM_SIZE &&
             ((this.element.style.width = `${e}px`),
             (this.element.style.left = `${this.originalX + t}px`)),
-            s > this.MINIMUM_SIZE &&
-              ((this.element.style.height = `${s}px`),
+            o > this.MINIMUM_SIZE &&
+              ((this.element.style.height = `${o}px`),
               (this.element.style.top = `${this.originalY + n}px`));
         }
       }),
@@ -306,31 +306,31 @@ class l {
   makeDraggable(e) {
     let t = !1,
       n = 0,
-      s = 0,
+      o = 0,
       i = 0,
-      o = 0;
+      s = 0;
     const l = l => {
         if (!t) return;
-        const a = l.clientX - n,
-          r = l.clientY - s;
-        e.style.transform = `translate(${i + a}px, ${o + r}px)`;
+        const r = l.clientX - n,
+          a = l.clientY - o;
+        e.style.transform = `translate(${i + r}px, ${s + a}px)`;
       },
-      a = () => {
+      r = () => {
         (t = !1),
           window.removeEventListener('mousemove', l),
-          window.removeEventListener('mouseup', a);
+          window.removeEventListener('mouseup', r);
       };
-    e.addEventListener('mousedown', r => {
-      r.preventDefault(),
-        r.stopPropagation(),
+    e.addEventListener('mousedown', a => {
+      a.preventDefault(),
+        a.stopPropagation(),
         (t = !0),
-        (n = r.clientX),
-        (s = r.clientY);
+        (n = a.clientX),
+        (o = a.clientY);
       const d = e.getBoundingClientRect();
       (i = d.left),
-        (o = d.top),
+        (s = d.top),
         window.addEventListener('mousemove', l),
-        window.addEventListener('mouseup', a);
+        window.addEventListener('mouseup', r);
     });
   }
   onDrop(e) {
@@ -341,21 +341,21 @@ class l {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const s = C.createComponent(n);
-    if (!s) return;
+    const o = C.createComponent(n);
+    if (!o) return;
     const i = this.element.classList[2],
-      o = C.generateUniqueClass(n, !0, i);
-    s.classList.add(o);
+      s = C.generateUniqueClass(n, !0, i);
+    o.classList.add(s);
     const l = document.createElement('span');
     (l.className = 'component-label'),
-      (l.textContent = o),
-      (s.id = o),
+      (l.textContent = s),
+      (o.id = s),
       (l.style.display = 'none'),
-      s.appendChild(l),
-      s.addEventListener('mouseenter', e => this.showLabel(e, s)),
-      s.addEventListener('mouseleave', e => this.hideLabel(e, s)),
-      this.element.appendChild(s),
-      this.makeDraggable(s),
+      o.appendChild(l),
+      o.addEventListener('mouseenter', e => this.showLabel(e, o)),
+      o.addEventListener('mouseleave', e => this.hideLabel(e, o)),
+      this.element.appendChild(o),
+      this.makeDraggable(o),
       C.historyManager.captureState();
   }
   showLabel(e, t) {
@@ -394,15 +394,15 @@ class l {
     t && t.remove();
     const n = document.createElement('div');
     n.classList.add('resizers');
-    const s = new l();
-    (s.element = e), (s.resizers = n), s.addResizeHandles(), e.appendChild(n);
+    const o = new l();
+    (o.element = e), (o.resizers = n), o.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e) {
     l.restoreResizer(e);
     const t = new l();
     t.element = e;
     e.querySelectorAll('.editable-component').forEach(e => {
-      var s;
+      var o;
       if (
         (C.controlsManager.addControlButtons(e),
         C.addDraggableListeners(e),
@@ -411,16 +411,16 @@ class l {
         e.classList.contains('image-component'))
       ) {
         const t =
-          (null === (s = e.querySelector('img')) || void 0 === s
+          (null === (o = e.querySelector('img')) || void 0 === o
             ? void 0
-            : s.getAttribute('src')) || '';
+            : o.getAttribute('src')) || '';
         n.restoreImageUpload(e, t);
       }
       e.classList.contains('container-component') && this.restoreContainer(e);
     });
   }
 }
-class a {
+class r {
   constructor(e, t = `${e}Col-component`) {
     (this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -453,11 +453,11 @@ class a {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const s = C.createComponent(n);
-    if (!s) return;
+    const o = C.createComponent(n);
+    if (!o) return;
     const i = e.target;
     if (i && i.classList.contains('column')) {
-      i.appendChild(s);
+      i.appendChild(o);
       const e = `${this.element.id}-${`c${Array.from(i.parentElement.children).indexOf(i) + 1}`}`;
       (i.id = e), i.classList.add(e);
       let t = i.querySelector('.column-label');
@@ -466,14 +466,14 @@ class a {
         (t.className = 'column-label'),
         i.appendChild(t)),
         (t.textContent = e);
-      const o = C.generateUniqueClass(n, !0, e);
-      s.classList.add(o), (s.id = o);
-      let l = s.querySelector('.component-label');
+      const s = C.generateUniqueClass(n, !0, e);
+      o.classList.add(s), (o.id = s);
+      let l = o.querySelector('.component-label');
       l ||
         ((l = document.createElement('span')),
         (l.className = 'component-label'),
-        s.appendChild(l)),
-        (l.textContent = o),
+        o.appendChild(l)),
+        (l.textContent = s),
         C.historyManager.captureState();
     }
   }
@@ -493,43 +493,43 @@ class a {
         C.addDraggableListeners(e),
         e.classList.contains('image-component'))
       ) {
-        const s =
+        const o =
           (null === (t = e.querySelector('img')) || void 0 === t
             ? void 0
             : t.getAttribute('src')) || '';
-        n.restoreImageUpload(e, s);
+        n.restoreImageUpload(e, o);
       }
     });
   }
 }
-class r extends a {
+class a extends r {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class d extends a {
+class d extends r {
   constructor() {
     super(3, 'threeCol-component');
   }
 }
 class c {
   create(e, t, n = !1) {
-    const s = document.createElement('div');
-    s.classList.add('table-component');
+    const o = document.createElement('div');
+    o.classList.add('table-component');
     const i = document.createElement('table');
     (i.style.width = '100%'), (i.style.borderCollapse = 'collapse');
     for (let n = 0; n < e; n++) {
       const e = document.createElement('tr');
-      for (let s = 0; s < t; s++) {
+      for (let o = 0; o < t; o++) {
         const t = document.createElement('td');
-        (t.textContent = `Row ${n + 1}, Col ${s + 1}`),
+        (t.textContent = `R${n + 1}C${o + 1}`),
           (t.style.border = '1px solid #000'),
           (t.style.padding = '8px'),
           e.appendChild(t);
       }
       i.appendChild(e);
     }
-    if ((s.appendChild(i), !n)) {
+    if ((o.appendChild(i), !n)) {
       const e = document.createElement('div');
       e.classList.add('button-container'),
         (e.style.marginTop = '10px'),
@@ -543,20 +543,20 @@ class c {
       (n.textContent = 'Add Column'),
         n.addEventListener('click', () => this.addColumn(i)),
         e.appendChild(n),
-        s.appendChild(e);
+        o.appendChild(e);
     }
-    return s;
+    return o;
   }
   addRow(e) {
     var t;
     const n = e.rows.length,
-      s =
+      o =
         (null === (t = e.rows[0]) || void 0 === t ? void 0 : t.cells.length) ||
         0,
       i = document.createElement('tr');
-    for (let e = 0; e < s; e++) {
+    for (let e = 0; e < o; e++) {
       const t = document.createElement('td');
-      (t.textContent = `Row ${n + 1}, Col ${e + 1}`),
+      (t.textContent = `R${n + 1}C${e + 1}`),
         (t.style.border = '1px solid #000'),
         (t.style.padding = '8px'),
         i.appendChild(t);
@@ -567,11 +567,27 @@ class c {
     const t = e.rows.length;
     for (let n = 0; n < t; n++) {
       const t = document.createElement('td');
-      (t.textContent = `Row ${n + 1}, Col ${e.rows[n].cells.length + 1}`),
+      (t.textContent = `R${n + 1}C${e.rows[n].cells.length + 1}`),
         (t.style.border = '1px solid #000'),
         (t.style.padding = '8px'),
         e.rows[n].appendChild(t);
     }
+  }
+  static restore(e) {
+    const t = new c(),
+      n = e.querySelector('table');
+    if (!n) return void console.error('No table found in container');
+    const o = e.querySelector('.button-container');
+    if (!o) return void console.error('No button container found');
+    o.querySelectorAll('button').forEach(e => {
+      var o;
+      const i = e.cloneNode(!0);
+      null === (o = e.parentNode) || void 0 === o || o.replaceChild(i, e),
+        'Add Row' === i.textContent
+          ? i.addEventListener('click', () => t.addRow(n))
+          : 'Add Column' === i.textContent &&
+            i.addEventListener('click', () => t.addColumn(n));
+    });
   }
 }
 class p {
@@ -585,42 +601,42 @@ class p {
       (this.link.href = e),
       (this.link.innerText = t),
       this.link.classList.add('link-component-label');
-    const s = document.createElement('button');
-    (s.innerHTML = '🖊️'), s.classList.add('edit-link');
+    const o = document.createElement('button');
+    (o.innerHTML = '🖊️'), o.classList.add('edit-link');
     const i = document.createElement('div');
     i.classList.add('edit-link-form');
-    const o = document.createElement('input');
-    (o.type = 'url'), (o.value = e), (o.placeholder = 'Enter URL');
+    const s = document.createElement('input');
+    (s.type = 'url'), (s.value = e), (s.placeholder = 'Enter URL');
     const l = document.createElement('input');
     l.type = 'checkbox';
-    const a = document.createElement('label');
-    (a.innerHTML = 'Open in new tab'), a.appendChild(l);
-    const r = document.createElement('button');
+    const r = document.createElement('label');
+    (r.innerHTML = 'Open in new tab'), r.appendChild(l);
+    const a = document.createElement('button');
     return (
-      (r.innerHTML = 'Save'),
-      i.appendChild(o),
-      i.appendChild(a),
+      (a.innerHTML = 'Save'),
+      i.appendChild(s),
       i.appendChild(r),
-      s.addEventListener('click', e => {
+      i.appendChild(a),
+      o.addEventListener('click', e => {
         e.preventDefault(),
           (this.isEditing = !0),
           this.link && (this.link.style.display = 'none'),
-          (s.style.display = 'none'),
+          (o.style.display = 'none'),
           (i.style.display = 'flex');
       }),
-      r.addEventListener('click', e => {
+      a.addEventListener('click', e => {
         e.preventDefault(),
           e.stopPropagation(),
           (this.isEditing = !1),
           this.link &&
-            ((this.link.href = o.value),
+            ((this.link.href = s.value),
             (this.link.style.display = 'inline'),
             (this.link.target = l.checked ? '_blank' : '_self')),
-          (s.style.display = 'inline-flex'),
+          (o.style.display = 'inline-flex'),
           (i.style.display = 'none');
       }),
       n.appendChild(this.link),
-      n.appendChild(s),
+      n.appendChild(o),
       n.appendChild(i),
       n
     );
@@ -644,49 +660,82 @@ class p {
   isInEditMode() {
     return this.isEditing;
   }
+  static restore(e) {
+    var t, n;
+    const o = e.querySelector('.link-component-label'),
+      i = e.querySelector('.edit-link'),
+      s = e.querySelector('.edit-link-form'),
+      l = s.querySelector('button'),
+      r = s.querySelector('input[type="url"]'),
+      a = s.querySelector('input[type="checkbox"]');
+    if (!(o && i && s && l && r && a))
+      return void console.error('Required elements not found');
+    (o.style.display = 'inline'),
+      (i.style.display = 'inline-flex'),
+      (s.style.display = 'none');
+    const d = i.cloneNode(!0),
+      c = l.cloneNode(!0);
+    null === (t = i.parentNode) || void 0 === t || t.replaceChild(d, i),
+      null === (n = l.parentNode) || void 0 === n || n.replaceChild(c, l),
+      d.addEventListener('click', e => {
+        e.preventDefault(),
+          (o.style.display = 'none'),
+          (d.style.display = 'none'),
+          (s.style.display = 'flex');
+      }),
+      c.addEventListener('click', e => {
+        e.preventDefault(),
+          e.stopPropagation(),
+          (o.href = r.value),
+          (o.style.display = 'inline'),
+          (o.target = a.checked ? '_blank' : '_self'),
+          (d.style.display = 'inline-flex'),
+          (s.style.display = 'none');
+      });
+  }
 }
 class h {
   create() {
     const e = e => {
         let t,
           n,
-          s,
+          o,
           i,
-          o = !1,
+          s = !1,
           l = !1,
-          a = 0,
-          r = 0;
+          r = 0,
+          a = 0;
         (e.style.position = 'relative'),
           (e.style.cursor = 'move'),
-          e.addEventListener('mousedown', s => {
+          e.addEventListener('mousedown', o => {
             l ||
-              ((o = !0),
-              (t = s.clientX),
-              (n = s.clientY),
-              (a = parseFloat(e.getAttribute('data-x') || '0')),
-              (r = parseFloat(e.getAttribute('data-y') || '0')),
+              ((s = !0),
+              (t = o.clientX),
+              (n = o.clientY),
+              (r = parseFloat(e.getAttribute('data-x') || '0')),
+              (a = parseFloat(e.getAttribute('data-y') || '0')),
               document.addEventListener('mousemove', d),
               document.addEventListener('mouseup', c));
           });
-        const d = s => {
-            if (o) {
-              const i = s.clientX - t,
-                o = s.clientY - n,
-                l = a + i,
-                d = r + o;
+        const d = o => {
+            if (s) {
+              const i = o.clientX - t,
+                s = o.clientY - n,
+                l = r + i,
+                d = a + s;
               (e.style.transform = `translate(${l}px, ${d}px)`),
                 e.setAttribute('data-x', l.toString()),
                 e.setAttribute('data-y', d.toString());
             }
           },
           c = () => {
-            (o = !1),
+            (s = !1),
               document.removeEventListener('mousemove', d),
               document.removeEventListener('mouseup', c);
           };
         if (e.classList.contains('container')) {
-          const o = document.createElement('div');
-          Object.assign(o.style, {
+          const s = document.createElement('div');
+          Object.assign(s.style, {
             width: '10px',
             height: '10px',
             background: 'blue',
@@ -695,28 +744,28 @@ class h {
             bottom: '0',
             cursor: 'se-resize',
           }),
-            e.appendChild(o),
-            o.addEventListener('mousedown', o => {
-              o.stopPropagation(),
+            e.appendChild(s),
+            s.addEventListener('mousedown', s => {
+              s.stopPropagation(),
                 (l = !0),
-                (s = e.offsetWidth),
+                (o = e.offsetWidth),
                 (i = e.offsetHeight),
-                (t = o.clientX),
-                (n = o.clientY),
-                document.addEventListener('mousemove', a),
-                document.addEventListener('mouseup', r);
+                (t = s.clientX),
+                (n = s.clientY),
+                document.addEventListener('mousemove', r),
+                document.addEventListener('mouseup', a);
             });
-          const a = o => {
+          const r = s => {
               if (l) {
-                const l = s + (o.clientX - t),
-                  a = i + (o.clientY - n);
-                (e.style.width = `${l}px`), (e.style.height = `${a}px`);
+                const l = o + (s.clientX - t),
+                  r = i + (s.clientY - n);
+                (e.style.width = `${l}px`), (e.style.height = `${r}px`);
               }
             },
-            r = () => {
+            a = () => {
               (l = !1),
-                document.removeEventListener('mousemove', a),
-                document.removeEventListener('mouseup', r);
+                document.removeEventListener('mousemove', r),
+                document.removeEventListener('mouseup', a);
             };
         }
       },
@@ -730,26 +779,26 @@ class h {
         fontFamily: "'Roboto', sans-serif",
       }),
       e(n);
-    const s = new l().create();
-    s.classList.add('container'),
-      Object.assign(s.style, {
+    const o = new l().create();
+    o.classList.add('container'),
+      Object.assign(o.style, {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '40px',
         width: '100%',
       }),
-      e(s);
-    const o = new t('MyBrand').create();
-    Object.assign(o.style, {
+      e(o);
+    const s = new t('MyBrand').create();
+    Object.assign(s.style, {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333',
     });
-    const a = new l().create();
-    a.classList.add('container'),
-      Object.assign(a.style, { display: 'flex', gap: '20px' }),
-      e(a),
+    const r = new l().create();
+    r.classList.add('container'),
+      Object.assign(r.style, { display: 'flex', gap: '20px' }),
+      e(r),
       ['Home', 'Features', 'Contact'].forEach(e => {
         const n = new t(e).create();
         Object.assign(n.style, {
@@ -757,20 +806,20 @@ class h {
           color: '#555',
           textDecoration: 'none',
         }),
-          a.appendChild(n);
+          r.appendChild(n);
       }),
-      s.appendChild(o),
-      s.appendChild(a);
-    const r = new l().create();
-    r.classList.add('container'),
-      Object.assign(r.style, {
+      o.appendChild(s),
+      o.appendChild(r);
+    const a = new l().create();
+    a.classList.add('container'),
+      Object.assign(a.style, {
         textAlign: 'center',
         padding: '60px 20px',
         backgroundColor: '#f9f9f9',
         borderRadius: '10px',
         marginBottom: '40px',
       }),
-      e(r);
+      e(a);
     const d = new t('Welcome to My Landing Page').create();
     Object.assign(d.style, {
       textAlign: 'center',
@@ -805,9 +854,9 @@ class h {
       p.addEventListener('mouseleave', () => {
         p.style.backgroundColor = '#007bff';
       }),
-      r.appendChild(d),
-      r.appendChild(c),
-      r.appendChild(p);
+      a.appendChild(d),
+      a.appendChild(c),
+      a.appendChild(p);
     const h = new l().create();
     h.classList.add('container'),
       Object.assign(h.style, {
@@ -817,18 +866,18 @@ class h {
         borderTop: '1px solid #ddd',
       }),
       e(h);
-    const m = new t('© 2025 MyBrand. All rights reserved.').create();
+    const u = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
-      Object.assign(m.style, { fontSize: '14px', color: '#999' }),
-      h.appendChild(m),
-      n.appendChild(s),
-      n.appendChild(r),
+      Object.assign(u.style, { fontSize: '14px', color: '#999' }),
+      h.appendChild(u),
+      n.appendChild(o),
+      n.appendChild(a),
       n.appendChild(h),
       n
     );
   }
 }
-class m {
+class u {
   constructor(e) {
     (this.undoStack = []), (this.redoStack = []), (this.canvas = e);
   }
@@ -862,7 +911,7 @@ class m {
     } else console.warn('No more actions to redo.');
   }
 }
-class u {
+class m {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -889,8 +938,8 @@ class g {
       ((n = document.createElement('div')),
       (n.className = 'component-controls'),
       t ? e.appendChild(n) : e.prepend(n));
-    const s = this.createDeleteIcon(e);
-    n.appendChild(s);
+    const o = this.createDeleteIcon(e);
+    n.appendChild(o);
   }
   createDeleteIcon(e) {
     let t = e.querySelector('.delete-icon');
@@ -955,8 +1004,8 @@ class v {
         'edit-link-form',
         'edit-link',
       ];
-    Array.from(e.children).forEach(s => {
-      const i = s;
+    Array.from(e.children).forEach(o => {
+      const i = o;
       t.forEach(e => {
         i.removeAttribute(e);
       }),
@@ -982,7 +1031,7 @@ class v {
     n.push(
       `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n      .home {\n          display: flex;\n          justify-content: center;\n          align-items: center;\n          width: 100%;\n          min-height:100vh;\n          background-color: ${t};\n          margin: 0;\n      }\n      `
     );
-    const s = e.querySelectorAll('*'),
+    const o = e.querySelectorAll('*'),
       i = [
         'position',
         'top',
@@ -1016,7 +1065,7 @@ class v {
         'line-height',
         'font-family',
       ],
-      o = [
+      s = [
         'component-controls',
         'delete-icon',
         'component-label',
@@ -1027,20 +1076,20 @@ class v {
         'edit-link',
       ];
     return (
-      s.forEach(e => {
-        if (o.some(t => e.classList.contains(t))) return;
+      o.forEach(e => {
+        if (s.some(t => e.classList.contains(t))) return;
         const t = window.getComputedStyle(e),
-          s = [];
+          o = [];
         i.forEach(e => {
           const n = t.getPropertyValue(e);
           if (n && 'none' !== n && '' !== n) {
             if ('resize' === e) return;
-            s.push(`${e}: ${n};`);
+            o.push(`${e}: ${n};`);
           }
         });
         const l = this.generateUniqueSelector(e);
-        s.length > 0 &&
-          n.push(`\n        ${l} {\n          ${s.join('\n  ')}\n        }`);
+        o.length > 0 &&
+          n.push(`\n        ${l} {\n          ${o.join('\n  ')}\n        }`);
       }),
       n.join('\n')
     );
@@ -1079,11 +1128,11 @@ class w {
   static buildLayerHierarchyFromDOM(e) {
     const t = new v(new C()).generateHTML(),
       n = new DOMParser().parseFromString(t, 'text/html'),
-      s = (e, t = 0) => {
+      o = (e, t = 0) => {
         var n;
         const i = e;
         if (!i.id) return null;
-        const o = {
+        const s = {
           id: i.id,
           isVisible:
             'none' !==
@@ -1094,14 +1143,14 @@ class w {
         };
         return (
           Array.from(e.children).forEach(e => {
-            const n = s(e, t + 1);
-            n && o.children.push(n);
+            const n = o(e, t + 1);
+            n && s.children.push(n);
           }),
-          o
+          s
         );
       };
     return Array.from(n.body.children)
-      .map(e => s(e))
+      .map(e => o(e))
       .filter(e => null !== e);
   }
   static updateLayersView() {
@@ -1116,27 +1165,27 @@ class w {
   }
   static renderLayerItems(e, t, n = 0) {
     t.forEach(t => {
-      const s = this.createLayerItemElement(t);
+      const o = this.createLayerItemElement(t);
       if (
-        ((s.style.paddingLeft = 1 * n + 'px'),
+        ((o.style.paddingLeft = 1 * n + 'px'),
         t.children && t.children.length > 0)
       ) {
         const i = document.createElement('span');
         (i.className = 'layer-expand-toggle'), (i.textContent = '▶');
-        const o = document.createElement('ul');
-        (o.className = 'layer-children'),
-          (o.style.display = 'none'),
-          (o.style.paddingLeft = '0'),
-          this.renderLayerItems(o, t.children, n + 1),
+        const s = document.createElement('ul');
+        (s.className = 'layer-children'),
+          (s.style.display = 'none'),
+          (s.style.paddingLeft = '0'),
+          this.renderLayerItems(s, t.children, n + 1),
           i.addEventListener('click', () => {
-            'block' === o.style.display
-              ? ((o.style.display = 'none'), (i.textContent = '▶'))
-              : ((o.style.display = 'block'), (i.textContent = '▼'));
+            'block' === s.style.display
+              ? ((s.style.display = 'none'), (i.textContent = '▶'))
+              : ((s.style.display = 'block'), (i.textContent = '▼'));
           }),
-          s.appendChild(i),
-          e.appendChild(s),
-          e.appendChild(o);
-      } else e.appendChild(s);
+          o.appendChild(i),
+          e.appendChild(o),
+          e.appendChild(s);
+      } else e.appendChild(o);
     });
   }
   static createLayerItemElement(e) {
@@ -1146,10 +1195,10 @@ class w {
     (n.className = 'layer-visibility'),
       (n.innerHTML = e.isVisible ? '👁️' : '👁️‍🗨️'),
       n.addEventListener('click', () => this.toggleLayerVisibility(e));
-    const s = document.createElement('span');
-    (s.className = 'layer-name'),
-      (s.textContent = `${e.id}`),
-      s.addEventListener('click', () => this.selectLayer(e));
+    const o = document.createElement('span');
+    (o.className = 'layer-name'),
+      (o.textContent = `${e.id}`),
+      o.addEventListener('click', () => this.selectLayer(e));
     const i = document.createElement('span');
     return (
       (i.className = 'layer-lock'),
@@ -1160,7 +1209,7 @@ class w {
       t.addEventListener('dragover', this.handleDragOver),
       t.addEventListener('drop', t => this.handleDrop(t, e)),
       t.appendChild(n),
-      t.appendChild(s),
+      t.appendChild(o),
       t.appendChild(i),
       t
     );
@@ -1200,13 +1249,13 @@ class w {
   static handleDrop(e, t) {
     var n;
     if ((e.preventDefault(), e.stopPropagation(), !e.dataTransfer)) return;
-    const s = parseInt(
+    const o = parseInt(
         (null === (n = e.dataTransfer) || void 0 === n
           ? void 0
           : n.getData('text/plain')) || '-1'
       ),
       i = parseInt(t.id || '-1');
-    C.reorderComponent(s, i), this.updateLayersView();
+    C.reorderComponent(o, i), this.updateLayersView();
   }
   static switchToCustomizeMode(e) {
     const t = document.getElementById('customize-sidebar');
@@ -1221,7 +1270,7 @@ class w {
   }
 }
 (w.layersView = null), (w.canvasRoot = null), (w.draggedItem = null);
-class b {
+class f {
   static init() {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1261,13 +1310,13 @@ class b {
     const e = document.getElementById('customize-tab'),
       t = document.getElementById('layers-tab'),
       n = document.getElementById('layers-view'),
-      s = document.getElementById('controls'),
+      o = document.getElementById('controls'),
       i = document.getElementById('component-name');
     e.classList.add('active'),
       t.classList.remove('active'),
       n.classList.add('hidden'),
-      s.classList.remove('hidden'),
-      (s.style.display = 'block'),
+      o.classList.remove('hidden'),
+      (o.style.display = 'block'),
       (n.style.display = 'none'),
       (i.style.display = 'block');
   }
@@ -1275,11 +1324,11 @@ class b {
     const e = document.getElementById('customize-tab'),
       t = document.getElementById('layers-tab'),
       n = document.getElementById('layers-view'),
-      s = document.getElementById('controls'),
+      o = document.getElementById('controls'),
       i = document.getElementById('component-name');
     t.classList.add('active'),
       e.classList.remove('active'),
-      (s.style.display = 'none'),
+      (o.style.display = 'none'),
       (n.style.display = 'block'),
       (i.style.display = 'none'),
       w.updateLayersView();
@@ -1290,21 +1339,21 @@ class b {
   static showSidebar(e) {
     const t = document.getElementById('customize-tab'),
       n = document.getElementById('layers-tab'),
-      s = document.getElementById('layers-view'),
+      o = document.getElementById('layers-view'),
       i = document.getElementById('controls');
     t.classList.add('active'),
       n.classList.remove('active'),
-      s.classList.add('hidden'),
+      o.classList.add('hidden'),
       i.classList.remove('hidden');
-    const o = document.getElementById(e);
-    if ((console.log(`Showing sidebar for: ${e}`), !o))
+    const s = document.getElementById(e);
+    if ((console.log(`Showing sidebar for: ${e}`), !s))
       return void console.error(`Component with ID "${e}" not found.`);
     const l = 'canvas' === e.toLowerCase();
     (this.sidebarElement.style.display = 'block'),
       (this.controlsContainer.innerHTML = ''),
       (this.componentNameHeader.textContent = `Component: ${e}`);
-    const a = getComputedStyle(o);
-    this.createSelectControl('Display', 'display', a.display || 'block', [
+    const r = getComputedStyle(s);
+    this.createSelectControl('Display', 'display', r.display || 'block', [
       'block',
       'inline',
       'inline-block',
@@ -1313,12 +1362,12 @@ class b {
       'none',
     ]),
       l ||
-        (this.createControl('Width', 'width', 'number', o.offsetWidth, {
+        (this.createControl('Width', 'width', 'number', s.offsetWidth, {
           min: 0,
           max: 1e3,
           unit: 'px',
         }),
-        this.createControl('Height', 'height', 'number', o.offsetHeight, {
+        this.createControl('Height', 'height', 'number', s.offsetHeight, {
           min: 0,
           max: 1e3,
           unit: 'px',
@@ -1327,23 +1376,23 @@ class b {
           'Margin',
           'margin',
           'number',
-          parseInt(a.margin) || 0,
+          parseInt(r.margin) || 0,
           { min: 0, max: 1e3, unit: 'px' }
         ),
         this.createControl(
           'Padding',
           'padding',
           'number',
-          parseInt(a.padding) || 0,
+          parseInt(r.padding) || 0,
           { min: 0, max: 1e3, unit: 'px' }
         )),
-      this.createControl('Color', 'color', 'color', a.backgroundColor),
-      this.createSelectControl('Text Alignment', 'alignment', a.textAlign, [
+      this.createControl('Color', 'color', 'color', r.backgroundColor),
+      this.createSelectControl('Text Alignment', 'alignment', r.textAlign, [
         'left',
         'center',
         'right',
       ]),
-      this.createSelectControl('Font Family', 'font-family', a.fontFamily, [
+      this.createSelectControl('Font Family', 'font-family', r.fontFamily, [
         'Arial',
         'Verdana',
         'Helvetica',
@@ -1357,26 +1406,26 @@ class b {
         'Font Size',
         'font-size',
         'number',
-        parseInt(a.fontSize) || 16,
+        parseInt(r.fontSize) || 16,
         { min: 0, max: 100, unit: 'px' }
       ),
       this.createControl(
         'Text Color',
         'text-color',
         'color',
-        a.color || '#000000'
+        r.color || '#000000'
       ),
       this.createControl(
         'Border Width',
         'border-width',
         'number',
-        parseInt(a.borderWidth) || 0,
+        parseInt(r.borderWidth) || 0,
         { min: 0, max: 20, unit: 'px' }
       ),
       this.createSelectControl(
         'Border Style',
         'border-style',
-        a.borderStyle || 'none',
+        r.borderStyle || 'none',
         [
           'none',
           'solid',
@@ -1393,11 +1442,11 @@ class b {
         'Border Color',
         'border-color',
         'color',
-        a.borderColor || '#000000'
+        r.borderColor || '#000000'
       );
-    const r = b.rgbToHex(a.backgroundColor),
+    const a = f.rgbToHex(r.backgroundColor),
       d = document.getElementById('color');
-    d && (d.value = r), this.addListeners(o);
+    d && (d.value = a), this.addListeners(s);
   }
   static hideSidebar() {
     this.sidebarElement && (this.sidebarElement.style.display = 'none');
@@ -1407,52 +1456,52 @@ class b {
     if (!t) return e;
     return `#${((1 << 24) | (parseInt(t[1], 10) << 16) | (parseInt(t[2], 10) << 8) | parseInt(t[3], 10)).toString(16).slice(1).toUpperCase()}`;
   }
-  static createControl(e, t, n, s, i = {}) {
-    const o = document.createElement('div');
-    o.classList.add('control-wrapper');
+  static createControl(e, t, n, o, i = {}) {
+    const s = document.createElement('div');
+    s.classList.add('control-wrapper');
     if ('number' === n && i.unit) {
       const l = i.unit;
-      o.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${s}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === l ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === l ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === l ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === l ? 'selected' : ''}>%</option>\n                  </select>\n              `;
+      s.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${o}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === l ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === l ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === l ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === l ? 'selected' : ''}>%</option>\n                  </select>\n              `;
     } else
-      o.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${s}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${s}">\n        `;
-    const l = o.querySelector('input'),
-      a = o.querySelector(`#${t}-unit`);
+      s.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${o}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${o}">\n        `;
+    const l = s.querySelector('input'),
+      r = s.querySelector(`#${t}-unit`);
     l &&
       Object.keys(i).forEach(e => {
         l.setAttribute(e, i[e].toString());
       });
-    const r = o.querySelector('input[type="color"]'),
-      d = o.querySelector('#color-value');
-    r &&
-      r.addEventListener('input', () => {
-        d && (d.value = r.value);
+    const a = s.querySelector('input[type="color"]'),
+      d = s.querySelector('#color-value');
+    a &&
+      a.addEventListener('input', () => {
+        d && (d.value = a.value);
       }),
       d &&
         d.addEventListener('input', () => {
-          r && (r.value = d.value);
+          a && (a.value = d.value);
         }),
-      this.controlsContainer.appendChild(o),
-      a &&
-        a.addEventListener('change', () => {
-          const e = a.value,
+      this.controlsContainer.appendChild(s),
+      r &&
+        r.addEventListener('change', () => {
+          const e = r.value,
             t = parseInt(l.value);
           l.value = `${t}${e}`;
         });
   }
-  static createSelectControl(e, t, n, s) {
+  static createSelectControl(e, t, n, o) {
     const i = document.createElement('div');
     i.classList.add('control-wrapper');
-    const o = s
+    const s = o
       .map(
         e => `<option value="${e}" ${e === n ? 'selected' : ''}>${e}</option>`
       )
       .join('');
-    (i.innerHTML = `\n              <label for="${t}">${e}:</label>\n              <select id="${t}">${o}</select>\n          `),
+    (i.innerHTML = `\n              <label for="${t}">${e}:</label>\n              <select id="${t}">${s}</select>\n          `),
       this.controlsContainer.appendChild(i);
   }
   static addListeners(e) {
-    var t, n, s, i, o, l, a, r, d, c, p, h, m;
-    const u = {
+    var t, n, o, i, s, l, r, a, d, c, p, h, u;
+    const m = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
       color: document.getElementById('color'),
@@ -1467,94 +1516,94 @@ class b {
       display: document.getElementById('display'),
       fontFamily: document.getElementById('font-family'),
     };
-    if (!u) return;
+    if (!m) return;
     const g = (function (e, t) {
       let n = null;
-      return (...s) => {
-        n && clearTimeout(n), (n = setTimeout(() => e(...s), t));
+      return (...o) => {
+        n && clearTimeout(n), (n = setTimeout(() => e(...o), t));
       };
     })(() => {
       C.historyManager.captureState();
     }, 300);
-    null === (t = u.width) ||
+    null === (t = m.width) ||
       void 0 === t ||
       t.addEventListener('input', () => {
         const t = document.getElementById('width-unit').value;
-        (e.style.width = `${u.width.value}${t}`), g();
+        (e.style.width = `${m.width.value}${t}`), g();
       }),
-      null === (n = u.height) ||
+      null === (n = m.height) ||
         void 0 === n ||
         n.addEventListener('input', () => {
           const t = document.getElementById('height-unit').value;
-          (e.style.height = `${u.height.value}${t}`), g();
+          (e.style.height = `${m.height.value}${t}`), g();
         }),
-      null === (s = u.color) ||
-        void 0 === s ||
-        s.addEventListener('input', () => {
-          e.style.backgroundColor = u.color.value;
+      null === (o = m.color) ||
+        void 0 === o ||
+        o.addEventListener('input', () => {
+          e.style.backgroundColor = m.color.value;
           const t = document.querySelector('#color-value');
-          t && (t.textContent = u.color.value), g();
+          t && (t.textContent = m.color.value), g();
         }),
-      null === (i = u.margin) ||
+      null === (i = m.margin) ||
         void 0 === i ||
         i.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
-          (e.style.margin = `${u.margin.value}${t}`), g();
+          (e.style.margin = `${m.margin.value}${t}`), g();
         }),
-      null === (o = u.padding) ||
-        void 0 === o ||
-        o.addEventListener('input', () => {
+      null === (s = m.padding) ||
+        void 0 === s ||
+        s.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
-          (e.style.padding = `${u.padding.value}${t}`), g();
+          (e.style.padding = `${m.padding.value}${t}`), g();
         }),
-      null === (l = u.alignment) ||
+      null === (l = m.alignment) ||
         void 0 === l ||
         l.addEventListener('change', () => {
-          (e.style.textAlign = u.alignment.value), g();
+          (e.style.textAlign = m.alignment.value), g();
         }),
-      null === (a = u.fontSize) ||
-        void 0 === a ||
-        a.addEventListener('input', () => {
-          const t = document.getElementById('font-size-unit').value;
-          (e.style.fontSize = `${u.fontSize.value}${t}`), g();
-        }),
-      null === (r = u.textColor) ||
+      null === (r = m.fontSize) ||
         void 0 === r ||
         r.addEventListener('input', () => {
-          (e.style.color = u.textColor.value), g();
+          const t = document.getElementById('font-size-unit').value;
+          (e.style.fontSize = `${m.fontSize.value}${t}`), g();
         }),
-      null === (d = u.borderWidth) ||
+      null === (a = m.textColor) ||
+        void 0 === a ||
+        a.addEventListener('input', () => {
+          (e.style.color = m.textColor.value), g();
+        }),
+      null === (d = m.borderWidth) ||
         void 0 === d ||
         d.addEventListener('input', () => {
           const t = document.getElementById('border-width-unit').value;
-          (e.style.borderWidth = `${u.borderWidth.value}${t}`), g();
+          (e.style.borderWidth = `${m.borderWidth.value}${t}`), g();
         }),
-      null === (c = u.borderStyle) ||
+      null === (c = m.borderStyle) ||
         void 0 === c ||
         c.addEventListener('change', () => {
-          (e.style.borderStyle = u.borderStyle.value), g();
+          (e.style.borderStyle = m.borderStyle.value), g();
         }),
-      null === (p = u.borderColor) ||
+      null === (p = m.borderColor) ||
         void 0 === p ||
         p.addEventListener('input', () => {
-          (e.style.borderColor = u.borderColor.value), g();
+          (e.style.borderColor = m.borderColor.value), g();
         }),
-      null === (h = u.display) ||
+      null === (h = m.display) ||
         void 0 === h ||
         h.addEventListener('change', () => {
-          (e.style.display = u.display.value), g();
+          (e.style.display = m.display.value), g();
         }),
-      null === (m = u.fontFamily) ||
-        void 0 === m ||
-        m.addEventListener('change', () => {
-          (e.style.fontFamily = u.fontFamily.value), g();
+      null === (u = m.fontFamily) ||
+        void 0 === u ||
+        u.addEventListener('change', () => {
+          (e.style.fontFamily = m.fontFamily.value), g();
         });
   }
   static getLayersViewController() {
     return this.layersViewController;
   }
 }
-class f {
+class b {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -1572,8 +1621,8 @@ class f {
       });
   }
   showGridCornerHighlight(e, t, n) {
-    const { gridX: s, gridY: i } = this.mousePositionAtGridCorner(e, n);
-    (t.style.left = `${s}px`),
+    const { gridX: o, gridY: i } = this.mousePositionAtGridCorner(e, n);
+    (t.style.left = `${o}px`),
       (t.style.top = `${i}px`),
       (t.style.width = '20px'),
       (t.style.height = '20px'),
@@ -1581,9 +1630,9 @@ class f {
   }
   mousePositionAtGridCorner(e, t) {
     const n = t.getBoundingClientRect(),
-      s = e.clientX - n.left,
+      o = e.clientX - n.left,
       i = e.clientY - n.top;
-    return { gridX: 20 * Math.floor(s / 20), gridY: 20 * Math.floor(i / 20) };
+    return { gridX: 20 * Math.floor(o / 20), gridY: 20 * Math.floor(i / 20) };
   }
   getCellSize() {
     return this.cellSize;
@@ -1603,13 +1652,13 @@ class C {
       C.canvasElement.addEventListener('dragover', e => e.preventDefault()),
       C.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && b.showSidebar(t.id);
+        t && f.showSidebar(t.id);
       }),
       (C.canvasElement.style.position = 'relative'),
-      (C.historyManager = new m(C.canvasElement)),
-      (C.jsonStorage = new u()),
+      (C.historyManager = new u(C.canvasElement)),
+      (C.jsonStorage = new m()),
       (C.controlsManager = new g(C)),
-      (C.gridManager = new f()),
+      (C.gridManager = new b()),
       C.gridManager.initializeDropPreview(C.canvasElement);
     new e(C.canvasElement, C.sidebarElement).enable();
     const t = C.jsonStorage.load();
@@ -1625,7 +1674,7 @@ class C {
     return C.components.map(e => {
       const t = e.classList[0].split(/\d/)[0].replace('-component', ''),
         n = e.querySelector('img') ? e.querySelector('img').src : null,
-        s = window.getComputedStyle(e),
+        o = window.getComputedStyle(e),
         i = {};
       [
         'position',
@@ -1659,14 +1708,14 @@ class C {
         'text-align',
         'line-height',
       ].forEach(e => {
-        i[e] = s.getPropertyValue(e);
+        i[e] = o.getPropertyValue(e);
       });
-      const o = {};
+      const s = {};
       return (
         Array.from(e.attributes)
           .filter(e => e.name.startsWith('data-'))
           .forEach(e => {
-            o[e.name] = e.value;
+            s[e.name] = e.value;
           }),
         {
           id: e.id,
@@ -1677,7 +1726,7 @@ class C {
           style: i,
           inlineStyle: e.getAttribute('style') || '',
           classes: Array.from(e.classList),
-          dataAttributes: o,
+          dataAttributes: s,
           imageSrc: n,
         }
       );
@@ -1698,10 +1747,10 @@ class C {
             'video' === e.type && e.videoSrc)
           ) {
             const n = t.querySelector('video'),
-              s = t.querySelector('.upload-text');
+              o = t.querySelector('.upload-text');
             (n.src = e.videoSrc),
               (n.style.display = 'block'),
-              (s.style.display = 'none');
+              (o.style.display = 'none');
           }
           e.inlineStyle && t.setAttribute('style', e.inlineStyle),
             e.computedStyle &&
@@ -1718,8 +1767,10 @@ class C {
               l.restoreContainer(t),
             (t.classList.contains('twoCol-component') ||
               t.classList.contains('threeCol-component')) &&
-              a.restoreColumn(t),
+              r.restoreColumn(t),
             'image' === e.type && n.restoreImageUpload(t, e.imageSrc),
+            'table' === e.type && c.restore(t),
+            'link' === e.type && p.restore(t),
             C.canvasElement.appendChild(t),
             C.components.push(t);
         }
@@ -1737,29 +1788,29 @@ class C {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const { gridX: s, gridY: i } = this.gridManager.mousePositionAtGridCorner(
+    const { gridX: o, gridY: i } = this.gridManager.mousePositionAtGridCorner(
         e,
         C.canvasElement
       ),
-      o = C.createComponent(n);
-    if (o) {
+      s = C.createComponent(n);
+    if (s) {
       const t = C.generateUniqueClass(n);
-      (o.id = t),
-        o.classList.add(t),
-        (o.style.position = 'absolute'),
+      (s.id = t),
+        s.classList.add(t),
+        (s.style.position = 'absolute'),
         'container' === n || 'twoCol' === n || 'threeCol' === n
-          ? (o.style.top = `${e.offsetY}px`)
-          : ((o.style.position = 'absolute'),
-            (o.style.left = `${s}px`),
-            (o.style.top = `${i}px`));
+          ? (s.style.top = `${e.offsetY}px`)
+          : ((s.style.position = 'absolute'),
+            (s.style.left = `${o}px`),
+            (s.style.top = `${i}px`));
       const l = document.createElement('span');
       (l.className = 'component-label'),
         (l.textContent = t),
-        o.appendChild(l),
-        C.components.push(o),
-        C.canvasElement.appendChild(o),
-        C.addDraggableListeners(o),
-        b.updateLayersView(),
+        s.appendChild(l),
+        C.components.push(s),
+        C.canvasElement.appendChild(s),
+        C.addDraggableListeners(s),
+        f.updateLayersView(),
         C.historyManager.captureState();
     }
   }
@@ -1773,11 +1824,11 @@ class C {
       return void console.error('Invalid indices for reordering');
     const [n] = this.components.splice(e, 1);
     this.components.splice(t, 0, n);
-    const s = document.getElementById('canvas-container');
-    s &&
-      ((s.innerHTML = ''),
+    const o = document.getElementById('canvas-container');
+    o &&
+      ((o.innerHTML = ''),
       this.components.forEach(e => {
-        s.appendChild(e);
+        o.appendChild(e);
       })),
       this.historyManager.captureState();
   }
@@ -1794,7 +1845,7 @@ class C {
           ? n.setAttribute('contenteditable', 'false')
           : n.setAttribute('contenteditable', 'true'),
         C.controlsManager.addControlButtons(n),
-        b.updateLayersView();
+        f.updateLayersView();
     }
     return n;
   }
@@ -1805,20 +1856,20 @@ class C {
         return (
           console.warn(`Container with class ${n} not found.`), `${n}-${e}1`
         );
-      const s = Array.from(t.children),
+      const o = Array.from(t.children),
         i = new RegExp(`${n}-${e}(\\d+)`);
-      let o = 0;
+      let s = 0;
       return (
-        s.forEach(e => {
+        o.forEach(e => {
           e.classList.forEach(e => {
             const t = e.match(i);
             if (t) {
               const e = parseInt(t[1]);
-              o = Math.max(o, e);
+              s = Math.max(s, e);
             }
           });
         }),
-        `${n}-${e}${o + 1}`
+        `${n}-${e}${s + 1}`
       );
     }
     {
@@ -1827,9 +1878,9 @@ class C {
       return (
         C.components.forEach(e => {
           e.classList.forEach(e => {
-            const s = e.match(t);
-            if (s) {
-              const e = parseInt(s[1]);
+            const o = e.match(t);
+            if (o) {
+              const e = parseInt(o[1]);
               n = Math.max(n, e);
             }
           });
@@ -1842,31 +1893,31 @@ class C {
     e.setAttribute('draggable', 'true'), (e.style.cursor = 'grab');
     let t = 0,
       n = 0,
-      s = 0,
+      o = 0,
       i = 0;
-    e.addEventListener('dragstart', o => {
-      if (o.dataTransfer) {
+    e.addEventListener('dragstart', s => {
+      if (s.dataTransfer) {
         const l = C.canvasElement.getBoundingClientRect(),
-          a = e.getBoundingClientRect();
-        (t = o.clientX),
-          (n = o.clientY),
-          (s = a.left - l.left),
-          (i = a.top - l.top),
-          (o.dataTransfer.effectAllowed = 'move'),
+          r = e.getBoundingClientRect();
+        (t = s.clientX),
+          (n = s.clientY),
+          (o = r.left - l.left),
+          (i = r.top - l.top),
+          (s.dataTransfer.effectAllowed = 'move'),
           (e.style.cursor = 'grabbing');
       }
     }),
-      e.addEventListener('dragend', o => {
-        o.preventDefault();
-        const l = o.clientX - t,
-          a = o.clientY - n;
-        let r = s + l,
-          d = i + a;
+      e.addEventListener('dragend', s => {
+        s.preventDefault();
+        const l = s.clientX - t,
+          r = s.clientY - n;
+        let a = o + l,
+          d = i + r;
         const c = C.canvasElement.offsetWidth - e.offsetWidth,
           p = C.canvasElement.offsetHeight - e.offsetHeight;
-        (r = Math.max(0, Math.min(r, c))),
+        (a = Math.max(0, Math.min(a, c))),
           (d = Math.max(0, Math.min(d, p))),
-          (e.style.left = `${r}px`),
+          (e.style.left = `${a}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
           C.historyManager.captureState();
@@ -1879,19 +1930,19 @@ class C {
 (C.components = []),
   (C.componentFactory = {
     button: () => new i().create(),
-    header: () => new o().create(),
+    header: () => new s().create(),
     image: () => new n().create(),
-    video: () => new s(() => C.historyManager.captureState()).create(),
+    video: () => new o(() => C.historyManager.captureState()).create(),
     table: () => new c().create(2, 2),
     text: () => new t().create(),
     container: () => new l().create(),
-    twoCol: () => new r().create(),
+    twoCol: () => new a().create(),
     threeCol: () => new d().create(),
     landingpage: () => new h().create(),
     link: () => new p().create(),
   });
 const E = document.getElementById('canvas'),
-  L = new (class {
+  x = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -1912,9 +1963,9 @@ const E = document.getElementById('canvas'),
 E &&
   E.addEventListener('click', e => {
     const t = e.target;
-    t !== E && L.selectElement(t);
+    t !== E && x.selectElement(t);
   });
-class x {
+class L {
   constructor(e) {
     this.canvas = e;
   }
@@ -1983,12 +2034,12 @@ const k = {
 function M(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
-  let s = 0;
+  let o = 0;
   const i = [];
   e.forEach(e => {
-    const o = t(e.name),
+    const s = t(e.name),
       l = t(e.content),
-      a = (function (e) {
+      r = (function (e) {
         let t = 4294967295;
         for (let n = 0; n < e.length; n++) {
           t ^= e[n];
@@ -1996,20 +2047,20 @@ function M(e) {
         }
         return 4294967295 ^ t;
       })(l),
-      r = ((e, t, n) => {
-        const s = new Uint8Array(30 + e.length);
+      a = ((e, t, n) => {
+        const o = new Uint8Array(30 + e.length);
         return (
-          s.set([80, 75, 3, 4]),
-          s.set([20, 0], 4),
-          s.set([0, 0], 6),
-          s.set([0, 0], 8),
-          s.set([0, 0], 10),
-          s.set([0, 0], 12),
-          s.set(
+          o.set([80, 75, 3, 4]),
+          o.set([20, 0], 4),
+          o.set([0, 0], 6),
+          o.set([0, 0], 8),
+          o.set([0, 0], 10),
+          o.set([0, 0], 12),
+          o.set(
             [255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255],
             14
           ),
-          s.set(
+          o.set(
             [
               255 & t.length,
               (t.length >> 8) & 255,
@@ -2018,7 +2069,7 @@ function M(e) {
             ],
             18
           ),
-          s.set(
+          o.set(
             [
               255 & t.length,
               (t.length >> 8) & 255,
@@ -2027,14 +2078,14 @@ function M(e) {
             ],
             22
           ),
-          s.set([255 & e.length, (e.length >> 8) & 255], 26),
-          s.set([0, 0], 28),
-          s.set(e, 30),
-          s
+          o.set([255 & e.length, (e.length >> 8) & 255], 26),
+          o.set([0, 0], 28),
+          o.set(e, 30),
+          o
         );
-      })(o, l, a);
-    n.push(r), n.push(l);
-    const d = ((e, t, n, s) => {
+      })(s, l, r);
+    n.push(a), n.push(l);
+    const d = ((e, t, n, o) => {
       const i = new Uint8Array(46 + e.length);
       return (
         i.set([80, 75, 1, 2]),
@@ -2069,32 +2120,32 @@ function M(e) {
         i.set([0, 0], 34),
         i.set([0, 0], 36),
         i.set([0, 0, 0, 0], 38),
-        i.set([255 & s, (s >> 8) & 255, (s >> 16) & 255, (s >> 24) & 255], 42),
+        i.set([255 & o, (o >> 8) & 255, (o >> 16) & 255, (o >> 24) & 255], 42),
         i.set(e, 46),
         i
       );
-    })(o, l, a, s);
-    i.push(d), (s += r.length + l.length);
+    })(s, l, r, o);
+    i.push(d), (o += a.length + l.length);
   }),
     n.push(...i);
-  const o = i.reduce((e, t) => e + t.length, 0),
+  const s = i.reduce((e, t) => e + t.length, 0),
     l = ((e, t, n) => {
-      const s = new Uint8Array(22);
+      const o = new Uint8Array(22);
       return (
-        s.set([80, 75, 5, 6]),
-        s.set([0, 0], 4),
-        s.set([0, 0], 6),
-        s.set([255 & e, (e >> 8) & 255], 8),
-        s.set([255 & e, (e >> 8) & 255], 10),
-        s.set([255 & t, (t >> 8) & 255, (t >> 16) & 255, (t >> 24) & 255], 12),
-        s.set([255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255], 16),
-        s.set([0, 0], 20),
-        s
+        o.set([80, 75, 5, 6]),
+        o.set([0, 0], 4),
+        o.set([0, 0], 6),
+        o.set([255 & e, (e >> 8) & 255], 8),
+        o.set([255 & e, (e >> 8) & 255], 10),
+        o.set([255 & t, (t >> 8) & 255, (t >> 16) & 255, (t >> 24) & 255], 12),
+        o.set([255 & n, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255], 16),
+        o.set([0, 0], 20),
+        o
       );
-    })(e.length, o, s);
+    })(e.length, s, o);
   n.push(l);
-  const a = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
-  return new Blob([a], { type: 'application/zip' });
+  const r = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
+  return new Blob([r], { type: 'application/zip' });
 }
 class S {
   static init() {
@@ -2121,12 +2172,12 @@ class H {
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
-  var e, t, n, s, i, o, l, a, r;
+  var e, t, n, o, i, s, l, r, a;
   const d = new C(),
-    c = new x(d),
+    c = new L(d),
     p = new v(d),
-    h = new u(),
-    m = new H();
+    h = new m(),
+    u = new H();
   !(function () {
     const e = document.getElementById('sidebar'),
       t = {
@@ -2155,8 +2206,8 @@ document.addEventListener('DOMContentLoaded', () => {
         landingpage: 'Landing Page Template',
         link: 'Link',
       },
-      s = document.createElement('div');
-    s.classList.add('menu'),
+      o = document.createElement('div');
+    o.classList.add('menu'),
       Object.entries({
         Basic: [
           'button',
@@ -2172,34 +2223,34 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         Extra: ['landingpage'],
       }).forEach(([e, i]) => {
-        const o = document.createElement('div');
-        o.classList.add('category');
+        const s = document.createElement('div');
+        s.classList.add('category');
         const l = document.createElement('h4');
         l.classList.add('categoryHeading'),
           (l.innerHTML = e),
-          o.prepend(l),
+          s.prepend(l),
           i.forEach(e => {
-            const s = document.createElement('div');
-            s.classList.add('draggable'),
-              (s.id = e),
-              s.setAttribute('draggable', 'true'),
-              s.setAttribute('data-component', e);
+            const o = document.createElement('div');
+            o.classList.add('draggable'),
+              (o.id = e),
+              o.setAttribute('draggable', 'true'),
+              o.setAttribute('data-component', e);
             const i = n[e] || `Drag to add ${e}`;
-            if ((s.setAttribute('title', i), t[e])) {
-              s.innerHTML = t[e];
-              const n = s.querySelector('svg');
+            if ((o.setAttribute('title', i), t[e])) {
+              o.innerHTML = t[e];
+              const n = o.querySelector('svg');
               n && n.classList.add('component-icon');
             } else console.warn(`Icon not found for component: ${e}`);
-            o.appendChild(s);
+            s.appendChild(o);
           }),
-          s.appendChild(o);
+          o.appendChild(s);
       }),
-      e.appendChild(s);
+      e.appendChild(o);
   })(),
     C.init(),
     c.init(),
     S.init(),
-    b.init();
+    f.init();
   const g = document.createElement('header');
   function w(e) {
     e.classList.remove('show'),
@@ -2232,7 +2283,7 @@ document.addEventListener('DOMContentLoaded', () => {
           { id: 'undo-btn', icon: t.undo, title: 'Undo button' },
           { id: 'redo-btn', icon: t.redo, title: 'Redo button' },
         ],
-        s = [
+        o = [
           { id: 'view-btn', icon: t.view, title: 'View' },
           { id: 'save-btn', icon: t.save, title: 'Save Layout' },
           { id: 'reset-btn', icon: t.reset, title: 'Reset' },
@@ -2241,30 +2292,30 @@ document.addEventListener('DOMContentLoaded', () => {
         i = document.createElement('div');
       i.classList.add('left-buttons'),
         n.forEach(({ id: e, icon: t, title: n }) => {
-          const s = document.createElement('button');
-          (s.id = e),
-            s.classList.add('preview-btn'),
-            (s.title = n),
-            (s.innerHTML = t);
-          const o = s.querySelector('svg');
-          o && o.classList.add('nav-icon'), i.appendChild(s);
+          const o = document.createElement('button');
+          (o.id = e),
+            o.classList.add('preview-btn'),
+            (o.title = n),
+            (o.innerHTML = t);
+          const s = o.querySelector('svg');
+          s && s.classList.add('nav-icon'), i.appendChild(o);
         });
-      const o = document.createElement('div');
-      o.classList.add('center-text'), (o.textContent = 'Page Builder');
+      const s = document.createElement('div');
+      s.classList.add('center-text'), (s.textContent = 'Page Builder');
       const l = document.createElement('div');
       return (
         l.classList.add('right-buttons'),
-        s.forEach(({ id: e, icon: t, title: n }) => {
-          const s = document.createElement('button');
-          (s.id = e),
-            s.classList.add('preview-btn'),
-            (s.title = n),
-            (s.innerHTML = t);
-          const i = s.querySelector('svg');
-          i && i.classList.add('nav-icon'), l.appendChild(s);
+        o.forEach(({ id: e, icon: t, title: n }) => {
+          const o = document.createElement('button');
+          (o.id = e),
+            o.classList.add('preview-btn'),
+            (o.title = n),
+            (o.innerHTML = t);
+          const i = o.querySelector('svg');
+          i && i.classList.add('nav-icon'), l.appendChild(o);
         }),
         e.appendChild(i),
-        e.appendChild(o),
+        e.appendChild(s),
         e.appendChild(l),
         e
       );
@@ -2281,19 +2332,19 @@ document.addEventListener('DOMContentLoaded', () => {
       void 0 === t ||
       t.addEventListener('click', () => {
         !(function (e, t, n) {
-          const s = document.getElementById('dialog'),
+          const o = document.getElementById('dialog'),
             i = document.getElementById('dialog-yes'),
-            o = document.getElementById('dialog-no'),
+            s = document.getElementById('dialog-no'),
             l = document.getElementById('dialog-message');
           l && (l.innerHTML = e),
-            null == s || s.classList.remove('hidden'),
+            null == o || o.classList.remove('hidden'),
             null == i ||
               i.addEventListener('click', () => {
-                t(), null == s || s.classList.add('hidden');
+                t(), null == o || o.classList.add('hidden');
               }),
-            null == o ||
-              o.addEventListener('click', () => {
-                n(), null == s || s.classList.add('hidden');
+            null == s ||
+              s.addEventListener('click', () => {
+                n(), null == o || o.classList.add('hidden');
               });
         })(
           'Are you sure you want to reset the layout?',
@@ -2314,7 +2365,7 @@ document.addEventListener('DOMContentLoaded', () => {
           t = e.generateHTML(),
           n = e.generateCSS();
         console.log('this is html', t);
-        const s = (function (e) {
+        const o = (function (e) {
             return e
               .replace(/&/g, '&amp;')
               .replace(/</g, '&lt;')
@@ -2335,39 +2386,39 @@ document.addEventListener('DOMContentLoaded', () => {
               .replace(/(:\s*[^;]+;)/g, '<span class="value">$1</span>')
               .replace(/({|})/g, '<span class="bracket">$1</span>');
           })(n),
-          o = document.createElement('div');
-        (o.id = 'export-dialog'), o.classList.add('modal');
+          s = document.createElement('div');
+        (s.id = 'export-dialog'), s.classList.add('modal');
         const l = document.createElement('div');
         l.classList.add('modal-content');
-        const a = document.createElement('button');
-        (a.textContent = '×'),
-          a.classList.add('close-btn'),
-          a.addEventListener('click', () => {
-            w(o);
+        const r = document.createElement('button');
+        (r.textContent = '×'),
+          r.classList.add('close-btn'),
+          r.addEventListener('click', () => {
+            w(s);
           }),
-          l.appendChild(a);
-        const r = document.createElement('div');
-        r.classList.add('modal-section');
+          l.appendChild(r);
+        const a = document.createElement('div');
+        a.classList.add('modal-section');
         const d = document.createElement('h2');
         d.textContent = 'HTML';
         const c = document.createElement('div');
         c.classList.add('code-block'),
           c.setAttribute('contenteditable', 'true'),
-          (c.innerHTML = s),
-          r.appendChild(d),
-          r.appendChild(c);
+          (c.innerHTML = o),
+          a.appendChild(d),
+          a.appendChild(c);
         const p = document.createElement('div');
         p.classList.add('modal-section');
         const h = document.createElement('h2');
         h.textContent = 'CSS';
-        const m = document.createElement('div');
-        m.classList.add('code-block'),
-          m.setAttribute('contenteditable', 'true'),
-          (m.innerHTML = i),
-          p.appendChild(h),
-          p.appendChild(m);
         const u = document.createElement('div');
-        u.classList.add('button-wrapper');
+        u.classList.add('code-block'),
+          u.setAttribute('contenteditable', 'true'),
+          (u.innerHTML = i),
+          p.appendChild(h),
+          p.appendChild(u);
+        const m = document.createElement('div');
+        m.classList.add('button-wrapper');
         const g = document.createElement('button');
         (g.textContent = 'Export to ZIP'),
           g.classList.add('export-btn'),
@@ -2376,29 +2427,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 { name: 'index.html', content: t },
                 { name: 'styles.css', content: n },
               ]),
-              s = document.createElement('a');
-            (s.href = URL.createObjectURL(e)),
-              (s.download = 'exported-files.zip'),
-              s.click(),
-              URL.revokeObjectURL(s.href);
+              o = document.createElement('a');
+            (o.href = URL.createObjectURL(e)),
+              (o.download = 'exported-files.zip'),
+              o.click(),
+              URL.revokeObjectURL(o.href);
           }),
-          l.appendChild(r),
+          l.appendChild(a),
           l.appendChild(p),
           l.appendChild(g),
-          u.appendChild(l),
-          o.appendChild(u),
-          document.body.appendChild(o),
-          o.classList.add('show'),
-          o.addEventListener('click', e => {
-            e.target === o && w(o);
+          m.appendChild(l),
+          s.appendChild(m),
+          document.body.appendChild(s),
+          s.classList.add('show'),
+          s.addEventListener('click', e => {
+            e.target === s && w(s);
           }),
           document.addEventListener('keydown', e => {
-            'Escape' === e.key && w(o);
+            'Escape' === e.key && w(s);
           });
       }),
-    null === (s = document.getElementById('view-btn')) ||
-      void 0 === s ||
-      s.addEventListener('click', () => {
+    null === (o = document.getElementById('view-btn')) ||
+      void 0 === o ||
+      o.addEventListener('click', () => {
         const e = p.generateHTML(),
           t = document.createElement('div');
         (t.id = 'preview-modal'),
@@ -2410,12 +2461,12 @@ document.addEventListener('DOMContentLoaded', () => {
             '\n    width: 97%;\n    height: 90%;\n    border: none;\n    background: #fff;\n    margin-right: 20px;\n  '),
           (n.srcdoc = e),
           t.appendChild(n);
-        const s = document.createElement('button');
-        (s.id = 'close-modal-btn'),
-          (s.textContent = '✕'),
-          (s.style.cssText =
+        const o = document.createElement('button');
+        (o.id = 'close-modal-btn'),
+          (o.textContent = '✕'),
+          (o.style.cssText =
             '\n    position: absolute;\n    top: 10px;\n    right: 20px;\n    font-size: 20px;\n    border: none;\n    background: none;\n    cursor: pointer;\n  '),
-          t.appendChild(s);
+          t.appendChild(o);
         const i = document.createElement('div');
         i.style.cssText =
           '\n    display: flex;\n    gap: 10px;\n    margin-bottom: 10px;\n  ';
@@ -2428,14 +2479,14 @@ document.addEventListener('DOMContentLoaded', () => {
           (t.style.cssText =
             '\n        padding: 5px;\n        border: none;\n        background: none;\n        cursor: pointer;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n      '),
             (t.title = e.title);
-          const s = document.createElement('div');
-          s.innerHTML = e.icon;
-          const o = s.querySelector('svg');
-          o &&
-            ((o.style.width = '24px'),
-            (o.style.height = '24px'),
-            o.classList.add('component-icon')),
-            t.appendChild(s),
+          const o = document.createElement('div');
+          o.innerHTML = e.icon;
+          const s = o.querySelector('svg');
+          s &&
+            ((s.style.width = '24px'),
+            (s.style.height = '24px'),
+            s.classList.add('component-icon')),
+            t.appendChild(o),
             t.addEventListener('click', () => {
               (n.style.width = e.width), (n.style.height = e.height);
             }),
@@ -2443,39 +2494,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }),
           t.insertBefore(i, n),
           document.body.appendChild(t);
-        const o = () => {
+        const s = () => {
           setTimeout(() => t.remove(), 300),
             document.removeEventListener('keydown', l);
         };
-        s.addEventListener('click', o);
+        o.addEventListener('click', s);
         const l = e => {
-          'Escape' === e.key && o();
+          'Escape' === e.key && s();
         };
         document.addEventListener('keydown', l);
       }),
     null === (i = document.getElementById('preview-desktop')) ||
       void 0 === i ||
       i.addEventListener('click', () => {
-        m.setPreviewMode('desktop');
+        u.setPreviewMode('desktop');
       }),
-    null === (o = document.getElementById('preview-tablet')) ||
-      void 0 === o ||
-      o.addEventListener('click', () => {
-        m.setPreviewMode('tablet');
+    null === (s = document.getElementById('preview-tablet')) ||
+      void 0 === s ||
+      s.addEventListener('click', () => {
+        u.setPreviewMode('tablet');
       }),
     null === (l = document.getElementById('preview-mobile')) ||
       void 0 === l ||
       l.addEventListener('click', () => {
-        m.setPreviewMode('mobile');
+        u.setPreviewMode('mobile');
       }),
-    null === (a = document.getElementById('undo-btn')) ||
-      void 0 === a ||
-      a.addEventListener('click', () => {
-        C.historyManager.undo();
-      }),
-    null === (r = document.getElementById('redo-btn')) ||
+    null === (r = document.getElementById('undo-btn')) ||
       void 0 === r ||
       r.addEventListener('click', () => {
+        C.historyManager.undo();
+      }),
+    null === (a = document.getElementById('redo-btn')) ||
+      void 0 === a ||
+      a.addEventListener('click', () => {
         C.historyManager.redo();
       });
 });
