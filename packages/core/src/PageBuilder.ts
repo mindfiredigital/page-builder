@@ -33,7 +33,7 @@ export class PageBuilder {
     this.initializeEventListeners();
   }
 
-  private initializeEventListeners() {
+  public initializeEventListeners() {
     document.addEventListener('DOMContentLoaded', () => {
       this.canvas = new Canvas();
       this.sidebar = new Sidebar(this.canvas);
@@ -51,7 +51,7 @@ export class PageBuilder {
     });
   }
 
-  private setupInitialComponents() {
+  public setupInitialComponents() {
     createSidebar();
     Canvas.init();
     this.sidebar.init();
@@ -63,7 +63,7 @@ export class PageBuilder {
     document.body.insertBefore(header, document.getElementById('app'));
   }
 
-  private setupSaveButton() {
+  public setupSaveButton() {
     const saveButton = document.getElementById('save-btn');
     if (saveButton) {
       saveButton.addEventListener('click', () => {
@@ -74,7 +74,7 @@ export class PageBuilder {
     }
   }
 
-  private setupResetButton() {
+  public setupResetButton() {
     const resetButton = document.getElementById('reset-btn');
     if (resetButton) {
       resetButton.addEventListener('click', () => {
@@ -93,7 +93,7 @@ export class PageBuilder {
     }
   }
 
-  private setupExportHTMLButton() {
+  public setupExportHTMLButton() {
     const exportButton = document.getElementById('export-html-btn');
     if (exportButton) {
       exportButton.addEventListener('click', () => {
@@ -116,7 +116,7 @@ export class PageBuilder {
     }
   }
 
-  private createExportModal(
+  public createExportModal(
     highlightedHTML: string,
     highlightedCSS: string,
     html: string,
@@ -152,7 +152,7 @@ export class PageBuilder {
     return modal;
   }
 
-  private createCloseButton(modal: HTMLElement) {
+  public createCloseButton(modal: HTMLElement) {
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
     closeButton.classList.add('close-btn');
@@ -160,7 +160,7 @@ export class PageBuilder {
     return closeButton;
   }
 
-  private createCodeSection(title: string, highlightedContent: string) {
+  public createCodeSection(title: string, highlightedContent: string) {
     const section = document.createElement('div');
     section.classList.add('modal-section');
 
@@ -178,7 +178,7 @@ export class PageBuilder {
     return section;
   }
 
-  private createExportToZipButton(html: string, css: string) {
+  public createExportToZipButton(html: string, css: string) {
     const exportButton = document.createElement('button');
     exportButton.textContent = 'Export to ZIP';
     exportButton.classList.add('export-btn');
@@ -198,7 +198,7 @@ export class PageBuilder {
     return exportButton;
   }
 
-  private setupModalEventListeners(modal: HTMLElement) {
+  public setupModalEventListeners(modal: HTMLElement) {
     modal.addEventListener('click', event => {
       if (event.target === modal) {
         this.closeModal(modal);
@@ -212,13 +212,13 @@ export class PageBuilder {
     });
   }
 
-  private closeModal(modal: HTMLElement) {
+  public closeModal(modal: HTMLElement) {
     modal.classList.remove('show');
     modal.classList.add('hide');
     setTimeout(() => modal.remove(), 300);
   }
 
-  private setupViewButton() {
+  public setupViewButton() {
     const viewButton = document.getElementById('view-btn');
     if (viewButton) {
       viewButton.addEventListener('click', () => {
@@ -229,7 +229,7 @@ export class PageBuilder {
     }
   }
 
-  private createFullScreenPreviewModal(html: string) {
+  public createFullScreenPreviewModal(html: string) {
     const fullScreenModal = document.createElement('div');
     fullScreenModal.id = 'preview-modal';
     fullScreenModal.style.cssText = `
@@ -268,7 +268,7 @@ export class PageBuilder {
     return fullScreenModal;
   }
 
-  private createPreviewCloseButton(fullScreenModal: HTMLElement) {
+  public createPreviewCloseButton(fullScreenModal: HTMLElement) {
     const closeButton = document.createElement('button');
     closeButton.id = 'close-modal-btn';
     closeButton.textContent = '✕';
@@ -299,7 +299,7 @@ export class PageBuilder {
     return closeButton;
   }
 
-  private createResponsivenessControls(iframe: HTMLIFrameElement) {
+  public createResponsivenessControls(iframe: HTMLIFrameElement) {
     const responsivenessContainer = document.createElement('div');
     responsivenessContainer.style.cssText = `
       display: flex;
@@ -364,7 +364,7 @@ export class PageBuilder {
     return responsivenessContainer;
   }
 
-  private setupPreviewModeButtons() {
+  public setupPreviewModeButtons() {
     const desktopButton = document.getElementById('preview-desktop');
     const tabletButton = document.getElementById('preview-tablet');
     const mobileButton = document.getElementById('preview-mobile');
@@ -388,7 +388,7 @@ export class PageBuilder {
     }
   }
 
-  private setupUndoRedoButtons() {
+  public setupUndoRedoButtons() {
     const undoButton = document.getElementById('undo-btn');
     const redoButton = document.getElementById('redo-btn');
 

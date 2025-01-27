@@ -6,21 +6,26 @@ export declare class PageBuilder {
   private jsonStorage;
   private previewPanel;
   constructor();
-  private initializeEventListeners;
-  private setupInitialComponents;
-  private setupSaveButton;
-  private setupResetButton;
-  private setupExportHTMLButton;
-  private createExportModal;
-  private createCloseButton;
-  private createCodeSection;
-  private createExportToZipButton;
-  private setupModalEventListeners;
-  private closeModal;
-  private setupViewButton;
-  private createFullScreenPreviewModal;
-  private createPreviewCloseButton;
-  private createResponsivenessControls;
-  private setupPreviewModeButtons;
-  private setupUndoRedoButtons;
+  initializeEventListeners(): void;
+  setupInitialComponents(): void;
+  setupSaveButton(): void;
+  setupResetButton(): void;
+  setupExportHTMLButton(): void;
+  createExportModal(
+    highlightedHTML: string,
+    highlightedCSS: string,
+    html: string,
+    css: string
+  ): HTMLDivElement;
+  createCloseButton(modal: HTMLElement): HTMLButtonElement;
+  createCodeSection(title: string, highlightedContent: string): HTMLDivElement;
+  createExportToZipButton(html: string, css: string): HTMLButtonElement;
+  setupModalEventListeners(modal: HTMLElement): void;
+  closeModal(modal: HTMLElement): void;
+  setupViewButton(): void;
+  createFullScreenPreviewModal(html: string): HTMLDivElement;
+  createPreviewCloseButton(fullScreenModal: HTMLElement): HTMLButtonElement;
+  createResponsivenessControls(iframe: HTMLIFrameElement): HTMLDivElement;
+  setupPreviewModeButtons(): void;
+  setupUndoRedoButtons(): void;
 }

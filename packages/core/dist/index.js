@@ -605,8 +605,8 @@ class d {
       color: '#666',
       marginBottom: '30px',
     });
-    const h = new s().create();
-    Object.assign(h.style, {
+    const p = new s().create();
+    Object.assign(p.style, {
       padding: '12px 24px',
       fontSize: '16px',
       color: '#fff',
@@ -616,31 +616,31 @@ class d {
       cursor: 'pointer',
       transition: 'background-color 0.3s',
     }),
-      h.addEventListener('mouseenter', () => {
-        h.style.backgroundColor = '#0056b3';
+      p.addEventListener('mouseenter', () => {
+        p.style.backgroundColor = '#0056b3';
       }),
-      h.addEventListener('mouseleave', () => {
-        h.style.backgroundColor = '#007bff';
+      p.addEventListener('mouseleave', () => {
+        p.style.backgroundColor = '#007bff';
       }),
       l.appendChild(d),
       l.appendChild(c),
-      l.appendChild(h);
-    const p = new i().create();
-    p.classList.add('container'),
-      Object.assign(p.style, {
+      l.appendChild(p);
+    const h = new i().create();
+    h.classList.add('container'),
+      Object.assign(h.style, {
         textAlign: 'center',
         padding: '20px',
         marginTop: '40px',
         borderTop: '1px solid #ddd',
       }),
-      e(p);
+      e(h);
     const u = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
       Object.assign(u.style, { fontSize: '14px', color: '#999' }),
-      p.appendChild(u),
+      h.appendChild(u),
       n.appendChild(o),
       n.appendChild(l),
-      n.appendChild(p),
+      n.appendChild(h),
       n
     );
   }
@@ -679,7 +679,7 @@ class c {
     } else console.warn('No more actions to redo.');
   }
 }
-class h {
+class p {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -691,7 +691,7 @@ class h {
     localStorage.removeItem('pageLayout');
   }
 }
-class p {
+class h {
   constructor(e) {
     (this.icons = {
       delete:
@@ -1264,7 +1264,7 @@ class y {
       this.controlsContainer.appendChild(o);
   }
   static addListeners(e) {
-    var t, n, s, o, i, r, a, l, d, c, h, p, u;
+    var t, n, s, o, i, r, a, l, d, c, p, h, u;
     const m = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -1347,14 +1347,14 @@ class y {
         c.addEventListener('change', () => {
           (e.style.borderStyle = m.borderStyle.value), g();
         }),
-      null === (h = m.borderColor) ||
-        void 0 === h ||
-        h.addEventListener('input', () => {
+      null === (p = m.borderColor) ||
+        void 0 === p ||
+        p.addEventListener('input', () => {
           (e.style.borderColor = m.borderColor.value), g();
         }),
-      null === (p = m.display) ||
-        void 0 === p ||
-        p.addEventListener('change', () => {
+      null === (h = m.display) ||
+        void 0 === h ||
+        h.addEventListener('change', () => {
           (e.style.display = m.display.value), g();
         }),
       null === (u = m.fontFamily) ||
@@ -1422,8 +1422,8 @@ class w {
       }),
       (w.canvasElement.style.position = 'relative'),
       (w.historyManager = new c(w.canvasElement)),
-      (w.jsonStorage = new h()),
-      (w.controlsManager = new p(w)),
+      (w.jsonStorage = new p()),
+      (w.controlsManager = new h(w)),
       (w.gridManager = new v()),
       w.gridManager.initializeDropPreview(w.canvasElement);
     new e(w.canvasElement, w.sidebarElement).enable();
@@ -1667,9 +1667,9 @@ class w {
         let l = s + r,
           d = o + a;
         const c = w.canvasElement.offsetWidth - e.offsetWidth,
-          h = w.canvasElement.offsetHeight - e.offsetHeight;
+          p = w.canvasElement.offsetHeight - e.offsetHeight;
         (l = Math.max(0, Math.min(l, c))),
-          (d = Math.max(0, Math.min(d, h))),
+          (d = Math.max(0, Math.min(d, p))),
           (e.style.left = `${l}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
@@ -1916,12 +1916,12 @@ class k {
       t.classList.add(`preview-${e}`);
   }
 }
-const M = new (class {
+class M {
   constructor() {
     (this.canvas = new w()),
       (this.sidebar = new f(this.canvas)),
       (this.htmlGenerator = new m(this.canvas)),
-      (this.jsonStorage = new h()),
+      (this.jsonStorage = new p()),
       (this.previewPanel = new k()),
       this.initializeEventListeners();
   }
@@ -1930,7 +1930,7 @@ const M = new (class {
       (this.canvas = new w()),
         (this.sidebar = new f(this.canvas)),
         (this.htmlGenerator = new m(this.canvas)),
-        (this.jsonStorage = new h()),
+        (this.jsonStorage = new p()),
         (this.previewPanel = new k()),
         this.setupInitialComponents(),
         this.setupSaveButton(),
@@ -2330,5 +2330,6 @@ const M = new (class {
           w.historyManager.redo();
         });
   }
-})();
-exports.PageBuilderCore = M;
+}
+const S = new M();
+(exports.PageBuilder = M), (exports.PageBuilderCore = S);
