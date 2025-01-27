@@ -273,6 +273,10 @@ export class Canvas {
           TableComponent.restore(component);
         }
 
+        if (componentData.type === 'link') {
+          LinkComponent.restore(component);
+        }
+
         // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
