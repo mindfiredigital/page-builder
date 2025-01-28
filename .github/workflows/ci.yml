@@ -25,9 +25,6 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Install pnpm
-        run: npm install -g pnpm # Install pnpm
-
       - name: 'Install dependencies with pnpm'
         run: pnpm install # Install all dependencies using pnpm
 
@@ -58,8 +55,8 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install dependencies with pnpm
         run: pnpm install
