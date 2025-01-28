@@ -8,64 +8,66 @@ on:
 
 jobs:
   build:
-    name: Build Packages
+    name: '@mindfiredigital/pagebuilder'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: read
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: 'Checkout repository'
+        uses: actions/checkout@v2
 
-      - name: Set up Node.js and pnpm
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
 
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Install dependencies with pnpm
-        run: pnpm install --frozen-lockfile
+      - name: Install pnpm
+        run: npm install -g pnpm # Install pnpm
 
-      - name: Build all packages
-        run: pnpm turbo run build # Ensure your turbo.json defines the build pipeline
+      - name: 'Install dependencies with pnpm'
+        run: pnpm install # Install all dependencies using pnpm
 
-      - name: Cache build outputs
-        uses: actions/cache@v3
-        with:
-          path: |
-            .turbo
-            dist
-          key: ${{ runner.os }}-build-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-
+      - name: 'Build application'
+        run: pnpm turbo run build # Assuming there's a build script in each package
 
-  release:
-    name: Release Packages
+      - name: 'Restore changes in pnpm lock'
+        run: |
+          git restore pnpm-lock.yaml  # Restore any changes in lock files if needed
+
+      - name: 'Set Git user name and email'
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "GitHub Actions"
+
+  create-github-release:
+    name: Create GitHub release document and publish to npm
     runs-on: ubuntu-latest
     permissions:
       contents: write
     needs: build
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Set up Node.js and pnpm
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 20.x
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies with pnpm
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
-      - name: Run Semantic Release
-        run: pnpm exec semantic-release
+      - name: Semantic Release and npm release
+        run: |
+          pnpm install --frozen-lockfile
+           run: pnpm exec semantic-release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
