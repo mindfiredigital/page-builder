@@ -1,6 +1,12 @@
 {
   "branches": ["main", "next", "master", "beta"],
   "extends": "semantic-release-monorepo",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/git"
+  ],
   "packages": [
     {
       "path": "packages/core",
