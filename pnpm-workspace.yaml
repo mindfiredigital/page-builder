@@ -1,7 +1,9 @@
 packages:
   # Core packages
-  - 'packages/core'         # Core animation library
-  - 'packages/react'
+  - 'packages/*'            # All packages in the packages directory
+  - 'packages/core'
+  - 'packages/react'         # Core animation library
+  - 'packages/example/*'
   
   # Applications
   - 'apps/*'               # All applications
