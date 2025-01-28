@@ -1,6 +1,6 @@
 {
   "name": "@mindfiredigital/page-builder-core",
-  "version": "1.1.0",
+  "version": "0.0.0",
   "description": "UI Page builder",
   "repository": {
     "type": "git",
@@ -25,8 +25,7 @@
     "lint": "turbo run lint",
     "copy-assets": "npm run copy-icons && npm run copy-styles",
     "copy-icons": "ncp ./src/icons ./dist/icons",
-    "copy-styles": "ncp ./src/styles ./dist/styles",
-    "release": "turbo run build && semantic-release"
+    "copy-styles": "ncp ./src/styles ./dist/styles"
   },
   "browserslist": {
     "production": [
