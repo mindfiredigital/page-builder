@@ -39,14 +39,14 @@ var __toCommonJS = mod =>
 // src/index.tsx
 var src_exports = {};
 __export(src_exports, {
-  PageBuilderWrapper: () => PageBuilderWrapper,
+  PageBuilderReact: () => PageBuilderReact,
 });
 module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.tsx
 var import_react = __toESM(require('react'));
 var import_PageBuilder = require('@mindfiredigital/page-builder-core/dist/PageBuilder.js');
-var PageBuilderWrapper = ({ onInitialize, customStyles = {} }) => {
+var PageBuilderReact = ({ onInitialize, customStyles = {} }) => {
   const pageBuilderRef = (0, import_react.useRef)(null);
   const wrapperRef = (0, import_react.useRef)(null);
   (0, import_react.useEffect)(() => {
@@ -107,6 +107,6 @@ var PageBuilderWrapper = ({ onInitialize, customStyles = {} }) => {
 // Annotate the CommonJS export names for ESM import in node:
 0 &&
   (module.exports = {
-    PageBuilderWrapper,
+    PageBuilderReact,
   });
 //# sourceMappingURL=index.js.map

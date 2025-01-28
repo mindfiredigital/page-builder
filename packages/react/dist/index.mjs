@@ -1,7 +1,7 @@
 // src/components/PageBuilder.tsx
 import React, { useEffect, useRef } from "react";
 import { PageBuilder } from "@mindfiredigital/page-builder-core/dist/PageBuilder.js";
-var PageBuilderWrapper = ({
+var PageBuilderReact = ({
   onInitialize,
   customStyles = {}
 }) => {
@@ -67,6 +67,6 @@ var PageBuilderWrapper = ({
   );
 };
 export {
-  PageBuilderWrapper
+  PageBuilderReact
 };
 //# sourceMappingURL=index.mjs.map

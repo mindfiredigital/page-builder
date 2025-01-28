@@ -1,22 +1,36 @@
 {
   "branches": ["main", "next", "master", "beta"],
-  "plugins": [
-    "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
-    "@semantic-release/changelog",
+  "extends": "semantic-release-monorepo",
+  "packages": [
     {
-      "path": "@semantic-release/npm",
-      "pkgRoot": "packages/core"
+      "path": "packages/core",
+      "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        "@semantic-release/changelog",
+        [
+          "@semantic-release/npm",
+          {
+            "npmPublish": true
+          }
+        ],
+        "@semantic-release/git"
+      ]
     },
     {
-      "path": "@semantic-release/npm",
-      "pkgRoot": "packages/react"
-    },
-    "@semantic-release/git",
-    {
-      "path": "@semantic-release/exec",
-      "cmd": "pnpm version --no-git-tag-version ${nextRelease.version}"
+      "path": "packages/react",
+      "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        "@semantic-release/changelog",
+        [
+          "@semantic-release/npm",
+          {
+            "npmPublish": true
+          }
+        ],
+        "@semantic-release/git"
+      ]
     }
-  ],
-  "extends": "semantic-release-monorepo"
+  ]
 }

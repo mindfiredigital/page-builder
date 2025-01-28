@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
 
-export interface PageBuilderWrapperProps {
+export interface PageBuilderReactProps {
   onInitialize?: (pageBuilder: PageBuilder) => void;
   customStyles?: {
     wrapper?: React.CSSProperties;
@@ -11,7 +11,7 @@ export interface PageBuilderWrapperProps {
   };
 }
 
-export const PageBuilderWrapper: React.FC<PageBuilderWrapperProps> = ({ 
+export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({ 
   onInitialize,
   customStyles = {}
 }) => {

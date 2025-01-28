@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
 
-interface PageBuilderWrapperProps {
+interface PageBuilderReactProps {
   onInitialize?: (pageBuilder: PageBuilder) => void;
   customStyles?: {
     wrapper?: React.CSSProperties;
@@ -10,6 +10,6 @@ interface PageBuilderWrapperProps {
     customization?: React.CSSProperties;
   };
 }
-declare const PageBuilderWrapper: React.FC<PageBuilderWrapperProps>;
+declare const PageBuilderReact: React.FC<PageBuilderReactProps>;
 
-export { PageBuilderWrapper, PageBuilderWrapperProps };
+export { PageBuilderReact, PageBuilderReactProps };
