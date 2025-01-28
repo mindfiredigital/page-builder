@@ -1,5 +1,7 @@
 {
   "private": true,
+  "name": "@mindfiredigital/pagebuilder",
+  "version": "0.0.0",
   "description": "pagebuilder",
   "workspaces": [
     "packages/*"
