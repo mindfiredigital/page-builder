@@ -11,12 +11,15 @@ export declare const svgs: {
   button: string;
   header: string;
   image: string;
+  video: string;
   container: string;
   text: string;
   hyperlink: string;
   twocol: string;
   threecol: string;
+  table: string;
   landing: string;
   delete: string;
   close: string;
+  edit: string;
 };

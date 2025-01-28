@@ -1,75 +1,50 @@
-interface LinkData {
-  href: string;
-  label: string;
-}
-
 export class LinkComponent {
   private link: HTMLAnchorElement | null = null;
   private isEditing: boolean = false;
 
+  /**
+   * Creates a link component with editing functionality.
+   * Users can edit the link's URL and choose whether it opens in the same tab or a new tab.
+   * @param href - The initial URL for the link (default: '#').
+   * @param label - The text displayed for the link (default: 'Click Here').
+   * @returns A div element containing the link, edit button, and edit form.
+   */
   create(href: string = '#', label: string = 'Click Here'): HTMLDivElement {
-    // Create container for the component
     const container = document.createElement('div');
-    container.classList.add('link-component-container');
-    container.style.display = 'flex';
-    container.style.gap = '8px';
-    container.style.alignItems = 'center';
-    container.style.padding = '8px';
+    container.classList.add('link-component');
 
     // Create the link element
     this.link = document.createElement('a');
     this.link.href = href;
     this.link.innerText = label;
-    this.link.classList.add('link-component');
-    this.link.style.textDecoration = 'none';
-    this.link.style.color = 'blue';
-    this.link.style.fontSize = '14px';
-    this.link.style.cursor = 'pointer';
+    this.link.classList.add('link-component-label');
 
-    // Create edit button
     const editButton = document.createElement('button');
-    editButton.innerText = 'Edit';
-    editButton.classList.add('edit-button');
-    editButton.style.padding = '4px 8px';
-    editButton.style.cursor = 'pointer';
-    editButton.style.display = 'inline-flex';
+    editButton.innerHTML = '🖊️';
+    editButton.classList.add('edit-link');
 
-    // Create edit form
     const editForm = document.createElement('div');
-    editForm.classList.add('edit-form');
-    editForm.style.display = 'none';
-    editForm.style.flexDirection = 'column';
-    editForm.style.gap = '8px';
-    editForm.style.padding = '8px';
+    editForm.classList.add('edit-link-form');
 
-    // URL input
     const urlInput = document.createElement('input');
     urlInput.type = 'url';
     urlInput.value = href;
     urlInput.placeholder = 'Enter URL';
-    urlInput.style.padding = '4px';
-    urlInput.style.marginBottom = '4px';
 
-    // Label input
-    const labelInput = document.createElement('input');
-    labelInput.type = 'text';
-    labelInput.value = label;
-    labelInput.placeholder = 'Enter Label';
-    labelInput.style.padding = '4px';
-    labelInput.style.marginBottom = '4px';
+    // New checkbox for toggle
+    const targetCheckbox = document.createElement('input');
+    targetCheckbox.type = 'checkbox';
+    const checkboxLabel = document.createElement('label');
+    checkboxLabel.innerHTML = 'Open in new tab';
+    checkboxLabel.appendChild(targetCheckbox);
 
-    // Save button
     const saveButton = document.createElement('button');
-    saveButton.innerText = 'Save';
-    saveButton.style.padding = '4px 8px';
-    saveButton.style.cursor = 'pointer';
+    saveButton.innerHTML = 'Save';
 
-    // Add elements to edit form
     editForm.appendChild(urlInput);
-    editForm.appendChild(labelInput);
+    editForm.appendChild(checkboxLabel);
     editForm.appendChild(saveButton);
 
-    // Event handlers
     editButton.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault();
       this.isEditing = true;
@@ -82,17 +57,17 @@ export class LinkComponent {
 
     saveButton.addEventListener('click', (e: MouseEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       this.isEditing = false;
       if (this.link) {
         this.link.href = urlInput.value;
-        this.link.innerText = labelInput.value;
         this.link.style.display = 'inline';
+        this.link.target = targetCheckbox.checked ? '_blank' : '_self';
       }
       editButton.style.display = 'inline-flex';
       editForm.style.display = 'none';
     });
 
-    // Add elements to container
     container.appendChild(this.link);
     container.appendChild(editButton);
     container.appendChild(editForm);
@@ -100,24 +75,104 @@ export class LinkComponent {
     return container;
   }
 
-  // Method to get current link data
-  getLinkData(): LinkData {
+  /**
+   * Gets the current data of the link, including the URL, label, and target behavior.
+   * @returns An object containing href, label, and target.
+   */
+  getLinkData() {
     return {
       href: this.link?.href || '#',
       label: this.link?.innerText || 'Click Here',
+      target: this.link?.target || '_self',
     };
   }
 
-  // Method to update link programmatically
-  updateLink(href: string, label: string): void {
+  /**
+   * Updates the link's URL, label, and target programmatically.
+   * @param href - The new URL for the link.
+   * @param label - The new text displayed for the link.
+   * @param target - The target behavior ('_self' for the same tab, '_blank' for a new tab).
+   */
+  updateLink(href: string, label: string, target: string = '_self'): void {
     if (this.link) {
       this.link.href = href;
       this.link.innerText = label;
+      this.link.target = target;
     }
   }
 
-  // Method to check if component is in edit mode
+  /**
+   * Checks if the component is currently in editing mode.
+   * @returns A boolean indicating whether the component is in editing mode.
+   */
   isInEditMode(): boolean {
     return this.isEditing;
+  }
+
+  /**
+   * Restores the edit functionality for an existing link component
+   * @param container - The container element of the link component
+   */
+  static restore(container: HTMLElement): void {
+    // Find necessary elements
+    const link = container.querySelector(
+      '.link-component-label'
+    ) as HTMLAnchorElement;
+    const editButton = container.querySelector(
+      '.edit-link'
+    ) as HTMLButtonElement;
+    const editForm = container.querySelector(
+      '.edit-link-form'
+    ) as HTMLDivElement;
+    const saveButton = editForm.querySelector('button') as HTMLButtonElement;
+    const urlInput = editForm.querySelector(
+      'input[type="url"]'
+    ) as HTMLInputElement;
+    const targetCheckbox = editForm.querySelector(
+      'input[type="checkbox"]'
+    ) as HTMLInputElement;
+
+    if (
+      !link ||
+      !editButton ||
+      !editForm ||
+      !saveButton ||
+      !urlInput ||
+      !targetCheckbox
+    ) {
+      console.error('Required elements not found');
+      return;
+    }
+
+    // Set initial display states
+    link.style.display = 'inline';
+    editButton.style.display = 'inline-flex';
+    editForm.style.display = 'none';
+
+    // Clone and replace the edit button to remove existing listeners
+    const newEditButton = editButton.cloneNode(true) as HTMLButtonElement;
+    const newSaveButton = saveButton.cloneNode(true) as HTMLButtonElement;
+
+    editButton.parentNode?.replaceChild(newEditButton, editButton);
+    saveButton.parentNode?.replaceChild(newSaveButton, saveButton);
+
+    // Add new click event listener
+    newEditButton.addEventListener('click', (e: MouseEvent) => {
+      e.preventDefault();
+      link.style.display = 'none';
+      newEditButton.style.display = 'none';
+      editForm.style.display = 'flex';
+    });
+
+    // Add new save button click event listener
+    newSaveButton.addEventListener('click', (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      link.href = urlInput.value;
+      link.style.display = 'inline';
+      link.target = targetCheckbox.checked ? '_blank' : '_self';
+      newEditButton.style.display = 'inline-flex';
+      editForm.style.display = 'none';
+    });
   }
 }

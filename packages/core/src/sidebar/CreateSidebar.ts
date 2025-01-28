@@ -11,26 +11,30 @@ export function createSidebar() {
     button: svgs.button,
     header: svgs.header,
     image: svgs.image,
+    video: svgs.video,
     text: svgs.text,
     container: svgs.container,
     twoCol: svgs.twocol,
     threeCol: svgs.threecol,
+    table: svgs.table,
     // portfolio: 'dist/icons/portfolio.png',
     landingpage: svgs.landing,
-    // link: 'dist/icons/linkIcon.png'
+    link: svgs.hyperlink,
   };
 
   const titles: { [key: string]: string } = {
     button: 'Button',
     header: 'Header',
     image: 'Image',
+    video: 'Link Video',
     text: 'Text',
     container: 'Container',
     twoCol: 'Two Column Layout',
     threeCol: 'Three Column Layout',
+    table: 'Table',
     // portfolio: 'Portfolio Template',
     landingpage: 'Landing Page Template',
-    // link: 'Link',
+    link: 'Link',
   };
 
   // Create the Templates menu section
@@ -43,10 +47,12 @@ export function createSidebar() {
       'header',
       'text',
       'image',
+      'video',
       'container',
       'twoCol',
       'threeCol',
-      // 'link'
+      'table',
+      'link',
     ],
     // Add portfolio for version 2
     Extra: ['landingpage'],

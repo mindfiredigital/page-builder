@@ -1,3 +1,5 @@
+/* Import the linkComponent.css file */
+@import url('./linkComponent.css');
 /* General Styles */
 body,
 html {
@@ -761,4 +763,46 @@ ul {
 .categoryHeading {
   margin: 0%;
   text-align: center;
+}
+
+.video-component {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+}
+
+.video-component video {
+  display: none;
+}
+
+.pencil-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.upload-text {
+  color: #666;
+  text-align: center;
+}
+
+.table-component .button-container {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Prevent interaction when hidden */
+}
+
+/* Show buttons on hover of the table-component */
+.table-component:hover .button-container {
+  opacity: 1;
+  pointer-events: auto; /* Allow interaction when visible */
 }

@@ -6,11 +6,13 @@ import {
   ButtonComponent,
   HeaderComponent,
   ImageComponent,
+  VideoComponent,
   TextComponent,
   ContainerComponent,
   TwoColumnContainer,
   ThreeColumnContainer,
-  // LinkComponent
+  TableComponent,
+  LinkComponent,
 } from '../components/index.js';
 import { HistoryManager } from '../services/HistoryManager.js';
 import { JSONStorage } from '../services/JSONStorage.js';
@@ -35,8 +37,8 @@ export class Canvas {
     );
     Canvas.canvasElement.addEventListener('click', event => {
       const component = event.target;
-      console.log('this is my component,', component);
-      console.log('this is component id ', component.id);
+      // console.log('this is my component,', component);
+      // console.log('this is component id ', component.id);
       if (component) {
         CustomizationSidebar.showSidebar(component.id);
       }
@@ -164,6 +166,13 @@ export class Canvas {
         componentData.classes.forEach(cls => {
           component.classList.add(cls);
         });
+        if (componentData.type === 'video' && componentData.videoSrc) {
+          const videoElement = component.querySelector('video');
+          const uploadText = component.querySelector('.upload-text');
+          videoElement.src = componentData.videoSrc;
+          videoElement.style.display = 'block';
+          uploadText.style.display = 'none';
+        }
         // Restore inline styles
         if (componentData.inlineStyle) {
           component.setAttribute('style', componentData.inlineStyle);
@@ -202,6 +211,12 @@ export class Canvas {
         if (componentData.type === 'image') {
           ImageComponent.restoreImageUpload(component, componentData.imageSrc);
         }
+        if (componentData.type === 'table') {
+          TableComponent.restore(component);
+        }
+        if (componentData.type === 'link') {
+          LinkComponent.restore(component);
+        }
         // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
@@ -220,7 +235,7 @@ export class Canvas {
       (_a = event.dataTransfer) === null || _a === void 0
         ? void 0
         : _a.getData('component-type');
-    console.log(`Dropped component type: ${componentType}`);
+    // console.log(`Dropped component type: ${componentType}`);
     if (!componentType) {
       return;
     }
@@ -418,13 +433,16 @@ Canvas.componentFactory = {
   button: () => new ButtonComponent().create(),
   header: () => new HeaderComponent().create(),
   image: () => new ImageComponent().create(),
+  video: () =>
+    new VideoComponent(() => Canvas.historyManager.captureState()).create(),
+  table: () => new TableComponent().create(2, 2),
   text: () => new TextComponent().create(),
   container: () => new ContainerComponent().create(),
   twoCol: () => new TwoColumnContainer().create(),
   threeCol: () => new ThreeColumnContainer().create(),
   // portfolio: () => new UserPortfolioTemplate().create(),
   landingpage: () => new LandingPageTemplate().create(),
-  // link: ()=> new LinkComponent().create()
+  link: () => new LinkComponent().create(),
 };
 const canvas = document.getElementById('canvas');
 // Instantiate the DeleteElementHandler

@@ -60,6 +60,8 @@ export class HTMLGenerator {
       'upload-btn',
       'component-resizer',
       'drop-preview',
+      'edit-link-form',
+      'edit-link',
     ];
 
     Array.from(element.children).forEach(child => {
@@ -81,7 +83,7 @@ export class HTMLGenerator {
 
       // Remove specific child elements
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label,.column-label, .resizers, .resizer, .drop-preview, .upload-btn, component-resizer'
+        '.component-controls, .delete-icon, .component-label,.column-label, .resizers, .resizer, .drop-preview, .upload-btn, component-resizer,.edit-link, .edit-link-form'
       );
       elementsToRemove.forEach(el => el.remove());
 
@@ -165,6 +167,8 @@ export class HTMLGenerator {
       'resizers',
       'resizer',
       'upload-btn',
+      'edit-link-form',
+      'edit-link',
     ];
 
     elements.forEach(component => {
