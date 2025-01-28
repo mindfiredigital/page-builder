@@ -3,6 +3,12 @@ import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder
 
 interface PageBuilderWrapperProps {
   onInitialize?: (pageBuilder: PageBuilder) => void;
+  customStyles?: {
+    wrapper?: React.CSSProperties;
+    sidebar?: React.CSSProperties;
+    canvas?: React.CSSProperties;
+    customization?: React.CSSProperties;
+  };
 }
 declare const PageBuilderWrapper: React.FC<PageBuilderWrapperProps>;
 

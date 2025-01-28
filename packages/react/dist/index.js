@@ -46,81 +46,63 @@ module.exports = __toCommonJS(src_exports);
 // src/components/PageBuilder.tsx
 var import_react = __toESM(require('react'));
 var import_PageBuilder = require('@mindfiredigital/page-builder-core/dist/PageBuilder.js');
-var PageBuilderWrapper = ({ onInitialize }) => {
+var PageBuilderWrapper = ({ onInitialize, customStyles = {} }) => {
   const pageBuilderRef = (0, import_react.useRef)(null);
+  const wrapperRef = (0, import_react.useRef)(null);
   (0, import_react.useEffect)(() => {
-    const pageBuilder = new import_PageBuilder.PageBuilder();
-    pageBuilderRef.current = pageBuilder;
-    if (onInitialize) {
-      onInitialize(pageBuilder);
-    }
+    const setupDOMStructure = () => {
+      if (!wrapperRef.current) return;
+      wrapperRef.current.innerHTML = '';
+      const appDiv = document.createElement('div');
+      appDiv.id = 'app';
+      appDiv.innerHTML = `
+        <div id="sidebar"></div>
+        <div id="canvas" class="canvas"></div>
+        <div id="customization">
+          <h4 id="component-name">Component: None</h4>
+          <div id="controls"></div>
+          <div id="layers-view" class="hidden"></div>
+        </div>
+        <div id="notification" class="notification hidden"></div>
+        <div id="dialog" class="dialog hidden">
+          <div class="dialog-content">
+            <p id="dialog-message"></p>
+            <button id="dialog-yes" class="dialog-btn">Yes</button>
+            <button id="dialog-no" class="dialog-btn">No</button>
+          </div>
+        </div>`;
+      wrapperRef.current.appendChild(appDiv);
+    };
+    const initializePageBuilder = () => {
+      try {
+        if (!pageBuilderRef.current) {
+          setupDOMStructure();
+          const pageBuilder = new import_PageBuilder.PageBuilder();
+          pageBuilderRef.current = pageBuilder;
+          if (onInitialize) {
+            onInitialize(pageBuilder);
+          }
+          const event = new Event('DOMContentLoaded');
+          document.dispatchEvent(event);
+        }
+      } catch (error) {
+        console.error('Error initializing PageBuilder:', error);
+      }
+    };
+    setTimeout(initializePageBuilder, 0);
     return () => {
       pageBuilderRef.current = null;
     };
   }, [onInitialize]);
-  return /* @__PURE__ */ import_react.default.createElement(
-    'div',
-    { style: { margin: 'auto', width: '100%', height: '100%' } },
-    /* @__PURE__ */ import_react.default.createElement(
-      'header',
-      null,
-      /* @__PURE__ */ import_react.default.createElement('nav', {
-        id: 'preview-navbar',
-      })
-    ),
-    /* @__PURE__ */ import_react.default.createElement(
-      'div',
-      { id: 'app' },
-      /* @__PURE__ */ import_react.default.createElement('div', {
-        id: 'sidebar',
-      }),
-      /* @__PURE__ */ import_react.default.createElement('div', {
-        id: 'canvas',
-        className: 'canvas',
-      }),
-      /* @__PURE__ */ import_react.default.createElement(
-        'div',
-        { id: 'customization' },
-        /* @__PURE__ */ import_react.default.createElement(
-          'h4',
-          { id: 'component-name' },
-          'Component: None'
-        ),
-        /* @__PURE__ */ import_react.default.createElement('div', {
-          id: 'controls',
-        }),
-        /* @__PURE__ */ import_react.default.createElement('div', {
-          id: 'layers-view',
-          className: 'hidden',
-        })
-      ),
-      /* @__PURE__ */ import_react.default.createElement('div', {
-        id: 'notification',
-        className: 'notification hidden',
-      }),
-      /* @__PURE__ */ import_react.default.createElement(
-        'div',
-        { id: 'dialog', className: 'dialog hidden' },
-        /* @__PURE__ */ import_react.default.createElement(
-          'div',
-          { className: 'dialog-content' },
-          /* @__PURE__ */ import_react.default.createElement('p', {
-            id: 'dialog-message',
-          }),
-          /* @__PURE__ */ import_react.default.createElement(
-            'button',
-            { id: 'dialog-yes', className: 'dialog-btn' },
-            'Yes'
-          ),
-          /* @__PURE__ */ import_react.default.createElement(
-            'button',
-            { id: 'dialog-no', className: 'dialog-btn' },
-            'No'
-          )
-        )
-      )
-    )
-  );
+  return /* @__PURE__ */ import_react.default.createElement('div', {
+    ref: wrapperRef,
+    style: {
+      margin: 'auto',
+      width: '100%',
+      height: '100%',
+      ...customStyles.wrapper,
+    },
+  });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 &&

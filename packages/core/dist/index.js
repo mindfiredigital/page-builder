@@ -605,8 +605,8 @@ class d {
       color: '#666',
       marginBottom: '30px',
     });
-    const p = new s().create();
-    Object.assign(p.style, {
+    const h = new s().create();
+    Object.assign(h.style, {
       padding: '12px 24px',
       fontSize: '16px',
       color: '#fff',
@@ -616,31 +616,31 @@ class d {
       cursor: 'pointer',
       transition: 'background-color 0.3s',
     }),
-      p.addEventListener('mouseenter', () => {
-        p.style.backgroundColor = '#0056b3';
+      h.addEventListener('mouseenter', () => {
+        h.style.backgroundColor = '#0056b3';
       }),
-      p.addEventListener('mouseleave', () => {
-        p.style.backgroundColor = '#007bff';
+      h.addEventListener('mouseleave', () => {
+        h.style.backgroundColor = '#007bff';
       }),
       l.appendChild(d),
       l.appendChild(c),
-      l.appendChild(p);
-    const h = new i().create();
-    h.classList.add('container'),
-      Object.assign(h.style, {
+      l.appendChild(h);
+    const p = new i().create();
+    p.classList.add('container'),
+      Object.assign(p.style, {
         textAlign: 'center',
         padding: '20px',
         marginTop: '40px',
         borderTop: '1px solid #ddd',
       }),
-      e(h);
+      e(p);
     const u = new t('© 2025 MyBrand. All rights reserved.').create();
     return (
       Object.assign(u.style, { fontSize: '14px', color: '#999' }),
-      h.appendChild(u),
+      p.appendChild(u),
       n.appendChild(o),
       n.appendChild(l),
-      n.appendChild(h),
+      n.appendChild(p),
       n
     );
   }
@@ -679,7 +679,7 @@ class c {
     } else console.warn('No more actions to redo.');
   }
 }
-class p {
+class h {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -691,7 +691,7 @@ class p {
     localStorage.removeItem('pageLayout');
   }
 }
-class h {
+class p {
   constructor(e) {
     (this.icons = {
       delete:
@@ -1264,7 +1264,7 @@ class y {
       this.controlsContainer.appendChild(o);
   }
   static addListeners(e) {
-    var t, n, s, o, i, r, a, l, d, c, p, h, u;
+    var t, n, s, o, i, r, a, l, d, c, h, p, u;
     const m = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -1347,14 +1347,14 @@ class y {
         c.addEventListener('change', () => {
           (e.style.borderStyle = m.borderStyle.value), g();
         }),
-      null === (p = m.borderColor) ||
-        void 0 === p ||
-        p.addEventListener('input', () => {
+      null === (h = m.borderColor) ||
+        void 0 === h ||
+        h.addEventListener('input', () => {
           (e.style.borderColor = m.borderColor.value), g();
         }),
-      null === (h = m.display) ||
-        void 0 === h ||
-        h.addEventListener('change', () => {
+      null === (p = m.display) ||
+        void 0 === p ||
+        p.addEventListener('change', () => {
           (e.style.display = m.display.value), g();
         }),
       null === (u = m.fontFamily) ||
@@ -1422,8 +1422,8 @@ class w {
       }),
       (w.canvasElement.style.position = 'relative'),
       (w.historyManager = new c(w.canvasElement)),
-      (w.jsonStorage = new p()),
-      (w.controlsManager = new h(w)),
+      (w.jsonStorage = new h()),
+      (w.controlsManager = new p(w)),
       (w.gridManager = new v()),
       w.gridManager.initializeDropPreview(w.canvasElement);
     new e(w.canvasElement, w.sidebarElement).enable();
@@ -1667,9 +1667,9 @@ class w {
         let l = s + r,
           d = o + a;
         const c = w.canvasElement.offsetWidth - e.offsetWidth,
-          p = w.canvasElement.offsetHeight - e.offsetHeight;
+          h = w.canvasElement.offsetHeight - e.offsetHeight;
         (l = Math.max(0, Math.min(l, c))),
-          (d = Math.max(0, Math.min(d, p))),
+          (d = Math.max(0, Math.min(d, h))),
           (e.style.left = `${l}px`),
           (e.style.top = `${d}px`),
           (e.style.cursor = 'grab'),
@@ -1692,7 +1692,7 @@ class w {
     landingpage: () => new d().create(),
   });
 const b = document.getElementById('canvas'),
-  C = new (class {
+  f = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -1713,9 +1713,9 @@ const b = document.getElementById('canvas'),
 b &&
   b.addEventListener('click', e => {
     const t = e.target;
-    t !== b && C.selectElement(t);
+    t !== b && f.selectElement(t);
   });
-class f {
+class C {
   constructor(e) {
     this.canvas = e;
   }
@@ -1919,18 +1919,18 @@ class k {
 class M {
   constructor() {
     (this.canvas = new w()),
-      (this.sidebar = new f(this.canvas)),
+      (this.sidebar = new C(this.canvas)),
       (this.htmlGenerator = new m(this.canvas)),
-      (this.jsonStorage = new p()),
+      (this.jsonStorage = new h()),
       (this.previewPanel = new k()),
       this.initializeEventListeners();
   }
   initializeEventListeners() {
     document.addEventListener('DOMContentLoaded', () => {
       (this.canvas = new w()),
-        (this.sidebar = new f(this.canvas)),
+        (this.sidebar = new C(this.canvas)),
         (this.htmlGenerator = new m(this.canvas)),
-        (this.jsonStorage = new p()),
+        (this.jsonStorage = new h()),
         (this.previewPanel = new k()),
         this.setupInitialComponents(),
         this.setupSaveButton(),
@@ -1942,145 +1942,163 @@ class M {
     });
   }
   setupInitialComponents() {
-    !(function () {
-      const e = document.getElementById('sidebar');
-      if (!e) return void console.error('Sidebar element not found');
-      const t = {
-          button: E.button,
-          header: E.header,
-          image: E.image,
-          text: E.text,
-          container: E.container,
-          twoCol: E.twocol,
-          threeCol: E.threecol,
-          landingpage: E.landing,
-        },
-        n = {
-          button: 'Button',
-          header: 'Header',
-          image: 'Image',
-          text: 'Text',
-          container: 'Container',
-          twoCol: 'Two Column Layout',
-          threeCol: 'Three Column Layout',
-          landingpage: 'Landing Page Template',
-        },
-        s = document.createElement('div');
-      s.classList.add('menu'),
-        Object.entries({
-          Basic: [
-            'button',
-            'header',
-            'text',
-            'image',
-            'container',
-            'twoCol',
-            'threeCol',
-          ],
-          Extra: ['landingpage'],
-        }).forEach(([e, o]) => {
-          const i = document.createElement('div');
-          i.classList.add('category');
-          const r = document.createElement('h4');
-          r.classList.add('categoryHeading'),
-            (r.innerHTML = e),
-            i.prepend(r),
-            o.forEach(e => {
-              const s = document.createElement('div');
-              s.classList.add('draggable'),
-                (s.id = e),
-                s.setAttribute('draggable', 'true'),
-                s.setAttribute('data-component', e);
-              const o = n[e] || `Drag to add ${e}`;
-              if ((s.setAttribute('title', o), t[e])) {
-                s.innerHTML = t[e];
-                const n = s.querySelector('svg');
-                n && n.classList.add('component-icon');
-              } else console.warn(`Icon not found for component: ${e}`);
-              i.appendChild(s);
-            }),
-            s.appendChild(i);
-        }),
-        e.appendChild(s);
-    })(),
+    if (
+      ((function () {
+        const e = document.getElementById('sidebar');
+        if (!e) return void console.error('Sidebar element not found');
+        const t = {
+            button: E.button,
+            header: E.header,
+            image: E.image,
+            text: E.text,
+            container: E.container,
+            twoCol: E.twocol,
+            threeCol: E.threecol,
+            landingpage: E.landing,
+          },
+          n = {
+            button: 'Button',
+            header: 'Header',
+            image: 'Image',
+            text: 'Text',
+            container: 'Container',
+            twoCol: 'Two Column Layout',
+            threeCol: 'Three Column Layout',
+            landingpage: 'Landing Page Template',
+          },
+          s = document.createElement('div');
+        s.classList.add('menu'),
+          Object.entries({
+            Basic: [
+              'button',
+              'header',
+              'text',
+              'image',
+              'container',
+              'twoCol',
+              'threeCol',
+            ],
+            Extra: ['landingpage'],
+          }).forEach(([e, o]) => {
+            const i = document.createElement('div');
+            i.classList.add('category');
+            const r = document.createElement('h4');
+            r.classList.add('categoryHeading'),
+              (r.innerHTML = e),
+              i.prepend(r),
+              o.forEach(e => {
+                const s = document.createElement('div');
+                s.classList.add('draggable'),
+                  (s.id = e),
+                  s.setAttribute('draggable', 'true'),
+                  s.setAttribute('data-component', e);
+                const o = n[e] || `Drag to add ${e}`;
+                if ((s.setAttribute('title', o), t[e])) {
+                  s.innerHTML = t[e];
+                  const n = s.querySelector('svg');
+                  n && n.classList.add('component-icon');
+                } else console.warn(`Icon not found for component: ${e}`);
+                i.appendChild(s);
+              }),
+              s.appendChild(i);
+          }),
+          e.appendChild(s);
+      })(),
       w.init(),
       this.sidebar.init(),
       x.init(),
-      y.init();
-    const e = document.createElement('header');
-    e.appendChild(
-      (function () {
-        const e = document.createElement('nav');
-        e.id = 'preview-navbar';
-        const t = {
-            desktop: E.desktop,
-            tablet: E.tablet,
-            mobile: E.mobile,
-            save: E.save,
-            export: E.code,
-            view: E.view,
-            undo: E.undo,
-            redo: E.redo,
-            reset: E.reset,
-          },
-          n = [
-            {
-              id: 'preview-desktop',
-              icon: t.desktop,
-              title: 'Preview in Desktop',
-            },
-            {
-              id: 'preview-tablet',
-              icon: t.tablet,
-              title: 'Preview in Tablet',
-            },
-            {
-              id: 'preview-mobile',
-              icon: t.mobile,
-              title: 'Preview in Mobile',
-            },
-            { id: 'undo-btn', icon: t.undo, title: 'Undo button' },
-            { id: 'redo-btn', icon: t.redo, title: 'Redo button' },
-          ],
-          s = [
-            { id: 'view-btn', icon: t.view, title: 'View' },
-            { id: 'save-btn', icon: t.save, title: 'Save Layout' },
-            { id: 'reset-btn', icon: t.reset, title: 'Reset' },
-            { id: 'export-html-btn', icon: t.export, title: 'Export HTML' },
-          ],
-          o = document.createElement('div');
-        o.classList.add('left-buttons'),
-          n.forEach(({ id: e, icon: t, title: n }) => {
-            const s = document.createElement('button');
-            (s.id = e),
-              s.classList.add('preview-btn'),
-              (s.title = n),
-              (s.innerHTML = t);
-            const i = s.querySelector('svg');
-            i && i.classList.add('nav-icon'), o.appendChild(s);
-          });
-        const i = document.createElement('div');
-        i.classList.add('center-text'), (i.textContent = 'Page Builder');
-        const r = document.createElement('div');
-        return (
-          r.classList.add('right-buttons'),
-          s.forEach(({ id: e, icon: t, title: n }) => {
-            const s = document.createElement('button');
-            (s.id = e),
-              s.classList.add('preview-btn'),
-              (s.title = n),
-              (s.innerHTML = t);
-            const o = s.querySelector('svg');
-            o && o.classList.add('nav-icon'), r.appendChild(s);
-          }),
-          e.appendChild(o),
-          e.appendChild(i),
-          e.appendChild(r),
-          e
-        );
-      })()
-    ),
-      document.body.insertBefore(e, document.getElementById('app'));
+      y.init(),
+      !M.headerInitialized)
+    ) {
+      if (document.getElementById('page-builder-header'))
+        M.headerInitialized = !0;
+      else {
+        const e = document.getElementById('app');
+        if (e && e.parentNode) {
+          const t = document.createElement('header');
+          (t.id = 'page-builder-header'),
+            t.appendChild(
+              (function () {
+                const e = document.createElement('nav');
+                e.id = 'preview-navbar';
+                const t = {
+                    desktop: E.desktop,
+                    tablet: E.tablet,
+                    mobile: E.mobile,
+                    save: E.save,
+                    export: E.code,
+                    view: E.view,
+                    undo: E.undo,
+                    redo: E.redo,
+                    reset: E.reset,
+                  },
+                  n = [
+                    {
+                      id: 'preview-desktop',
+                      icon: t.desktop,
+                      title: 'Preview in Desktop',
+                    },
+                    {
+                      id: 'preview-tablet',
+                      icon: t.tablet,
+                      title: 'Preview in Tablet',
+                    },
+                    {
+                      id: 'preview-mobile',
+                      icon: t.mobile,
+                      title: 'Preview in Mobile',
+                    },
+                    { id: 'undo-btn', icon: t.undo, title: 'Undo button' },
+                    { id: 'redo-btn', icon: t.redo, title: 'Redo button' },
+                  ],
+                  s = [
+                    { id: 'view-btn', icon: t.view, title: 'View' },
+                    { id: 'save-btn', icon: t.save, title: 'Save Layout' },
+                    { id: 'reset-btn', icon: t.reset, title: 'Reset' },
+                    {
+                      id: 'export-html-btn',
+                      icon: t.export,
+                      title: 'Export HTML',
+                    },
+                  ],
+                  o = document.createElement('div');
+                o.classList.add('left-buttons'),
+                  n.forEach(({ id: e, icon: t, title: n }) => {
+                    const s = document.createElement('button');
+                    (s.id = e),
+                      s.classList.add('preview-btn'),
+                      (s.title = n),
+                      (s.innerHTML = t);
+                    const i = s.querySelector('svg');
+                    i && i.classList.add('nav-icon'), o.appendChild(s);
+                  });
+                const i = document.createElement('div');
+                i.classList.add('center-text'),
+                  (i.textContent = 'Page Builder');
+                const r = document.createElement('div');
+                return (
+                  r.classList.add('right-buttons'),
+                  s.forEach(({ id: e, icon: t, title: n }) => {
+                    const s = document.createElement('button');
+                    (s.id = e),
+                      s.classList.add('preview-btn'),
+                      (s.title = n),
+                      (s.innerHTML = t);
+                    const o = s.querySelector('svg');
+                    o && o.classList.add('nav-icon'), r.appendChild(s);
+                  }),
+                  e.appendChild(o),
+                  e.appendChild(i),
+                  e.appendChild(r),
+                  e
+                );
+              })()
+            ),
+            e.parentNode.insertBefore(t, e),
+            (M.headerInitialized = !0);
+        } else console.error('Error: #app not found in the DOM');
+      }
+    }
   }
   setupSaveButton() {
     const e = document.getElementById('save-btn');
@@ -2331,5 +2349,6 @@ class M {
         });
   }
 }
+M.headerInitialized = !1;
 const S = new M();
 (exports.PageBuilder = M), (exports.PageBuilderCore = S);

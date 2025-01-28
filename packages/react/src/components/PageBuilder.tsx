@@ -3,54 +3,96 @@ import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder
 
 export interface PageBuilderWrapperProps {
   onInitialize?: (pageBuilder: PageBuilder) => void;
+  customStyles?: {
+    wrapper?: React.CSSProperties;
+    sidebar?: React.CSSProperties;
+    canvas?: React.CSSProperties;
+    customization?: React.CSSProperties;
+  };
 }
 
 export const PageBuilderWrapper: React.FC<PageBuilderWrapperProps> = ({ 
-  onInitialize 
+  onInitialize,
+  customStyles = {}
 }) => {
   const pageBuilderRef = useRef<PageBuilder | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Create PageBuilder instance when component mounts
-    const pageBuilder = new PageBuilder();
-    pageBuilderRef.current = pageBuilder;
+    // Function to set up the DOM structure
+    const setupDOMStructure = () => {
+      if (!wrapperRef.current) return;
 
-    if (onInitialize) {
-      onInitialize(pageBuilder);
-    }
+      // Clear existing content
+      wrapperRef.current.innerHTML = '';
 
-    // Cleanup function
+      // Create the main app container
+      const appDiv = document.createElement('div');
+      appDiv.id = 'app';
+
+      // Create required inner elements
+      appDiv.innerHTML = 
+      `
+        <div id="sidebar"></div>
+        <div id="canvas" class="canvas"></div>
+        <div id="customization">
+          <h4 id="component-name">Component: None</h4>
+          <div id="controls"></div>
+          <div id="layers-view" class="hidden"></div>
+        </div>
+        <div id="notification" class="notification hidden"></div>
+        <div id="dialog" class="dialog hidden">
+          <div class="dialog-content">
+            <p id="dialog-message"></p>
+            <button id="dialog-yes" class="dialog-btn">Yes</button>
+            <button id="dialog-no" class="dialog-btn">No</button>
+          </div>
+        </div>`
+      ;
+
+      wrapperRef.current.appendChild(appDiv);
+    };
+
+    // Initialize PageBuilder after DOM setup
+    const initializePageBuilder = () => {
+      try {
+        if (!pageBuilderRef.current) {
+          setupDOMStructure();
+
+          // Create new PageBuilder instance
+          const pageBuilder = new PageBuilder();
+          pageBuilderRef.current = pageBuilder;
+
+          if (onInitialize) {
+            onInitialize(pageBuilder);
+          }
+
+          // Trigger DOMContentLoaded to initialize PageBuilder
+          const event = new Event('DOMContentLoaded');
+          document.dispatchEvent(event);
+        }
+      } catch (error) {
+        console.error('Error initializing PageBuilder:', error);
+      }
+    };
+
+    // Small delay to ensure React has finished rendering
+    setTimeout(initializePageBuilder, 0);
+
     return () => {
       pageBuilderRef.current = null;
     };
   }, [onInitialize]);
 
   return (
-    <div style={{ margin: 'auto', width: '100%', height: '100%' }}>
-      <header>
-        <nav id="preview-navbar"></nav>
-      </header>
-      <div id="app">
-        <div id="sidebar"></div>
-        <div id="canvas" className="canvas"></div>
-        <div id="customization">
-          <h4 id="component-name">Component: None</h4>
-          <div id="controls"></div>
-          <div id="layers-view" className="hidden"></div>
-        </div>
-  
-        {/* Notification for saving */}
-        <div id="notification" className="notification hidden"></div>
-  
-        {/* Dialog for reset */}
-        <div id="dialog" className="dialog hidden">
-          <div className="dialog-content">
-            <p id="dialog-message"></p>
-            <button id="dialog-yes" className="dialog-btn">Yes</button>
-            <button id="dialog-no" className="dialog-btn">No</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div 
+      ref={wrapperRef}
+      style={{ 
+        margin: 'auto', 
+        width: '100%', 
+        height: '100%',
+        ...customStyles.wrapper 
+      }}
+    />
   );
-}  
+}

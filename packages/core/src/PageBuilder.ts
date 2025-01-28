@@ -23,6 +23,7 @@ export class PageBuilder {
   private htmlGenerator: HTMLGenerator;
   private jsonStorage: JSONStorage;
   private previewPanel: PreviewPanel;
+  private static headerInitialized = false;
 
   constructor() {
     this.canvas = new Canvas();
@@ -58,9 +59,24 @@ export class PageBuilder {
     ShortcutManager.init();
     CustomizationSidebar.init();
 
-    const header = document.createElement('header');
-    header.appendChild(createNavbar());
-    document.body.insertBefore(header, document.getElementById('app'));
+    // Only create header if it doesn't exist
+    if (!PageBuilder.headerInitialized) {
+      const existingHeader = document.getElementById('page-builder-header');
+      if (!existingHeader) {
+        const appElement = document.getElementById('app');
+        if (appElement && appElement.parentNode) {
+          const header = document.createElement('header');
+          header.id = 'page-builder-header';
+          header.appendChild(createNavbar());
+          appElement.parentNode.insertBefore(header, appElement);
+          PageBuilder.headerInitialized = true;
+        } else {
+          console.error('Error: #app not found in the DOM');
+        }
+      } else {
+        PageBuilder.headerInitialized = true;
+      }
+    }
   }
 
   public setupSaveButton() {

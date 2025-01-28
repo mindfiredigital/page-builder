@@ -5,6 +5,7 @@ export declare class PageBuilder {
   private htmlGenerator;
   private jsonStorage;
   private previewPanel;
+  private static headerInitialized;
   constructor();
   initializeEventListeners(): void;
   setupInitialComponents(): void;
