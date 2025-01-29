@@ -220,6 +220,18 @@ importers:
         specifier: ^6.0.5
         version: 6.0.11(@types/node@22.10.7)(jiti@2.4.2)(terser@5.37.0)(yaml@2.6.1)
 
+  packages/example/test-web-component:
+    dependencies:
+      '@mindfiredigital/page-builder-web-component':
+        specifier: workspace:1.0.0-development
+        version: link:../../web-component
+      serve:
+        specifier: ^14.2.4
+        version: 14.2.4
+      vite:
+        specifier: ^6.0.5
+        version: 6.0.11(@types/node@22.10.7)(jiti@2.4.2)(terser@5.37.0)(yaml@2.6.1)
+
   packages/react:
     dependencies:
       '@mindfiredigital/page-builder-core':
@@ -252,6 +264,13 @@ importers:
         version: 5.7.3
 
   packages/web-component:
+    dependencies:
+      '@mindfiredigital/page-builder-core':
+        specifier: workspace:^1.1.0
+        version: link:../core
+      serve:
+        specifier: ^14.2.4
+        version: 14.2.4
     devDependencies:
       eslint:
         specifier: ^9.19.0
