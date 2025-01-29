@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "echo 'Skipping build for test-react",
+    "build": "echo 'Skipping build for test-react'",
     "lint": "eslint .",
     "preview": "vite preview"
   },
