@@ -1,9 +1,9 @@
-const typescript = require('@rollup/plugin-typescript');
-const resolve = require('@rollup/plugin-node-resolve');
-const commonjs = require('@rollup/plugin-commonjs');
-const terser = require('@rollup/plugin-terser');
-const postcss = require('rollup-plugin-postcss');
-const { dts } = require('rollup-plugin-dts');
+import typescript from '@rollup/plugin-typescript';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import terser from '@rollup/plugin-terser';
+import postcss from 'rollup-plugin-postcss';
+import { dts } from 'rollup-plugin-dts';
 
 module.exports = [
   // Main build configuration
@@ -37,7 +37,7 @@ module.exports = [
       terser(), // Minify the JS for production
     ],
     // Only externalize dependencies for ESM, not for IIFE
-    external: (id: any) => id.includes('@mindfiredigital/page-builder-core'),
+    // external: (id: any) => id.includes('@mindfiredigital/page-builder-core'),
   },
   // Type declaration generation
   {
