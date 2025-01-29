@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "echo 'Skipping build for test-react'",
-    "build": "tsc -b && vite build",
+    "dev": "vite",
+    "build": "echo 'Skipping build for test-react",
     "lint": "eslint .",
     "preview": "vite preview"
   },
