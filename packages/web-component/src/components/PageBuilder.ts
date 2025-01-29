@@ -1,4 +1,4 @@
-import { PageBuilder } from '@mindfiredigital/page-builder-core';
+import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
 
 console.log('Web component script is running...');
 console.log('Attempting to import PageBuilder...');
@@ -24,54 +24,26 @@ export class PageBuilderComponent extends HTMLElement {
     // Attach Shadow DOM
     const shadow = this.attachShadow({ mode: 'open' });
 
-    // Set up inner HTML with styling and layout structure
+    // Set up inner HTML layout structure
     shadow.innerHTML = `
-      <style>
-        :host {
-          display: block;
-          width: 100%;
-          height: 100%;
-        }
-        #app {
-          display: flex;
-          height: 100%;
-        }
-        #sidebar {
-          width: 250px;
-          background: #f4f4f4;
-          padding: 10px;
-        }
-        #canvas {
-          flex-grow: 1;
-          background: white;
-          border: 1px solid #ccc;
-          padding: 20px;
-        }
-        #customization {
-          width: 300px;
-          background: #f8f9fa;
-          padding: 10px;
-        }
-        .hidden {
-          display: none;
-        }
-        /* Additional custom styles can be applied here */
-      </style>
-
-      <header>
-        <nav id="preview-navbar"></nav>
-      </header>
-
-      <div id="app">
-        <div id="sidebar">Sidebar</div>
-        <div id="canvas" class="canvas">Canvas</div>
-        <div id="customization">
-          <h4 id="component-name">Component: None</h4>
-          <div id="controls"></div>
-          <div id="layers-view" class="hidden"></div>
-        </div>
+  <div id="app">
+    <div id="sidebar"></div>
+    <div id="canvas" class="canvas"></div>
+    <div id="customization">
+      <h4 id="component-name">Component: None</h4>
+      <div id="controls"></div>
+      <div id="layers-view" class="hidden"></div>
+    </div>
+    <div id="notification" class="notification hidden"></div>
+    <div id="dialog" class="dialog hidden">
+      <div class="dialog-content">
+        <p id="dialog-message"></p>
+        <button id="dialog-yes" class="dialog-btn">Yes</button>
+        <button id="dialog-no" class="dialog-btn">No</button>
       </div>
-    `;
+    </div>
+  </div>
+`;
   }
 
   connectedCallback() {

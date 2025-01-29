@@ -25,66 +25,38 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.ts
-var import_page_builder_core = require("@mindfiredigital/page-builder-core");
+var import_PageBuilder = require("@mindfiredigital/page-builder-core/dist/PageBuilder.js");
 console.log("Web component script is running...");
 console.log("Attempting to import PageBuilder...");
 var PageBuilderComponent = class extends HTMLElement {
   constructor() {
     super();
-    console.log("PageBuilder class:", import_page_builder_core.PageBuilder);
-    if (!import_page_builder_core.PageBuilder) {
+    console.log("PageBuilder class:", import_PageBuilder.PageBuilder);
+    if (!import_PageBuilder.PageBuilder) {
       console.error("\u274C PageBuilder is undefined. Check your import.");
       return;
     }
-    this.pageBuilder = new import_page_builder_core.PageBuilder();
+    this.pageBuilder = new import_PageBuilder.PageBuilder();
     const shadow = this.attachShadow({ mode: "open" });
     shadow.innerHTML = `
-      <style>
-        :host {
-          display: block;
-          width: 100%;
-          height: 100%;
-        }
-        #app {
-          display: flex;
-          height: 100%;
-        }
-        #sidebar {
-          width: 250px;
-          background: #f4f4f4;
-          padding: 10px;
-        }
-        #canvas {
-          flex-grow: 1;
-          background: white;
-          border: 1px solid #ccc;
-          padding: 20px;
-        }
-        #customization {
-          width: 300px;
-          background: #f8f9fa;
-          padding: 10px;
-        }
-        .hidden {
-          display: none;
-        }
-        /* Additional custom styles can be applied here */
-      </style>
-
-      <header>
-        <nav id="preview-navbar"></nav>
-      </header>
-
-      <div id="app">
-        <div id="sidebar">Sidebar</div>
-        <div id="canvas" class="canvas">Canvas</div>
-        <div id="customization">
-          <h4 id="component-name">Component: None</h4>
-          <div id="controls"></div>
-          <div id="layers-view" class="hidden"></div>
-        </div>
+  <div id="app">
+    <div id="sidebar"></div>
+    <div id="canvas" class="canvas"></div>
+    <div id="customization">
+      <h4 id="component-name">Component: None</h4>
+      <div id="controls"></div>
+      <div id="layers-view" class="hidden"></div>
+    </div>
+    <div id="notification" class="notification hidden"></div>
+    <div id="dialog" class="dialog hidden">
+      <div class="dialog-content">
+        <p id="dialog-message"></p>
+        <button id="dialog-yes" class="dialog-btn">Yes</button>
+        <button id="dialog-no" class="dialog-btn">No</button>
       </div>
-    `;
+    </div>
+  </div>
+`;
   }
   connectedCallback() {
     console.log("\u2705 PageBuilderComponent connected to the DOM.");
@@ -93,7 +65,9 @@ var PageBuilderComponent = class extends HTMLElement {
         this.pageBuilder.setupInitialComponents();
         console.log("\u2705 PageBuilder initialized.");
       } else {
-        console.error("\u274C pageBuilder.setupInitialComponents() is missing or not a function.");
+        console.error(
+          "\u274C pageBuilder.setupInitialComponents() is missing or not a function."
+        );
       }
     }, 0);
   }
