@@ -16,7 +16,7 @@
     "copy-icons": "ncp ./src/icons ./dist/icons",
     "copy-styles": "ncp ./src/styles ./dist/styles",
     "prepare": "npx husky install",
-    "release": "multi-semantic-release"
+    "release": "npx multi-semantic-release"
   },
   "browserslist": {
     "production": [
@@ -95,12 +95,7 @@
       "main",
       "next"
     ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm"
-    ],
+    "extends": "semantic-release-monorepo",
     "noCi": true
   },
   "packageManager": "pnpm@8.6.0"

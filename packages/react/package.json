@@ -1,6 +1,6 @@
 {
   "name": "@mindfiredigital/page-builder-react",
-  "version": "0.0.0",
+  "version": "0.0.0-semantically-released",
   "private": false,
   "description": "React UI Page builder",
   "repository": {
@@ -47,5 +47,23 @@
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0"
+  },
+  "release": {
+    "branches": [
+      "main",
+      "next"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": true
+        }
+      ],
+      "@semantic-release/git"
+    ]
   }
 }

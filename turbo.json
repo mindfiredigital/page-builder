@@ -2,7 +2,7 @@
   "pipeline": {
     "build": {
       "outputs": ["dist/**"],
-      "filter": ["!packages/example/test-react"],
+      "dependsOn": ["^build"],
       "cache": true
     },
     "lint": {

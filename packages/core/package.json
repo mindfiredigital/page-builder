@@ -1,6 +1,6 @@
 {
   "name": "@mindfiredigital/page-builder-core",
-  "version": "0.0.0",
+  "version": "0.0.0-semantically-released",
   "private": false,
   "description": "UI Page builder",
   "repository": {
@@ -84,14 +84,21 @@
     "node": ">=12.0.0"
   },
   "release": {
-    "repositoryUrl": "https://github.com/mindfiredigital/page-builder.git",
     "branches": [
       "main",
-      "next",
-      {
-        "name": "beta",
-        "prerelease": true
-      }
+      "next"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": true
+        }
+      ],
+      "@semantic-release/git"
     ]
   }
 }
