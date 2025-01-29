@@ -3,7 +3,6 @@
   "name": "@mindfiredigital/pagebuilder",
   "version": "0.0.0-semantically-released",
   "description": "pagebuilder",
-  "type": "module",
   "workspaces": [
     "packages/*"
   ],
@@ -41,6 +40,7 @@
   "author": "",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
     "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@semantic-release/changelog": "^6.0.3",
@@ -83,6 +83,25 @@
   },
   "engines": {
     "node": ">=12.0.0"
+  },
+  "release": {
+    "branches": [
+      "main",
+      "next"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": true
+        }
+      ],
+      "@semantic-release/git"
+    ],
+    "noCi": true
   },
   "packageManager": "pnpm@8.6.0"
 }
