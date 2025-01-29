@@ -12,59 +12,41 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: read
+      packages: write
+      pull-requests: write
     steps:
-      - name: 'Checkout repository'
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: 'Install dependencies with pnpm'
-        run: pnpm install # Install all dependencies using pnpm
+        run: pnpm install --frozen-lockfile
 
       - name: 'Build application'
-        run: pnpm turbo run build # Assuming there's a build script in each package
-
-      - name: 'Restore changes in pnpm lock'
-        run: |
-          git restore pnpm-lock.yaml  # Restore any changes in lock files if needed
+        run: pnpm turbo run build
 
       - name: 'Set Git user name and email'
         run: |
           git config --local user.email "github-actions@github.com"
           git config --local user.name "GitHub Actions"
 
-  create-github-release:
-    name: Create GitHub release document and publish to npm
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
         with:
-          node-version: 20.x
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Install dependencies with pnpm
-        run: pnpm install
-
-      - name: Semantic Release and npm release
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm release
+          publish: pnpm run release
+          commit: 'chore: version packages'
+          title: 'chore: version packages'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
