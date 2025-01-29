@@ -29,7 +29,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "release": "npm publish --access public"
+    "release": "pnpm publish --access public"
   },
   "dependencies": {
     "@mindfiredigital/page-builder-core": "workspace:^1.1.1",

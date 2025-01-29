@@ -15,7 +15,7 @@
     "copy-icons": "ncp ./src/icons ./dist/icons",
     "copy-styles": "ncp ./src/styles ./dist/styles",
     "prepare": "npx husky install",
-    "release": "turbo run build && changeset publish"
+    "release": "turbo run build && changeset publish --access public"
   },
   "browserslist": {
     "production": [

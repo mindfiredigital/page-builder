@@ -27,7 +27,7 @@
     "copy-assets": "npm run copy-icons && npm run copy-styles",
     "copy-icons": "ncp ./src/icons ./dist/icons",
     "copy-styles": "ncp ./src/styles ./dist/styles",
-    "release": "npm publish --access public"
+    "release": "pnpm publish --access public"
   },
   "browserslist": {
     "production": [
