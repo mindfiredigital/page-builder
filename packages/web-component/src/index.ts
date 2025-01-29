@@ -1,1 +1,1 @@
-// index
+export * from './components/PageBuilder';
