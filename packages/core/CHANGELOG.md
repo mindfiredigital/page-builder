@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-core
 
+## 3.0.0
+
+### Major Changes
+
+- [`dbc8138`](https://github.com/mindfiredigital/page-builder/commit/dbc813869e7faeed3bfc0b00c1076a3186b38805) Thanks [@anandmindfire](https://github.com/anandmindfire)! - release
+
 ## 2.0.0
 
 ### Major Changes
