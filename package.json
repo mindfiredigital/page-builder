@@ -17,7 +17,7 @@
     "copy-icons": "ncp ./src/icons ./dist/icons",
     "copy-styles": "ncp ./src/styles ./dist/styles",
     "prepare": "npx husky install",
-    "release": "npx multi-semantic-release"
+    "release": "multi-semantic-release"
   },
   "browserslist": {
     "production": [
