@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-core
 
+## 1.3.0
+
+### Minor Changes
+
+- [`a9facf0`](https://github.com/mindfiredigital/page-builder/commit/a9facf0fcd1b052e18b857f5a8c97c925ad985dc) Thanks [@anandmindfire](https://github.com/anandmindfire)! - fix package json going to npm
+
 ## 1.2.1
 
 ### Patch Changes
