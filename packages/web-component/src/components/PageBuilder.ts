@@ -1,80 +1,80 @@
 import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
 
-console.log('Web component script is running...');
-console.log('Attempting to import PageBuilder...');
-
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
+  private initialized = false;
 
   constructor() {
     super();
 
-    // Log the imported PageBuilder class for debugging
-    console.log('PageBuilder class:', PageBuilder);
-
-    // Check if PageBuilder is properly imported
-    if (!PageBuilder) {
-      console.error('❌ PageBuilder is undefined. Check your import.');
-      return;
-    }
-
-    // Initialize the PageBuilder instance
-    this.pageBuilder = new PageBuilder();
-
-    // Attach Shadow DOM
-    const shadow = this.attachShadow({ mode: 'open' });
-
-    // Set up inner HTML layout structure
-    shadow.innerHTML = `
-  <div id="app">
-    <div id="sidebar"></div>
-    <div id="canvas" class="canvas"></div>
-    <div id="customization">
-      <h4 id="component-name">Component: None</h4>
-      <div id="controls"></div>
-      <div id="layers-view" class="hidden"></div>
-    </div>
-    <div id="notification" class="notification hidden"></div>
-    <div id="dialog" class="dialog hidden">
-      <div class="dialog-content">
-        <p id="dialog-message"></p>
-        <button id="dialog-yes" class="dialog-btn">Yes</button>
-        <button id="dialog-no" class="dialog-btn">No</button>
+    // Set up inner HTML structure
+    this.innerHTML = `
+      <div id="app">
+        <div id="sidebar"></div>
+        <div id="canvas" class="canvas"></div>
+        <div id="customization">
+          <h4 id="component-name">Component: None</h4>
+          <div id="controls"></div>
+          <div id="layers-view" class="hidden"></div>
+        </div>
+        <div id="notification" class="notification hidden"></div>
+        <div id="dialog" class="dialog hidden">
+          <div class="dialog-content">
+            <p id="dialog-message"></p>
+            <button id="dialog-yes" class="dialog-btn">Yes</button>
+            <button id="dialog-no" class="dialog-btn">No</button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-`;
+    `;
   }
 
   connectedCallback() {
-    console.log('✅ PageBuilderComponent connected to the DOM.');
+    if (this.initialized) return;
 
-    // Initialize the PageBuilder instance after component is connected
-    setTimeout(() => {
-      if (
-        this.pageBuilder &&
-        typeof this.pageBuilder.setupInitialComponents === 'function'
-      ) {
-        this.pageBuilder.setupInitialComponents();
-        console.log('✅ PageBuilder initialized.');
-      } else {
-        console.error(
-          '❌ pageBuilder.setupInitialComponents() is missing or not a function.'
-        );
+    // Use MutationObserver to ensure DOM elements are ready
+    const observer = new MutationObserver((mutations, obs) => {
+      const appElement = this.querySelector('#app');
+      if (appElement) {
+        this.initializePageBuilder();
+        obs.disconnect(); // Stop observing once initialized
+        this.initialized = true;
       }
-    }, 0);
+    });
+
+    observer.observe(this, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  private initializePageBuilder() {
+    try {
+      this.pageBuilder = new PageBuilder();
+
+      // Wait for next frame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        if (typeof this.pageBuilder.setupInitialComponents === 'function') {
+          this.pageBuilder.setupInitialComponents();
+          console.log('✅ PageBuilder initialized successfully');
+        } else {
+          console.error('❌ setupInitialComponents is not a function');
+        }
+      });
+    } catch (error) {
+      console.error('❌ Failed to initialize PageBuilder:', error);
+    }
   }
 
   disconnectedCallback() {
-    // Cleanup when the component is removed from the DOM (if necessary)
-    console.log('❌ PageBuilderComponent disconnected from the DOM.');
+    // Cleanup when component is removed
+    this.initialized = false;
+    console.log('❌ PageBuilderComponent disconnected from the DOM');
   }
 }
 
-// Register the custom element if it's not already registered
+// Register the custom element
 if (!customElements.get('page-builder')) {
   customElements.define('page-builder', PageBuilderComponent);
-  console.log('✅ Custom element "page-builder" registered.');
-} else {
-  console.warn('⚠️ "page-builder" is already defined.');
+  console.log('✅ Custom element "page-builder" registered');
 }

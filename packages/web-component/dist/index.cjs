@@ -26,60 +26,69 @@ module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.ts
 var import_PageBuilder = require("@mindfiredigital/page-builder-core/dist/PageBuilder.js");
-console.log("Web component script is running...");
-console.log("Attempting to import PageBuilder...");
 var PageBuilderComponent = class extends HTMLElement {
   constructor() {
     super();
-    console.log("PageBuilder class:", import_PageBuilder.PageBuilder);
-    if (!import_PageBuilder.PageBuilder) {
-      console.error("\u274C PageBuilder is undefined. Check your import.");
-      return;
-    }
-    this.pageBuilder = new import_PageBuilder.PageBuilder();
-    const shadow = this.attachShadow({ mode: "open" });
-    shadow.innerHTML = `
-  <div id="app">
-    <div id="sidebar"></div>
-    <div id="canvas" class="canvas"></div>
-    <div id="customization">
-      <h4 id="component-name">Component: None</h4>
-      <div id="controls"></div>
-      <div id="layers-view" class="hidden"></div>
-    </div>
-    <div id="notification" class="notification hidden"></div>
-    <div id="dialog" class="dialog hidden">
-      <div class="dialog-content">
-        <p id="dialog-message"></p>
-        <button id="dialog-yes" class="dialog-btn">Yes</button>
-        <button id="dialog-no" class="dialog-btn">No</button>
+    this.initialized = false;
+    this.innerHTML = `
+      <div id="app">
+        <div id="sidebar"></div>
+        <div id="canvas" class="canvas"></div>
+        <div id="customization">
+          <h4 id="component-name">Component: None</h4>
+          <div id="controls"></div>
+          <div id="layers-view" class="hidden"></div>
+        </div>
+        <div id="notification" class="notification hidden"></div>
+        <div id="dialog" class="dialog hidden">
+          <div class="dialog-content">
+            <p id="dialog-message"></p>
+            <button id="dialog-yes" class="dialog-btn">Yes</button>
+            <button id="dialog-no" class="dialog-btn">No</button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-`;
+    `;
   }
   connectedCallback() {
-    console.log("\u2705 PageBuilderComponent connected to the DOM.");
-    setTimeout(() => {
-      if (this.pageBuilder && typeof this.pageBuilder.setupInitialComponents === "function") {
-        this.pageBuilder.setupInitialComponents();
-        console.log("\u2705 PageBuilder initialized.");
-      } else {
-        console.error(
-          "\u274C pageBuilder.setupInitialComponents() is missing or not a function."
-        );
+    if (this.initialized)
+      return;
+    const observer = new MutationObserver((mutations, obs) => {
+      const appElement = this.querySelector("#app");
+      if (appElement) {
+        this.initializePageBuilder();
+        obs.disconnect();
+        this.initialized = true;
       }
-    }, 0);
+    });
+    observer.observe(this, {
+      childList: true,
+      subtree: true
+    });
+  }
+  initializePageBuilder() {
+    try {
+      this.pageBuilder = new import_PageBuilder.PageBuilder();
+      requestAnimationFrame(() => {
+        if (typeof this.pageBuilder.setupInitialComponents === "function") {
+          this.pageBuilder.setupInitialComponents();
+          console.log("\u2705 PageBuilder initialized successfully");
+        } else {
+          console.error("\u274C setupInitialComponents is not a function");
+        }
+      });
+    } catch (error) {
+      console.error("\u274C Failed to initialize PageBuilder:", error);
+    }
   }
   disconnectedCallback() {
-    console.log("\u274C PageBuilderComponent disconnected from the DOM.");
+    this.initialized = false;
+    console.log("\u274C PageBuilderComponent disconnected from the DOM");
   }
 };
 if (!customElements.get("page-builder")) {
   customElements.define("page-builder", PageBuilderComponent);
-  console.log('\u2705 Custom element "page-builder" registered.');
-} else {
-  console.warn('\u26A0\uFE0F "page-builder" is already defined.');
+  console.log('\u2705 Custom element "page-builder" registered');
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
