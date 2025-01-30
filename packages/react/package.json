@@ -1,6 +1,6 @@
 {
   "name": "@mindfiredigital/page-builder-react",
-  "version": "3.0.0",
+  "version": "1.0.0",
   "private": false,
   "description": "React UI Page builder",
   "repository": {
@@ -29,7 +29,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "release": "pnpm publish --access public"
+    "release": "turbo run build && pnpm publish --access public"
   },
   "dependencies": {
     "@mindfiredigital/page-builder-core": "workspace:^3.0.0",
