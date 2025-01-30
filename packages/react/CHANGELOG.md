@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-react
 
+## 1.1.0
+
+### Minor Changes
+
+- [`912c469`](https://github.com/mindfiredigital/page-builder/commit/912c469c1cce9636360c6eaa172bac7e5080fc5f) Thanks [@anandmindfire](https://github.com/anandmindfire)! - UPDATE peer dependencies to support react version greater than 17
+
 ## 1.0.1
 
 ### Patch Changes
