@@ -1,4 +1,4 @@
-# Contributing to ESLint Plugin Hub
+# Contributing to PAGE-BUILDER
 
 We welcome and appreciate your contributions to the Page Builder. To ensure a smooth and collaborative process, please follow these guidelines.
 
