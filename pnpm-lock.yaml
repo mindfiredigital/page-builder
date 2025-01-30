@@ -187,17 +187,45 @@ importers:
       react-dom:
         specifier: ^18.0.0
         version: 18.3.1(react@18.3.1)
-<<<<<<< HEAD
       serve:
         specifier: ^14.2.4
         version: 14.2.4
-=======
->>>>>>> 68a2150 (feat: set up enviornments and folder structure for web component)
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.5.1)(typescript@5.7.3)
       typescript:
         specifier: ^5.0.0
+        version: 5.7.3
+
+  packages/web-component:
+    dependencies:
+      '@mindfiredigital/page-builder-core':
+        specifier: workspace:^1.1.0
+        version: link:../core
+      serve:
+        specifier: ^14.2.4
+        version: 14.2.4
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.0
+        version: 18.3.18
+      '@types/react-dom':
+        specifier: ^18.2.0
+        version: 18.3.5(@types/react@18.3.18)
+      eslint:
+        specifier: ^8.40.0
+        version: 8.57.1
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.0.0
+        version: 18.3.1(react@18.3.1)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.5.1)(typescript@5.7.3)
+      typescript:
+        specifier: ^5.7.3
         version: 5.7.3
 
   packages/web-component:
@@ -6213,7 +6241,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+<<<<<<< HEAD
 >>>>>>> 68a2150 (feat: set up enviornments and folder structure for web component)
+=======
+>>>>>>> ba1eec5d81b4f4fe45beac04417c6ea49c1f6d74
   '@typescript-eslint/parser@8.21.0(eslint@9.18.0(jiti@2.4.2))(typescript@5.6.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.21.0
