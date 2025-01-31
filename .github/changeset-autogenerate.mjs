@@ -1,14 +1,17 @@
-import { execSync } from "child_process";
-import fs from "fs";
+import { execSync } from 'child_process';
+import fs from 'fs';
 
 // Get the most recent commit message
-const commitMessage = execSync("git log -1 --format=%s").toString().trim();
+const commitMessage = execSync('git log -1 --format=%s').toString().trim();
+
+// Define valid scopes
+const validScopes = ['core', 'react', 'web-component'];
 
 // Define regex patterns
 const commitPatterns = {
   major: /^BREAKING CHANGE: (.+)/,
-  minor: /^feat\((.+)\): (.+)/,
-  patch: /^fix\((.+)\): (.+)/
+  minor: /^feat\(([^)]+)\): (.+)/,
+  patch: /^fix\(([^)]+)\): (.+)/,
 };
 
 // Identify type, package, and description
@@ -17,22 +20,28 @@ let changeType = null;
 let description = null;
 
 if (commitPatterns.major.test(commitMessage)) {
-  changeType = "major";
+  changeType = 'major';
   description = commitMessage.match(commitPatterns.major)?.[1];
 } else if (commitPatterns.minor.test(commitMessage)) {
-  changeType = "minor";
-  packageName = commitMessage.match(commitPatterns.minor)?.[1];
-  description = commitMessage.match(commitPatterns.minor)?.[2];
+  const scope = commitMessage.match(commitPatterns.minor)?.[1];
+  if (validScopes.includes(scope)) {
+    changeType = 'minor';
+    packageName = scope;
+    description = commitMessage.match(commitPatterns.minor)?.[2];
+  }
 } else if (commitPatterns.patch.test(commitMessage)) {
-  changeType = "patch";
-  packageName = commitMessage.match(commitPatterns.patch)?.[1];
-  description = commitMessage.match(commitPatterns.patch)?.[2];
+  const scope = commitMessage.match(commitPatterns.patch)?.[1];
+  if (validScopes.includes(scope)) {
+    changeType = 'patch';
+    packageName = scope;
+    description = commitMessage.match(commitPatterns.patch)?.[2];
+  }
 }
 
-// Ensure package name is valid
+// Generate and write changeset if valid package found
 if (packageName) {
   packageName = packageName.trim();
-  description = description?.trim() || "No description provided.";
+  description = description?.trim() || 'No description provided.';
 
   // Generate changeset content
   const changesetContent = `---
@@ -43,7 +52,11 @@ ${description}
 
   // Write to a changeset file
   fs.writeFileSync(`.changeset/auto-${Date.now()}.md`, changesetContent);
-  console.log("✅ Changeset file created based on the latest commit!");
+  console.log(
+    `✅ Changeset file created for package: page-builder-${packageName}`
+  );
 } else {
-  console.log("⚠️ No valid package found in the latest commit message, skipping changeset.");
+  console.log(
+    '⚠️ No valid package scope found in commit message. Valid scopes are: core, react, web-component'
+  );
 }
