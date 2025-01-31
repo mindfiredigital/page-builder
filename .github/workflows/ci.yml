@@ -82,10 +82,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Pull latest changes
+        run: |
+          git pull origin main
+
       - name: Publish to npm
         id: changesets
         uses: changesets/action@v1.4.1
         with:
+          run: |
+            git checkout main
+            git pull origin main
           commit: 'chore(release): version packages'
           title: 'chore(release): version packages'
           version: node .github/changeset-version.js
