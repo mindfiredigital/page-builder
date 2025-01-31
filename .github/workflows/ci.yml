@@ -59,5 +59,7 @@ jobs:
         if: steps.changesets.outputs.pullRequestNumber != ''
         run: |
           gh pr merge ${{ steps.changesets.outputs.pullRequestNumber }} --squash --delete-branch
+          node .github/changeset-version.js
+          npx changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
