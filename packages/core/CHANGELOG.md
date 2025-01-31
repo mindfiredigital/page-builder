@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-core
 
+## 1.4.2
+
+### Patch Changes
+
+- fix core build conflict
+
 ## 1.4.1
 
 ### Patch Changes
