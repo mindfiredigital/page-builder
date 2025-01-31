@@ -58,6 +58,6 @@ jobs:
       - name: Auto-merge release PR
         if: steps.changesets.outputs.pullRequestNumber != ''
         run: |
-          gh pr merge ${{ steps.changesets.outputs.pullRequestNumber }} --auto --squash
+          gh pr merge ${{ steps.changesets.outputs.pullRequestNumber }} --squash --delete-branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
