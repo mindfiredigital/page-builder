@@ -59,6 +59,8 @@ jobs:
         if: steps.changesets.outputs.pullRequestNumber != ''
         run: |
           gh pr merge ${{ steps.changesets.outputs.pullRequestNumber }} --squash --delete-branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     needs: build
@@ -67,7 +69,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
