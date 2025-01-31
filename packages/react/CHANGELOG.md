@@ -1,5 +1,12 @@
 # @mindfiredigital/page-builder-react
 
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @mindfiredigital/page-builder-core@1.3.1
+
 ## 1.1.1
 
 ### Patch Changes
