@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-react
 
+## 1.1.9
+
+### Patch Changes
+
+- fix changelog version release issue
+
 ## 1.1.8
 
 ### Patch Changes
