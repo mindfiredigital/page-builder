@@ -2,15 +2,28 @@
 
 We welcome and appreciate your contributions to the Page Builder. To ensure a smooth and collaborative process, please follow these guidelines.
 
+## Table of Contents
+
+- [How Can You Contribute?](#how-can-you-contribute)
+- [Steps for Contributing](#steps-for-contributing)
+- [Development Setup](#development-setup)
+- [Commit Message Format](#commit-message-format)
+- [Pull Request Guidelines](#pull-request-guidelines)
+- [Documentation Guidelines](#documentation-guidelines)
+- [Code of Conduct](#code-of-conduct)
+- [Need Help?](#need-help)
+
 ## How Can You Contribute?
 
 Here are some ways you can contribute to the project:
 
 - Reporting bugs or issues
-- Suggesting new rules or features
+- Suggesting new features or enhancements
 - Writing or improving documentation
 - Fixing bugs
-- Implementing new rules or features
+- Implementing new features
+- Improving tests
+- Helping with reviews
 
 ## Steps for Contributing
 
@@ -18,80 +31,233 @@ Here are some ways you can contribute to the project:
 2. **Clone** the forked repository to your local machine:
 
    ```bash
-   git clone https://github.com/lakinmindfire/page-builder.git
+   git clone https://github.com/yourusername/page-builder.git
    ```
 
-3. Create a new **branch** for your feature or fix:
+3. **Set up the development environment**:
 
    ```bash
-   git checkout -b feature/new-login or bugfix/header-styling.
+   cd page-builder
+   pnpm install
    ```
 
-4. **Make changes** and **test** to ensure they work as expected.
-5. **Commit** your changes:
+4. Create a new **branch** for your feature or fix:
 
    ```bash
-   git commit -m 'Your descriptive commit message'
+   git checkout -b feat/core/new-feature
+   # or
+   git checkout -b fix/react/bug-fix
    ```
 
-6. **Push** your branch to your GitHub repository:
+5. **Make changes** and **test** to ensure they work as expected:
 
    ```bash
-   git push origin feature-name
+   pnpm test
+   pnpm turbo run build
    ```
 
-7. Create a **Pull Request (PR)** from your branch to the original repository's `main` branch.
+6. **Commit** your changes following our commit message format (see below).
+7. **Push** your branch to your GitHub repository:
+
+   ```bash
+   git push origin feat/core/new-feature
+   ```
+
+8. Create a **Pull Request (PR)** from your branch to the original repository's `main` branch.
+
+## Development Setup
+
+1. **Prerequisites**:
+
+   - Node.js (v20 or later)
+   - pnpm (v8 or later)
+
+2. **Installation**:
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Development Commands**:
+   ```bash
+   pnpm dev          # Start development server
+   pnpm turbo run build        # Build all packages
+   pnpm lint         # Run linting
+   ```
 
 ## Commit Message Format
 
-We follow the conventional commit message format to ensure consistent and meaningful commit messages. This format helps in automated versioning and release notes generation.
+We follow a strict conventional commit message format to ensure consistent and meaningful commit messages. This format helps in automated versioning, changelog generation, and release management in our monorepo structure.
 
-### Commit Types
+### Commit Structure
 
-- **feat:** A new feature or significant change.
-- **fix:** A bug fix or issue resolution.
-- **docs:** Documentation changes.
-- **chore:** Routine tasks, maintenance, or tooling changes.
+```
+type(scope): subject
+```
 
-### How to Write Commit Messages
+- **type**: The type of change being made (see types below)
+- **scope**: The package name from the monorepo being affected (required)
+- **subject**: A brief description of the change
 
-- Start the commit message with the type, followed by a colon and a space (e.g., `feat: Add new feature`).
-- Provide a concise and descriptive commit message.
-- If the commit addresses an issue or feature request, include the issue number in the message (e.g., `fix: Resolve issue #123`).
+### Commit Types and Release Impact
 
-### Example Commit Messages
+- **feat**: A new feature or significant change (triggers MINOR version bump)
 
-- feat: Add new feature
-- fix: Correct issue #456 with class name validation
-- docs: Update usage instructions in README
-- chore: Upgrade dependencies to latest versions
+  - Example: `feat(react): add new drag-and-drop functionality`
+
+- **fix**: A bug fix or issue resolution (triggers PATCH version bump)
+
+  - Example: `fix(core): resolve element positioning bug`
+
+- **docs**: Documentation changes only (no version bump)
+
+  - Example: `docs(web-component): update API documentation`
+
+- **chore**: Routine tasks, maintenance, or tooling changes (no version bump)
+
+  - Example: `chore(react): update dev dependencies`
+
+- **style**: Code style/formatting changes (no version bump)
+
+  - Example: `style(core): format according to new eslint rules`
+
+- **refactor**: Code changes that neither fix a bug nor add a feature (no version bump)
+
+  - Example: `refactor(web-component): improve rendering performance`
+
+- **test**: Adding or modifying tests (no version bump)
+
+  - Example: `test(react): add unit tests for form component`
+
+- **perf**: Performance improvements (triggers PATCH version bump)
+
+  - Example: `perf(core): optimize rendering logic`
+
+- **ci**: Changes to CI configuration (no version bump)
+  - Example: `ci(web-component): update GitHub Actions workflow`
+
+### Scopes
+
+Scopes must match your package names in the monorepo:
+
+- `core`: Core package changes
+- `react`: React package changes
+- `web-component`: Web Components package changes
+
+### Breaking Changes
+
+For breaking changes, add `BREAKING CHANGE:` in the commit body and append a `!` after the type/scope:
+
+```
+feat(core)!: change API interface
+
+BREAKING CHANGE: The API interface has changed. Users need to update their implementations.
+```
+
+Breaking changes will trigger a MAJOR version bump.
+
+### Release Management
+
+Commit messages directly influence our automated release process:
+
+1. MAJOR version (1.0.0 → 2.0.0)
+
+   - Any commit with a breaking change (`!` or `BREAKING CHANGE` in body)
+
+2. MINOR version (1.1.0 → 1.2.0)
+
+   - Commits with `feat` type
+
+3. PATCH version (1.1.1 → 1.1.2)
+
+   - Commits with `fix` or `perf` type
+
+4. No version change
+   - Commits with `docs`, `chore`, `style`, `refactor`, `test`, or `ci` types
 
 ### Commitlint Configuration
 
-We use Commitlint to enforce the commit message format. Ensure that your commits adhere to the specified format. You can find the Commitlint configuration in the repository.
+We enforce these commit conventions using Commitlint. Your commits will be automatically validated against these rules:
 
-For more details on Commitlint and conventional commits, please refer to [Commitlint Documentation](https://commitlint.js.org/).
+```javascript
+module.exports = {
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    'scope-enum': [2, 'always', ['core', 'react', 'web-component']],
+    'scope-empty': [2, 'never'],
+    'scope-case': [2, 'always', 'lower-case'],
+  },
+  ignores: [message => message.includes('[skip-commitlint]')],
+};
+```
+
+### Common Error Messages
+
+```bash
+# Missing scope
+❌ Error: scope may not be empty [scope-empty]
+# Wrong scope
+❌ Error: scope must be one of [core, react, web-component] [scope-enum]
+# Invalid type
+❌ Error: type must be one of [build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test] [type-enum]
+```
 
 ## Pull Request Guidelines
 
-- Make sure your PR addresses an issue or feature request.
-- Provide a clear description of your PR and any relevant context.
-- Keep your PR focused on a single change to facilitate review.
-- Ensure your code follows the project's coding style and conventions.
-- Include tests for any new rules or changes to existing ones.
+1. **Before Submitting a PR**:
+
+   - Run the linter: `pnpm lint`
+   - Update documentation if needed
+   - Add tests for new features
+   - Run `pnpm build` to ensure everything builds correctly
+
+2. **PR Title**:
+
+   - Follow the same convention as commit messages
+   - Example: `feat(core): add new template engine`
+
+3. **PR Description**:
+
+   - Clearly describe the changes
+   - Reference any related issues
+   - Include any breaking changes
+   - List any new dependencies
+   - Provide steps to test the changes
+
+4. **PR Review Process**:
+   - At least one maintainer approval is required
+   - Address review comments
+   - Keep the PR focused and atomic
+   - Rebase if needed to resolve conflicts
 
 ## Documentation Guidelines
 
-When contributing to the documentation, please add your updates in the `docs` branch inside the `docs` folder. This helps keep the documentation organized and easily accessible.
+1. **API Documentation**:
 
-## Code of Conduct and Licensing
+   - Document all public APIs
+   - Include JSDoc comments for TypeScript/JavaScript code
+   - Provide usage examples
 
-Please ensure your contributions adhere to the project's [Code of Conduct](./CODE_OF_CONDUCT.md) and are licensed under the project's [License](./LICENSE).
+2. **Package Documentation**:
+
+   - Each package should have its own README.md
+   - Include installation instructions
+   - Provide basic usage examples
+   - List available options/props
+
+3. **Contributing to Docs**:
+   - Place documentation in the `docs` folder
+   - Follow markdown best practices
+   - Include images in the `docs/assets` folder
+   - Update the docs index when adding new pages
+
+## Code of Conduct
+
+By participating in this project, you agree to abide by our [Code of Conduct](./CODE_OF_CONDUCT.md). Please read it before contributing.
 
 ## Need Help?
 
-If you have questions or need assistance, feel free to create an issue or directly contact the maintainers.
+- **Issues**: Open an issue in the repository
+- **Discussions**: Use GitHub Discussions for questions
 
-Thank you for your interest in contributing to Page builder! We appreciate your efforts in making this project better.
-
-Happy contributing!
+Thank you for contributing to Page Builder! Your efforts help make this project better for everyone.
