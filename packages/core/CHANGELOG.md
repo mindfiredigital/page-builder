@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-core
 
+## 1.4.0
+
+### Minor Changes
+
+- fix automation script
+
 ## 1.3.1
 
 ### Patch Changes
