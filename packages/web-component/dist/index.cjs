@@ -53,18 +53,21 @@ var PageBuilderComponent = class extends HTMLElement {
   connectedCallback() {
     if (this.initialized)
       return;
+    const appElement = this.querySelector("#app");
+    if (appElement) {
+      this.initializePageBuilder();
+      this.initialized = true;
+      return;
+    }
     const observer = new MutationObserver((mutations, obs) => {
-      const appElement = this.querySelector("#app");
-      if (appElement) {
+      const appElement2 = this.querySelector("#app");
+      if (appElement2) {
         this.initializePageBuilder();
         obs.disconnect();
         this.initialized = true;
       }
     });
-    observer.observe(this, {
-      childList: true,
-      subtree: true
-    });
+    observer.observe(this, { childList: true, subtree: true });
   }
   initializePageBuilder() {
     try {
@@ -72,23 +75,20 @@ var PageBuilderComponent = class extends HTMLElement {
       requestAnimationFrame(() => {
         if (typeof this.pageBuilder.setupInitialComponents === "function") {
           this.pageBuilder.setupInitialComponents();
-          console.log("\u2705 PageBuilder initialized successfully");
         } else {
-          console.error("\u274C setupInitialComponents is not a function");
+          console.error("setupInitialComponents is not a function");
         }
       });
     } catch (error) {
-      console.error("\u274C Failed to initialize PageBuilder:", error);
+      console.error("Failed to initialize PageBuilder:", error);
     }
   }
   disconnectedCallback() {
     this.initialized = false;
-    console.log("\u274C PageBuilderComponent disconnected from the DOM");
   }
 };
 if (!customElements.get("page-builder")) {
   customElements.define("page-builder", PageBuilderComponent);
-  console.log('\u2705 Custom element "page-builder" registered');
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

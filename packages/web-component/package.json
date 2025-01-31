@@ -23,7 +23,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@mindfiredigital/page-builder-core": "workspace:^1.1.0",
+    "@mindfiredigital/page-builder-core": "workspace:*",
     "serve": "^14.2.4"
   },
   "devDependencies": {
