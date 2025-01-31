@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-core
 
+## 1.4.3
+
+### Patch Changes
+
+- fix auto release configuration
+
 ## 1.4.2
 
 ### Patch Changes
