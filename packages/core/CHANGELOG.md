@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-core
 
+## 1.4.7
+
+### Patch Changes
+
+- fix install pnpm
+
 ## 1.4.6
 
 ### Patch Changes
