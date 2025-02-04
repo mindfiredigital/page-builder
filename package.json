@@ -15,7 +15,8 @@
     "copy-icons": "ncp ./src/icons ./dist/icons",
     "copy-styles": "ncp ./src/styles ./dist/styles",
     "prepare": "npx husky install",
-    "release": "turbo run build && pnpm publish --access public"
+    "release": "turbo run build && pnpm publish --access public",
+    "changeset:autogenerate": "node .github/changeset-autogenerate.mjs"
   },
   "browserslist": {
     "production": [

@@ -1,5 +1,46 @@
 # @mindfiredigital/page-builder-react
 
+## 1.1.10
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @mindfiredigital/page-builder-core@1.4.6
+
+## 1.1.9
+
+### Patch Changes
+
+- fix changelog version release issue
+
+## 1.1.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @mindfiredigital/page-builder-core@1.4.5
+
+## 1.1.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @mindfiredigital/page-builder-core@1.4.0
+
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @mindfiredigital/page-builder-core@1.3.1
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`a9facf0`](https://github.com/mindfiredigital/page-builder/commit/a9facf0fcd1b052e18b857f5a8c97c925ad985dc)]:
+  - @mindfiredigital/page-builder-core@1.3.0
+
 ## 1.1.0
 
 ### Minor Changes
