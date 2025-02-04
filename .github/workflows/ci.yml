@@ -77,7 +77,7 @@ jobs:
         uses: actions/setup-node@v4
 
       - name: Enable Corepack
-        run: corepack enable
+        run: npm install -g pnpm
 
       - name: Install dependencies
         run: pnpm install

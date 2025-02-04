@@ -157,7 +157,7 @@ importers:
   packages/example/test-web-component:
     dependencies:
       '@mindfiredigital/page-builder-web-component':
-        specifier: workspace:1.0.0-development
+        specifier: workspace:*
         version: link:../../web-component
       serve:
         specifier: ^14.2.4
