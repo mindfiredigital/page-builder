@@ -1,0 +1,23 @@
+{
+  "name": "@mindfiredigital/page-builder-angular",
+  "version": "0.0.1",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "peerDependencies": {
+    "@angular/common": "^19.1.0",
+    "@angular/core": "^19.1.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "@mindfiredigital/page-builder-core": "workspace:*"
+  },
+  "sideEffects": false,
+  "devDependencies": {
+    "ng-packagr": "^19.1.2"
+  }
+}
