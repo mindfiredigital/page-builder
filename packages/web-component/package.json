@@ -1,6 +1,6 @@
 {
   "name": "@mindfiredigital/page-builder-web-component",
-  "version": "1.0.0-development",
+  "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
