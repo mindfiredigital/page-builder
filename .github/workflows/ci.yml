@@ -27,7 +27,7 @@ jobs:
           node-version: 20
 
       - name: Enable Corepack
-        run: corepack enable
+        run: npm install -g pnpm
 
       - name: 'Install dependencies with pnpm'
         run: pnpm install
