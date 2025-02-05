@@ -3,70 +3,55 @@ import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
   private initialized = false;
+  private template = `<div id="app">
+      <div id="sidebar"></div>
+      <div id="canvas" class="canvas"></div>
+      <div id="customization">
+        <h4 id="component-name">Component: None</h4>
+        <div id="controls"></div>
+        <div id="layers-view" class="hidden"></div>
+      </div>
+      <div id="notification" class="notification hidden"></div>
+      <div id="dialog" class="dialog hidden">
+        <div class="dialog-content">
+          <p id="dialog-message"></p>
+          <button id="dialog-yes" class="dialog-btn">Yes</button>
+          <button id="dialog-no" class="dialog-btn">No</button>
+        </div>
+      </div>
+    </div>`;
 
   constructor() {
     super();
-
-    // Set up inner HTML structure
-    this.innerHTML = `
-      <div id="app">
-        <div id="sidebar"></div>
-        <div id="canvas" class="canvas"></div>
-        <div id="customization">
-          <h4 id="component-name">Component: None</h4>
-          <div id="controls"></div>
-          <div id="layers-view" class="hidden"></div>
-        </div>
-        <div id="notification" class="notification hidden"></div>
-        <div id="dialog" class="dialog hidden">
-          <div class="dialog-content">
-            <p id="dialog-message"></p>
-            <button id="dialog-yes" class="dialog-btn">Yes</button>
-            <button id="dialog-no" class="dialog-btn">No</button>
-          </div>
-        </div>
-      </div>
-    `;
+    // Only set the template once
+    if (!this.firstElementChild) {
+      this.innerHTML = this.template;
+    }
   }
 
   connectedCallback() {
-    if (this.initialized) return;
-
-    const appElement = this.querySelector('#app');
-    if (appElement) {
-      this.initializePageBuilder();
-      this.initialized = true;
+    // Ensure we only initialize once
+    if (this.initialized) {
       return;
     }
-    const observer = new MutationObserver((mutations, obs) => {
-      const appElement = this.querySelector('#app');
-      if (appElement) {
-        this.initializePageBuilder();
-        obs.disconnect();
-        this.initialized = true;
-      }
-    });
-    observer.observe(this, { childList: true, subtree: true });
+
+    this.initializePageBuilder();
   }
 
   private initializePageBuilder() {
-    try {
-      this.pageBuilder = new PageBuilder();
+    if (this.initialized) {
+      return;
+    }
 
-      requestAnimationFrame(() => {
-        if (typeof this.pageBuilder.setupInitialComponents === 'function') {
-          this.pageBuilder.setupInitialComponents();
-        } else {
-          console.error('setupInitialComponents is not a function');
-        }
-      });
+    try {
+      // Set initialized first to prevent any potential race conditions
+      this.initialized = true;
+
+      this.pageBuilder = new PageBuilder();
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);
+      this.initialized = false;
     }
-  }
-
-  disconnectedCallback() {
-    this.initialized = false;
   }
 }
 
