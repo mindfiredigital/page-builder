@@ -3,12 +3,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationMap": true,
-    "inlineSources": true,
-    "types": []
+    "outDir": "./out-tsc/app",
+    "types": ["node"]
   },
-  "exclude": ["**/*.spec.ts"]
+  "files": ["src/main.ts", "src/main.server.ts", "src/server.ts"],
+  "include": ["src/**/*.d.ts"]
 }

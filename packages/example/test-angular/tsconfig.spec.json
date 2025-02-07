@@ -3,12 +3,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationMap": true,
-    "inlineSources": true,
-    "types": []
+    "outDir": "./out-tsc/spec",
+    "types": ["jasmine"]
   },
-  "exclude": ["**/*.spec.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }

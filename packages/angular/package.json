@@ -1,23 +1,27 @@
 {
   "name": "@mindfiredigital/page-builder-angular",
   "version": "0.0.1",
+  "description": "Angular wrapper for @mindfiredigital/page-builder-core",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng-packagr -p ng-package.json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
   "peerDependencies": {
-    "@angular/common": "^19.1.0",
-    "@angular/core": "^19.1.0"
-  },
-  "dependencies": {
-    "tslib": "^2.3.0",
+    "@angular/common": ">=15.0.0",
+    "@angular/core": ">=15.0.0",
     "@mindfiredigital/page-builder-core": "workspace:*"
   },
   "sideEffects": false,
   "devDependencies": {
-    "ng-packagr": "^19.1.2"
+    "@angular/compiler": "^17.0.0",
+    "@angular/compiler-cli": "^17.0.0",
+    "ng-packagr": "^17.0.0",
+    "tslib": "^2.3.0",
+    "typescript": "5.4.5"
   }
 }
