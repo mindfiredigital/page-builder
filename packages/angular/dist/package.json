@@ -4,9 +4,6 @@
   "description": "Angular wrapper for @mindfiredigital/page-builder-core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "styles": [
-    "dist/lib/_styles.scss"
-  ],
   "peerDependencies": {
     "@angular/common": ">=15.0.0",
     "@angular/core": ">=15.0.0",
@@ -21,7 +18,6 @@
     },
     ".": {
       "types": "./index.d.ts",
-      "esm2022": "./esm2022/mindfiredigital-page-builder-angular.mjs",
       "esm": "./esm2022/mindfiredigital-page-builder-angular.mjs",
       "default": "./fesm2022/mindfiredigital-page-builder-angular.mjs"
     }
