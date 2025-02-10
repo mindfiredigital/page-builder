@@ -15,15 +15,7 @@ import { CustomStyles } from './models/custom-styles.interface';
   standalone: true,
   imports: [CommonModule],
   template: ` <div #wrapper [ngStyle]="getWrapperStyles()"></div> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-    `,
-  ],
+  styleUrls: ['./styles/_styles.scss'],
 })
 export class PageBuilderComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() onInitialize?: (pageBuilder: PageBuilder) => void;

@@ -4,6 +4,9 @@
   "description": "Angular wrapper for @mindfiredigital/page-builder-core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "styles": [
+    "dist/lib/_styles.scss"
+  ],
   "peerDependencies": {
     "@angular/common": ">=15.0.0",
     "@angular/core": ">=15.0.0",
