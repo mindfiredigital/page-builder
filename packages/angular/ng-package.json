@@ -1,12 +1,16 @@
 {
   "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
   "dest": "./dist",
-  "assets": ["./lib/*.css"],
+  "assets": [
+    {
+      "glob": "**/*",
+      "input": "node_modules/@mindfiredigital/page-builder-core/dist/styles",
+      "output": "styles"
+    }
+  ],
   "lib": {
     "entryFile": "src/public-api.ts",
     "cssUrl": "inline",
-    "styleIncludePaths": [
-      "node_modules/@mindfiredigital/page-builder-core/dist/styles"
-    ]
+    "styleIncludePaths": ["./src/lib/styles"]
   }
 }

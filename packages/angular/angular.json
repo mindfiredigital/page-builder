@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "page-builder-angular": {
+      "architect": {
+        "build": {
+          "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "node_modules/@mindfiredigital/page-builder-core/dist/styles"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
