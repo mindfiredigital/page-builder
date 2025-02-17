@@ -23,14 +23,12 @@ export class PageBuilderComponent extends HTMLElement {
 
   constructor() {
     super();
-    // Only set the template once
     if (!this.firstElementChild) {
       this.innerHTML = this.template;
     }
   }
 
   connectedCallback() {
-    // Ensure we only initialize once
     if (this.initialized) {
       return;
     }
@@ -44,9 +42,7 @@ export class PageBuilderComponent extends HTMLElement {
     }
 
     try {
-      // Set initialized first to prevent any potential race conditions
       this.initialized = true;
-
       this.pageBuilder = new PageBuilder();
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);
@@ -55,7 +51,6 @@ export class PageBuilderComponent extends HTMLElement {
   }
 }
 
-// Register the custom element
 if (!customElements.get('page-builder')) {
   customElements.define('page-builder', PageBuilderComponent);
 }

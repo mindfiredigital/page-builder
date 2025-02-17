@@ -2181,20 +2181,18 @@ class B {
       this.initializeEventListeners();
   }
   initializeEventListeners() {
-    document.addEventListener('DOMContentLoaded', () => {
-      (this.canvas = new b()),
-        (this.sidebar = new L(this.canvas)),
-        (this.htmlGenerator = new v(this.canvas)),
-        (this.jsonStorage = new m()),
-        (this.previewPanel = new H()),
-        this.setupInitialComponents(),
-        this.setupSaveButton(),
-        this.setupResetButton(),
-        this.setupExportHTMLButton(),
-        this.setupViewButton(),
-        this.setupPreviewModeButtons(),
-        this.setupUndoRedoButtons();
-    });
+    (this.canvas = new b()),
+      (this.sidebar = new L(this.canvas)),
+      (this.htmlGenerator = new v(this.canvas)),
+      (this.jsonStorage = new m()),
+      (this.previewPanel = new H()),
+      this.setupInitialComponents(),
+      this.setupSaveButton(),
+      this.setupResetButton(),
+      this.setupExportHTMLButton(),
+      this.setupViewButton(),
+      this.setupPreviewModeButtons(),
+      this.setupUndoRedoButtons();
   }
   setupInitialComponents() {
     if (
