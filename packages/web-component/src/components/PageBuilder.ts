@@ -23,11 +23,13 @@ export class PageBuilderComponent extends HTMLElement {
 
   constructor() {
     super();
+    // Set inner HTML only if no child elements exist
     if (!this.firstElementChild) {
       this.innerHTML = this.template;
     }
   }
 
+  // Lifecycle method: Called when the element is added to the DOM
   connectedCallback() {
     if (this.initialized) {
       return;
@@ -36,6 +38,7 @@ export class PageBuilderComponent extends HTMLElement {
     this.initializePageBuilder();
   }
 
+  // Initializes the PageBuilder instance
   private initializePageBuilder() {
     if (this.initialized) {
       return;
@@ -51,6 +54,7 @@ export class PageBuilderComponent extends HTMLElement {
   }
 }
 
+// Define the custom element if it hasn't been registered already
 if (!customElements.get('page-builder')) {
   customElements.define('page-builder', PageBuilderComponent);
 }

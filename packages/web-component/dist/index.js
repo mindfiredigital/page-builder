@@ -25,12 +25,14 @@ var PageBuilderComponent = class extends HTMLElement {
       this.innerHTML = this.template;
     }
   }
+  // Lifecycle method: Called when the element is added to the DOM
   connectedCallback() {
     if (this.initialized) {
       return;
     }
     this.initializePageBuilder();
   }
+  // Initializes the PageBuilder instance
   initializePageBuilder() {
     if (this.initialized) {
       return;
