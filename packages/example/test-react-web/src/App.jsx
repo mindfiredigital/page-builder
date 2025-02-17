@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import('@mindfiredigital/page-builder-web-component');
 
 const App = () => {
-  useEffect(() => {
-    import('@mindfiredigital/page-builder-web-component');
-  }, []);
 
   return (
     <div style={{     
