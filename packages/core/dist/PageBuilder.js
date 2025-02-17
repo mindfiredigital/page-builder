@@ -26,20 +26,20 @@ export class PageBuilder {
     this.initializeEventListeners();
   }
   initializeEventListeners() {
-    document.addEventListener('DOMContentLoaded', () => {
-      this.canvas = new Canvas();
-      this.sidebar = new Sidebar(this.canvas);
-      this.htmlGenerator = new HTMLGenerator(this.canvas);
-      this.jsonStorage = new JSONStorage();
-      this.previewPanel = new PreviewPanel();
-      this.setupInitialComponents();
-      this.setupSaveButton();
-      this.setupResetButton();
-      this.setupExportHTMLButton();
-      this.setupViewButton();
-      this.setupPreviewModeButtons();
-      this.setupUndoRedoButtons();
-    });
+    // document.addEventListener('DOMContentLoaded', () => {
+    this.canvas = new Canvas();
+    this.sidebar = new Sidebar(this.canvas);
+    this.htmlGenerator = new HTMLGenerator(this.canvas);
+    this.jsonStorage = new JSONStorage();
+    this.previewPanel = new PreviewPanel();
+    this.setupInitialComponents();
+    this.setupSaveButton();
+    this.setupResetButton();
+    this.setupExportHTMLButton();
+    this.setupViewButton();
+    this.setupPreviewModeButtons();
+    this.setupUndoRedoButtons();
+    // });
   }
   setupInitialComponents() {
     createSidebar();

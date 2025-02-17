@@ -1,25 +1,19 @@
-import { Component } from '@angular/core';
-import { PageBuilderComponent } from '@mindfiredigital/page-builder-angular';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-test',
-  template: `
-    <mf-page-builder
-      [onInitialize]="handleInitialize"
-      [customStyles]="customStyles"
-    ></mf-page-builder>
-  `,
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
   standalone: true,
-  imports: [PageBuilderComponent],
+  imports: [CommonModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppComponent {
-  customStyles = {
-    wrapper: {
-      border: '1px solid #ccc',
-    },
-  };
+  title = '';
 
-  handleInitialize(pageBuilder: any) {
-    console.log('PageBuilder initialized:', pageBuilder);
+  constructor() {
+    // Import the web component
+    import('@mindfiredigital/page-builder-web-component');
   }
 }
