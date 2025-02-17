@@ -11,6 +11,7 @@ export interface PageBuilderReactProps {
   };
 }
 
+//react wrapper for page builder
 export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({ 
   onInitialize,
   customStyles = {}
