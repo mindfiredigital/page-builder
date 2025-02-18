@@ -1,6 +1,7 @@
 {
   "name": "@mindfiredigital/page-builder-angular",
   "version": "0.0.1",
+  "private": "true",
   "description": "Angular wrapper for @mindfiredigital/page-builder-core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,6 +31,6 @@
     "sass-loader": "^16.0.4",
     "style-loader": "^4.0.0",
     "tslib": "^2.3.0",
-    "typescript": "5.4.5"
+    "typescript": "5.2.0"
   }
 }
