@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-core
 
+## 1.4.8
+
+### Patch Changes
+
+- release updated version
+
 ## 1.4.7
 
 ### Patch Changes
