@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder-react
 
+## 1.2.0
+
+### Minor Changes
+
+- test builld
+
 ## 1.1.11
 
 ### Patch Changes
