@@ -22,8 +22,8 @@
   },
   "sideEffects": false,
   "devDependencies": {
-    "@angular/compiler": "^17.0.0",
-    "@angular/compiler-cli": "^17.0.0",
+    "@angular/cli": "^19.1.5",
+    "@angular/compiler-cli": "^19.1.0",
     "css-loader": "^7.1.2",
     "ng-packagr": "^17.0.0",
     "ngx-build-plus": "^19.0.0",
