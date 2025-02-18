@@ -1,5 +1,6 @@
 {
   "name": "@mindfiredigital/page-builder-web-component",
+  "description": "UI Page builder Web-Component",
   "private": false,
   "version": "1.0.0",
   "repository": {
@@ -27,6 +28,20 @@
     "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
+  "keywords": [
+    "pagebuilder",
+    "page-builder-web-component",
+    "rich-page-builder",
+    "html-editor",
+    "typescript",
+    "npm-package",
+    "block-editor",
+    "visual-editor",
+    "no-code",
+    "low-code",
+    "component-based",
+    "responsive-design"
+  ],
   "peerDependencies": {
     "@mindfiredigital/page-builder-core": "workspace:*"
   },
