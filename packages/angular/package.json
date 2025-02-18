@@ -22,8 +22,8 @@
   },
   "sideEffects": false,
   "devDependencies": {
-    "@angular/compiler": "^17.0.0",
-    "@angular/compiler-cli": "^17.0.0",
+    "@angular/cli": "^19.1.5",
+    "@angular/compiler-cli": "^19.1.0",
     "css-loader": "^7.1.2",
     "ng-packagr": "^17.0.0",
     "ngx-build-plus": "^19.0.0",
@@ -31,6 +31,6 @@
     "sass-loader": "^16.0.4",
     "style-loader": "^4.0.0",
     "tslib": "^2.3.0",
-    "typescript": "5.2.0"
+    "typescript": "^5.7.3"
   }
 }
