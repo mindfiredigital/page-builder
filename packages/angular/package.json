@@ -30,6 +30,6 @@
     "sass-loader": "^16.0.4",
     "style-loader": "^4.0.0",
     "tslib": "^2.3.0",
-    "typescript": "5.4.5"
+    "typescript": "5.2.0"
   }
 }
