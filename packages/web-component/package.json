@@ -1,7 +1,11 @@
 {
   "name": "@mindfiredigital/page-builder-web-component",
-  "private": true,
-  "version": "0.0.1",
+  "private": false,
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mindfiredigital/page-builder.git"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -23,16 +27,17 @@
     "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
-  "dependencies": {
-    "@mindfiredigital/page-builder-core": "workspace:*",
-    "serve": "^14.2.4"
+  "peerDependencies": {
+    "@mindfiredigital/page-builder-core": "workspace:*"
   },
   "devDependencies": {
     "eslint": "^9.19.0",
     "tsup": "^6.7.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "serve": "^14.2.4"
   },
   "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
     "access": "public"
   }
 }
