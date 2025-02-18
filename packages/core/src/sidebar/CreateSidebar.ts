@@ -6,7 +6,7 @@ export function createSidebar() {
     return;
   }
 
-  // Define your components, icons, and titles as before
+  // Define your components, icons, and titles as before using it
   const icons: { [key: string]: string } = {
     button: svgs.button,
     header: svgs.header,
