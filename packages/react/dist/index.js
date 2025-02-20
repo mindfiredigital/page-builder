@@ -45,63 +45,12 @@ module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.tsx
 var import_react = __toESM(require('react'));
-var import_PageBuilder = require('@mindfiredigital/page-builder-core/dist/PageBuilder.js');
-var PageBuilderReact = ({ onInitialize, customStyles = {} }) => {
-  const pageBuilderRef = (0, import_react.useRef)(null);
-  const wrapperRef = (0, import_react.useRef)(null);
+var PageBuilderReact = () => {
   (0, import_react.useEffect)(() => {
-    const setupDOMStructure = () => {
-      if (!wrapperRef.current) return;
-      wrapperRef.current.innerHTML = '';
-      const appDiv = document.createElement('div');
-      appDiv.id = 'app';
-      appDiv.innerHTML = `
-        <div id="sidebar"></div>
-        <div id="canvas" class="canvas"></div>
-        <div id="customization">
-          <h4 id="component-name">Component: None</h4>
-          <div id="controls"></div>
-          <div id="layers-view" class="hidden"></div>
-        </div>
-        <div id="notification" class="notification hidden"></div>
-        <div id="dialog" class="dialog hidden">
-          <div class="dialog-content">
-            <p id="dialog-message"></p>
-            <button id="dialog-yes" class="dialog-btn">Yes</button>
-            <button id="dialog-no" class="dialog-btn">No</button>
-          </div>
-        </div>`;
-      wrapperRef.current.appendChild(appDiv);
-    };
-    const initializePageBuilder = () => {
-      try {
-        if (!pageBuilderRef.current) {
-          setupDOMStructure();
-          const pageBuilder = new import_PageBuilder.PageBuilder();
-          pageBuilderRef.current = pageBuilder;
-          if (onInitialize) {
-            onInitialize(pageBuilder);
-          }
-          const event = new Event('DOMContentLoaded');
-          document.dispatchEvent(event);
-        }
-      } catch (error) {
-        console.error('Error initializing PageBuilder:', error);
-      }
-    };
-    setTimeout(initializePageBuilder, 0);
-    return () => {
-      pageBuilderRef.current = null;
-    };
-  }, [onInitialize]);
-  return /* @__PURE__ */ import_react.default.createElement('div', {
-    ref: wrapperRef,
-    style: {
-      margin: 'auto',
-      width: '100%',
-      height: '100%',
-      ...customStyles.wrapper,
-    },
+    import('@mindfiredigital/page-builder-web-component');
+  }, []);
+  return /* @__PURE__ */ import_react.default.createElement('page-builder', {
+    style: { width: '100vw', height: '100vh' },
   });
 };
 // Annotate the CommonJS export names for ESM import in node:
