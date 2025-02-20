@@ -458,7 +458,7 @@ class r {
     const o = e.target;
     if (o && o.classList.contains('column')) {
       o.appendChild(s);
-      const e = `${this.element.id}-${`c${Array.from(o.parentElement.children).indexOf(o) + 1}`}`;
+      const e = `${this.element.id}-${`c${Array.from(o.parentElement.children).indexOf(o)}`}`;
       (o.id = e), o.classList.add(e);
       let t = o.querySelector('.column-label');
       t ||
