@@ -9,4 +9,4 @@ declare global {
   }
 }
 
-export {}; // Prevents TypeScript from treating this file as a script
+export {};
