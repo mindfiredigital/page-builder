@@ -458,7 +458,7 @@ class r {
     const o = e.target;
     if (o && o.classList.contains('column')) {
       o.appendChild(s);
-      const e = `${this.element.id}-${`c${Array.from(o.parentElement.children).indexOf(o) + 1}`}`;
+      const e = `${this.element.id}-${`c${Array.from(o.parentElement.children).indexOf(o)}`}`;
       (o.id = e), o.classList.add(e);
       let t = o.querySelector('.column-label');
       t ||
@@ -1164,29 +1164,34 @@ class w {
       this.layersView.appendChild(t);
   }
   static renderLayerItems(e, t, n = 0) {
-    t.forEach(t => {
-      const s = this.createLayerItemElement(t);
-      if (
-        ((s.style.paddingLeft = 1 * n + 'px'),
-        t.children && t.children.length > 0)
-      ) {
-        const o = document.createElement('span');
-        (o.className = 'layer-expand-toggle'), (o.textContent = '▶');
-        const i = document.createElement('ul');
-        (i.className = 'layer-children'),
-          (i.style.display = 'none'),
-          (i.style.paddingLeft = '0'),
-          this.renderLayerItems(i, t.children, n + 1),
-          o.addEventListener('click', () => {
-            'block' === i.style.display
-              ? ((i.style.display = 'none'), (o.textContent = '▶'))
-              : ((i.style.display = 'block'), (o.textContent = '▼'));
-          }),
-          s.appendChild(o),
-          e.appendChild(s),
-          e.appendChild(i);
-      } else e.appendChild(s);
-    });
+    const s = document.createElement('ul');
+    (s.className = 'layer-list'),
+      e.appendChild(s),
+      t.forEach(e => {
+        const t = document.createElement('li');
+        (t.className = 'layer-item-container'), s.appendChild(t);
+        const o = this.createLayerItemElement(e);
+        if (
+          ((o.style.paddingLeft = 12 * n + 'px'),
+          t.appendChild(o),
+          e.children && e.children.length > 0)
+        ) {
+          const s = document.createElement('span');
+          (s.className = 'layer-expand-toggle'),
+            (s.textContent = '▶'),
+            o.insertBefore(s, o.firstChild);
+          const i = document.createElement('div');
+          (i.className = 'child-container'),
+            (i.style.display = 'none'),
+            t.appendChild(i),
+            this.renderLayerItems(i, e.children, n + 1),
+            s.addEventListener('click', () => {
+              'block' === i.style.display
+                ? ((i.style.display = 'none'), (s.textContent = '▶'))
+                : ((i.style.display = 'block'), (s.textContent = '▼'));
+            });
+        }
+      });
   }
   static createLayerItemElement(e) {
     const t = document.createElement('li');

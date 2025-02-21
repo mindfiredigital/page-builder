@@ -77,9 +77,9 @@ export class MultiColumnContainer {
       const parentId = this.element.id;
 
       // Determine the column-specific suffix dynamically
-      const columnIndex =
-        Array.from(targetColumn.parentElement!.children).indexOf(targetColumn) +
-        1;
+      const columnIndex = Array.from(
+        targetColumn.parentElement!.children
+      ).indexOf(targetColumn);
       const columnSuffix = `c${columnIndex}`;
 
       const newColumnClassName = `${parentId}-${columnSuffix}`;
