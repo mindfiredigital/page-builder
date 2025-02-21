@@ -99,36 +99,42 @@ class LayersViewController {
    * Render layer items recursively
    */
   static renderLayerItems(parentElement, layers, depth = 0) {
+    const list = document.createElement('ul');
+    list.className = 'layer-list';
+    parentElement.appendChild(list);
     layers.forEach(layer => {
+      // List item to contain everything related to this layer
+      const listItem = document.createElement('li');
+      listItem.className = 'layer-item-container';
+      list.appendChild(listItem);
+      // The actual layer item element
       const layerItem = this.createLayerItemElement(layer);
-      layerItem.style.paddingLeft = `${depth * 1}px`; // Add indentation
+      layerItem.style.paddingLeft = `${depth * 12}px`;
+      listItem.appendChild(layerItem);
       // Handle nested children
       if (layer.children && layer.children.length > 0) {
         const expandToggle = document.createElement('span');
         expandToggle.className = 'layer-expand-toggle';
         expandToggle.textContent = '▶';
-        const childrenContainer = document.createElement('ul');
-        childrenContainer.className = 'layer-children';
-        childrenContainer.style.display = 'none'; // Initially hidden
-        childrenContainer.style.paddingLeft = '0'; // Remove additional left padding
-        // Recursive rendering of children with increased depth
-        this.renderLayerItems(childrenContainer, layer.children, depth + 1);
+        layerItem.insertBefore(expandToggle, layerItem.firstChild);
+        // Created a container for children
+        const childContainer = document.createElement('div');
+        childContainer.className = 'child-container';
+        childContainer.style.display = 'none';
+        listItem.appendChild(childContainer);
+        // Recursively render children
+        this.renderLayerItems(childContainer, layer.children, depth + 1);
         // Toggle expand/collapse
         expandToggle.addEventListener('click', () => {
-          const isExpanded = childrenContainer.style.display === 'block';
+          const isExpanded = childContainer.style.display === 'block';
           if (isExpanded) {
-            childrenContainer.style.display = 'none';
+            childContainer.style.display = 'none';
             expandToggle.textContent = '▶';
           } else {
-            childrenContainer.style.display = 'block';
+            childContainer.style.display = 'block';
             expandToggle.textContent = '▼';
           }
         });
-        layerItem.appendChild(expandToggle);
-        parentElement.appendChild(layerItem);
-        parentElement.appendChild(childrenContainer); // Append children container after the parent
-      } else {
-        parentElement.appendChild(layerItem);
       }
     });
   }
