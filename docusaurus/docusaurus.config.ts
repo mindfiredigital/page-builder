@@ -9,7 +9,7 @@ const config: Config = {
   favicon: 'img/mindfire.ico',
 
   url: 'https://mindfiredigital.github.io',
-  baseUrl: '/page-builder/',
+  baseUrl: '/page-builder',
 
   organizationName: 'mindfiredigital',
   projectName: 'page-builder',
@@ -53,7 +53,7 @@ const config: Config = {
           label: 'Tutorial',
         },
         {
-          href: 'https://github.com/mindfiredigital/canvas-editor',
+          href: 'https://github.com/mindfiredigital/page-builder',
           label: 'GitHub',
           position: 'right',
         },
