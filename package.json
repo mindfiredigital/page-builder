@@ -38,7 +38,7 @@
     "npm-package"
   ],
   "author": "",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
     "@changesets/changelog-github": "^0.5.0",
