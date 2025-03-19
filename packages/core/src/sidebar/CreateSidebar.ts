@@ -1,23 +1,30 @@
 import { svgs } from '../icons/svgs';
-export function createSidebar() {
-  // Dynamic components config which will be received from constructor later
-  const dynamicComponents = {
-    Basic: [
-      'button',
-      'header',
-      'text',
-      'image',
-      'video',
-      'container',
-      'twoCol',
-      'threeCol',
-      'table',
-      'link',
-    ],
-    // Add portfolio for version 2
-    Extra: ['landingpage'],
-  };
-
+export function createSidebar(dynamicComponents: DynamicComponents) {
+  // We have default values if there is no custom components are specified within parameters
+  if (
+    !dynamicComponents ||
+    (dynamicComponents.Basic.length === 0 &&
+      dynamicComponents.Extra.length === 0 &&
+      dynamicComponents.Custom.length === 0)
+  ) {
+    dynamicComponents = {
+      Basic: [
+        'button',
+        'header',
+        'text',
+        'image',
+        'video',
+        'container',
+        'twoCol',
+        'threeCol',
+        'table',
+        'link',
+      ],
+      // Add portfolio for version 2
+      Extra: ['landingpage'],
+      Custom: [],
+    };
+  }
   const sidebar = document.getElementById('sidebar')!;
   if (!sidebar) {
     console.error('Sidebar element not found');
@@ -69,7 +76,7 @@ export function createSidebar() {
     categoryHeading.innerHTML = category;
     categoryMenu.prepend(categoryHeading);
 
-    components.forEach(componentId => {
+    components.forEach((componentId: any) => {
       const iconElement = document.createElement('div');
       iconElement.classList.add('draggable');
       iconElement.id = componentId;

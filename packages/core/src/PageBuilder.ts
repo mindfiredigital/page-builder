@@ -24,8 +24,12 @@ export class PageBuilder {
   private jsonStorage: JSONStorage;
   private previewPanel: PreviewPanel;
   private static headerInitialized = false;
+  private dynamicComponents;
 
-  constructor() {
+  constructor(
+    dynamicComponents: DynamicComponents = { Basic: [], Extra: [], Custom: [] }
+  ) {
+    this.dynamicComponents = dynamicComponents;
     this.canvas = new Canvas();
     this.sidebar = new Sidebar(this.canvas);
     this.htmlGenerator = new HTMLGenerator(this.canvas);
@@ -53,7 +57,7 @@ export class PageBuilder {
   }
 
   public setupInitialComponents() {
-    createSidebar();
+    createSidebar(this.dynamicComponents);
     Canvas.init();
     this.sidebar.init();
     ShortcutManager.init();

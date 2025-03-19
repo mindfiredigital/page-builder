@@ -1,22 +1,30 @@
 import { svgs } from '../icons/svgs.js';
-export function createSidebar() {
-  // Dynamic components config which will be received from constructor later
-  const dynamicComponents = {
-    Basic: [
-      'button',
-      'header',
-      'text',
-      'image',
-      'video',
-      'container',
-      'twoCol',
-      'threeCol',
-      'table',
-      'link',
-    ],
-    // Add portfolio for version 2
-    Extra: ['landingpage'],
-  };
+export function createSidebar(dynamicComponents) {
+  // We have default values if there is no custom components are specified within parameters
+  if (
+    !dynamicComponents ||
+    (dynamicComponents.Basic.length === 0 &&
+      dynamicComponents.Extra.length === 0 &&
+      dynamicComponents.Custom.length === 0)
+  ) {
+    dynamicComponents = {
+      Basic: [
+        'button',
+        'header',
+        'text',
+        'image',
+        'video',
+        'container',
+        'twoCol',
+        'threeCol',
+        'table',
+        'link',
+      ],
+      // Add portfolio for version 2
+      Extra: ['landingpage'],
+      Custom: [],
+    };
+  }
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) {
     console.error('Sidebar element not found');

@@ -2177,8 +2177,9 @@ class H {
   }
 }
 class B {
-  constructor() {
-    (this.canvas = new b()),
+  constructor(e = { Basic: [], Extra: [], Custom: [] }) {
+    (this.dynamicComponents = e),
+      (this.canvas = new b()),
       (this.sidebar = new L(this.canvas)),
       (this.htmlGenerator = new v(this.canvas)),
       (this.jsonStorage = new m()),
@@ -2201,38 +2202,12 @@ class B {
   }
   setupInitialComponents() {
     if (
-      ((function () {
-        const e = document.getElementById('sidebar');
-        if (!e) return void console.error('Sidebar element not found');
-        const t = {
-            button: k.button,
-            header: k.header,
-            image: k.image,
-            video: k.video,
-            text: k.text,
-            container: k.container,
-            twoCol: k.twocol,
-            threeCol: k.threecol,
-            table: k.table,
-            landingpage: k.landing,
-            link: k.hyperlink,
-          },
-          n = {
-            button: 'Button',
-            header: 'Header',
-            image: 'Image',
-            video: 'Link Video',
-            text: 'Text',
-            container: 'Container',
-            twoCol: 'Two Column Layout',
-            threeCol: 'Three Column Layout',
-            table: 'Table',
-            landingpage: 'Landing Page Template',
-            link: 'Link',
-          },
-          s = document.createElement('div');
-        s.classList.add('menu'),
-          Object.entries({
+      ((function (e) {
+        (!e ||
+          (0 === e.Basic.length &&
+            0 === e.Extra.length &&
+            0 === e.Custom.length)) &&
+          (e = {
             Basic: [
               'button',
               'header',
@@ -2246,31 +2221,63 @@ class B {
               'link',
             ],
             Extra: ['landingpage'],
-          }).forEach(([e, o]) => {
+            Custom: [],
+          });
+        const t = document.getElementById('sidebar');
+        if (!t) return void console.error('Sidebar element not found');
+        const n = {
+            button: k.button,
+            header: k.header,
+            image: k.image,
+            video: k.video,
+            text: k.text,
+            container: k.container,
+            twoCol: k.twocol,
+            threeCol: k.threecol,
+            table: k.table,
+            landingpage: k.landing,
+            link: k.hyperlink,
+          },
+          s = {
+            button: 'Button',
+            header: 'Header',
+            image: 'Image',
+            video: 'Link Video',
+            text: 'Text',
+            container: 'Container',
+            twoCol: 'Two Column Layout',
+            threeCol: 'Three Column Layout',
+            table: 'Table',
+            landingpage: 'Landing Page Template',
+            link: 'Link',
+          },
+          o = document.createElement('div');
+        o.classList.add('menu'),
+          Object.entries(e).forEach(([e, t]) => {
             const i = document.createElement('div');
             i.classList.add('category');
             const l = document.createElement('h4');
             l.classList.add('categoryHeading'),
               (l.innerHTML = e),
               i.prepend(l),
-              o.forEach(e => {
-                const s = document.createElement('div');
-                s.classList.add('draggable'),
-                  (s.id = e),
-                  s.setAttribute('draggable', 'true'),
-                  s.setAttribute('data-component', e);
-                const o = n[e] || `Drag to add ${e}`;
-                if ((s.setAttribute('title', o), t[e])) {
-                  s.innerHTML = t[e];
-                  const n = s.querySelector('svg');
-                  n && n.classList.add('component-icon');
+              t.forEach(e => {
+                const t = document.createElement('div');
+                t.classList.add('draggable'),
+                  (t.id = e),
+                  t.setAttribute('draggable', 'true'),
+                  t.setAttribute('data-component', e);
+                const o = s[e] || `Drag to add ${e}`;
+                if ((t.setAttribute('title', o), n[e])) {
+                  t.innerHTML = n[e];
+                  const s = t.querySelector('svg');
+                  s && s.classList.add('component-icon');
                 } else console.warn(`Icon not found for component: ${e}`);
-                i.appendChild(s);
+                i.appendChild(t);
               }),
-              s.appendChild(i);
+              o.appendChild(i);
           }),
-          e.appendChild(s);
-      })(),
+          t.appendChild(o);
+      })(this.dynamicComponents),
       b.init(),
       this.sidebar.init(),
       S.init(),
