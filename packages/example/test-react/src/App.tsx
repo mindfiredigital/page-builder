@@ -1,9 +1,18 @@
 import { PageBuilderReact } from '@mindfiredigital/page-builder-react';
 
 const App = () => {
+  const dynamicComponents = {
+    Basic: [
+      'button',
+      'header',
+      'text',
+    ],
+    Extra: ['landingpage'],
+    Custom: [],
+  };  
   return (
     <div>
-      <PageBuilderReact />
+      <PageBuilderReact config={dynamicComponents}/>
     </div>
   );
 };

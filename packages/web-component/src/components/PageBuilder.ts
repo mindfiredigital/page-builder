@@ -3,6 +3,7 @@ import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
   private initialized = false;
+  private config = { Basic: [], Extra: [], Custom: [] };
   private template = `<div id="app">
       <div id="sidebar"></div>
       <div id="canvas" class="canvas"></div>
@@ -29,12 +30,28 @@ export class PageBuilderComponent extends HTMLElement {
     }
   }
 
+  // Observe 'config-data' attribute to detect changes
+  static get observedAttributes() {
+    return ['config-data'];
+  }
+
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === 'config-data' && newValue !== oldValue) {
+      try {
+        const parsedConfig = JSON.parse(newValue);
+        this.config = parsedConfig;
+        this.initializePageBuilder(); // Reinitialize Core when config changes
+      } catch (e) {
+        console.error('Failed to parse config:', e);
+      }
+    }
+  }
+
   // Lifecycle method: Called when the element is added to the DOM
   connectedCallback() {
     if (this.initialized) {
       return;
     }
-
     this.initializePageBuilder();
   }
 
@@ -46,7 +63,7 @@ export class PageBuilderComponent extends HTMLElement {
 
     try {
       this.initialized = true;
-      this.pageBuilder = new PageBuilder();
+      this.pageBuilder = new PageBuilder(this.config);
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);
       this.initialized = false;
