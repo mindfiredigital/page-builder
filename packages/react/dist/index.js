@@ -45,12 +45,20 @@ module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.tsx
 var import_react = __toESM(require('react'));
-var PageBuilderReact = () => {
+var PageBuilderReact = ({ config }) => {
+  const builderRef = (0, import_react.useRef)(null);
   (0, import_react.useEffect)(() => {
-    import('@mindfiredigital/page-builder-web-component');
+    import('@mindfiredigital/page-builder-web-component').catch(error => {
+      console.error('Failed to load web component:', error);
+    });
   }, []);
+  (0, import_react.useEffect)(() => {
+    if (builderRef.current) {
+      builderRef.current.setAttribute('config-data', JSON.stringify(config));
+    }
+  }, [config]);
   return /* @__PURE__ */ import_react.default.createElement('page-builder', {
-    style: { width: '100vw', height: '100vh' },
+    ref: builderRef,
   });
 };
 // Annotate the CommonJS export names for ESM import in node:

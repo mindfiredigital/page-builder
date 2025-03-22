@@ -1,5 +1,30 @@
 import { svgs } from '../icons/svgs';
-export function createSidebar() {
+export function createSidebar(dynamicComponents: DynamicComponents) {
+  // We have default values if there is no custom components are specified within parameters
+  if (
+    !dynamicComponents ||
+    (dynamicComponents.Basic.length === 0 &&
+      dynamicComponents.Extra.length === 0 &&
+      dynamicComponents.Custom.length === 0)
+  ) {
+    dynamicComponents = {
+      Basic: [
+        'button',
+        'header',
+        'text',
+        'image',
+        'video',
+        'container',
+        'twoCol',
+        'threeCol',
+        'table',
+        'link',
+      ],
+      // Add portfolio for version 2
+      Extra: ['landingpage'],
+      Custom: [],
+    };
+  }
   const sidebar = document.getElementById('sidebar')!;
   if (!sidebar) {
     console.error('Sidebar element not found');
@@ -40,25 +65,9 @@ export function createSidebar() {
   // Create the Templates menu section
   const templatesMenu = document.createElement('div');
   templatesMenu.classList.add('menu');
-  // Categories under Templates
-  const categories = {
-    Basic: [
-      'button',
-      'header',
-      'text',
-      'image',
-      'video',
-      'container',
-      'twoCol',
-      'threeCol',
-      'table',
-      'link',
-    ],
-    // Add portfolio for version 2
-    Extra: ['landingpage'],
-  };
 
-  Object.entries(categories).forEach(([category, components]) => {
+  // Depending upon the config object of the dynamic components, it will add components to the sidebar
+  Object.entries(dynamicComponents).forEach(([category, components]) => {
     const categoryMenu = document.createElement('div');
     categoryMenu.classList.add('category');
 
@@ -67,7 +76,7 @@ export function createSidebar() {
     categoryHeading.innerHTML = category;
     categoryMenu.prepend(categoryHeading);
 
-    components.forEach(componentId => {
+    components.forEach((componentId: any) => {
       const iconElement = document.createElement('div');
       iconElement.classList.add('draggable');
       iconElement.id = componentId;

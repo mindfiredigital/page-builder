@@ -1,10 +1,18 @@
 // src/components/PageBuilder.tsx
-import React, { useEffect } from "react";
-var PageBuilderReact = () => {
+import React, { useEffect, useRef } from "react";
+var PageBuilderReact = ({ config }) => {
+  const builderRef = useRef(null);
   useEffect(() => {
-    import("@mindfiredigital/page-builder-web-component");
+    import("@mindfiredigital/page-builder-web-component").catch((error) => {
+      console.error("Failed to load web component:", error);
+    });
   }, []);
-  return /* @__PURE__ */ React.createElement("page-builder", { style: { width: "100vw", height: "100vh" } });
+  useEffect(() => {
+    if (builderRef.current) {
+      builderRef.current.setAttribute("config-data", JSON.stringify(config));
+    }
+  }, [config]);
+  return /* @__PURE__ */ React.createElement("page-builder", { ref: builderRef });
 };
 export {
   PageBuilderReact

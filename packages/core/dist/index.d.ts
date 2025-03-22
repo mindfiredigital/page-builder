@@ -5,7 +5,8 @@ declare class PageBuilder {
   private jsonStorage;
   private previewPanel;
   private static headerInitialized;
-  constructor();
+  private dynamicComponents;
+  constructor(dynamicComponents?: DynamicComponents);
   initializeEventListeners(): void;
   setupInitialComponents(): void;
   setupSaveButton(): void;

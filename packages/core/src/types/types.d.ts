@@ -35,6 +35,13 @@ declare global {
     components: ComponentConfig[]; // Array of component configurations on the canvas
   }
 
+  // Define interface for Dynamic components
+  interface DynamicComponents {
+    Basic: string[];
+    Extra: string[];
+    Custom: string[];
+  }
+
   // Define a union type for different device preview modes
   type DevicePreviewMode = 'desktop' | 'tablet' | 'mobile';
 }
