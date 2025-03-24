@@ -11,7 +11,7 @@ const App = () => {
       'threeCol'
     ],
     Extra: ['landingpage'],
-    Custom: [],
+    Custom: {},
   };  
   return (
     <div>
