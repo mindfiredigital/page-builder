@@ -4,7 +4,13 @@ import React, { useEffect, useRef } from "react";
 interface DynamicComponents {
   Basic: string[];
   Extra: string[];
-  Custom: string[];
+  Custom: Record<string, CustomComponentConfig>;
+}
+
+interface CustomComponentConfig {
+  component: React.FC<any>;
+  svg?: string;  // Optional SVG icon string
+  title?: string; // Optional custom title
 }
 // Props interface for the PageBuilderReact component
 interface PageBuilderReactProps {

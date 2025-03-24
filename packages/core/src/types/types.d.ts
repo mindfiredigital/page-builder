@@ -39,7 +39,14 @@ declare global {
   interface DynamicComponents {
     Basic: string[];
     Extra: string[];
-    Custom: string[];
+    Custom: Record<string, CustomComponentConfig>;
+  }
+
+  // Define interface for each custom component and its details
+  interface CustomComponentConfig {
+    component: string;
+    svg?: string; // Optional SVG icon string
+    title?: string; // Optional custom title
   }
 
   // Define a union type for different device preview modes

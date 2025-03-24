@@ -17,7 +17,7 @@ import { PreviewPanel } from './canvas/PreviewPanel.js';
 import './styles/main.css';
 import { svgs } from './icons/svgs.js';
 export class PageBuilder {
-  constructor(dynamicComponents = { Basic: [], Extra: [], Custom: [] }) {
+  constructor(dynamicComponents = { Basic: [], Extra: [], Custom: {} }) {
     this.dynamicComponents = dynamicComponents;
     this.canvas = new Canvas();
     this.sidebar = new Sidebar(this.canvas);

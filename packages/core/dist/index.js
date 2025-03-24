@@ -1275,7 +1275,7 @@ class w {
   }
 }
 (w.layersView = null), (w.canvasRoot = null), (w.draggedItem = null);
-class f {
+class C {
   static init() {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1449,7 +1449,7 @@ class f {
         'color',
         r.borderColor || '#000000'
       );
-    const a = f.rgbToHex(r.backgroundColor),
+    const a = C.rgbToHex(r.backgroundColor),
       d = document.getElementById('color');
     d && (d.value = a), this.addListeners(i);
   }
@@ -1608,7 +1608,7 @@ class f {
     return this.layersViewController;
   }
 }
-class C {
+class f {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -1657,13 +1657,13 @@ class b {
       b.canvasElement.addEventListener('dragover', e => e.preventDefault()),
       b.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && f.showSidebar(t.id);
+        t && C.showSidebar(t.id);
       }),
       (b.canvasElement.style.position = 'relative'),
       (b.historyManager = new u(b.canvasElement)),
       (b.jsonStorage = new m()),
       (b.controlsManager = new g(b)),
-      (b.gridManager = new C()),
+      (b.gridManager = new f()),
       b.gridManager.initializeDropPreview(b.canvasElement);
     new e(b.canvasElement, b.sidebarElement).enable();
     const t = b.jsonStorage.load();
@@ -1815,7 +1815,7 @@ class b {
         b.components.push(i),
         b.canvasElement.appendChild(i),
         b.addDraggableListeners(i),
-        f.updateLayersView(),
+        C.updateLayersView(),
         b.historyManager.captureState();
     }
   }
@@ -1850,7 +1850,7 @@ class b {
           ? n.setAttribute('contenteditable', 'false')
           : n.setAttribute('contenteditable', 'true'),
         b.controlsManager.addControlButtons(n),
-        f.updateLayersView();
+        C.updateLayersView();
     }
     return n;
   }
@@ -2177,7 +2177,7 @@ class H {
   }
 }
 class B {
-  constructor(e = { Basic: [], Extra: [], Custom: [] }) {
+  constructor(e = { Basic: [], Extra: [], Custom: {} }) {
     (this.dynamicComponents = e),
       (this.canvas = new b()),
       (this.sidebar = new L(this.canvas)),
@@ -2206,7 +2206,7 @@ class B {
         (!e ||
           (0 === e.Basic.length &&
             0 === e.Extra.length &&
-            0 === e.Custom.length)) &&
+            0 === Object.keys(e.Custom).length)) &&
           (e = {
             Basic: [
               'button',
@@ -2221,7 +2221,7 @@ class B {
               'link',
             ],
             Extra: ['landingpage'],
-            Custom: [],
+            Custom: {},
           });
         const t = document.getElementById('sidebar');
         if (!t) return void console.error('Sidebar element not found');
@@ -2260,20 +2260,24 @@ class B {
             l.classList.add('categoryHeading'),
               (l.innerHTML = e),
               i.prepend(l),
-              t.forEach(e => {
-                const t = document.createElement('div');
-                t.classList.add('draggable'),
-                  (t.id = e),
-                  t.setAttribute('draggable', 'true'),
-                  t.setAttribute('data-component', e);
-                const o = s[e] || `Drag to add ${e}`;
-                if ((t.setAttribute('title', o), n[e])) {
-                  t.innerHTML = n[e];
-                  const s = t.querySelector('svg');
-                  s && s.classList.add('component-icon');
-                } else console.warn(`Icon not found for component: ${e}`);
-                i.appendChild(t);
-              }),
+              Array.isArray(t)
+                ? t.forEach(e => {
+                    const t = document.createElement('div');
+                    t.classList.add('draggable'),
+                      (t.id = e),
+                      t.setAttribute('draggable', 'true'),
+                      t.setAttribute('data-component', e);
+                    const o = s[e] || `Drag to add ${e}`;
+                    if ((t.setAttribute('title', o), n[e])) {
+                      t.innerHTML = n[e];
+                      const s = t.querySelector('svg');
+                      s && s.classList.add('component-icon');
+                    } else console.warn(`Icon not found for component: ${e}`);
+                    i.appendChild(t);
+                  })
+                : 'Custom' === e &&
+                  'object' == typeof t &&
+                  console.log('Custom components are not handled yet'),
               o.appendChild(i);
           }),
           t.appendChild(o);
@@ -2281,7 +2285,7 @@ class B {
       b.init(),
       this.sidebar.init(),
       S.init(),
-      f.init(),
+      C.init(),
       !B.headerInitialized)
     ) {
       if (document.getElementById('page-builder-header'))
