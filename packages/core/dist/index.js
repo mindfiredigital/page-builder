@@ -56,41 +56,41 @@ class n {
       (i.accept = 'image/*'),
       (i.style.display = 'none'),
       i.addEventListener('change', e => n.handleFileChange(e, t, o));
-    const l = document.createElement('button');
-    l.classList.add('upload-btn'),
-      (l.innerHTML = '🖊️'),
-      (l.style.position = 'absolute'),
-      (l.style.padding = '8px'),
-      (l.style.background = 'transparent'),
-      (l.style.border = 'none'),
-      (l.style.cursor = 'pointer'),
-      (l.style.opacity = '0'),
-      (l.style.transition = 'opacity 0.2s'),
-      (l.style.left = '50%'),
-      (l.style.top = '50%'),
-      (l.style.transform = 'translate(-50%, -50%)'),
-      (l.style.fontSize = '24px'),
-      l.addEventListener('click', () => i.click());
-    const r = document.createElement('img'),
+    const r = document.createElement('button');
+    r.classList.add('upload-btn'),
+      (r.innerHTML = '🖊️'),
+      (r.style.position = 'absolute'),
+      (r.style.padding = '8px'),
+      (r.style.background = 'transparent'),
+      (r.style.border = 'none'),
+      (r.style.cursor = 'pointer'),
+      (r.style.opacity = '0'),
+      (r.style.transition = 'opacity 0.2s'),
+      (r.style.left = '50%'),
+      (r.style.top = '50%'),
+      (r.style.transform = 'translate(-50%, -50%)'),
+      (r.style.fontSize = '24px'),
+      r.addEventListener('click', () => i.click());
+    const l = document.createElement('img'),
       a = `${s}-img`;
     return (
-      (r.id = a),
-      (r.style.width = '100%'),
-      (r.style.height = '100%'),
-      (r.style.objectFit = 'contain'),
-      (r.style.border = 'none'),
-      (r.style.display = 'none'),
-      e && ((r.src = e), (r.style.display = 'block')),
+      (l.id = a),
+      (l.style.width = '100%'),
+      (l.style.height = '100%'),
+      (l.style.objectFit = 'contain'),
+      (l.style.border = 'none'),
+      (l.style.display = 'none'),
+      e && ((l.src = e), (l.style.display = 'block')),
       t.addEventListener('mouseenter', () => {
-        l.style.opacity = '1';
+        r.style.opacity = '1';
       }),
       t.addEventListener('mouseleave', () => {
-        l.style.opacity = '0';
+        r.style.opacity = '0';
       }),
       t.appendChild(o),
       t.appendChild(i),
-      t.appendChild(l),
       t.appendChild(r),
+      t.appendChild(l),
       t
     );
   }
@@ -204,7 +204,7 @@ class i {
     return (n.innerText = t), n.classList.add('header-component'), n;
   }
 }
-class l {
+class r {
   constructor() {
     (this.MINIMUM_SIZE = 20),
       (this.originalWidth = 0),
@@ -309,16 +309,16 @@ class l {
       s = 0,
       o = 0,
       i = 0;
-    const l = l => {
+    const r = r => {
         if (!t) return;
-        const r = l.clientX - n,
-          a = l.clientY - s;
-        e.style.transform = `translate(${o + r}px, ${i + a}px)`;
+        const l = r.clientX - n,
+          a = r.clientY - s;
+        e.style.transform = `translate(${o + l}px, ${i + a}px)`;
       },
-      r = () => {
+      l = () => {
         (t = !1),
-          window.removeEventListener('mousemove', l),
-          window.removeEventListener('mouseup', r);
+          window.removeEventListener('mousemove', r),
+          window.removeEventListener('mouseup', l);
       };
     e.addEventListener('mousedown', a => {
       a.preventDefault(),
@@ -329,8 +329,8 @@ class l {
       const d = e.getBoundingClientRect();
       (o = d.left),
         (i = d.top),
-        window.addEventListener('mousemove', l),
-        window.addEventListener('mouseup', r);
+        window.addEventListener('mousemove', r),
+        window.addEventListener('mouseup', l);
     });
   }
   onDrop(e) {
@@ -346,12 +346,12 @@ class l {
     const o = this.element.classList[2],
       i = b.generateUniqueClass(n, !0, o);
     s.classList.add(i);
-    const l = document.createElement('span');
-    (l.className = 'component-label'),
-      (l.textContent = i),
+    const r = document.createElement('span');
+    (r.className = 'component-label'),
+      (r.textContent = i),
       (s.id = i),
-      (l.style.display = 'none'),
-      s.appendChild(l),
+      (r.style.display = 'none'),
+      s.appendChild(r),
       s.addEventListener('mouseenter', e => this.showLabel(e, s)),
       s.addEventListener('mouseleave', e => this.hideLabel(e, s)),
       this.element.appendChild(s),
@@ -394,12 +394,12 @@ class l {
     t && t.remove();
     const n = document.createElement('div');
     n.classList.add('resizers');
-    const s = new l();
+    const s = new r();
     (s.element = e), (s.resizers = n), s.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e) {
-    l.restoreResizer(e);
-    const t = new l();
+    r.restoreResizer(e);
+    const t = new r();
     t.element = e;
     e.querySelectorAll('.editable-component').forEach(e => {
       var s;
@@ -420,7 +420,7 @@ class l {
     });
   }
 }
-class r {
+class l {
   constructor(e, t = `${e}Col-component`) {
     (this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -468,12 +468,12 @@ class r {
         (t.textContent = e);
       const i = b.generateUniqueClass(n, !0, e);
       s.classList.add(i), (s.id = i);
-      let l = s.querySelector('.component-label');
-      l ||
-        ((l = document.createElement('span')),
-        (l.className = 'component-label'),
-        s.appendChild(l)),
-        (l.textContent = i),
+      let r = s.querySelector('.component-label');
+      r ||
+        ((r = document.createElement('span')),
+        (r.className = 'component-label'),
+        s.appendChild(r)),
+        (r.textContent = i),
         b.historyManager.captureState();
     }
   }
@@ -502,12 +502,12 @@ class r {
     });
   }
 }
-class a extends r {
+class a extends l {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class d extends r {
+class d extends l {
   constructor() {
     super(3, 'threeCol-component');
   }
@@ -607,15 +607,15 @@ class p {
     o.classList.add('edit-link-form');
     const i = document.createElement('input');
     (i.type = 'url'), (i.value = e), (i.placeholder = 'Enter URL');
-    const l = document.createElement('input');
-    l.type = 'checkbox';
-    const r = document.createElement('label');
-    (r.innerHTML = 'Open in new tab'), r.appendChild(l);
+    const r = document.createElement('input');
+    r.type = 'checkbox';
+    const l = document.createElement('label');
+    (l.innerHTML = 'Open in new tab'), l.appendChild(r);
     const a = document.createElement('button');
     return (
       (a.innerHTML = 'Save'),
       o.appendChild(i),
-      o.appendChild(r),
+      o.appendChild(l),
       o.appendChild(a),
       s.addEventListener('click', e => {
         e.preventDefault(),
@@ -631,7 +631,7 @@ class p {
           this.link &&
             ((this.link.href = i.value),
             (this.link.style.display = 'inline'),
-            (this.link.target = l.checked ? '_blank' : '_self')),
+            (this.link.target = r.checked ? '_blank' : '_self')),
           (s.style.display = 'inline-flex'),
           (o.style.display = 'none');
       }),
@@ -665,18 +665,18 @@ class p {
     const s = e.querySelector('.link-component-label'),
       o = e.querySelector('.edit-link'),
       i = e.querySelector('.edit-link-form'),
-      l = i.querySelector('button'),
-      r = i.querySelector('input[type="url"]'),
+      r = i.querySelector('button'),
+      l = i.querySelector('input[type="url"]'),
       a = i.querySelector('input[type="checkbox"]');
-    if (!(s && o && i && l && r && a))
+    if (!(s && o && i && r && l && a))
       return void console.error('Required elements not found');
     (s.style.display = 'inline'),
       (o.style.display = 'inline-flex'),
       (i.style.display = 'none');
     const d = o.cloneNode(!0),
-      c = l.cloneNode(!0);
+      c = r.cloneNode(!0);
     null === (t = o.parentNode) || void 0 === t || t.replaceChild(d, o),
-      null === (n = l.parentNode) || void 0 === n || n.replaceChild(c, l),
+      null === (n = r.parentNode) || void 0 === n || n.replaceChild(c, r),
       d.addEventListener('click', e => {
         e.preventDefault(),
           (s.style.display = 'none'),
@@ -686,7 +686,7 @@ class p {
       c.addEventListener('click', e => {
         e.preventDefault(),
           e.stopPropagation(),
-          (s.href = r.value),
+          (s.href = l.value),
           (s.style.display = 'inline'),
           (s.target = a.checked ? '_blank' : '_self'),
           (d.style.display = 'inline-flex'),
@@ -702,17 +702,17 @@ class h {
           s,
           o,
           i = !1,
-          l = !1,
-          r = 0,
+          r = !1,
+          l = 0,
           a = 0;
         (e.style.position = 'relative'),
           (e.style.cursor = 'move'),
           e.addEventListener('mousedown', s => {
-            l ||
+            r ||
               ((i = !0),
               (t = s.clientX),
               (n = s.clientY),
-              (r = parseFloat(e.getAttribute('data-x') || '0')),
+              (l = parseFloat(e.getAttribute('data-x') || '0')),
               (a = parseFloat(e.getAttribute('data-y') || '0')),
               document.addEventListener('mousemove', d),
               document.addEventListener('mouseup', c));
@@ -721,10 +721,10 @@ class h {
             if (i) {
               const o = s.clientX - t,
                 i = s.clientY - n,
-                l = r + o,
+                r = l + o,
                 d = a + i;
-              (e.style.transform = `translate(${l}px, ${d}px)`),
-                e.setAttribute('data-x', l.toString()),
+              (e.style.transform = `translate(${r}px, ${d}px)`),
+                e.setAttribute('data-x', r.toString()),
                 e.setAttribute('data-y', d.toString());
             }
           },
@@ -747,29 +747,29 @@ class h {
             e.appendChild(i),
             i.addEventListener('mousedown', i => {
               i.stopPropagation(),
-                (l = !0),
+                (r = !0),
                 (s = e.offsetWidth),
                 (o = e.offsetHeight),
                 (t = i.clientX),
                 (n = i.clientY),
-                document.addEventListener('mousemove', r),
+                document.addEventListener('mousemove', l),
                 document.addEventListener('mouseup', a);
             });
-          const r = i => {
-              if (l) {
-                const l = s + (i.clientX - t),
-                  r = o + (i.clientY - n);
-                (e.style.width = `${l}px`), (e.style.height = `${r}px`);
+          const l = i => {
+              if (r) {
+                const r = s + (i.clientX - t),
+                  l = o + (i.clientY - n);
+                (e.style.width = `${r}px`), (e.style.height = `${l}px`);
               }
             },
             a = () => {
-              (l = !1),
-                document.removeEventListener('mousemove', r),
+              (r = !1),
+                document.removeEventListener('mousemove', l),
                 document.removeEventListener('mouseup', a);
             };
         }
       },
-      n = new l().create();
+      n = new r().create();
     n.classList.add('container'),
       Object.assign(n.style, {
         width: '100%',
@@ -779,7 +779,7 @@ class h {
         fontFamily: "'Roboto', sans-serif",
       }),
       e(n);
-    const s = new l().create();
+    const s = new r().create();
     s.classList.add('container'),
       Object.assign(s.style, {
         display: 'flex',
@@ -795,10 +795,10 @@ class h {
       fontWeight: 'bold',
       color: '#333',
     });
-    const r = new l().create();
-    r.classList.add('container'),
-      Object.assign(r.style, { display: 'flex', gap: '20px' }),
-      e(r),
+    const l = new r().create();
+    l.classList.add('container'),
+      Object.assign(l.style, { display: 'flex', gap: '20px' }),
+      e(l),
       ['Home', 'Features', 'Contact'].forEach(e => {
         const n = new t(e).create();
         Object.assign(n.style, {
@@ -806,11 +806,11 @@ class h {
           color: '#555',
           textDecoration: 'none',
         }),
-          r.appendChild(n);
+          l.appendChild(n);
       }),
       s.appendChild(i),
-      s.appendChild(r);
-    const a = new l().create();
+      s.appendChild(l);
+    const a = new r().create();
     a.classList.add('container'),
       Object.assign(a.style, {
         textAlign: 'center',
@@ -857,7 +857,7 @@ class h {
       a.appendChild(d),
       a.appendChild(c),
       a.appendChild(p);
-    const h = new l().create();
+    const h = new r().create();
     h.classList.add('container'),
       Object.assign(h.style, {
         textAlign: 'center',
@@ -1087,9 +1087,9 @@ class v {
             s.push(`${e}: ${n};`);
           }
         });
-        const l = this.generateUniqueSelector(e);
+        const r = this.generateUniqueSelector(e);
         s.length > 0 &&
-          n.push(`\n        ${l} {\n          ${s.join('\n  ')}\n        }`);
+          n.push(`\n        ${r} {\n          ${s.join('\n  ')}\n        }`);
       }),
       n.join('\n')
     );
@@ -1353,12 +1353,12 @@ class C {
     const i = document.getElementById(e);
     if ((console.log(`Showing sidebar for: ${e}`), !i))
       return void console.error(`Component with ID "${e}" not found.`);
-    const l = 'canvas' === e.toLowerCase();
+    const r = 'canvas' === e.toLowerCase();
     (this.sidebarElement.style.display = 'block'),
       (this.controlsContainer.innerHTML = ''),
       (this.componentNameHeader.textContent = `Component: ${e}`);
-    const r = getComputedStyle(i);
-    this.createSelectControl('Display', 'display', r.display || 'block', [
+    const l = getComputedStyle(i);
+    this.createSelectControl('Display', 'display', l.display || 'block', [
       'block',
       'inline',
       'inline-block',
@@ -1366,7 +1366,7 @@ class C {
       'grid',
       'none',
     ]),
-      l ||
+      r ||
         (this.createControl('Width', 'width', 'number', i.offsetWidth, {
           min: 0,
           max: 1e3,
@@ -1381,23 +1381,23 @@ class C {
           'Margin',
           'margin',
           'number',
-          parseInt(r.margin) || 0,
+          parseInt(l.margin) || 0,
           { min: 0, max: 1e3, unit: 'px' }
         ),
         this.createControl(
           'Padding',
           'padding',
           'number',
-          parseInt(r.padding) || 0,
+          parseInt(l.padding) || 0,
           { min: 0, max: 1e3, unit: 'px' }
         )),
-      this.createControl('Color', 'color', 'color', r.backgroundColor),
-      this.createSelectControl('Text Alignment', 'alignment', r.textAlign, [
+      this.createControl('Color', 'color', 'color', l.backgroundColor),
+      this.createSelectControl('Text Alignment', 'alignment', l.textAlign, [
         'left',
         'center',
         'right',
       ]),
-      this.createSelectControl('Font Family', 'font-family', r.fontFamily, [
+      this.createSelectControl('Font Family', 'font-family', l.fontFamily, [
         'Arial',
         'Verdana',
         'Helvetica',
@@ -1411,26 +1411,26 @@ class C {
         'Font Size',
         'font-size',
         'number',
-        parseInt(r.fontSize) || 16,
+        parseInt(l.fontSize) || 16,
         { min: 0, max: 100, unit: 'px' }
       ),
       this.createControl(
         'Text Color',
         'text-color',
         'color',
-        r.color || '#000000'
+        l.color || '#000000'
       ),
       this.createControl(
         'Border Width',
         'border-width',
         'number',
-        parseInt(r.borderWidth) || 0,
+        parseInt(l.borderWidth) || 0,
         { min: 0, max: 20, unit: 'px' }
       ),
       this.createSelectControl(
         'Border Style',
         'border-style',
-        r.borderStyle || 'none',
+        l.borderStyle || 'none',
         [
           'none',
           'solid',
@@ -1447,9 +1447,9 @@ class C {
         'Border Color',
         'border-color',
         'color',
-        r.borderColor || '#000000'
+        l.borderColor || '#000000'
       );
-    const a = C.rgbToHex(r.backgroundColor),
+    const a = C.rgbToHex(l.backgroundColor),
       d = document.getElementById('color');
     d && (d.value = a), this.addListeners(i);
   }
@@ -1465,15 +1465,15 @@ class C {
     const i = document.createElement('div');
     i.classList.add('control-wrapper');
     if ('number' === n && o.unit) {
-      const l = o.unit;
-      i.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${s}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === l ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === l ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === l ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === l ? 'selected' : ''}>%</option>\n                  </select>\n              `;
+      const r = o.unit;
+      i.innerHTML = `\n                  <label for="${t}">${e}:</label>\n                  <input type="${n}" id="${t}" value="${s}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === r ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === r ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === r ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === r ? 'selected' : ''}>%</option>\n                  </select>\n              `;
     } else
       i.innerHTML = `\n          <label for="${t}">${e}:</label>\n          <input type="color" id="${t}" value="${s}">\n          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${s}">\n        `;
-    const l = i.querySelector('input'),
-      r = i.querySelector(`#${t}-unit`);
-    l &&
+    const r = i.querySelector('input'),
+      l = i.querySelector(`#${t}-unit`);
+    r &&
       Object.keys(o).forEach(e => {
-        l.setAttribute(e, o[e].toString());
+        r.setAttribute(e, o[e].toString());
       });
     const a = i.querySelector('input[type="color"]'),
       d = i.querySelector('#color-value');
@@ -1486,11 +1486,11 @@ class C {
           a && (a.value = d.value);
         }),
       this.controlsContainer.appendChild(i),
-      r &&
-        r.addEventListener('change', () => {
-          const e = r.value,
-            t = parseInt(l.value);
-          l.value = `${t}${e}`;
+      l &&
+        l.addEventListener('change', () => {
+          const e = l.value,
+            t = parseInt(r.value);
+          r.value = `${t}${e}`;
         });
   }
   static createSelectControl(e, t, n, s) {
@@ -1505,7 +1505,7 @@ class C {
       this.controlsContainer.appendChild(o);
   }
   static addListeners(e) {
-    var t, n, s, o, i, l, r, a, d, c, p, h, u;
+    var t, n, s, o, i, r, l, a, d, c, p, h, u;
     const m = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -1561,14 +1561,14 @@ class C {
           const t = document.getElementById('padding-unit').value;
           (e.style.padding = `${m.padding.value}${t}`), g();
         }),
-      null === (l = m.alignment) ||
-        void 0 === l ||
-        l.addEventListener('change', () => {
+      null === (r = m.alignment) ||
+        void 0 === r ||
+        r.addEventListener('change', () => {
           (e.style.textAlign = m.alignment.value), g();
         }),
-      null === (r = m.fontSize) ||
-        void 0 === r ||
-        r.addEventListener('input', () => {
+      null === (l = m.fontSize) ||
+        void 0 === l ||
+        l.addEventListener('input', () => {
           const t = document.getElementById('font-size-unit').value;
           (e.style.fontSize = `${m.fontSize.value}${t}`), g();
         }),
@@ -1769,10 +1769,10 @@ class b {
             b.controlsManager.addControlButtons(t),
             b.addDraggableListeners(t),
             t.classList.contains('container-component') &&
-              l.restoreContainer(t),
+              r.restoreContainer(t),
             (t.classList.contains('twoCol-component') ||
               t.classList.contains('threeCol-component')) &&
-              r.restoreColumn(t),
+              l.restoreColumn(t),
             'image' === e.type && n.restoreImageUpload(t, e.imageSrc),
             'table' === e.type && c.restore(t),
             'link' === e.type && p.restore(t),
@@ -1808,10 +1808,10 @@ class b {
           : ((i.style.position = 'absolute'),
             (i.style.left = `${s}px`),
             (i.style.top = `${o}px`));
-      const l = document.createElement('span');
-      (l.className = 'component-label'),
-        (l.textContent = t),
-        i.appendChild(l),
+      const r = document.createElement('span');
+      (r.className = 'component-label'),
+        (r.textContent = t),
+        i.appendChild(r),
         b.components.push(i),
         b.canvasElement.appendChild(i),
         b.addDraggableListeners(i),
@@ -1902,22 +1902,22 @@ class b {
       o = 0;
     e.addEventListener('dragstart', i => {
       if (i.dataTransfer) {
-        const l = b.canvasElement.getBoundingClientRect(),
-          r = e.getBoundingClientRect();
+        const r = b.canvasElement.getBoundingClientRect(),
+          l = e.getBoundingClientRect();
         (t = i.clientX),
           (n = i.clientY),
-          (s = r.left - l.left),
-          (o = r.top - l.top),
+          (s = l.left - r.left),
+          (o = l.top - r.top),
           (i.dataTransfer.effectAllowed = 'move'),
           (e.style.cursor = 'grabbing');
       }
     }),
       e.addEventListener('dragend', i => {
         i.preventDefault();
-        const l = i.clientX - t,
-          r = i.clientY - n;
-        let a = s + l,
-          d = o + r;
+        const r = i.clientX - t,
+          l = i.clientY - n;
+        let a = s + r,
+          d = o + l;
         const c = b.canvasElement.offsetWidth - e.offsetWidth,
           p = b.canvasElement.offsetHeight - e.offsetHeight;
         (a = Math.max(0, Math.min(a, c))),
@@ -1940,7 +1940,7 @@ class b {
     video: () => new s(() => b.historyManager.captureState()).create(),
     table: () => new c().create(2, 2),
     text: () => new t().create(),
-    container: () => new l().create(),
+    container: () => new r().create(),
     twoCol: () => new a().create(),
     threeCol: () => new d().create(),
     landingpage: () => new h().create(),
@@ -2043,15 +2043,15 @@ function M(e) {
   const o = [];
   e.forEach(e => {
     const i = t(e.name),
-      l = t(e.content),
-      r = (function (e) {
+      r = t(e.content),
+      l = (function (e) {
         let t = 4294967295;
         for (let n = 0; n < e.length; n++) {
           t ^= e[n];
           for (let e = 0; e < 8; e++) t = (t >>> 1) ^ (1 & t ? 3988292384 : 0);
         }
         return 4294967295 ^ t;
-      })(l),
+      })(r),
       a = ((e, t, n) => {
         const s = new Uint8Array(30 + e.length);
         return (
@@ -2088,8 +2088,8 @@ function M(e) {
           s.set(e, 30),
           s
         );
-      })(i, l, r);
-    n.push(a), n.push(l);
+      })(i, r, l);
+    n.push(a), n.push(r);
     const d = ((e, t, n, s) => {
       const o = new Uint8Array(46 + e.length);
       return (
@@ -2129,12 +2129,12 @@ function M(e) {
         o.set(e, 46),
         o
       );
-    })(i, l, r, s);
-    o.push(d), (s += a.length + l.length);
+    })(i, r, l, s);
+    o.push(d), (s += a.length + r.length);
   }),
     n.push(...o);
   const i = o.reduce((e, t) => e + t.length, 0),
-    l = ((e, t, n) => {
+    r = ((e, t, n) => {
       const s = new Uint8Array(22);
       return (
         s.set([80, 75, 5, 6]),
@@ -2148,9 +2148,9 @@ function M(e) {
         s
       );
     })(e.length, i, s);
-  n.push(l);
-  const r = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
-  return new Blob([r], { type: 'application/zip' });
+  n.push(r);
+  const l = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
+  return new Blob([l], { type: 'application/zip' });
 }
 class S {
   static init() {
@@ -2256,10 +2256,10 @@ class B {
           Object.entries(e).forEach(([e, t]) => {
             const i = document.createElement('div');
             i.classList.add('category');
-            const l = document.createElement('h4');
-            l.classList.add('categoryHeading'),
-              (l.innerHTML = e),
-              i.prepend(l),
+            const r = document.createElement('h4');
+            r.classList.add('categoryHeading'),
+              (r.innerHTML = e),
+              i.prepend(r),
               Array.isArray(t)
                 ? t.forEach(e => {
                     const t = document.createElement('div');
@@ -2277,7 +2277,40 @@ class B {
                   })
                 : 'Custom' === e &&
                   'object' == typeof t &&
-                  console.log('Custom components are not handled yet'),
+                  Object.entries(t).forEach(([e, t]) => {
+                    const n = document.createElement('div');
+                    if (
+                      (n.classList.add('draggable', 'custom-component'),
+                      (n.id = e),
+                      n.setAttribute('draggable', 'true'),
+                      n.setAttribute('data-component', e),
+                      'string' == typeof t)
+                    ) {
+                      n.setAttribute('data-tag-name', t),
+                        n.setAttribute('title', `Drag to add ${e}`);
+                      const s = document.createElement('span');
+                      s.classList.add('custom-component-letter'),
+                        (s.textContent = e.charAt(0).toUpperCase()),
+                        n.appendChild(s);
+                    } else {
+                      const { component: s, svg: o, title: i } = t;
+                      if (
+                        (n.setAttribute('data-tag-name', s),
+                        n.setAttribute('title', i || `Drag to add ${e}`),
+                        o)
+                      ) {
+                        n.innerHTML = o;
+                        const e = n.querySelector('svg');
+                        e && e.classList.add('component-icon');
+                      } else {
+                        const t = document.createElement('span');
+                        t.classList.add('custom-component-letter'),
+                          (t.textContent = e.charAt(0).toUpperCase()),
+                          n.appendChild(t);
+                      }
+                    }
+                    i.appendChild(n);
+                  }),
               o.appendChild(i);
           }),
           t.appendChild(o);
@@ -2353,9 +2386,9 @@ class B {
                 const i = document.createElement('div');
                 i.classList.add('center-text'),
                   (i.textContent = 'Page Builder');
-                const l = document.createElement('div');
+                const r = document.createElement('div');
                 return (
-                  l.classList.add('right-buttons'),
+                  r.classList.add('right-buttons'),
                   s.forEach(({ id: e, icon: t, title: n }) => {
                     const s = document.createElement('button');
                     (s.id = e),
@@ -2363,11 +2396,11 @@ class B {
                       (s.title = n),
                       (s.innerHTML = t);
                     const o = s.querySelector('svg');
-                    o && o.classList.add('nav-icon'), l.appendChild(s);
+                    o && o.classList.add('nav-icon'), r.appendChild(s);
                   }),
                   e.appendChild(o),
                   e.appendChild(i),
-                  e.appendChild(l),
+                  e.appendChild(r),
                   e
                 );
               })()
@@ -2394,8 +2427,8 @@ class B {
           const s = document.getElementById('dialog'),
             o = document.getElementById('dialog-yes'),
             i = document.getElementById('dialog-no'),
-            l = document.getElementById('dialog-message');
-          l && (l.innerHTML = e),
+            r = document.getElementById('dialog-message');
+          r && (r.innerHTML = e),
             null == s || s.classList.remove('hidden'),
             null == o ||
               o.addEventListener('click', () => {
@@ -2455,12 +2488,12 @@ class B {
     (o.id = 'export-dialog'), o.classList.add('modal');
     const i = document.createElement('div');
     i.classList.add('modal-content');
-    const l = this.createCloseButton(o);
-    i.appendChild(l);
-    const r = this.createCodeSection('HTML', e),
+    const r = this.createCloseButton(o);
+    i.appendChild(r);
+    const l = this.createCodeSection('HTML', e),
       a = this.createCodeSection('CSS', t),
       d = this.createExportToZipButton(n, s);
-    i.appendChild(r), i.appendChild(a), i.appendChild(d);
+    i.appendChild(l), i.appendChild(a), i.appendChild(d);
     const c = document.createElement('div');
     return (
       c.classList.add('button-wrapper'),
