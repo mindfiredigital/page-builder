@@ -96,7 +96,45 @@ export function createSidebar(dynamicComponents) {
     }
     // Handling Custom components (which is an object)
     else if (category === 'Custom' && typeof components === 'object') {
-      console.log('Custom components are not handled yet');
+      Object.entries(components).forEach(([keyName, config]) => {
+        const iconElement = document.createElement('div');
+        iconElement.classList.add('draggable', 'custom-component');
+        iconElement.id = keyName;
+        iconElement.setAttribute('draggable', 'true');
+        iconElement.setAttribute('data-component', keyName);
+        // Handle the config object properly - could be old format or new format
+        if (typeof config === 'string') {
+          // Handle legacy format where config is just the tag name string
+          iconElement.setAttribute('data-tag-name', config);
+          iconElement.setAttribute('title', `Drag to add ${keyName}`);
+          // Create element with first letter of the key name
+          const letterSpan = document.createElement('span');
+          letterSpan.classList.add('custom-component-letter');
+          letterSpan.textContent = keyName.charAt(0).toUpperCase();
+          iconElement.appendChild(letterSpan);
+        } else {
+          // Handling new format with CustomComponentConfig
+          const { component, svg, title } = config;
+          iconElement.setAttribute('data-tag-name', component);
+          iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
+          if (svg) {
+            // Using provided SVG
+            iconElement.innerHTML = svg;
+            // Style the SVG
+            const svgElement = iconElement.querySelector('svg');
+            if (svgElement) {
+              svgElement.classList.add('component-icon');
+            }
+          } else {
+            // Fallback to first letter if no SVG provided
+            const letterSpan = document.createElement('span');
+            letterSpan.classList.add('custom-component-letter');
+            letterSpan.textContent = keyName.charAt(0).toUpperCase();
+            iconElement.appendChild(letterSpan);
+          }
+        }
+        categoryMenu.appendChild(iconElement);
+      });
     }
     templatesMenu.appendChild(categoryMenu);
   });
