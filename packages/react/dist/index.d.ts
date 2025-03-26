@@ -6,7 +6,7 @@ interface DynamicComponents {
   Custom: Record<string, CustomComponentConfig>;
 }
 interface CustomComponentConfig {
-  component: React.FC<any>;
+  component: any;
   svg?: string;
   title?: string;
 }
