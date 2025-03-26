@@ -45,6 +45,7 @@ module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.tsx
 var import_react = __toESM(require('react'));
+var import_client = __toESM(require('react-dom/client'));
 var PageBuilderReact = ({ config }) => {
   const builderRef = (0, import_react.useRef)(null);
   (0, import_react.useEffect)(() => {
@@ -54,7 +55,39 @@ var PageBuilderReact = ({ config }) => {
   }, []);
   (0, import_react.useEffect)(() => {
     if (builderRef.current) {
-      builderRef.current.setAttribute('config-data', JSON.stringify(config));
+      const modifiedConfig = JSON.parse(JSON.stringify(config));
+      Object.entries(modifiedConfig.Custom).forEach(
+        ([key, componentConfig]) => {
+          const { component: Component } = componentConfig;
+          const tagName = `react-component-${key.toLowerCase()}`;
+          if (!customElements.get(tagName)) {
+            class ReactComponentElement extends HTMLElement {
+              connectedCallback() {
+                const mountPoint = document.createElement('div');
+                this.appendChild(mountPoint);
+                import_client.default
+                  .createRoot(mountPoint)
+                  .render(
+                    /* @__PURE__ */ import_react.default.createElement(
+                      Component,
+                      null
+                    )
+                  );
+              }
+            }
+            customElements.define(tagName, ReactComponentElement);
+          }
+          modifiedConfig.Custom[key] = {
+            ...componentConfig,
+            component: tagName,
+            // Replace React component with tag name
+          };
+        }
+      );
+      builderRef.current.setAttribute(
+        'config-data',
+        JSON.stringify(modifiedConfig)
+      );
     }
   }, [config]);
   return /* @__PURE__ */ import_react.default.createElement('page-builder', {
