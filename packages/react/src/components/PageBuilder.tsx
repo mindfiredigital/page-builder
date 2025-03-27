@@ -1,70 +1,107 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 
-// Interface defining the structure of dynamic components
+// Updated interfaces to support new configuration
 interface DynamicComponents {
   Basic: string[];
   Extra: string[];
-  Custom: Record<string, CustomComponentConfig>;
+  Custom?: Record<string, CustomComponentConfig>;
 }
 
 interface CustomComponentConfig {
-  component: any;
-  svg?: string; // Optional SVG icon string
-  title?: string; // Optional custom title
+  component: React.ComponentType<any> | string;
+  svg?: string;
+  title?: string;
 }
-// Props interface for the PageBuilderReact component
+
 interface PageBuilderReactProps {
   config: DynamicComponents;
+  customComponents?: Record<string, CustomComponentConfig>;
 }
 
-export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({ config }) => {
+export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({ 
+  config, 
+  customComponents 
+}) => {
   const builderRef = useRef<HTMLElement>(null);
+  const [processedConfig, setProcessedConfig] = useState<DynamicComponents>(config);
 
   useEffect(() => {
-    import("@mindfiredigital/page-builder-web-component").catch(error => {
-      console.error("Failed to load web component:", error);
-    });
+    // Import web component
+    import("@mindfiredigital/page-builder-web-component")
+      .catch(error => {
+        console.error("Failed to load web component:", error);
+      });
   }, []);
 
-  // Convert React components to web components and pass configuration
   useEffect(() => {
-    if (builderRef.current) {
-      // Create a copy of config to modify
-      const modifiedConfig: DynamicComponents = JSON.parse(JSON.stringify(config));
+    // Create a copy of the original config
+    const modifiedConfig: DynamicComponents|any= JSON.parse(JSON.stringify(config));
 
-      // Convert React components in Custom section to web components
-      Object.entries(modifiedConfig.Custom).forEach(([key, componentConfig]) => {
-        const { component: Component } = componentConfig;
+    // Merge custom components if provided
+    if (customComponents) {
+      // Ensure Custom property exists
+      modifiedConfig.Custom = modifiedConfig.Custom || {};
+
+      // Process each custom component
+      Object.entries(customComponents).forEach(([key, componentConfig]) => {
+        // Skip if component is not valid
+        if (!componentConfig.component) {
+          console.warn(`Skipping invalid component: ${key}`);
+          return;
+        }
+
+        // Create unique tag name
         const tagName = `react-component-${key.toLowerCase()}`;
 
-        // Create a web component wrapper if it doesn't exist
+        // Create custom element if not exists
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
             connectedCallback() {
               const mountPoint = document.createElement("div");
               this.appendChild(mountPoint);
               
-              // Create React root and render the component
-              ReactDOM.createRoot(mountPoint).render(<Component />);
+              try {
+                ReactDOM.createRoot(mountPoint).render(
+                  React.createElement(componentConfig.component)
+                );
+              } catch (error) {
+                console.error(`Error rendering ${key} component:`, error);
+              }
             }
           }
           
-          // Define the custom element
+          // Define custom element
           customElements.define(tagName, ReactComponentElement);
         }
 
-        // Modify the original config to include the tag name
-        modifiedConfig.Custom[key] = {
-          ...componentConfig,
-          component: tagName  // Replace React component with tag name
+        // Add to Custom components with web component tag
+        modifiedConfig.Custom[key]  = {
+          component: tagName,
+          svg: componentConfig.svg,
+          title: componentConfig.title
         };
       });
-
-      // Set the config data attribute with modified configuration
-      builderRef.current.setAttribute("config-data", JSON.stringify(modifiedConfig));
     }
-  }, [config]);
+
+    // Update state and set config
+    setProcessedConfig(modifiedConfig);
+  }, [config, customComponents]);
+
+  // Effect to set config on web component
+  useEffect(() => {
+    if (builderRef.current) {
+      try {
+        // Convert to JSON string
+        const configString = JSON.stringify(processedConfig);
+        
+        // Set config data attribute
+        builderRef.current.setAttribute("config-data", configString);
+      } catch (error) {
+        console.error("Error setting config-data:", error);
+      }
+    }
+  }, [processedConfig]);
 
   return <page-builder ref={builderRef} />;
 };
