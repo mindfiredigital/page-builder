@@ -304,7 +304,19 @@ export class Canvas {
       event,
       Canvas.canvasElement
     );
-    const component = Canvas.createComponent(componentType);
+    let component;
+    if (Canvas.componentFactory[componentType]) {
+      component = Canvas.createComponent(componentType);
+    } else {
+      const tagName = document
+        .querySelector(`[data-component='${componentType}']`)
+        ?.getAttribute('data-tag-name');
+      if (tagName) {
+        component = document.createElement(tagName);
+        component.classList.add('editable-component', 'custom-component');
+      }
+    }
+    // const component = Canvas.createComponent(componentType);
     if (component) {
       // Add unique class name
       const uniqueClass = Canvas.generateUniqueClass(componentType);

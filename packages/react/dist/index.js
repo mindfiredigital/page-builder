@@ -46,50 +46,65 @@ module.exports = __toCommonJS(src_exports);
 // src/components/PageBuilder.tsx
 var import_react = __toESM(require('react'));
 var import_client = __toESM(require('react-dom/client'));
-var PageBuilderReact = ({ config }) => {
+var PageBuilderReact = ({ config, customComponents }) => {
   const builderRef = (0, import_react.useRef)(null);
+  const [processedConfig, setProcessedConfig] = (0, import_react.useState)(
+    config
+  );
   (0, import_react.useEffect)(() => {
     import('@mindfiredigital/page-builder-web-component').catch(error => {
       console.error('Failed to load web component:', error);
     });
   }, []);
   (0, import_react.useEffect)(() => {
-    if (builderRef.current) {
-      const modifiedConfig = JSON.parse(JSON.stringify(config));
-      Object.entries(modifiedConfig.Custom).forEach(
-        ([key, componentConfig]) => {
-          const { component: Component } = componentConfig;
-          const tagName = `react-component-${key.toLowerCase()}`;
-          if (!customElements.get(tagName)) {
-            class ReactComponentElement extends HTMLElement {
-              connectedCallback() {
-                const mountPoint = document.createElement('div');
-                this.appendChild(mountPoint);
+    const modifiedConfig = JSON.parse(JSON.stringify(config));
+    if (customComponents) {
+      modifiedConfig.Custom = modifiedConfig.Custom || {};
+      Object.entries(customComponents).forEach(([key, componentConfig]) => {
+        if (!componentConfig.component) {
+          console.warn(`Skipping invalid component: ${key}`);
+          return;
+        }
+        const tagName = `react-component-${key.toLowerCase()}`;
+        if (!customElements.get(tagName)) {
+          class ReactComponentElement extends HTMLElement {
+            connectedCallback() {
+              const mountPoint = document.createElement('div');
+              this.appendChild(mountPoint);
+              try {
                 import_client.default
                   .createRoot(mountPoint)
                   .render(
-                    /* @__PURE__ */ import_react.default.createElement(
-                      Component,
-                      null
+                    import_react.default.createElement(
+                      componentConfig.component
                     )
                   );
+              } catch (error) {
+                console.error(`Error rendering ${key} component:`, error);
               }
             }
-            customElements.define(tagName, ReactComponentElement);
           }
-          modifiedConfig.Custom[key] = {
-            ...componentConfig,
-            component: tagName,
-            // Replace React component with tag name
-          };
+          customElements.define(tagName, ReactComponentElement);
         }
-      );
-      builderRef.current.setAttribute(
-        'config-data',
-        JSON.stringify(modifiedConfig)
-      );
+        modifiedConfig.Custom[key] = {
+          component: tagName,
+          svg: componentConfig.svg,
+          title: componentConfig.title,
+        };
+      });
     }
-  }, [config]);
+    setProcessedConfig(modifiedConfig);
+  }, [config, customComponents]);
+  (0, import_react.useEffect)(() => {
+    if (builderRef.current) {
+      try {
+        const configString = JSON.stringify(processedConfig);
+        builderRef.current.setAttribute('config-data', configString);
+      } catch (error) {
+        console.error('Error setting config-data:', error);
+      }
+    }
+  }, [processedConfig]);
   return /* @__PURE__ */ import_react.default.createElement('page-builder', {
     ref: builderRef,
   });

@@ -1783,38 +1783,49 @@ class b {
       b.gridManager.initializeDropPreview(b.canvasElement);
   }
   static onDrop(e) {
-    var t;
+    var t, n;
     if (
       (e.preventDefault(), e.target.classList.contains('container-component'))
     )
       return;
-    const n =
+    const s =
       null === (t = e.dataTransfer) || void 0 === t
         ? void 0
         : t.getData('component-type');
-    if (!n) return;
-    const { gridX: s, gridY: o } = this.gridManager.mousePositionAtGridCorner(
-        e,
-        b.canvasElement
-      ),
-      i = b.createComponent(n);
-    if (i) {
-      const t = b.generateUniqueClass(n);
-      (i.id = t),
-        i.classList.add(t),
-        (i.style.position = 'absolute'),
-        'container' === n || 'twoCol' === n || 'threeCol' === n
-          ? (i.style.top = `${e.offsetY}px`)
-          : ((i.style.position = 'absolute'),
-            (i.style.left = `${s}px`),
-            (i.style.top = `${o}px`));
-      const r = document.createElement('span');
-      (r.className = 'component-label'),
-        (r.textContent = t),
-        i.appendChild(r),
-        b.components.push(i),
-        b.canvasElement.appendChild(i),
-        b.addDraggableListeners(i),
+    if (!s) return;
+    const { gridX: o, gridY: i } = this.gridManager.mousePositionAtGridCorner(
+      e,
+      b.canvasElement
+    );
+    let r;
+    if (b.componentFactory[s]) r = b.createComponent(s);
+    else {
+      const e =
+        null === (n = document.querySelector(`[data-component='${s}']`)) ||
+        void 0 === n
+          ? void 0
+          : n.getAttribute('data-tag-name');
+      e &&
+        ((r = document.createElement(e)),
+        r.classList.add('editable-component', 'custom-component'));
+    }
+    if (r) {
+      const t = b.generateUniqueClass(s);
+      (r.id = t),
+        r.classList.add(t),
+        (r.style.position = 'absolute'),
+        'container' === s || 'twoCol' === s || 'threeCol' === s
+          ? (r.style.top = `${e.offsetY}px`)
+          : ((r.style.position = 'absolute'),
+            (r.style.left = `${o}px`),
+            (r.style.top = `${i}px`));
+      const n = document.createElement('span');
+      (n.className = 'component-label'),
+        (n.textContent = t),
+        r.appendChild(n),
+        b.components.push(r),
+        b.canvasElement.appendChild(r),
+        b.addDraggableListeners(r),
         C.updateLayersView(),
         b.historyManager.captureState();
     }
