@@ -5,7 +5,14 @@ import fs from 'fs';
 const commitMessage = execSync('git log -1 --format=%s').toString().trim();
 
 // Define valid scopes
-const validScopes = ['core', 'react', 'web-component','angular','release','docs'];
+const validScopes = [
+  'core',
+  'react',
+  'web-component',
+  'angular',
+  'release',
+  'docs',
+];
 
 // Define regex patterns
 const commitPatterns = {
@@ -15,7 +22,7 @@ const commitPatterns = {
 };
 
 // Identify type, package, and description
-let packageName = null;
+let packageScope = null;
 let changeType = null;
 let description = null;
 
@@ -26,35 +33,38 @@ if (commitPatterns.major.test(commitMessage)) {
   const scope = commitMessage.match(commitPatterns.minor)?.[1];
   if (validScopes.includes(scope)) {
     changeType = 'minor';
-    packageName = scope;
+    packageScope = scope;
     description = commitMessage.match(commitPatterns.minor)?.[2];
   }
 } else if (commitPatterns.patch.test(commitMessage)) {
   const scope = commitMessage.match(commitPatterns.patch)?.[1];
   if (validScopes.includes(scope)) {
     changeType = 'patch';
-    packageName = scope;
+    packageScope = scope;
     description = commitMessage.match(commitPatterns.patch)?.[2];
   }
 }
 
 // Generate and write changeset if valid package found
-if (packageName) {
-  packageName = packageName.trim();
+if (packageScope) {
+  packageScope = packageScope.trim();
   description = description?.trim() || 'No description provided.';
+
+  const packageName =
+    packageScope === 'core'
+      ? '@mindfiredigital/page-builder'
+      : `@mindfiredigital/page-builder-${packageScope}`;
 
   // Generate changeset content
   const changesetContent = `---
-'@mindfiredigital/page-builder-${packageName}': ${changeType}
+'${packageName}': ${changeType}
 ---
 ${description}
 `;
 
   // Write to a changeset file
   fs.writeFileSync(`.changeset/auto-${Date.now()}.md`, changesetContent);
-  console.log(
-    `✅ Changeset file created for package: page-builder-${packageName}`
-  );
+  console.log(`✅ Changeset file created for package: ${packageName}`);
 } else {
   console.log(
     '⚠️ No valid package scope found in commit message. Valid scopes are: core, react, web-component'
