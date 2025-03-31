@@ -37,7 +37,7 @@ module.exports = [
       terser(), // Minify the JS for production
     ],
     // Only externalize dependencies for ESM, not for IIFE
-    // external: (id: any) => id.includes('@mindfiredigital/page-builder-core'),
+    // external: (id: any) => id.includes('@mindfiredigital/page-builder'),
   },
   // Type declaration generation
   {

@@ -1,5 +1,5 @@
 import { OnInit, OnDestroy, ElementRef, AfterViewInit } from '@angular/core';
-import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
+import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 import { CustomStyles } from './models/custom-styles.interface';
 import * as i0 from '@angular/core';
 export declare class PageBuilderComponent

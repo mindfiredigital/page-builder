@@ -1,4 +1,4 @@
-import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
+import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;

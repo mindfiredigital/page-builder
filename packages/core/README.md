@@ -1,7 +1,7 @@
 <h1 align="center">PageBuilder</h1><br><br>
 <p align="center">
-<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder-core"><img src="https://img.shields.io/npm/v/@mindfiredigital/page-builder-core.svg?sanitize=true" alt="Version"></a>
-<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder-core"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs"></a>
+<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder"><img src="https://img.shields.io/npm/v/@mindfiredigital/page-builder.svg?sanitize=true" alt="Version"></a>
+<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs"></a>
 </p>
 
 <br>
@@ -49,10 +49,10 @@ Click the button below to open the project on StackBlitz.
 
 ## Installation
 
-To install the `@mindfiredigital/page-builder-core` npm package in your project, use the following command:
+To install the `@mindfiredigital/page-builder` npm package in your project, use the following command:
 
 ```bash
-npm install @mindfiredigital/page-builder-core
+npm install @mindfiredigital/page-builder
 ```
 
 <br>
@@ -68,7 +68,7 @@ npm install @mindfiredigital/page-builder-core
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Page Builder</title>
-    <link rel="stylesheet" href="node_modules/@mindfiredigital/page-builder-core/dist/styles/main.css" />
+    <link rel="stylesheet" href="node_modules/@mindfiredigital/page-builder/dist/styles/main.css" />
   </head>
   <body>
     <header>
@@ -96,7 +96,7 @@ npm install @mindfiredigital/page-builder-core
     </div>
 
     <!-- Bundle JavaScript -->
-    <script src="node_modules/@mindfiredigital/page-builder-core/dist/index.js"></script>
+    <script src="node_modules/@mindfiredigital/page-builder/dist/index.js"></script>
   </body>
 </html>
 ```
@@ -105,15 +105,15 @@ npm install @mindfiredigital/page-builder-core
 
 ## Usage via CDN
 
-You can include @mindfiredigital/page-builder-core in your HTML file using the provided CDN link. This allows you to quickly test or use the library without installing it via npm.
+You can include @mindfiredigital/page-builder in your HTML file using the provided CDN link. This allows you to quickly test or use the library without installing it via npm.
 
 ```javascript
 
  <!-- CDN stylesheet -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/styles/main.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder/dist/styles/main.css" />
 
  <!--CDN Bundle JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder/dist/index.js"></script>
 ```
 
 ## CDN Usage Example
@@ -130,7 +130,7 @@ You can include @mindfiredigital/page-builder-core in your HTML file using the p
     <!-- CDN stylesheet -->
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/styles/main.css"
+      href="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder/dist/styles/main.css"
     />
   </head>
   <body>
@@ -158,7 +158,7 @@ You can include @mindfiredigital/page-builder-core in your HTML file using the p
     </div>
 
     <!--CDN Bundle JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder-core/dist/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mindfiredigital/page-builder/dist/index.js"></script>
   </body>
 </html>
 ```

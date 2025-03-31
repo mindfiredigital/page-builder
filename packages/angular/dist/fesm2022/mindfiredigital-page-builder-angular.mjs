@@ -2,7 +2,7 @@ import * as i0 from '@angular/core';
 import { Component, Input, NgModule } from '@angular/core';
 import * as i1 from '@angular/common';
 import { CommonModule } from '@angular/common';
-import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
+import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 
 class PageBuilderComponent {
     elementRef;

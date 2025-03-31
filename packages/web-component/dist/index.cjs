@@ -25,7 +25,7 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.ts
-var import_PageBuilder = require("@mindfiredigital/page-builder-core/dist/PageBuilder.js");
+var import_PageBuilder = require("@mindfiredigital/page-builder/dist/PageBuilder.js");
 var PageBuilderComponent = class extends HTMLElement {
   constructor() {
     super();

@@ -1,5 +1,5 @@
 // src/components/PageBuilder.ts
-import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
+import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 var PageBuilderComponent = class extends HTMLElement {
   constructor() {
     super();

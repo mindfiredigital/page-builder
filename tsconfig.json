@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@mindfiredigital/page-builder-core/*": ["packages/core/dist/*"]
+      "@mindfiredigital/page-builder/*": ["packages/core/dist/*"]
     },
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true

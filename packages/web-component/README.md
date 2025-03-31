@@ -1,7 +1,7 @@
 <h1 align="center">PageBuilder</h1><br><br>
 <p align="center">
-<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder-core"><img src="https://img.shields.io/npm/v/@mindfiredigital/page-builder-core.svg?sanitize=true" alt="Version"></a>
-<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder-core"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs"></a>
+<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder"><img src="https://img.shields.io/npm/v/@mindfiredigital/page-builder.svg?sanitize=true" alt="Version"></a>
+<a href="https://www.npmjs.com/package/@mindfiredigital/page-builder"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs"></a>
 </p>
 
 <br>

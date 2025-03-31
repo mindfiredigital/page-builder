@@ -13,12 +13,12 @@ Page-builder is essentially a set of npm [packages](https://github.com/mindfired
 
 ## Installation
 
-To install the `@mindfiredigital/page-builder-core` npm package in your project
+To install the `@mindfiredigital/page-builder` npm package in your project
 
-The `@mindfiredigital/page-builder-core` will automatically be added to your project after you run the command:
+The `@mindfiredigital/page-builder` will automatically be added to your project after you run the command:
 
 ```bash
-npm install @mindfiredigital/page-builder-core
+npm install @mindfiredigital/page-builder
 ```
 
 You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.

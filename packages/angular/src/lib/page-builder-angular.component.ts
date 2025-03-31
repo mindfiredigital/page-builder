@@ -7,7 +7,7 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
+import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 import { CustomStyles } from './models/custom-styles.interface';
 
 @Component({
