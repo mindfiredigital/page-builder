@@ -80,7 +80,7 @@ importers:
       '@angular/core':
         specifier: '>=15.0.0'
         version: 19.1.4(rxjs@7.8.1)(zone.js@0.15.0)
-      '@mindfiredigital/page-builder-core':
+      '@mindfiredigital/page-builder':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -351,9 +351,9 @@ importers:
 
   packages/react:
     dependencies:
-      '@mindfiredigital/page-builder-core':
+      '@mindfiredigital/page-builder-web-component':
         specifier: workspace:*
-        version: link:../core
+        version: link:../web-component
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -379,7 +379,7 @@ importers:
 
   packages/web-component:
     dependencies:
-      '@mindfiredigital/page-builder-core':
+      '@mindfiredigital/page-builder':
         specifier: workspace:*
         version: link:../core
     devDependencies:

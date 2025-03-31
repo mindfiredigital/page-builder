@@ -6,7 +6,7 @@
           "options": {
             "stylePreprocessorOptions": {
               "includePaths": [
-                "node_modules/@mindfiredigital/page-builder-core/dist/styles"
+                "node_modules/@mindfiredigital/page-builder/dist/styles"
               ]
             }
           }

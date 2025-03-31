@@ -458,7 +458,7 @@ class r {
     const o = e.target;
     if (o && o.classList.contains('column')) {
       o.appendChild(s);
-      const e = `${this.element.id}-${`c${Array.from(o.parentElement.children).indexOf(o) + 1}`}`;
+      const e = `${this.element.id}-${`c${Array.from(o.parentElement.children).indexOf(o)}`}`;
       (o.id = e), o.classList.add(e);
       let t = o.querySelector('.column-label');
       t ||
@@ -1164,29 +1164,34 @@ class w {
       this.layersView.appendChild(t);
   }
   static renderLayerItems(e, t, n = 0) {
-    t.forEach(t => {
-      const s = this.createLayerItemElement(t);
-      if (
-        ((s.style.paddingLeft = 1 * n + 'px'),
-        t.children && t.children.length > 0)
-      ) {
-        const o = document.createElement('span');
-        (o.className = 'layer-expand-toggle'), (o.textContent = '▶');
-        const i = document.createElement('ul');
-        (i.className = 'layer-children'),
-          (i.style.display = 'none'),
-          (i.style.paddingLeft = '0'),
-          this.renderLayerItems(i, t.children, n + 1),
-          o.addEventListener('click', () => {
-            'block' === i.style.display
-              ? ((i.style.display = 'none'), (o.textContent = '▶'))
-              : ((i.style.display = 'block'), (o.textContent = '▼'));
-          }),
-          s.appendChild(o),
-          e.appendChild(s),
-          e.appendChild(i);
-      } else e.appendChild(s);
-    });
+    const s = document.createElement('ul');
+    (s.className = 'layer-list'),
+      e.appendChild(s),
+      t.forEach(e => {
+        const t = document.createElement('li');
+        (t.className = 'layer-item-container'), s.appendChild(t);
+        const o = this.createLayerItemElement(e);
+        if (
+          ((o.style.paddingLeft = 12 * n + 'px'),
+          t.appendChild(o),
+          e.children && e.children.length > 0)
+        ) {
+          const s = document.createElement('span');
+          (s.className = 'layer-expand-toggle'),
+            (s.textContent = '▶'),
+            o.insertBefore(s, o.firstChild);
+          const i = document.createElement('div');
+          (i.className = 'child-container'),
+            (i.style.display = 'none'),
+            t.appendChild(i),
+            this.renderLayerItems(i, e.children, n + 1),
+            s.addEventListener('click', () => {
+              'block' === i.style.display
+                ? ((i.style.display = 'none'), (s.textContent = '▶'))
+                : ((i.style.display = 'block'), (s.textContent = '▼'));
+            });
+        }
+      });
   }
   static createLayerItemElement(e) {
     const t = document.createElement('li');
@@ -2172,8 +2177,9 @@ class H {
   }
 }
 class B {
-  constructor() {
-    (this.canvas = new b()),
+  constructor(e = { Basic: [], Extra: [], Custom: [] }) {
+    (this.dynamicComponents = e),
+      (this.canvas = new b()),
       (this.sidebar = new L(this.canvas)),
       (this.htmlGenerator = new v(this.canvas)),
       (this.jsonStorage = new m()),
@@ -2196,38 +2202,12 @@ class B {
   }
   setupInitialComponents() {
     if (
-      ((function () {
-        const e = document.getElementById('sidebar');
-        if (!e) return void console.error('Sidebar element not found');
-        const t = {
-            button: k.button,
-            header: k.header,
-            image: k.image,
-            video: k.video,
-            text: k.text,
-            container: k.container,
-            twoCol: k.twocol,
-            threeCol: k.threecol,
-            table: k.table,
-            landingpage: k.landing,
-            link: k.hyperlink,
-          },
-          n = {
-            button: 'Button',
-            header: 'Header',
-            image: 'Image',
-            video: 'Link Video',
-            text: 'Text',
-            container: 'Container',
-            twoCol: 'Two Column Layout',
-            threeCol: 'Three Column Layout',
-            table: 'Table',
-            landingpage: 'Landing Page Template',
-            link: 'Link',
-          },
-          s = document.createElement('div');
-        s.classList.add('menu'),
-          Object.entries({
+      ((function (e) {
+        (!e ||
+          (0 === e.Basic.length &&
+            0 === e.Extra.length &&
+            0 === e.Custom.length)) &&
+          (e = {
             Basic: [
               'button',
               'header',
@@ -2241,31 +2221,63 @@ class B {
               'link',
             ],
             Extra: ['landingpage'],
-          }).forEach(([e, o]) => {
+            Custom: [],
+          });
+        const t = document.getElementById('sidebar');
+        if (!t) return void console.error('Sidebar element not found');
+        const n = {
+            button: k.button,
+            header: k.header,
+            image: k.image,
+            video: k.video,
+            text: k.text,
+            container: k.container,
+            twoCol: k.twocol,
+            threeCol: k.threecol,
+            table: k.table,
+            landingpage: k.landing,
+            link: k.hyperlink,
+          },
+          s = {
+            button: 'Button',
+            header: 'Header',
+            image: 'Image',
+            video: 'Link Video',
+            text: 'Text',
+            container: 'Container',
+            twoCol: 'Two Column Layout',
+            threeCol: 'Three Column Layout',
+            table: 'Table',
+            landingpage: 'Landing Page Template',
+            link: 'Link',
+          },
+          o = document.createElement('div');
+        o.classList.add('menu'),
+          Object.entries(e).forEach(([e, t]) => {
             const i = document.createElement('div');
             i.classList.add('category');
             const l = document.createElement('h4');
             l.classList.add('categoryHeading'),
               (l.innerHTML = e),
               i.prepend(l),
-              o.forEach(e => {
-                const s = document.createElement('div');
-                s.classList.add('draggable'),
-                  (s.id = e),
-                  s.setAttribute('draggable', 'true'),
-                  s.setAttribute('data-component', e);
-                const o = n[e] || `Drag to add ${e}`;
-                if ((s.setAttribute('title', o), t[e])) {
-                  s.innerHTML = t[e];
-                  const n = s.querySelector('svg');
-                  n && n.classList.add('component-icon');
+              t.forEach(e => {
+                const t = document.createElement('div');
+                t.classList.add('draggable'),
+                  (t.id = e),
+                  t.setAttribute('draggable', 'true'),
+                  t.setAttribute('data-component', e);
+                const o = s[e] || `Drag to add ${e}`;
+                if ((t.setAttribute('title', o), n[e])) {
+                  t.innerHTML = n[e];
+                  const s = t.querySelector('svg');
+                  s && s.classList.add('component-icon');
                 } else console.warn(`Icon not found for component: ${e}`);
-                i.appendChild(s);
+                i.appendChild(t);
               }),
-              s.appendChild(i);
+              o.appendChild(i);
           }),
-          e.appendChild(s);
-      })(),
+          t.appendChild(o);
+      })(this.dynamicComponents),
       b.init(),
       this.sidebar.init(),
       S.init(),

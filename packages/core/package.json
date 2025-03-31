@@ -1,5 +1,5 @@
 {
-  "name": "@mindfiredigital/page-builder-core",
+  "name": "@mindfiredigital/page-builder",
   "version": "1.4.7",
   "private": false,
   "description": "UI Page builder",
@@ -43,6 +43,7 @@
   },
   "keywords": [
     "pagebuilder",
+    "ui-pagebuilder",
     "page-builder-core",
     "rich-page-builder",
     "html-editor",

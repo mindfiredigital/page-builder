@@ -43,7 +43,7 @@
     "responsive-design"
   ],
   "peerDependencies": {
-    "@mindfiredigital/page-builder-core": "workspace:*"
+    "@mindfiredigital/page-builder": "workspace:*"
   },
   "devDependencies": {
     "eslint": "^9.19.0",

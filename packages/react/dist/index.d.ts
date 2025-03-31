@@ -1,15 +1,13 @@
 import React from 'react';
-import { PageBuilder } from '@mindfiredigital/page-builder-core/dist/PageBuilder.js';
 
+interface DynamicComponents {
+  Basic: string[];
+  Extra: string[];
+  Custom: string[];
+}
 interface PageBuilderReactProps {
-  onInitialize?: (pageBuilder: PageBuilder) => void;
-  customStyles?: {
-    wrapper?: React.CSSProperties;
-    sidebar?: React.CSSProperties;
-    canvas?: React.CSSProperties;
-    customization?: React.CSSProperties;
-  };
+  config: DynamicComponents;
 }
 declare const PageBuilderReact: React.FC<PageBuilderReactProps>;
 
-export { PageBuilderReact, PageBuilderReactProps };
+export { PageBuilderReact };

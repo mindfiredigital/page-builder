@@ -17,7 +17,8 @@ import { PreviewPanel } from './canvas/PreviewPanel.js';
 import './styles/main.css';
 import { svgs } from './icons/svgs.js';
 export class PageBuilder {
-  constructor() {
+  constructor(dynamicComponents = { Basic: [], Extra: [], Custom: [] }) {
+    this.dynamicComponents = dynamicComponents;
     this.canvas = new Canvas();
     this.sidebar = new Sidebar(this.canvas);
     this.htmlGenerator = new HTMLGenerator(this.canvas);
@@ -42,7 +43,7 @@ export class PageBuilder {
     // });
   }
   setupInitialComponents() {
-    createSidebar();
+    createSidebar(this.dynamicComponents);
     Canvas.init();
     this.sidebar.init();
     ShortcutManager.init();

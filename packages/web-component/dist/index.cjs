@@ -25,11 +25,12 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 
 // src/components/PageBuilder.ts
-var import_PageBuilder = require("@mindfiredigital/page-builder-core/dist/PageBuilder.js");
+var import_PageBuilder = require("@mindfiredigital/page-builder/dist/PageBuilder.js");
 var PageBuilderComponent = class extends HTMLElement {
   constructor() {
     super();
     this.initialized = false;
+    this.config = { Basic: [], Extra: [], Custom: [] };
     this.template = `<div id="app">
       <div id="sidebar"></div>
       <div id="canvas" class="canvas"></div>
@@ -51,6 +52,21 @@ var PageBuilderComponent = class extends HTMLElement {
       this.innerHTML = this.template;
     }
   }
+  // Observe 'config-data' attribute to detect changes
+  static get observedAttributes() {
+    return ["config-data"];
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "config-data" && newValue !== oldValue) {
+      try {
+        const parsedConfig = JSON.parse(newValue);
+        this.config = parsedConfig;
+        this.initializePageBuilder();
+      } catch (e) {
+        console.error("Failed to parse config:", e);
+      }
+    }
+  }
   // Lifecycle method: Called when the element is added to the DOM
   connectedCallback() {
     if (this.initialized) {
@@ -65,7 +81,7 @@ var PageBuilderComponent = class extends HTMLElement {
     }
     try {
       this.initialized = true;
-      this.pageBuilder = new import_PageBuilder.PageBuilder();
+      this.pageBuilder = new import_PageBuilder.PageBuilder(this.config);
     } catch (error) {
       console.error("Failed to initialize PageBuilder:", error);
       this.initialized = false;
