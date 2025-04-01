@@ -27,7 +27,7 @@ export class PageBuilder {
   private dynamicComponents;
 
   constructor(
-    dynamicComponents: DynamicComponents = { Basic: [], Extra: [], Custom: [] }
+    dynamicComponents: DynamicComponents = { Basic: [], Extra: [], Custom: {} }
   ) {
     this.dynamicComponents = dynamicComponents;
     this.canvas = new Canvas();

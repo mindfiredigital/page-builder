@@ -5,7 +5,7 @@ export function createSidebar(dynamicComponents: DynamicComponents) {
     !dynamicComponents ||
     (dynamicComponents.Basic.length === 0 &&
       dynamicComponents.Extra.length === 0 &&
-      dynamicComponents.Custom.length === 0)
+      Object.keys(dynamicComponents.Custom).length === 0)
   ) {
     dynamicComponents = {
       Basic: [
@@ -22,7 +22,7 @@ export function createSidebar(dynamicComponents: DynamicComponents) {
       ],
       // Add portfolio for version 2
       Extra: ['landingpage'],
-      Custom: [],
+      Custom: {},
     };
   }
   const sidebar = document.getElementById('sidebar')!;
@@ -76,31 +76,82 @@ export function createSidebar(dynamicComponents: DynamicComponents) {
     categoryHeading.innerHTML = category;
     categoryMenu.prepend(categoryHeading);
 
-    components.forEach((componentId: any) => {
-      const iconElement = document.createElement('div');
-      iconElement.classList.add('draggable');
-      iconElement.id = componentId;
-      iconElement.setAttribute('draggable', 'true');
-      iconElement.setAttribute('data-component', componentId);
+    // Handling standard dynamic components (Basic and Extra)
+    if (Array.isArray(components)) {
+      components.forEach((componentId: string) => {
+        const iconElement = document.createElement('div');
+        iconElement.classList.add('draggable');
+        iconElement.id = componentId;
+        iconElement.setAttribute('draggable', 'true');
+        iconElement.setAttribute('data-component', componentId);
 
-      const customTitle = titles[componentId] || `Drag to add ${componentId}`;
-      iconElement.setAttribute('title', customTitle);
+        const customTitle = titles[componentId] || `Drag to add ${componentId}`;
+        iconElement.setAttribute('title', customTitle);
 
-      // Add SVG as innerHTML
-      if (icons[componentId]) {
-        iconElement.innerHTML = icons[componentId];
+        // Add SVG as innerHTML
+        if (icons[componentId]) {
+          iconElement.innerHTML = icons[componentId];
 
-        // Optionally style the SVG
-        const svgElement = iconElement.querySelector('svg');
-        if (svgElement) {
-          svgElement.classList.add('component-icon');
+          // Optionally style the SVG
+          const svgElement = iconElement.querySelector('svg');
+          if (svgElement) {
+            svgElement.classList.add('component-icon');
+          }
+        } else {
+          console.warn(`Icon not found for component: ${componentId}`);
         }
-      } else {
-        console.warn(`Icon not found for component: ${componentId}`);
-      }
 
-      categoryMenu.appendChild(iconElement);
-    });
+        categoryMenu.appendChild(iconElement);
+      });
+    }
+    // Handling Custom components (which is an object)
+    else if (category === 'Custom' && typeof components === 'object') {
+      Object.entries(components).forEach(([keyName, config]) => {
+        const iconElement = document.createElement('div');
+        iconElement.classList.add('draggable', 'custom-component');
+        iconElement.id = keyName;
+        iconElement.setAttribute('draggable', 'true');
+        iconElement.setAttribute('data-component', keyName);
+
+        // Handle the config object properly - could be old format or new format
+        if (typeof config === 'string') {
+          // Handle legacy format where config is just the tag name string
+          iconElement.setAttribute('data-tag-name', config);
+          iconElement.setAttribute('title', `Drag to add ${keyName}`);
+
+          // Create element with first letter of the key name
+          const letterSpan = document.createElement('span');
+          letterSpan.classList.add('custom-component-letter');
+          letterSpan.textContent = keyName.charAt(0).toUpperCase();
+          iconElement.appendChild(letterSpan);
+        } else {
+          // Handling new format with CustomComponentConfig
+          const { component, svg, title }: any = config;
+
+          iconElement.setAttribute('data-tag-name', component);
+          iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
+
+          if (svg) {
+            // Using provided SVG
+            iconElement.innerHTML = svg;
+
+            // Style the SVG
+            const svgElement = iconElement.querySelector('svg');
+            if (svgElement) {
+              svgElement.classList.add('component-icon');
+            }
+          } else {
+            // Fallback to first letter if no SVG provided
+            const letterSpan = document.createElement('span');
+            letterSpan.classList.add('custom-component-letter');
+            letterSpan.textContent = keyName.charAt(0).toUpperCase();
+            iconElement.appendChild(letterSpan);
+          }
+        }
+
+        categoryMenu.appendChild(iconElement);
+      });
+    }
 
     templatesMenu.appendChild(categoryMenu);
   });

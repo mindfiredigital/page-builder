@@ -226,7 +226,7 @@ export class Canvas {
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
   }
   static onDrop(event) {
-    var _a;
+    var _a, _b;
     event.preventDefault();
     if (event.target.classList.contains('container-component')) {
       return;
@@ -243,7 +243,21 @@ export class Canvas {
       event,
       Canvas.canvasElement
     );
-    const component = Canvas.createComponent(componentType);
+    let component;
+    if (Canvas.componentFactory[componentType]) {
+      component = Canvas.createComponent(componentType);
+    } else {
+      const tagName =
+        (_b = document.querySelector(`[data-component='${componentType}']`)) ===
+          null || _b === void 0
+          ? void 0
+          : _b.getAttribute('data-tag-name');
+      if (tagName) {
+        component = document.createElement(tagName);
+        component.classList.add('editable-component', 'custom-component');
+      }
+    }
+    // const component = Canvas.createComponent(componentType);
     if (component) {
       // Add unique class name
       const uniqueClass = Canvas.generateUniqueClass(componentType);
