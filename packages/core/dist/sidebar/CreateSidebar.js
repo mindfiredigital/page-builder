@@ -30,7 +30,7 @@ export function createSidebar(dynamicComponents) {
     console.error('Sidebar element not found');
     return;
   }
-  // Define your components, icons, and titles as before
+  // Define your components, icons, and titles as before using it
   const icons = {
     button: svgs.button,
     header: svgs.header,
