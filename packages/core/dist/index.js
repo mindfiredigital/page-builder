@@ -1783,49 +1783,38 @@ class b {
       b.gridManager.initializeDropPreview(b.canvasElement);
   }
   static onDrop(e) {
-    var t, n;
+    var t;
     if (
       (e.preventDefault(), e.target.classList.contains('container-component'))
     )
       return;
-    const s =
+    const n =
       null === (t = e.dataTransfer) || void 0 === t
         ? void 0
         : t.getData('component-type');
-    if (!s) return;
-    const { gridX: o, gridY: i } = this.gridManager.mousePositionAtGridCorner(
-      e,
-      b.canvasElement
-    );
-    let r;
-    if (b.componentFactory[s]) r = b.createComponent(s);
-    else {
-      const e =
-        null === (n = document.querySelector(`[data-component='${s}']`)) ||
-        void 0 === n
-          ? void 0
-          : n.getAttribute('data-tag-name');
-      e &&
-        ((r = document.createElement(e)),
-        r.classList.add('editable-component', 'custom-component'));
-    }
-    if (r) {
-      const t = b.generateUniqueClass(s);
-      (r.id = t),
-        r.classList.add(t),
-        (r.style.position = 'absolute'),
-        'container' === s || 'twoCol' === s || 'threeCol' === s
-          ? (r.style.top = `${e.offsetY}px`)
-          : ((r.style.position = 'absolute'),
-            (r.style.left = `${o}px`),
-            (r.style.top = `${i}px`));
-      const n = document.createElement('span');
-      (n.className = 'component-label'),
-        (n.textContent = t),
-        r.appendChild(n),
-        b.components.push(r),
-        b.canvasElement.appendChild(r),
-        b.addDraggableListeners(r),
+    if (!n) return;
+    const { gridX: s, gridY: o } = this.gridManager.mousePositionAtGridCorner(
+        e,
+        b.canvasElement
+      ),
+      i = b.createComponent(n);
+    if (i) {
+      const t = b.generateUniqueClass(n);
+      (i.id = t),
+        i.classList.add(t),
+        (i.style.position = 'absolute'),
+        'container' === n || 'twoCol' === n || 'threeCol' === n
+          ? (i.style.top = `${e.offsetY}px`)
+          : ((i.style.position = 'absolute'),
+            (i.style.left = `${s}px`),
+            (i.style.top = `${o}px`));
+      const r = document.createElement('span');
+      (r.className = 'component-label'),
+        (r.textContent = t),
+        i.appendChild(r),
+        b.components.push(i),
+        b.canvasElement.appendChild(i),
+        b.addDraggableListeners(i),
         C.updateLayersView(),
         b.historyManager.captureState();
     }
@@ -1849,21 +1838,27 @@ class b {
       this.historyManager.captureState();
   }
   static createComponent(e) {
-    const t = b.componentFactory[e];
-    if (!t) return console.warn(`Unknown component type: ${e}`), null;
-    const n = t();
-    if (n) {
-      n.classList.add('editable-component'),
-        'container' != e && n.classList.add('component-resizer');
-      const t = b.generateUniqueClass(e);
-      n.setAttribute('id', t),
+    let t = null;
+    const n = b.componentFactory[e];
+    if (n) t = n();
+    else {
+      const n = document.querySelector(`[data-component='${e}']`),
+        s = null == n ? void 0 : n.getAttribute('data-tag-name');
+      if (!s) return console.warn(`Unknown component type: ${e}`), null;
+      (t = document.createElement(s)), t.classList.add('custom-component');
+    }
+    if (t) {
+      t.classList.add('editable-component'),
+        'container' != e && t.classList.add('component-resizer');
+      const n = b.generateUniqueClass(e);
+      t.setAttribute('id', n),
         'image' === e
-          ? n.setAttribute('contenteditable', 'false')
-          : n.setAttribute('contenteditable', 'true'),
-        b.controlsManager.addControlButtons(n),
+          ? t.setAttribute('contenteditable', 'false')
+          : t.setAttribute('contenteditable', 'true'),
+        b.controlsManager.addControlButtons(t),
         C.updateLayersView();
     }
-    return n;
+    return t;
   }
   static generateUniqueClass(e, t = !1, n = null) {
     if (t && n) {

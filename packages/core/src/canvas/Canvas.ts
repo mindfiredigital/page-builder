@@ -304,19 +304,9 @@ export class Canvas {
       event,
       Canvas.canvasElement
     );
-    let component;
-    if (Canvas.componentFactory[componentType]) {
-      component = Canvas.createComponent(componentType);
-    } else {
-      const tagName = document
-        .querySelector(`[data-component='${componentType}']`)
-        ?.getAttribute('data-tag-name');
-      if (tagName) {
-        component = document.createElement(tagName);
-        component.classList.add('editable-component', 'custom-component');
-      }
-    }
-    // const component = Canvas.createComponent(componentType);
+
+    const component = Canvas.createComponent(componentType);
+
     if (component) {
       // Add unique class name
       const uniqueClass = Canvas.generateUniqueClass(componentType);
@@ -378,12 +368,26 @@ export class Canvas {
   }
 
   static createComponent(type: string): HTMLElement | null {
+    let element: HTMLElement | null = null;
+    // First try to create using component factory
     const componentFactoryFunction = Canvas.componentFactory[type];
-    if (!componentFactoryFunction) {
-      console.warn(`Unknown component type: ${type}`);
-      return null;
+    if (componentFactoryFunction) {
+      element = componentFactoryFunction();
     }
-    const element = componentFactoryFunction();
+    // If not in factory, check if it's a custom component with a tag name
+    else {
+      const tagNameElement = document.querySelector(
+        `[data-component='${type}']`
+      );
+      const tagName = tagNameElement?.getAttribute('data-tag-name');
+      if (tagName) {
+        element = document.createElement(tagName);
+        element.classList.add('custom-component');
+      } else {
+        console.warn(`Unknown component type: ${type}`);
+        return null;
+      }
+    }
 
     if (element) {
       element.classList.add('editable-component');
