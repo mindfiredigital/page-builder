@@ -159,8 +159,11 @@ export class Canvas {
     state.forEach(componentData => {
       const component = Canvas.createComponent(componentData.type);
       if (component) {
-        // Restore full content
-        component.innerHTML = componentData.content;
+        // For custom components, only restore style and attributes, not innerHTML
+        // This prevents content duplication
+        if (!componentData.classes.includes('custom-component')) {
+          component.innerHTML = componentData.content;
+        }
         // Restore classes
         component.className = ''; // Clear existing classes
         componentData.classes.forEach(cls => {
@@ -226,7 +229,7 @@ export class Canvas {
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
   }
   static onDrop(event) {
-    var _a, _b;
+    var _a;
     event.preventDefault();
     if (event.target.classList.contains('container-component')) {
       return;
@@ -243,21 +246,7 @@ export class Canvas {
       event,
       Canvas.canvasElement
     );
-    let component;
-    if (Canvas.componentFactory[componentType]) {
-      component = Canvas.createComponent(componentType);
-    } else {
-      const tagName =
-        (_b = document.querySelector(`[data-component='${componentType}']`)) ===
-          null || _b === void 0
-          ? void 0
-          : _b.getAttribute('data-tag-name');
-      if (tagName) {
-        component = document.createElement(tagName);
-        component.classList.add('editable-component', 'custom-component');
-      }
-    }
-    // const component = Canvas.createComponent(componentType);
+    const component = Canvas.createComponent(componentType);
     if (component) {
       // Add unique class name
       const uniqueClass = Canvas.generateUniqueClass(componentType);
@@ -277,11 +266,11 @@ export class Canvas {
         component.style.left = `${gridX}px`;
         component.style.top = `${gridY}px`;
       }
-      // Create label for showing class name on hover
-      const label = document.createElement('span');
-      label.className = 'component-label';
-      label.textContent = uniqueClass;
-      component.appendChild(label);
+      // // Create label for showing class name on hover
+      // const label = document.createElement('span');
+      // label.className = 'component-label';
+      // label.textContent = uniqueClass;
+      // component.appendChild(label);
       Canvas.components.push(component);
       Canvas.canvasElement.appendChild(component);
       Canvas.addDraggableListeners(component); // Add drag functionality
@@ -313,12 +302,30 @@ export class Canvas {
     this.historyManager.captureState();
   }
   static createComponent(type) {
+    let element = null;
+    // First try to create using component factory
     const componentFactoryFunction = Canvas.componentFactory[type];
-    if (!componentFactoryFunction) {
-      console.warn(`Unknown component type: ${type}`);
-      return null;
+    if (componentFactoryFunction) {
+      element = componentFactoryFunction();
     }
-    const element = componentFactoryFunction();
+    // If not in factory, check if it's a custom component with a tag name
+    else {
+      const tagNameElement = document.querySelector(
+        `[data-component='${type}']`
+      );
+      const tagName =
+        tagNameElement === null || tagNameElement === void 0
+          ? void 0
+          : tagNameElement.getAttribute('data-tag-name');
+      if (tagName) {
+        element = document.createElement(tagName);
+        //Adding these classnames, since these will have prime role in history management.
+        element.classList.add(`${type}-component`, 'custom-component');
+      } else {
+        console.warn(`Unknown component type: ${type}`);
+        return null;
+      }
+    }
     if (element) {
       element.classList.add('editable-component');
       if (type != 'container') {
@@ -332,6 +339,11 @@ export class Canvas {
       } else {
         element.setAttribute('contenteditable', 'true'); // Other components are editable
       }
+      // Create label for showing class name on hover
+      const label = document.createElement('span');
+      label.className = 'component-label';
+      label.textContent = uniqueClass;
+      element.appendChild(label);
       //Add control for each component
       Canvas.controlsManager.addControlButtons(element);
       CustomizationSidebar.updateLayersView();
