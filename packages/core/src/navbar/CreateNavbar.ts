@@ -29,7 +29,7 @@ export function createNavbar() {
     { id: 'view-btn', icon: icons.view, title: 'View' },
     { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
     { id: 'reset-btn', icon: icons.reset, title: 'Reset' },
-    { id: 'export-html-btn', icon: icons.export, title: 'Export HTML' },
+    { id: 'export-html-btn', icon: icons.export, title: 'Export' },
   ];
 
   const leftContainer = document.createElement('div');

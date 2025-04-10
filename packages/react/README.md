@@ -90,11 +90,10 @@ export default App;
 ### Custom Components (Optional)
 
 - You can optionally add your own React components to the page builder using the customComponents prop:
-- Each custom component requires:
-
-component: Your React component
-svg: An SVG icon for the builder toolbar
-title: A display name for the component
+- Each custom component requires:<br>
+  `component`: Your React component<br>
+  `svg`: An SVG icon for the builder toolbar<br>
+  `title`: A display name for the component
 
 ```javascript
 import { PageBuilderReact } from '@mindfiredigital/page-builder-react';
