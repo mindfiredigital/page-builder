@@ -2203,6 +2203,7 @@ class B {
       this.setupInitialComponents(),
       this.setupSaveButton(),
       this.setupResetButton(),
+      this.handleExport(),
       this.setupExportHTMLButton(),
       this.setupViewButton(),
       this.setupPreviewModeButtons(),
@@ -2374,7 +2375,7 @@ class B {
                     { id: 'view-btn', icon: t.view, title: 'View' },
                     { id: 'save-btn', icon: t.save, title: 'Save Layout' },
                     { id: 'reset-btn', icon: t.reset, title: 'Reset' },
-                    { id: 'export-html-btn', icon: t.export, title: 'Export' },
+                    { id: 'export-btn', icon: t.export, title: 'Export' },
                   ],
                   o = document.createElement('div');
                 o.classList.add('left-buttons'),
@@ -2454,6 +2455,30 @@ class B {
           }
         );
       });
+  }
+  handleExport() {
+    const e = document.getElementById('export-btn');
+    if (e) {
+      const t = document.createElement('div');
+      t.classList.add('export-dropdown');
+      const n = document.createElement('div');
+      (n.textContent = 'HTML'),
+        n.classList.add('export-option'),
+        (n.id = 'export-html-btn');
+      const s = document.createElement('div');
+      (s.textContent = 'JSON'),
+        s.classList.add('export-option'),
+        (s.id = 'export-json-btn'),
+        t.appendChild(n),
+        t.appendChild(s),
+        e.appendChild(t),
+        e.addEventListener('click', e => {
+          e.stopPropagation(), t.classList.toggle('visible');
+        }),
+        document.addEventListener('click', n => {
+          e.contains(n.target) || t.classList.remove('visible');
+        });
+    }
   }
   setupExportHTMLButton() {
     const e = document.getElementById('export-html-btn');

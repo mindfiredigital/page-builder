@@ -36,6 +36,7 @@ export class PageBuilder {
     this.setupInitialComponents();
     this.setupSaveButton();
     this.setupResetButton();
+    this.handleExport();
     this.setupExportHTMLButton();
     this.setupViewButton();
     this.setupPreviewModeButtons();
@@ -95,6 +96,45 @@ export class PageBuilder {
       });
     }
   }
+  /**
+   * This function handles the event on clicking the export button
+   * It opens up a drop down with 2 options for exporting
+   * One is for html export and another is for json object export
+   */
+  handleExport() {
+    const exportBtn = document.getElementById('export-btn');
+    if (exportBtn) {
+      const dropdown = document.createElement('div');
+      dropdown.classList.add('export-dropdown');
+      // Create Option 1
+      const option1 = document.createElement('div');
+      option1.textContent = 'HTML';
+      option1.classList.add('export-option');
+      option1.id = 'export-html-btn';
+      // Create Option 2
+      const option2 = document.createElement('div');
+      option2.textContent = 'JSON';
+      option2.classList.add('export-option');
+      option2.id = 'export-json-btn';
+      dropdown.appendChild(option1);
+      dropdown.appendChild(option2);
+      exportBtn.appendChild(dropdown);
+      exportBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        dropdown.classList.toggle('visible'); // Toggle dropdown visibility
+      });
+      // Hide dropdown when clicking outside
+      document.addEventListener('click', event => {
+        if (!exportBtn.contains(event.target)) {
+          dropdown.classList.remove('visible');
+        }
+      });
+    }
+  }
+  /**
+   * This function handles opening up the modal on clicking export to html option from drop down options
+   * This generates expected html and css present on the canvas layout.
+   */
   setupExportHTMLButton() {
     const exportButton = document.getElementById('export-html-btn');
     if (exportButton) {
