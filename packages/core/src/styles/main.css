@@ -863,3 +863,29 @@ ul {
   display: flex;
   align-items: center;
 }
+
+/* Drop down for export */
+.export-dropdown {
+  display: none;
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  margin-top: 2%;
+  right: 1%;
+  z-index: 1000;
+}
+
+.export-dropdown.visible {
+  display: block;
+}
+
+.export-option {
+  padding: 8px 18px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.export-option:hover {
+  background-color: #f0f0f0;
+}
+
