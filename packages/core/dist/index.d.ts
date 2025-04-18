@@ -22,6 +22,10 @@ declare class PageBuilder {
    * This generates expected html and css present on the canvas layout.
    */
   setupExportHTMLButton(): void;
+  /**
+   * This function handles the exporting feature in PDF format
+   */
+  setupExportPDFButton(): void;
   createExportModal(
     highlightedHTML: string,
     highlightedCSS: string,
