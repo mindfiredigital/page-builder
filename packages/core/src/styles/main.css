@@ -889,3 +889,38 @@ ul {
   background-color: #f0f0f0;
 }
 
+
+.expand-config {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.dropdown-btn {
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-btn.active {
+  background-color: #e0e0e0;
+}
+
+.dropdown-btn:hover {
+  background-color: #ddd;
+}
+
+.dropdown-panel {
+  margin-top: 8px;
+  padding: 10px;
+  background-color: #fff;
+  border-left: 3px solid #007acc;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}

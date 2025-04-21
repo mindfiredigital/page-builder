@@ -9,8 +9,7 @@ const App = () => {
       'button',
       'header',
       'text',
-      'twoCol',
-      'threeCol'
+      'table'
     ],
     Extra: ['landingpage'], 
   };  
