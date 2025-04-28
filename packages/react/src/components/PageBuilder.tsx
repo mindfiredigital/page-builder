@@ -1,23 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
+import { PageBuilderReactProps, DynamicComponents } from "../types/types";
 
 // Updated interfaces to support new configuration
-interface DynamicComponents {
-  Basic: string[];
-  Extra: string[];
-  Custom?: Record<string, CustomComponentConfig>;
-}
-
-interface CustomComponentConfig {
-  component: React.ComponentType<any> | string;
-  svg?: string;
-  title?: string;
-}
-
-interface PageBuilderReactProps {
-  config: DynamicComponents;
-  customComponents?: Record<string, CustomComponentConfig>;
-}
 
 export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({ 
   config, 
