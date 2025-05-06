@@ -1292,7 +1292,7 @@ class b {
       (this.expandConfiguration.className = 'expand-config'),
       (this.expandConfiguration.id = 'expand-config'),
       (this.expandConfiguration.innerHTML =
-        '\n<button id="css-tab" title="Expand" class="dropdown-btn">Customize css</button>\n<button id="functionalities-tab" title="Expand" class="dropdown-btn">Customize Functions</button>\n'),
+        '\n<button id="css-tab" title="Expand" class="dropdown-btn">Customize CSS</button>\n<button id="functionalities-tab" title="Expand" class="dropdown-btn">Settings Panel</button>\n'),
       (this.layersModeToggle = document.createElement('div')),
       (this.layersModeToggle.className = 'layers-mode-toggle'),
       (this.layersModeToggle.innerHTML =

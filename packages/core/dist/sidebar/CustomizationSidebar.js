@@ -18,8 +18,8 @@ export class CustomizationSidebar {
     this.expandConfiguration.className = 'expand-config';
     this.expandConfiguration.id = 'expand-config';
     this.expandConfiguration.innerHTML = `
-<button id="css-tab" title="Expand" class="dropdown-btn">Customize css</button>
-<button id="functionalities-tab" title="Expand" class="dropdown-btn">Customize Functions</button>
+<button id="css-tab" title="Expand" class="dropdown-btn">Customize CSS</button>
+<button id="functionalities-tab" title="Expand" class="dropdown-btn">Settings Panel</button>
 `;
     // Create layers mode toggle
     this.layersModeToggle = document.createElement('div');
