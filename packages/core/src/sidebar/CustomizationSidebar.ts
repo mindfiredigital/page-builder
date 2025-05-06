@@ -9,6 +9,7 @@ export class CustomizationSidebar {
   private static layersModeToggle: HTMLDivElement;
   private static layersView: HTMLDivElement;
   private static layersViewController: LayersViewController;
+  private static expandConfiguration: HTMLDivElement;
 
   static init() {
     this.sidebarElement = document.getElementById('customization')!;
@@ -23,17 +24,85 @@ export class CustomizationSidebar {
     // Initialize LayersViewController
     this.layersViewController = new LayersViewController();
 
+    // Create expandible menu
+    this.expandConfiguration = document.createElement('div');
+    this.expandConfiguration.className = 'expand-config';
+    this.expandConfiguration.id = 'expand-config';
+    this.expandConfiguration.innerHTML = `
+<button id="css-tab" title="Expand" class="dropdown-btn">Customize CSS</button>
+<button id="functionalities-tab" title="Expand" class="dropdown-btn">Settings Panel</button>
+`;
+
     // Create layers mode toggle
     this.layersModeToggle = document.createElement('div');
     this.layersModeToggle.className = 'layers-mode-toggle';
     this.layersModeToggle.innerHTML = `
-      <button id="customize-tab" title="Customize" class="active">⚙️</button>
-      <button id="layers-tab" title="Layers"> ☰ </button>
-    `;
+    <button id="customize-tab" title="Customize" class="active">⚙️</button>
+    <button id="layers-tab" title="Layers"> ☰ </button>
+  `;
+
+    // Insert layers toggle before component name
     this.sidebarElement.insertBefore(
       this.layersModeToggle,
       this.componentNameHeader
     );
+
+    // Insert expand config (with both buttons) before the controls container
+    this.sidebarElement.insertBefore(
+      this.expandConfiguration,
+      this.controlsContainer
+    );
+
+    // Insert controlsContainer right before the functionalities button inside expandConfiguration
+    const funcButton = this.expandConfiguration.querySelector(
+      '#functionalities-tab'
+    )!;
+    this.expandConfiguration.insertBefore(this.controlsContainer, funcButton);
+
+    // Create panels for CSS and Function tabs
+    const cssPanel = this.controlsContainer; // reuse controlsContainer
+    cssPanel.style.display = 'none'; // Initially hidden until CSS tab is clicked
+    const funcPanel = document.createElement('div');
+    funcPanel.id = 'functions-panel';
+    funcPanel.className = 'dropdown-panel hidden';
+    funcPanel.style.display = 'none';
+    funcPanel.innerHTML = '<p>Functionality settings will appear here.</p>';
+
+    this.sidebarElement.appendChild(funcPanel);
+
+    // Add event listeners to toggle panels
+    const cssTabBtn = document.getElementById('css-tab')!;
+    const funcTabBtn = document.getElementById('functionalities-tab')!;
+
+    // CSS tab dropdown behavior
+    cssTabBtn.addEventListener('click', () => {
+      // Toggle CSS panel
+      if (cssPanel.style.display === 'block') {
+        cssPanel.style.display = 'none';
+        cssTabBtn.classList.remove('active');
+      } else {
+        cssPanel.style.display = 'block';
+        cssTabBtn.classList.add('active');
+        // Hide functions panel if it's open
+        funcPanel.style.display = 'none';
+        funcTabBtn.classList.remove('active');
+      }
+    });
+
+    // Functions tab dropdown behavior
+    funcTabBtn.addEventListener('click', () => {
+      // Toggle Functions panel
+      if (funcPanel.style.display === 'block') {
+        funcPanel.style.display = 'none';
+        funcTabBtn.classList.remove('active');
+      } else {
+        funcPanel.style.display = 'block';
+        funcTabBtn.classList.add('active');
+        // Hide CSS panel if it's open
+        cssPanel.style.display = 'none';
+        cssTabBtn.classList.remove('active');
+      }
+    });
 
     // Create layers view
     this.layersView = document.createElement('div');
@@ -63,15 +132,17 @@ export class CustomizationSidebar {
     const customizeTab = document.getElementById('customize-tab')!;
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
-    const controlsContainer = document.getElementById('controls')!;
     const componentName = document.getElementById('component-name')!;
+    const expandConfig = document.getElementById('expand-config')!;
 
     customizeTab.classList.add('active');
     layersTab.classList.remove('active');
     layersView.classList.add('hidden');
-    controlsContainer.classList.remove('hidden');
-    // Ensure only the control view is visible
-    controlsContainer.style.display = 'block'; // show the controls
+
+    // Show the expand-config in customize mode
+    expandConfig.style.display = 'flex';
+
+    // Don't automatically show controls container - wait for user to click the CSS tab
     layersView.style.display = 'none';
     componentName.style.display = 'block';
   }
@@ -80,16 +151,29 @@ export class CustomizationSidebar {
     const customizeTab = document.getElementById('customize-tab')!;
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
-    const controlsContainer = document.getElementById('controls')!;
     const componentName = document.getElementById('component-name')!;
+    const expandConfig = document.getElementById('expand-config')!;
+    const cssPanel = document.getElementById('controls')!;
+    const funcPanel = document.getElementById('functions-panel')!;
+    const cssTabBtn = document.getElementById('css-tab')!;
+    const funcTabBtn = document.getElementById('functionalities-tab')!;
 
     layersTab.classList.add('active');
     customizeTab.classList.remove('active');
 
+    // Hide expand-config in layers mode
+    expandConfig.style.display = 'none';
+
+    // Hide both dropdown panels
+    cssPanel.style.display = 'none';
+    funcPanel.style.display = 'none';
+    cssTabBtn.classList.remove('active');
+    funcTabBtn.classList.remove('active');
+
     // Ensure only the layers view is visible
-    controlsContainer.style.display = 'none'; // Hides the controls
     layersView.style.display = 'block';
     componentName.style.display = 'none';
+
     // Update the layers view using the new LayersViewController
     LayersViewController.updateLayersView();
   }
