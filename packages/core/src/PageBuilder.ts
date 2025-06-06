@@ -49,7 +49,9 @@ export class PageBuilder {
     this.setupInitialComponents();
     this.setupSaveButton();
     this.setupResetButton();
+    this.handleExport();
     this.setupExportHTMLButton();
+    this.setupExportPDFButton();
     this.setupViewButton();
     this.setupPreviewModeButtons();
     this.setupUndoRedoButtons();
@@ -113,6 +115,53 @@ export class PageBuilder {
     }
   }
 
+  /**
+   * This function handles the event on clicking the export button
+   * It opens up a drop down with 2 options for exporting
+   * One is for html export and another is for json object export
+   */
+  public handleExport() {
+    const exportBtn = document.getElementById('export-btn');
+
+    if (exportBtn) {
+      const dropdown = document.createElement('div');
+      dropdown.classList.add('export-dropdown');
+
+      // Create Option 1
+      const option1 = document.createElement('div');
+      option1.textContent = 'HTML';
+      option1.classList.add('export-option');
+      option1.id = 'export-html-btn';
+
+      // Create Option 2
+      const option2 = document.createElement('div');
+      option2.textContent = 'PDF';
+      option2.classList.add('export-option');
+      option2.id = 'export-pdf-btn';
+
+      dropdown.appendChild(option1);
+      dropdown.appendChild(option2);
+
+      exportBtn.appendChild(dropdown);
+
+      exportBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        dropdown.classList.toggle('visible'); // Toggle dropdown visibility
+      });
+
+      // Hide dropdown when clicking outside
+      document.addEventListener('click', event => {
+        if (!exportBtn.contains(event.target as Node)) {
+          dropdown.classList.remove('visible');
+        }
+      });
+    }
+  }
+
+  /**
+   * This function handles opening up the modal on clicking export to html option from drop down options
+   * This generates expected html and css present on the canvas layout.
+   */
   public setupExportHTMLButton() {
     const exportButton = document.getElementById('export-html-btn');
     if (exportButton) {
@@ -132,6 +181,67 @@ export class PageBuilder {
         );
         document.body.appendChild(modal);
         modal.classList.add('show');
+      });
+    }
+  }
+
+  /**
+   * This function handles the exporting feature in PDF format
+   */
+  public setupExportPDFButton() {
+    const exportButton = document.getElementById('export-pdf-btn');
+    if (exportButton) {
+      exportButton.addEventListener('click', () => {
+        console.log('clicked on pdf');
+        const htmlGenerator = new HTMLGenerator(new Canvas());
+        const html = htmlGenerator.generateHTML();
+        const css = htmlGenerator.generateCSS();
+
+        // Create a new window
+        const printWindow = window.open('', '_blank');
+
+        if (printWindow) {
+          const fullHTML = `
+            <html>
+              <head>
+                <title>Export PDF</title>
+                <style>
+                  ${css} /* Generated CSS */
+                  body {
+                    margin: 0;
+                    padding: 20px;
+                    font-family: Arial, sans-serif;
+                  }
+                  @media print {
+                    /* Ensure print styles are applied */
+                    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+                    
+                    /* Remove browser headers and footers */
+                    @page {
+                      size: auto;
+                      margin: 0mm;  /* Remove default margins */
+                    }
+                    
+                    /* For Chrome/Safari */
+                    @page { margin: 0; }
+                    html { margin: 0; }
+                  }
+                </style>
+              </head>
+              <body>
+                ${html} <!-- Generated HTML -->
+              </body>
+            </html>
+          `;
+          printWindow.document.write(fullHTML);
+          printWindow.document.close();
+
+          // Delay printing slightly to allow CSS processing
+          setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+          }, 500);
+        }
       });
     }
   }

@@ -8,6 +8,7 @@ export default [
       "**/test/**",
       "**/dist/**",
       "**/*.d.ts",
+      "**/documentation/**",
     ],
   },
   {

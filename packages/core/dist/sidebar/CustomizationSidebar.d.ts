@@ -7,6 +7,7 @@ export declare class CustomizationSidebar {
   private static layersModeToggle;
   private static layersView;
   private static layersViewController;
+  private static expandConfiguration;
   static init(): void;
   private static switchToCustomizeMode;
   private static switchToLayersMode;
