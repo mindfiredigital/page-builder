@@ -25,11 +25,15 @@ export class PageBuilder {
   private previewPanel: PreviewPanel;
   private static headerInitialized = false;
   private dynamicComponents;
+  private initialDesign: PageBuilderDesign | null;
 
   constructor(
-    dynamicComponents: DynamicComponents = { Basic: [], Extra: [], Custom: {} }
+    dynamicComponents: DynamicComponents = { Basic: [], Extra: [], Custom: {} },
+    initialDesign: PageBuilderDesign | null = null
   ) {
+    console.log(initialDesign, 'initial design of component');
     this.dynamicComponents = dynamicComponents;
+    this.initialDesign = initialDesign;
     this.canvas = new Canvas();
     this.sidebar = new Sidebar(this.canvas);
     this.htmlGenerator = new HTMLGenerator(this.canvas);
@@ -38,8 +42,13 @@ export class PageBuilder {
     this.initializeEventListeners();
   }
 
+  // Static method to reset header flag (called during cleanup)
+  public static resetHeaderFlag() {
+    PageBuilder.headerInitialized = false;
+  }
+
   public initializeEventListeners() {
-    // document.addEventListener('DOMContentLoaded', () => {
+    // Re-initialize core components
     this.canvas = new Canvas();
     this.sidebar = new Sidebar(this.canvas);
     this.htmlGenerator = new HTMLGenerator(this.canvas);
@@ -55,36 +64,44 @@ export class PageBuilder {
     this.setupViewButton();
     this.setupPreviewModeButtons();
     this.setupUndoRedoButtons();
-    // });
   }
 
   public setupInitialComponents() {
     createSidebar(this.dynamicComponents);
-    Canvas.init();
+
+    // Pass initial design to Canvas.init
+    Canvas.init(this.initialDesign);
+
     this.sidebar.init();
     ShortcutManager.init();
     CustomizationSidebar.init();
 
+    // Create header logic - improved to handle re-initialization
+    this.createHeaderIfNeeded();
+  }
+
+  private createHeaderIfNeeded() {
+    const existingHeader = document.getElementById('page-builder-header');
+
     // Only create header if it doesn't exist
-    if (!PageBuilder.headerInitialized) {
-      const existingHeader = document.getElementById('page-builder-header');
-      if (!existingHeader) {
-        const appElement = document.getElementById('app');
-        if (appElement && appElement.parentNode) {
-          const header = document.createElement('header');
-          header.id = 'page-builder-header';
-          header.appendChild(createNavbar());
-          appElement.parentNode.insertBefore(header, appElement);
-          PageBuilder.headerInitialized = true;
-        } else {
-          console.error('Error: #app not found in the DOM');
-        }
-      } else {
+    if (!existingHeader) {
+      const appElement = document.getElementById('app');
+      if (appElement && appElement.parentNode) {
+        const header = document.createElement('header');
+        header.id = 'page-builder-header';
+        header.appendChild(createNavbar());
+        appElement.parentNode.insertBefore(header, appElement);
         PageBuilder.headerInitialized = true;
+      } else {
+        console.error('Error: #app not found in the DOM');
       }
+    } else {
+      // Header exists, mark as initialized
+      PageBuilder.headerInitialized = true;
     }
   }
 
+  // Rest of your methods remain the same...
   public setupSaveButton() {
     const saveButton = document.getElementById('save-btn');
     if (saveButton) {
@@ -146,7 +163,7 @@ export class PageBuilder {
 
       exportBtn.addEventListener('click', event => {
         event.stopPropagation();
-        dropdown.classList.toggle('visible'); // Toggle dropdown visibility
+        dropdown.classList.toggle('visible');
       });
 
       // Hide dropdown when clicking outside

@@ -1,0 +1,288 @@
+/* View.module.css */
+
+.container {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f9fafb;
+}
+
+.header {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.headerContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.headerContent {
+  padding: 16px 0;
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 14px;
+}
+
+.backIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.badge {
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.badgeGreen {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.badgeYellow {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badgeBlue {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badgeGray {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.badgePurple {
+  background-color: #e9d5ff;
+  color: #7c3aed;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.buttonRed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.buttonGreen {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.buttonYellow {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.buttonBlue {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.tabs {
+  margin-top: 24px;
+}
+
+.tabNav {
+  display: flex;
+  gap: 32px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab {
+  padding: 8px 4px;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #6b7280;
+}
+
+.tabActive {
+  border-bottom-color: #3b82f6;
+  color: #2563eb;
+}
+
+.content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 384px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { 
+    transform: rotate(0deg); 
+  }
+  to { 
+    transform: rotate(360deg); 
+  }
+}
+
+.builderContainer {
+  background-color: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.infoGridLg {
+  grid-template-columns: 1fr 1fr;
+}
+
+.card {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.dl {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dt {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.dd {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.configCard {
+  grid-column: 1 / -1;
+}
+
+.configContent {
+  background-color: #f9fafb;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.configText {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.componentTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.componentTag {
+  padding: 4px 8px;
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.noComponents {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 1024px) {
+  .infoGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

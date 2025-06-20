@@ -12,40 +12,21 @@ export declare class Canvas {
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
   private static componentFactory;
-  static init(): void;
-  static clearCanvas(): void;
+  static init(initialData?: PageBuilderDesign | null): void;
   /**
-   * Generates the current state of the canvas for undo/redo purposes.
-   * Maps each component into a structured object containing:
-   * Type, content, position, dimensions, style, and classes.
-   * @returns The array of component objects.
+   * Dispatches a custom event indicating that the canvas design has changed.
+   * The event detail contains the current design state.
    */
-  static getState(): {
-    id: string;
-    type: string;
-    content: string;
-    position: {
-      x: number;
-      y: number;
-    };
-    dimensions: {
-      width: number;
-      height: number;
-    };
-    style: {
-      [key: string]: string;
-    };
-    inlineStyle: string;
-    classes: string[];
-    dataAttributes: {
-      [key: string]: string;
-    };
-    imageSrc: string | null;
-  }[];
+  static dispatchDesignChange(): void;
+  static clearCanvas(): void;
+  static getState(): PageBuilderDesign;
   static restoreState(state: any): void;
   static onDrop(event: DragEvent): void;
   static reorderComponent(fromIndex: number, toIndex: number): void;
-  static createComponent(type: string): HTMLElement | null;
+  static createComponent(
+    type: string,
+    customSettings?: string | null
+  ): HTMLElement | null;
   static generateUniqueClass(
     type: string,
     isContainerComponent?: boolean,

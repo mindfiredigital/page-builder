@@ -114,9 +114,16 @@ export function createSidebar(dynamicComponents) {
           iconElement.appendChild(letterSpan);
         } else {
           // Handling new format with CustomComponentConfig
-          const { component, svg, title } = config;
+          const { component, svg, title, settings } = config;
           iconElement.setAttribute('data-tag-name', component);
           iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
+          // Store custom settings as a JSON string
+          if (settings && settings.length > 0) {
+            iconElement.setAttribute(
+              'data-custom-settings',
+              JSON.stringify(settings)
+            );
+          }
           if (svg) {
             // Using provided SVG
             iconElement.innerHTML = svg;

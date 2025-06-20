@@ -1,8 +1,20 @@
 import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 
+export interface PageBuilderDesign {
+  pages?: Array<{
+    id: string;
+    components: Array<{
+      type: string;
+      id: string;
+      props: Record<string, any>;
+    }>;
+  }>;
+  [key: string]: any;
+}
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
   private initialized = false;
+  private _initialDesign: PageBuilderDesign | null = null;
   private config = { Basic: [], Extra: [], Custom: [] };
   private template = `<div id="app">
       <div id="sidebar"></div>
@@ -25,9 +37,6 @@ export class PageBuilderComponent extends HTMLElement {
   constructor() {
     super();
     // Set inner HTML only if no child elements exist
-    if (!this.firstElementChild) {
-      this.innerHTML = this.template;
-    }
   }
 
   // Observe 'config-data' attribute to detect changes
@@ -40,6 +49,8 @@ export class PageBuilderComponent extends HTMLElement {
       try {
         const parsedConfig = JSON.parse(newValue);
         this.config = parsedConfig;
+        this.initialized = false;
+
         this.initializePageBuilder(); // Reinitialize Core when config changes
       } catch (e) {
         console.error('Failed to parse config:', e);
@@ -47,12 +58,48 @@ export class PageBuilderComponent extends HTMLElement {
     }
   }
 
+  set initialDesign(value: PageBuilderDesign | null) {
+    console.log(value, 'value');
+    if (this._initialDesign !== value) {
+      this._initialDesign = value;
+      if (this.initialized) {
+        this.initialized = false;
+        if (value !== null || this.initialized) {
+          this.initialized = false;
+          this.initializePageBuilder();
+        }
+      }
+    }
+  }
+
+  get initialDesign(): PageBuilderDesign | null {
+    return this._initialDesign;
+  }
+
   // Lifecycle method: Called when the element is added to the DOM
   connectedCallback() {
     if (this.initialized) {
       return;
     }
-    this.initializePageBuilder();
+
+    setTimeout(() => {
+      if (!this.firstElementChild) {
+        this.innerHTML = this.template;
+      }
+
+      if (this.hasValidConfig()) {
+        this.initializePageBuilder();
+      }
+    }, 0);
+  }
+
+  private hasValidConfig(): boolean {
+    return (
+      this.config &&
+      (this.config.Basic?.length > 0 ||
+        this.config.Extra?.length > 0 ||
+        (this.config.Custom && Object.keys(this.config.Custom).length > 0))
+    );
   }
 
   // Initializes the PageBuilder instance
@@ -62,8 +109,23 @@ export class PageBuilderComponent extends HTMLElement {
     }
 
     try {
+      const app = this.querySelector('#app');
+      if (app === null) {
+        console.error('Error: #app element not found.');
+        return; // Exit if #app is not found
+      }
+      if (app && this.pageBuilder) {
+        app.innerHTML = '';
+        this.innerHTML = this.template; // Reset the template
+      }
+      this.pageBuilder = new PageBuilder(this.config, this._initialDesign);
+
       this.initialized = true;
-      this.pageBuilder = new PageBuilder(this.config);
+      console.log(
+        'PageBuilderComponent: PageBuilder initialized successfully with config and initial design.',
+        this._initialDesign,
+        this.config
+      );
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);
       this.initialized = false;

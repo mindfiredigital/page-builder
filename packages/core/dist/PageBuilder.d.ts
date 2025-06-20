@@ -7,9 +7,15 @@ export declare class PageBuilder {
   private previewPanel;
   private static headerInitialized;
   private dynamicComponents;
-  constructor(dynamicComponents?: DynamicComponents);
+  private initialDesign;
+  constructor(
+    dynamicComponents?: DynamicComponents,
+    initialDesign?: PageBuilderDesign | null
+  );
+  static resetHeaderFlag(): void;
   initializeEventListeners(): void;
   setupInitialComponents(): void;
+  private createHeaderIfNeeded;
   setupSaveButton(): void;
   setupResetButton(): void;
   /**

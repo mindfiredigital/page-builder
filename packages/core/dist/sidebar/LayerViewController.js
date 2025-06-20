@@ -3,7 +3,7 @@ import { HTMLGenerator } from '../services/HTMLGenerator.js';
 class LayersViewController {
   constructor(
     layersViewSelector = '#layers-view',
-    canvasRootSelector = '#page'
+    canvasRootSelector = '#canvas'
   ) {
     // Ensure elements exist before assignment
     this.initializeElements(layersViewSelector, canvasRootSelector);

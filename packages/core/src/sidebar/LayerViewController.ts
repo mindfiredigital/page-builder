@@ -16,7 +16,7 @@ class LayersViewController {
 
   constructor(
     layersViewSelector: string = '#layers-view',
-    canvasRootSelector: string = '#page'
+    canvasRootSelector: string = '#canvas'
   ) {
     // Ensure elements exist before assignment
     this.initializeElements(layersViewSelector, canvasRootSelector);

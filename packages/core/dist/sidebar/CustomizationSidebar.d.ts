@@ -8,12 +8,15 @@ export declare class CustomizationSidebar {
   private static layersView;
   private static layersViewController;
   private static expandConfiguration;
+  private static functionsPanel;
+  private static selectedComponent;
   static init(): void;
   private static switchToCustomizeMode;
   private static switchToLayersMode;
-  static updateLayersView(): void;
   static showSidebar(componentId: string): void;
   static hideSidebar(): void;
+  private static populateCssControls;
+  private static populateFunctionalityControls;
   static rgbToHex(rgb: string): string;
   private static createControl;
   private static createSelectControl;

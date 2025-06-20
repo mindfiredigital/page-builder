@@ -46,6 +46,7 @@ export class ComponentControlsManager {
     // Attach the click event handler
     deleteIcon.onclick = e => {
       e.stopPropagation();
+      console.log('clciked');
       this.handleDelete(element);
     };
     return deleteIcon;
@@ -64,5 +65,7 @@ export class ComponentControlsManager {
       .filter(comp => comp !== element);
     this.canvas.setComponents(updatedComponents);
     this.canvas.historyManager.captureState();
+    console.log('event');
+    this.canvas.dispatchDesignChange();
   }
 }

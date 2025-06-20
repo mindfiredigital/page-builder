@@ -1,6 +1,5 @@
 import { DragDropManager } from './DragDropManager';
 import { DeleteElementHandler } from './DeleteElement';
-// import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate';
 import { LandingPageTemplate } from './../templates/LandingPageTemplate';
 
 import {
@@ -59,7 +58,7 @@ export class Canvas {
       link: () => new LinkComponent().create(),
     };
 
-  static init() {
+  static init(initialData: PageBuilderDesign | null = null) {
     Canvas.canvasElement = document.getElementById('canvas')!;
     Canvas.sidebarElement = document.getElementById('sidebar')!;
     Canvas.canvasElement.addEventListener('drop', Canvas.onDrop.bind(Canvas));
@@ -68,8 +67,6 @@ export class Canvas {
     );
     Canvas.canvasElement.addEventListener('click', (event: MouseEvent) => {
       const component = event.target as HTMLElement;
-      // console.log('this is my component,', component);
-      // console.log('this is component id ', component.id);
       if (component) {
         CustomizationSidebar.showSidebar(component.id);
       }
@@ -77,8 +74,7 @@ export class Canvas {
     // Set canvas to relative positioning
     Canvas.canvasElement.style.position = 'relative';
 
-    // Initialize the HistoryManager with this canvas, jsonStorage and ComponentControlsManager
-    Canvas.historyManager = new HistoryManager(Canvas.canvasElement); // Pass the canvas element here
+    Canvas.historyManager = new HistoryManager(Canvas.canvasElement);
     Canvas.jsonStorage = new JSONStorage();
     Canvas.controlsManager = new ComponentControlsManager(Canvas);
 
@@ -91,11 +87,42 @@ export class Canvas {
       Canvas.sidebarElement
     );
     dragDropManager.enable();
-
+    console.log(initialData, 'initialData');
     // Load existing layout from local storage and render, if any
-    const savedState = Canvas.jsonStorage.load();
-    if (savedState) {
-      Canvas.restoreState(savedState);
+    if (initialData) {
+      // Check for initialData presence and if it's not an empty array
+      console.log('Canvas: Restoring state from initialData prop.');
+      Canvas.restoreState(initialData);
+    } else {
+      const savedState = Canvas.jsonStorage.load();
+      if (savedState) {
+        // Check for savedState presence and if it's not empty
+        console.log('Canvas: Restoring state from localStorage.');
+        Canvas.restoreState(savedState); // savedState is already PageBuilderDesign
+      } else {
+        console.log(
+          'Canvas: No initial design provided, starting with empty canvas.'
+        );
+        Canvas.clearCanvas(); // Ensure canvas is truly empty if nothing to load
+      }
+    }
+  }
+
+  /**
+   * Dispatches a custom event indicating that the canvas design has changed.
+   * The event detail contains the current design state.
+   */
+  static dispatchDesignChange() {
+    console.log('event');
+    if (Canvas.canvasElement) {
+      const currentDesign = Canvas.getState();
+      const event = new CustomEvent('design-change', {
+        detail: currentDesign,
+        bubbles: true,
+        composed: true,
+      });
+      Canvas.canvasElement.dispatchEvent(event);
+      console.log('Canvas: Dispatched design-change event', currentDesign);
     }
   }
 
@@ -104,33 +131,29 @@ export class Canvas {
     Canvas.canvasElement.innerHTML = '';
     Canvas.components = [];
     Canvas.historyManager.captureState(); // Capture cleared state for undo functionality if needed
-
+    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
     // Reinitialize the drop-preview after clearing the canvas
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
+
+    Canvas.dispatchDesignChange();
   }
 
-  /**
-   * Generates the current state of the canvas for undo/redo purposes.
-   * Maps each component into a structured object containing:
-   * Type, content, position, dimensions, style, and classes.
-   * @returns The array of component objects.
-   */
-  static getState() {
-    return Canvas.components.map(component => {
+  static getState(): PageBuilderDesign {
+    // Explicitly return PageBuilderDesign (PageComponent[])
+    return Canvas.components.map((component: HTMLElement) => {
       const baseType = component.classList[0]
         .split(/\d/)[0]
         .replace('-component', '');
 
-      // Capture the image src for image components
-      const imageSrc = component.querySelector('img')
-        ? (component.querySelector('img') as HTMLImageElement).src
-        : null;
-      // Capture all inline styles
-      // Enhanced style capturing
+      const imageElement = component.querySelector('img') as HTMLImageElement;
+      const imageSrc = imageElement ? imageElement.src : null;
+
+      const videoElement = component.querySelector('video') as HTMLVideoElement;
+      const videoSrc = videoElement ? videoElement.src : null;
+
       const computedStyles = window.getComputedStyle(component);
       const styles: { [key: string]: string } = {};
 
-      // Capture all potentially relevant CSS properties
       const stylesToCapture = [
         'position',
         'top',
@@ -167,17 +190,34 @@ export class Canvas {
       stylesToCapture.forEach(prop => {
         styles[prop] = computedStyles.getPropertyValue(prop);
       });
-      // Capture data attributes
+
       const dataAttributes: { [key: string]: string } = {};
       Array.from(component.attributes)
         .filter(attr => attr.name.startsWith('data-'))
         .forEach(attr => {
           dataAttributes[attr.name] = attr.value;
         });
+
+      // Capture props for custom components if they have any
+      // This is a conceptual placeholder; you'd need a way to store/retrieve these.
+      let componentProps: Record<string, any> = {};
+      if (component.classList.contains('custom-component')) {
+        // How your custom components store their data/props needs to be defined
+        // Example: If props are stored in a data attribute
+        const propsJson = component.getAttribute('data-component-props');
+        if (propsJson) {
+          try {
+            componentProps = JSON.parse(propsJson);
+          } catch (e) {
+            console.error('Error parsing data-component-props:', e);
+          }
+        }
+      }
+
       return {
         id: component.id,
         type: baseType,
-        content: component.innerHTML,
+        content: component.innerHTML, // Inner HTML includes component controls
         position: {
           x: component.offsetLeft,
           y: component.offsetTop,
@@ -186,12 +226,14 @@ export class Canvas {
           width: component.offsetWidth,
           height: component.offsetHeight,
         },
-        style: styles, // Store all styles dynamically
+        style: styles,
         inlineStyle: component.getAttribute('style') || '',
         classes: Array.from(component.classList),
         dataAttributes: dataAttributes,
-        imageSrc: imageSrc, // Store the image source if it's an image component
-      };
+        imageSrc: imageSrc,
+        videoSrc: videoSrc,
+        props: componentProps, // Include custom component props
+      } as PageComponent; // Explicit cast for safety
     });
   }
 
@@ -200,10 +242,13 @@ export class Canvas {
     Canvas.components = [];
 
     state.forEach((componentData: any) => {
-      const component = Canvas.createComponent(componentData.type);
+      const customSettings =
+        componentData.dataAttributes['data-custom-settings'] || null;
+      const component = Canvas.createComponent(
+        componentData.type,
+        customSettings
+      );
       if (component) {
-        // For custom components, only restore style and attributes, not innerHTML
-        // This prevents content duplication
         if (!componentData.classes.includes('custom-component')) {
           component.innerHTML = componentData.content;
         }
@@ -298,17 +343,40 @@ export class Canvas {
     }
 
     const componentType = event.dataTransfer?.getData('component-type');
-    // console.log(`Dropped component type: ${componentType}`);
+    let customSettings = event.dataTransfer?.getData('custom-settings');
 
     if (!componentType) {
       return;
     }
+
+    // FIX 1: Handle empty string custom settings by getting them from the draggable element
+    if (!customSettings || customSettings.trim() === '') {
+      // Try to get settings from the draggable element in sidebar
+      const draggableElement = document.querySelector(
+        `[data-component="${componentType}"]`
+      );
+      if (draggableElement) {
+        // Look for settings in the global customComponents registry
+        if (
+          (window as any).customComponents &&
+          (window as any).customComponents[componentType]
+        ) {
+          const componentConfig = (window as any).customComponents[
+            componentType
+          ];
+          if (componentConfig.settings) {
+            customSettings = JSON.stringify(componentConfig.settings);
+          }
+        }
+      }
+    }
+
     const { gridX, gridY } = this.gridManager.mousePositionAtGridCorner(
       event,
       Canvas.canvasElement
     );
 
-    const component = Canvas.createComponent(componentType);
+    const component = Canvas.createComponent(componentType, customSettings);
 
     if (component) {
       // Add unique class name
@@ -331,20 +399,18 @@ export class Canvas {
         component.style.left = `${gridX}px`;
         component.style.top = `${gridY}px`;
       }
-      // // Create label for showing class name on hover
-      // const label = document.createElement('span');
-      // label.className = 'component-label';
-      // label.textContent = uniqueClass;
-      // component.appendChild(label);
 
       Canvas.components.push(component);
       Canvas.canvasElement.appendChild(component);
       Canvas.addDraggableListeners(component); // Add drag functionality
-      CustomizationSidebar.updateLayersView();
       //On adding new component to the canvas it captures the current state.
       Canvas.historyManager.captureState();
     }
+
+    // Dispatch design change event
+    Canvas.dispatchDesignChange();
   }
+
   // Reorder components in the Canvas model (in the components array)
   public static reorderComponent(fromIndex: number, toIndex: number): void {
     if (
@@ -368,10 +434,16 @@ export class Canvas {
       });
     }
     this.historyManager.captureState();
+    Canvas.dispatchDesignChange();
   }
 
-  static createComponent(type: string): HTMLElement | null {
+  // FIX 2: Enhanced createComponent method with better custom settings handling
+  static createComponent(
+    type: string,
+    customSettings: string | null = null
+  ): HTMLElement | null {
     let element: HTMLElement | null = null;
+
     // First try to create using component factory
     const componentFactoryFunction = Canvas.componentFactory[type];
     if (componentFactoryFunction) {
@@ -382,13 +454,45 @@ export class Canvas {
       const tagNameElement = document.querySelector(
         `[data-component='${type}']`
       );
-      const tagName = tagNameElement?.getAttribute('data-tag-name');
+
+      const tagName = tagNameElement?.getAttribute('data-tag-name'); // This will be 'ColorPicker', 'CustomRating' etc.
+
       if (tagName) {
-        element = document.createElement(tagName);
+        element = document.createElement(tagName); // This creates a *vanilla DOM element*
         //Adding these classnames, since these will have prime role in history management.
         element.classList.add(`${type}-component`, 'custom-component');
+
+        // FIX 3: Enhanced custom settings handling
+        if (customSettings && customSettings.trim() !== '') {
+          element.setAttribute('data-custom-settings', customSettings);
+
+          // Also store in a way that's accessible to the CustomizationSidebar
+          try {
+            const parsedSettings = JSON.parse(customSettings);
+            element.setAttribute(
+              'data-component-settings',
+              JSON.stringify(parsedSettings)
+            );
+          } catch (e) {
+            console.warn('DEBUG - Could not parse custom settings:', e);
+          }
+
+          // Verify it was set:
+        } else {
+          // FIX 4: Fallback to global registry if no settings provided
+          if (
+            (window as any).customComponents &&
+            (window as any).customComponents[type]
+          ) {
+            const componentConfig = (window as any).customComponents[type];
+            if (componentConfig.settings) {
+              const settingsJson = JSON.stringify(componentConfig.settings);
+              element.setAttribute('data-custom-settings', settingsJson);
+              element.setAttribute('data-component-settings', settingsJson);
+            }
+          }
+        }
       } else {
-        console.warn(`Unknown component type: ${type}`);
         return null;
       }
     }
@@ -399,12 +503,20 @@ export class Canvas {
         element.classList.add('component-resizer');
       }
       const uniqueClass = Canvas.generateUniqueClass(type);
-      element.setAttribute('id', uniqueClass);
+      element.setAttribute('id', uniqueClass); // <-- This is where the ID is set on the wrapper!
+
       // Conditionally set contenteditable attribute
       if (type === 'image') {
-        element.setAttribute('contenteditable', 'false'); // Image should not be editable
+        element.setAttribute('contenteditable', 'false');
       } else {
-        element.setAttribute('contenteditable', 'true'); // Other components are editable
+        element.setAttribute('contenteditable', 'true');
+        element.addEventListener('input', () => {
+          Canvas.historyManager.captureState();
+        });
+
+        element.addEventListener('blur', () => {
+          Canvas.dispatchDesignChange();
+        });
       }
 
       // Create label for showing class name on hover
@@ -415,7 +527,6 @@ export class Canvas {
 
       //Add control for each component
       Canvas.controlsManager.addControlButtons(element);
-      CustomizationSidebar.updateLayersView();
     }
 
     return element;
@@ -436,7 +547,6 @@ export class Canvas {
         // If container is not found in Canvas.components, try searching in the whole document
         containerElement = document.querySelector(`.${containerClass}`);
         if (!containerElement) {
-          console.warn(`Container with class ${containerClass} not found.`);
           return `${containerClass}-${type}1`; // Default fallback name if no container found
         }
       }
@@ -535,6 +645,7 @@ export class Canvas {
 
       // Capture the state after dragging
       Canvas.historyManager.captureState();
+      Canvas.dispatchDesignChange();
     });
   }
 
