@@ -19,7 +19,6 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   console.log(initialDesign, 'init farams');
 
   useEffect(() => {
-    // Import web component
     import('@mindfiredigital/page-builder-web-component').catch(error => {
       console.error('Failed to load web component:', error);
     });
@@ -56,7 +55,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
               this.appendChild(mountPoint);
 
               // Get the ID of this Web Component instance
-              const componentId = this.id; // <-- CRUCIAL LINE: Get the ID from the Web Component itself
+              const componentId = this.id;
 
               try {
                 // Render the React component into the mountPoint,
@@ -64,7 +63,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
                 ReactDOM.createRoot(mountPoint).render(
                   React.createElement(componentConfig.component, {
                     componentId: componentId,
-                  }) // <--- PASSING THE PROP HERE
+                  })
                 );
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
@@ -81,8 +80,6 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
           component: tagName, // The tagName refers to the custom Web Component tag
           svg: componentConfig.svg,
           title: componentConfig.title,
-          // Note: The actual React component (componentConfig.component) is used internally by ReactComponentElement
-          // and its settings are already in data-custom-settings on the wrapper div (handled by Canvas.ts)
         };
       });
     }

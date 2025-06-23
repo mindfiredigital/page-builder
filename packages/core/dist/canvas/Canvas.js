@@ -373,36 +373,12 @@ export class Canvas {
       const tagName =
         tagNameElement === null || tagNameElement === void 0
           ? void 0
-          : tagNameElement.getAttribute('data-tag-name'); // This will be 'ColorPicker', 'CustomRating' etc.
+          : tagNameElement.getAttribute('data-tag-name');
       if (tagName) {
         element = document.createElement(tagName); // This creates a *vanilla DOM element*
         //Adding these classnames, since these will have prime role in history management.
         element.classList.add(`${type}-component`, 'custom-component');
-        // FIX 3: Enhanced custom settings handling
-        if (customSettings && customSettings.trim() !== '') {
-          element.setAttribute('data-custom-settings', customSettings);
-          // Also store in a way that's accessible to the CustomizationSidebar
-          try {
-            const parsedSettings = JSON.parse(customSettings);
-            element.setAttribute(
-              'data-component-settings',
-              JSON.stringify(parsedSettings)
-            );
-          } catch (e) {
-            console.warn('DEBUG - Could not parse custom settings:', e);
-          }
-          // Verify it was set:
-        } else {
-          // FIX 4: Fallback to global registry if no settings provided
-          if (window.customComponents && window.customComponents[type]) {
-            const componentConfig = window.customComponents[type];
-            if (componentConfig.settings) {
-              const settingsJson = JSON.stringify(componentConfig.settings);
-              element.setAttribute('data-custom-settings', settingsJson);
-              element.setAttribute('data-component-settings', settingsJson);
-            }
-          }
-        }
+        element.setAttribute('data-component-type', type);
       } else {
         return null;
       }

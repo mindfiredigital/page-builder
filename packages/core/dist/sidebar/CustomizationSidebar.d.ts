@@ -10,6 +10,7 @@ export declare class CustomizationSidebar {
   private static expandConfiguration;
   private static functionsPanel;
   private static selectedComponent;
+  private static settingsReactRoot;
   static init(): void;
   private static switchToCustomizeMode;
   private static switchToLayersMode;
@@ -17,6 +18,10 @@ export declare class CustomizationSidebar {
   static hideSidebar(): void;
   private static populateCssControls;
   private static populateFunctionalityControls;
+  /**
+   * Unmounts the currently rendered React settings component to prevent memory leaks.
+   */
+  private static unmountSettingsComponent;
   static rgbToHex(rgb: string): string;
   private static createControl;
   private static createSelectControl;

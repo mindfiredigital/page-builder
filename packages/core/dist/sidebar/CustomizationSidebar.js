@@ -1,7 +1,9 @@
 import { Canvas } from '../canvas/Canvas.js';
 import { debounce } from '../utils/utilityFunctions.js';
 import LayersViewController from './LayerViewController.js';
-import { TableComponent } from '../components/TableComponent.js'; // Import the TableComponent
+import { TableComponent } from '../components/TableComponent.js';
+import * as ReactDOM from 'react-dom/client';
+import * as React from 'react';
 export class CustomizationSidebar {
   static init() {
     this.sidebarElement = document.getElementById('customization');
@@ -390,100 +392,117 @@ export class CustomizationSidebar {
         );
       }
     } else if (component.classList.contains('custom-component')) {
-      console.log('DEBUG: Component is custom-component');
-      console.log('DEBUG: Component id:', component.id);
-      console.log('DEBUG: Component classes:', Array.from(component.classList));
-      // Check multiple ways to get settings
-      let customSettingsAttr = component.getAttribute('data-custom-settings');
-      console.log(
-        'DEBUG: data-custom-settings from getAttribute:',
-        customSettingsAttr
-      );
-      // Alternative: try to infer settings from component type
-      if (!customSettingsAttr) {
-        // Extract component type from class name
-        const componentType =
-          (_b = Array.from(component.classList).find(cls =>
-            cls.endsWith('-component')
-          )) === null || _b === void 0
-            ? void 0
-            : _b.replace('-component', '');
-        console.log('DEBUG: Inferred component type:', componentType);
-        // Try to get settings from a global registry or window object
-        // This assumes your PageBuilder exposes the custom components config
-        if (componentType && window.customComponents) {
-          const customComponents = window.customComponents;
-          if (
-            customComponents[componentType] &&
-            customComponents[componentType].settings
-          ) {
-            customSettingsAttr = JSON.stringify(
-              customComponents[componentType].settings
-            );
-            console.log(
-              'DEBUG: Got settings from window registry:',
-              customSettingsAttr
-            );
-          }
-        }
-      }
-      if (customSettingsAttr) {
-        try {
-          const customSettings = JSON.parse(customSettingsAttr);
-          if (customSettings.length > 0) {
-            customSettings.forEach(setting => {
-              const settingButton = document.createElement('button');
-              settingButton.classList.add('custom-setting-button');
-              settingButton.textContent = setting.name;
-              settingButton.addEventListener('click', () => {
-                console.log(
-                  'DEBUG: Custom setting button clicked:',
-                  setting.functionName
-                );
-                // Get the ID of the currently selected component on the canvas
-                const selectedComponentOnCanvasId = component.id; // This is the ID of the wrapper element, e.g., 'customrating1'
-                if (!selectedComponentOnCanvasId) {
-                  console.error('No selected component ID found for dispatch.');
-                  return;
-                }
-                // Create the custom event
-                const event = new CustomEvent(
-                  'pagebuilder:custom-setting-action',
-                  {
-                    detail: {
-                      functionName: setting.functionName,
-                      targetComponentId: selectedComponentOnCanvasId, // <--- IMPORTANT: Include the target component's ID
-                    },
-                    bubbles: true, // Allow event to bubble up the DOM tree (important for document listeners)
-                    composed: true, // Allow event to cross Shadow DOM boundaries
-                  }
-                );
-                console.log(
-                  'DEBUG: Dispatching event globally for ID:',
-                  selectedComponentOnCanvasId,
-                  event
-                );
-                // Dispatch the event to the global document object
-                document.dispatchEvent(event); // <--- IMPORTANT: Dispatch to document
-                Canvas.historyManager.captureState();
-              });
-              this.functionsPanel.appendChild(settingButton);
-            });
-          }
-        } catch (e) {
-          console.error('DEBUG: Error parsing data-custom-settings JSON:', e);
-          this.functionsPanel.innerHTML =
-            '<p>Error loading custom settings.</p>';
-        }
+      const componentType =
+        (_b = Array.from(component.classList).find(cls =>
+          cls.endsWith('-component')
+        )) === null || _b === void 0
+          ? void 0
+          : _b.replace('-component', '');
+      // Check if there's a React settings component is provided in the global customComponents config
+      const customComponentsConfig = window.customComponents;
+      if (
+        componentType &&
+        customComponentsConfig &&
+        customComponentsConfig[componentType] &&
+        customComponentsConfig[componentType].settingsComponent // Check for the new property
+      ) {
+        const SettingsReactComponent =
+          customComponentsConfig[componentType].settingsComponent;
+        // Create a dedicated div for React component mounting
+        const mountPoint = document.createElement('div');
+        mountPoint.id = `react-settings-mount-point-${component.id}`;
+        this.functionsPanel.appendChild(mountPoint);
+        // Render the React component using ReactDOM.createRoot().render()
+        this.settingsReactRoot = ReactDOM.createRoot(mountPoint);
+        this.settingsReactRoot.render(
+          React.createElement(SettingsReactComponent, {
+            targetComponentId: component.id,
+          })
+        );
+        console.log(
+          `Mounted React settings component for ${componentType} (ID: ${component.id})`
+        );
       } else {
-        console.log('DEBUG: No custom settings found');
-        this.functionsPanel.innerHTML =
-          '<p>No custom settings available for this component.</p>';
+        // Fallback to existing button-based settings if no React component is defined
+        // This part should handle cases where 'settings' (array of {name, functionName}) is still used.
+        let customSettingsAttr = component.getAttribute('data-custom-settings');
+        if (
+          !customSettingsAttr &&
+          componentType &&
+          customComponentsConfig &&
+          customComponentsConfig[componentType] &&
+          customComponentsConfig[componentType].settings
+        ) {
+          customSettingsAttr = JSON.stringify(
+            customComponentsConfig[componentType].settings
+          );
+        }
+        if (customSettingsAttr) {
+          try {
+            const customSettings = JSON.parse(customSettingsAttr);
+            if (customSettings.length > 0) {
+              customSettings.forEach(setting => {
+                const settingButton = document.createElement('button');
+                settingButton.classList.add('custom-setting-button');
+                settingButton.textContent = setting.name;
+                settingButton.addEventListener('click', () => {
+                  console.log(
+                    'DEBUG: Custom setting button clicked:',
+                    setting.functionName
+                  );
+                  const selectedComponentOnCanvasId = component.id;
+                  if (!selectedComponentOnCanvasId) {
+                    console.error(
+                      'No selected component ID found for dispatch.'
+                    );
+                    return;
+                  }
+                  const event = new CustomEvent(
+                    'pagebuilder:custom-setting-action',
+                    {
+                      detail: {
+                        functionName: setting.functionName,
+                        targetComponentId: selectedComponentOnCanvasId,
+                      },
+                      bubbles: true,
+                      composed: true,
+                    }
+                  );
+                  document.dispatchEvent(event);
+                  Canvas.historyManager.captureState();
+                });
+                this.functionsPanel.appendChild(settingButton);
+              });
+            }
+          } catch (e) {
+            console.error('DEBUG: Error parsing data-custom-settings JSON:', e);
+            this.functionsPanel.innerHTML =
+              '<p>Error loading custom settings.</p>';
+          }
+        } else {
+          console.log(
+            'DEBUG: No custom settings or React settings component found'
+          );
+          this.functionsPanel.innerHTML =
+            '<p>No specific settings available for this component.</p>';
+        }
       }
     } else {
-      console.log('DEBUG: Component is not a custom component');
+      console.log(
+        'DEBUG: Component is not a custom component and not a table component.'
+      );
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
+    }
+  }
+  /**
+   * Unmounts the currently rendered React settings component to prevent memory leaks.
+   */
+  static unmountSettingsComponent() {
+    if (this.settingsReactRoot) {
+      this.settingsReactRoot.unmount();
+      this.settingsReactRoot = null;
+      console.log('Unmounted React settings component.');
     }
   }
   // --- Utility Methods (rgbToHex, createControl, createSelectControl, addListeners) ---
@@ -723,4 +742,5 @@ export class CustomizationSidebar {
     return this.layersViewController;
   }
 }
-CustomizationSidebar.selectedComponent = null; // To keep track of the currently selected component
+CustomizationSidebar.selectedComponent = null;
+CustomizationSidebar.settingsReactRoot = null;
