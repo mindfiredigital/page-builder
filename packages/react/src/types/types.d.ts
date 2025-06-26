@@ -23,7 +23,7 @@ export interface CustomComponentConfig {
   component: React.ComponentType<any> | string;
   svg?: string;
   title?: string;
-  settings?: React.ComponentType<any> | string;
+  settingsComponent?: React.ComponentType<any> | string;
 }
 
 export interface PageBuilderReactProps {

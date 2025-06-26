@@ -46,11 +46,48 @@ var PageBuilderReact = ({
           }
           customElements.define(tagName, ReactComponentElement);
         }
+        const settingsTagName = `react-settings-component-${key.toLowerCase()}`;
+        if (componentConfig.settingsComponent && !customElements.get(settingsTagName)) {
+          class ReactSettingsElement extends HTMLElement {
+            connectedCallback() {
+              const mountPoint = document.createElement("div");
+              this.appendChild(mountPoint);
+              const settingsData = this.getAttribute("data-settings");
+              const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
+              ReactDOM.createRoot(mountPoint).render(
+                React.createElement(
+                  componentConfig.settingsComponent,
+                  parsedSettings
+                )
+              );
+            }
+            // You might need to observe attributes here if PageBuilder updates settings dynamically
+            static get observedAttributes() {
+              return ["data-settings"];
+            }
+            attributeChangedCallback(name, oldValue, newValue) {
+              if (name === "data-settings" && newValue !== oldValue) {
+                const mountPoint = document.createElement("div");
+                this.appendChild(mountPoint);
+                const settingsData = this.getAttribute("data-settings");
+                const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
+                ReactDOM.createRoot(mountPoint).render(
+                  React.createElement(
+                    componentConfig.settingsComponent,
+                    parsedSettings
+                  )
+                );
+              }
+            }
+          }
+          customElements.define(settingsTagName, ReactSettingsElement);
+        }
         modifiedConfig.Custom[key] = {
           component: tagName,
           // The tagName refers to the custom Web Component tag
           svg: componentConfig.svg,
-          title: componentConfig.title
+          title: componentConfig.title,
+          settingsComponent: settingsTagName
         };
       });
     }
@@ -63,9 +100,9 @@ var PageBuilderReact = ({
         try {
           const configString = JSON.stringify(processedConfig);
           (_a = builderRef.current) == null ? void 0 : _a.setAttribute("config-data", configString);
+          console.log(configString, "config");
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
-            console.log(initialDesign, "init");
           }
         } catch (error) {
           console.error("Error setting config-data and initialDesign:", error);

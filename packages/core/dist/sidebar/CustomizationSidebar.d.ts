@@ -1,4 +1,17 @@
 import LayersViewController from './LayerViewController';
+import * as React from 'react';
+type ReactComponentType<P = {}> = React.ComponentType<P>;
+interface CustomComponentConfig {
+  [key: string]: {
+    component: string;
+    svg?: string;
+    title?: string;
+    settingsComponent?: ReactComponentType<{
+      targetComponentId: string;
+    }>;
+    props?: Record<string, any>;
+  };
+}
 export declare class CustomizationSidebar {
   private static sidebarElement;
   private static controlsContainer;
@@ -10,7 +23,8 @@ export declare class CustomizationSidebar {
   private static functionsPanel;
   private static selectedComponent;
   private static settingsReactRoot;
-  static init(): void;
+  private static customComponentsConfig;
+  static init(customComponentsConfig: CustomComponentConfig): void;
   private static switchToCustomizeMode;
   private static switchToAttributeMode;
   private static switchToLayersMode;
@@ -28,3 +42,4 @@ export declare class CustomizationSidebar {
   private static addListeners;
   static getLayersViewController(): LayersViewController;
 }
+export {};

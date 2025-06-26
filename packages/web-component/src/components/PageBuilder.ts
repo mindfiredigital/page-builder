@@ -59,7 +59,6 @@ export class PageBuilderComponent extends HTMLElement {
   }
 
   set initialDesign(value: PageBuilderDesign | null) {
-    console.log(value, 'value');
     if (this._initialDesign !== value) {
       this._initialDesign = value;
       if (this.initialized) {

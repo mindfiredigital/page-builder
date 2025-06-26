@@ -5,7 +5,19 @@ import { TableComponent } from '../components/TableComponent';
 import * as ReactDOM from 'react-dom/client';
 import * as React from 'react';
 import { svgs } from '../icons/svgs';
+
 type ReactComponentType<P = {}> = React.ComponentType<P>;
+
+// Define the type for customComponentsConfig
+interface CustomComponentConfig {
+  [key: string]: {
+    component: string;
+    svg?: string;
+    title?: string;
+    settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
+    props?: Record<string, any>;
+  };
+}
 
 export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
@@ -18,12 +30,15 @@ export class CustomizationSidebar {
   private static functionsPanel: HTMLDivElement;
   private static selectedComponent: HTMLElement | null = null;
   private static settingsReactRoot: ReactDOM.Root | null = null;
+  private static customComponentsConfig: CustomComponentConfig | null = null; // New static property
 
-  static init() {
+  static init(customComponentsConfig: CustomComponentConfig) {
+    // Accept config here
     this.sidebarElement = document.getElementById('customization')!;
     this.controlsContainer = document.getElementById('controls')!; // CSS controls
     this.componentNameHeader = document.getElementById('component-name')!;
     this.closeButton = document.createElement('button');
+    this.customComponentsConfig = customComponentsConfig; // Store the config
 
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
@@ -431,8 +446,9 @@ export class CustomizationSidebar {
         .find(cls => cls.endsWith('-component'))
         ?.replace('-component', '');
 
-      // Check if there's a React settings component is provided in the global customComponents config
-      const customComponentsConfig = (window as any).customComponents;
+      // Use the stored customComponentsConfig
+      const customComponentsConfig =
+        CustomizationSidebar.customComponentsConfig;
       console.log(customComponentsConfig, 'config');
       if (
         componentType &&
@@ -459,73 +475,6 @@ export class CustomizationSidebar {
         console.log(
           `Mounted React settings component for ${componentType} (ID: ${component.id})`
         );
-      } else {
-        // Fallback to existing button-based settings if no React component is defined
-        // This part should handle cases where 'settings' (array of {name, functionName}) is still used.
-        let customSettingsAttr = component.getAttribute('data-custom-settings');
-
-        if (
-          !customSettingsAttr &&
-          componentType &&
-          customComponentsConfig &&
-          customComponentsConfig[componentType] &&
-          customComponentsConfig[componentType].settings
-        ) {
-          customSettingsAttr = JSON.stringify(
-            customComponentsConfig[componentType].settings
-          );
-        }
-
-        if (customSettingsAttr) {
-          try {
-            const customSettings: CustomComponentSetting[] =
-              JSON.parse(customSettingsAttr);
-            if (customSettings.length > 0) {
-              customSettings.forEach(setting => {
-                const settingButton = document.createElement('button');
-                settingButton.classList.add('custom-setting-button');
-                settingButton.textContent = setting.name;
-                settingButton.addEventListener('click', () => {
-                  console.log(
-                    'DEBUG: Custom setting button clicked:',
-                    setting.functionName
-                  );
-                  const selectedComponentOnCanvasId = component.id;
-                  if (!selectedComponentOnCanvasId) {
-                    console.error(
-                      'No selected component ID found for dispatch.'
-                    );
-                    return;
-                  }
-                  const event = new CustomEvent(
-                    'pagebuilder:custom-setting-action',
-                    {
-                      detail: {
-                        functionName: setting.functionName,
-                        targetComponentId: selectedComponentOnCanvasId,
-                      },
-                      bubbles: true,
-                      composed: true,
-                    }
-                  );
-                  document.dispatchEvent(event);
-                  Canvas.historyManager.captureState();
-                });
-                this.functionsPanel.appendChild(settingButton);
-              });
-            }
-          } catch (e) {
-            console.error('DEBUG: Error parsing data-custom-settings JSON:', e);
-            this.functionsPanel.innerHTML =
-              '<p>Error loading custom settings.</p>';
-          }
-        } else {
-          console.log(
-            'DEBUG: No custom settings or React settings component found'
-          );
-          this.functionsPanel.innerHTML =
-            '<p>No specific settings available for this component.</p>';
-        }
       }
     } else {
       console.log(

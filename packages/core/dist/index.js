@@ -1343,8 +1343,8 @@ class b {
 (b.layersView = null), (b.canvasRoot = null), (b.draggedItem = null);
 var w,
   k,
-  E = {},
-  C = { exports: {} },
+  C = {},
+  E = { exports: {} },
   x = {},
   S = { exports: {} },
   L = {};
@@ -1402,8 +1402,8 @@ function M() {
   (y.constructor = v), p(y, m.prototype), (y.isPureReactComponent = !0);
   var b = Array.isArray,
     k = Object.prototype.hasOwnProperty,
-    E = { current: null },
-    C = { key: !0, ref: !0, __self: !0, __source: !0 };
+    C = { current: null },
+    E = { key: !0, ref: !0, __self: !0, __source: !0 };
   function x(t, n, r) {
     var l,
       a = {},
@@ -1413,7 +1413,7 @@ function M() {
       for (l in (void 0 !== n.ref && (i = n.ref),
       void 0 !== n.key && (o = '' + n.key),
       n))
-        k.call(n, l) && !C.hasOwnProperty(l) && (a[l] = n[l]);
+        k.call(n, l) && !E.hasOwnProperty(l) && (a[l] = n[l]);
     var s = arguments.length - 2;
     if (1 === s) a.children = r;
     else if (1 < s) {
@@ -1428,7 +1428,7 @@ function M() {
       key: o,
       ref: i,
       props: a,
-      _owner: E.current,
+      _owner: C.current,
     };
   }
   function S(t) {
@@ -1562,7 +1562,7 @@ function M() {
     R = {
       ReactCurrentDispatcher: N,
       ReactCurrentBatchConfig: I,
-      ReactCurrentOwner: E,
+      ReactCurrentOwner: C,
     };
   function H() {
     throw Error('act(...) is not supported in production builds of React.');
@@ -1624,14 +1624,14 @@ function M() {
         i = t._owner;
       if (null != n) {
         if (
-          (void 0 !== n.ref && ((o = n.ref), (i = E.current)),
+          (void 0 !== n.ref && ((o = n.ref), (i = C.current)),
           void 0 !== n.key && (a = '' + n.key),
           t.type && t.type.defaultProps)
         )
           var s = t.type.defaultProps;
         for (u in n)
           k.call(n, u) &&
-            !C.hasOwnProperty(u) &&
+            !E.hasOwnProperty(u) &&
             (l[u] = void 0 === n[u] && void 0 !== s ? s[u] : n[u]);
       }
       var u = arguments.length - 2;
@@ -1870,8 +1870,8 @@ function D() {
               void 0 !== navigator.scheduling &&
               void 0 !== navigator.scheduling.isInputPending &&
               navigator.scheduling.isInputPending.bind(navigator.scheduling);
-            var E,
-              C = !1,
+            var C,
+              E = !1,
               x = null,
               S = -1,
               L = 5,
@@ -1887,27 +1887,27 @@ function D() {
                 try {
                   n = x(!0, t);
                 } finally {
-                  n ? E() : ((C = !1), (x = null));
+                  n ? C() : ((E = !1), (x = null));
                 }
-              } else C = !1;
+              } else E = !1;
             }
             if ('function' == typeof y)
-              E = function () {
+              C = function () {
                 y(T);
               };
             else if ('undefined' != typeof MessageChannel) {
               var _ = new MessageChannel(),
                 P = _.port2;
               (_.port1.onmessage = T),
-                (E = function () {
+                (C = function () {
                   P.postMessage(null);
                 });
             } else
-              E = function () {
+              C = function () {
                 g(T, 0);
               };
             function N(e) {
-              (x = e), C || ((C = !0), E());
+              (x = e), E || ((E = !0), C());
             }
             function I(t, n) {
               S = g(function () {
@@ -2247,8 +2247,8 @@ function D() {
     b = Symbol.for('react.portal'),
     w = Symbol.for('react.fragment'),
     k = Symbol.for('react.strict_mode'),
-    E = Symbol.for('react.profiler'),
-    C = Symbol.for('react.provider'),
+    C = Symbol.for('react.profiler'),
+    E = Symbol.for('react.provider'),
     S = Symbol.for('react.context'),
     L = Symbol.for('react.forward_ref'),
     M = Symbol.for('react.suspense'),
@@ -2381,7 +2381,7 @@ function D() {
         return 'Fragment';
       case b:
         return 'Portal';
-      case E:
+      case C:
         return 'Profiler';
       case k:
         return 'StrictMode';
@@ -2394,7 +2394,7 @@ function D() {
       switch (e.$$typeof) {
         case S:
           return (e.displayName || 'Context') + '.Consumer';
-        case C:
+        case E:
           return (e._context.displayName || 'Context') + '.Provider';
         case L:
           var t = e.render;
@@ -2841,21 +2841,21 @@ function D() {
     }
   }
   var ke = null;
-  function Ee(e) {
+  function Ce(e) {
     return (
       (e = e.target || e.srcElement || window).correspondingUseElement &&
         (e = e.correspondingUseElement),
       3 === e.nodeType ? e.parentNode : e
     );
   }
-  var Ce = null,
+  var Ee = null,
     xe = null,
     Se = null;
   function Le(e) {
     if ((e = wl(e))) {
-      if ('function' != typeof Ce) throw Error(n(280));
+      if ('function' != typeof Ee) throw Error(n(280));
       var t = e.stateNode;
-      t && ((t = El(t)), Ce(e.stateNode, e.type, t));
+      t && ((t = Cl(t)), Ee(e.stateNode, e.type, t));
     }
   }
   function Me(e) {
@@ -2885,7 +2885,7 @@ function D() {
   function Ie(e, t) {
     var r = e.stateNode;
     if (null === r) return null;
-    var l = El(r);
+    var l = Cl(r);
     if (null === l) return null;
     r = l[t];
     e: switch (t) {
@@ -3205,8 +3205,8 @@ function D() {
   function kt(e) {
     return 1 < (e &= -e) ? (4 < e ? (268435455 & e ? 16 : 536870912) : 4) : 1;
   }
-  var Et,
-    Ct,
+  var Ct,
+    Et,
     xt,
     St,
     Lt,
@@ -3254,7 +3254,7 @@ function D() {
           nativeEvent: a,
           targetContainers: [l],
         }),
-        null !== t && null !== (t = wl(t)) && Ct(t),
+        null !== t && null !== (t = wl(t)) && Et(t),
         e)
       : ((e.eventSystemFlags |= r),
         (t = e.targetContainers),
@@ -3285,7 +3285,7 @@ function D() {
     for (var t = e.targetContainers; 0 < t.length; ) {
       var n = Zt(e.domEventName, e.eventSystemFlags, t[0], e.nativeEvent);
       if (null !== n)
-        return null !== (t = wl(n)) && Ct(t), (e.blockedOn = n), !1;
+        return null !== (t = wl(n)) && Et(t), (e.blockedOn = n), !1;
       var r = new (n = e.nativeEvent).constructor(n.type, n);
       (ke = r), n.target.dispatchEvent(r), (ke = null), t.shift();
     }
@@ -3387,7 +3387,7 @@ function D() {
         for (; null !== l; ) {
           var a = wl(l);
           if (
-            (null !== a && Et(a),
+            (null !== a && Ct(a),
             null === (a = Zt(e, t, n, r)) && qr(e, t, r, Xt, n),
             a === l)
           )
@@ -3400,7 +3400,7 @@ function D() {
   }
   var Xt = null;
   function Zt(e, t, n, r) {
-    if (((Xt = null), null !== (e = bl((e = Ee(r))))))
+    if (((Xt = null), null !== (e = bl((e = Ce(r))))))
       if (null === (t = Ue(e))) e = null;
       else if (13 === (n = t.tag)) {
         if (null !== (e = je(t))) return e;
@@ -3643,7 +3643,7 @@ function D() {
     }),
     wn = an(bn),
     kn = an($({}, cn, { data: 0 })),
-    En = {
+    Cn = {
       Esc: 'Escape',
       Spacebar: ' ',
       Left: 'ArrowLeft',
@@ -3657,7 +3657,7 @@ function D() {
       Scroll: 'ScrollLock',
       MozPrintableKey: 'Unidentified',
     },
-    Cn = {
+    En = {
       8: 'Backspace',
       9: 'Tab',
       12: 'Clear',
@@ -3711,7 +3711,7 @@ function D() {
   var Mn = $({}, fn, {
       key: function (e) {
         if (e.key) {
-          var t = En[e.key] || e.key;
+          var t = Cn[e.key] || e.key;
           if ('Unidentified' !== t) return t;
         }
         return 'keypress' === e.type
@@ -3719,7 +3719,7 @@ function D() {
             ? 'Enter'
             : String.fromCharCode(e)
           : 'keydown' === e.type || 'keyup' === e.type
-            ? Cn[e.keyCode] || 'Unidentified'
+            ? En[e.keyCode] || 'Unidentified'
             : '';
       },
       code: 0,
@@ -3878,7 +3878,7 @@ function D() {
   function rr(e) {
     if ('value' === e.propertyName && Zn(Yn)) {
       var t = [];
-      Wn(t, Yn, e, Ee(e)), Ne(Xn, t);
+      Wn(t, Yn, e, Ce(e)), Ne(Xn, t);
     }
   }
   function lr(e, t, n) {
@@ -4063,7 +4063,7 @@ function D() {
           e.push({ event: t, listeners: r }),
           (t.target = vr))));
   }
-  function Er(e, t) {
+  function Cr(e, t) {
     var n = {};
     return (
       (n[e.toLowerCase()] = t.toLowerCase()),
@@ -4072,29 +4072,29 @@ function D() {
       n
     );
   }
-  var Cr = {
-      animationend: Er('Animation', 'AnimationEnd'),
-      animationiteration: Er('Animation', 'AnimationIteration'),
-      animationstart: Er('Animation', 'AnimationStart'),
-      transitionend: Er('Transition', 'TransitionEnd'),
+  var Er = {
+      animationend: Cr('Animation', 'AnimationEnd'),
+      animationiteration: Cr('Animation', 'AnimationIteration'),
+      animationstart: Cr('Animation', 'AnimationStart'),
+      transitionend: Cr('Transition', 'TransitionEnd'),
     },
     xr = {},
     Sr = {};
   function Lr(e) {
     if (xr[e]) return xr[e];
-    if (!Cr[e]) return e;
+    if (!Er[e]) return e;
     var t,
-      n = Cr[e];
+      n = Er[e];
     for (t in n) if (n.hasOwnProperty(t) && t in Sr) return (xr[e] = n[t]);
     return e;
   }
   i &&
     ((Sr = document.createElement('div').style),
     'AnimationEvent' in window ||
-      (delete Cr.animationend.animation,
-      delete Cr.animationiteration.animation,
-      delete Cr.animationstart.animation),
-    'TransitionEvent' in window || delete Cr.transitionend.transition);
+      (delete Er.animationend.animation,
+      delete Er.animationiteration.animation,
+      delete Er.animationstart.animation),
+    'TransitionEvent' in window || delete Er.transitionend.transition);
   var Mr = Lr('animationend'),
     zr = Lr('animationiteration'),
     Tr = Lr('animationstart'),
@@ -4276,7 +4276,7 @@ function D() {
       }
     Ne(function () {
       var r = a,
-        l = Ee(n),
+        l = Ce(n),
         o = [];
       e: {
         var i = Pr.get(e);
@@ -4718,19 +4718,19 @@ function D() {
     if (5 === e.tag || 6 === e.tag) return e.stateNode;
     throw Error(n(33));
   }
-  function El(e) {
+  function Cl(e) {
     return e[hl] || null;
   }
-  var Cl = [],
+  var El = [],
     xl = -1;
   function Sl(e) {
     return { current: e };
   }
   function Ll(e) {
-    0 > xl || ((e.current = Cl[xl]), (Cl[xl] = null), xl--);
+    0 > xl || ((e.current = El[xl]), (El[xl] = null), xl--);
   }
   function Ml(e, t) {
-    xl++, (Cl[xl] = e.current), (e.current = t);
+    xl++, (El[xl] = e.current), (e.current = t);
   }
   var zl = {},
     Tl = Sl(zl),
@@ -5344,8 +5344,8 @@ function D() {
     };
   }
   var ka = wa(!0),
-    Ea = wa(!1),
-    Ca = Sl(null),
+    Ca = wa(!1),
+    Ea = Sl(null),
     xa = null,
     Sa = null,
     La = null;
@@ -5353,8 +5353,8 @@ function D() {
     La = Sa = xa = null;
   }
   function za(e) {
-    var t = Ca.current;
-    Ll(Ca), (e._currentValue = t);
+    var t = Ea.current;
+    Ll(Ea), (e._currentValue = t);
   }
   function Ta(e, t, n) {
     for (; null !== e; ) {
@@ -5759,7 +5759,7 @@ function D() {
   function ko(e, t) {
     return 'function' == typeof t ? t(e) : t;
   }
-  function Eo(e) {
+  function Co(e) {
     var t = wo(),
       r = t.queue;
     if (null === r) throw Error(n(311));
@@ -5821,7 +5821,7 @@ function D() {
     } else null === a && (r.lanes = 0);
     return [t.memoizedState, r.dispatch];
   }
-  function Co(e) {
+  function Eo(e) {
     var t = wo(),
       r = t.queue;
     if (null === r) throw Error(n(311));
@@ -6209,17 +6209,17 @@ function D() {
       useInsertionEffect: $o,
       useLayoutEffect: Vo,
       useMemo: jo,
-      useReducer: Eo,
+      useReducer: Co,
       useRef: Io,
       useState: function () {
-        return Eo(ko);
+        return Co(ko);
       },
       useDebugValue: Ao,
       useDeferredValue: function (e) {
         return qo(wo(), so.memoizedState, e);
       },
       useTransition: function () {
-        return [Eo(ko)[0], wo().memoizedState];
+        return [Co(ko)[0], wo().memoizedState];
       },
       useMutableSource: xo,
       useSyncExternalStore: So,
@@ -6235,10 +6235,10 @@ function D() {
       useInsertionEffect: $o,
       useLayoutEffect: Vo,
       useMemo: jo,
-      useReducer: Co,
+      useReducer: Eo,
       useRef: Io,
       useState: function () {
-        return Co(ko);
+        return Eo(ko);
       },
       useDebugValue: Ao,
       useDeferredValue: function (e) {
@@ -6246,7 +6246,7 @@ function D() {
         return null === so ? (t.memoizedState = e) : qo(t, so.memoizedState, e);
       },
       useTransition: function () {
-        return [Co(ko)[0], wo().memoizedState];
+        return [Eo(ko)[0], wo().memoizedState];
       },
       useMutableSource: xo,
       useSyncExternalStore: So,
@@ -6468,9 +6468,9 @@ function D() {
   var bi = v.ReactCurrentOwner,
     wi = !1;
   function ki(e, t, n, r) {
-    t.child = null === e ? Ea(t, null, n, r) : ka(t, e.child, n, r);
+    t.child = null === e ? Ca(t, null, n, r) : ka(t, e.child, n, r);
   }
-  function Ei(e, t, n, r, l) {
+  function Ci(e, t, n, r, l) {
     n = n.render;
     var a = t.ref;
     return (
@@ -6485,7 +6485,7 @@ function D() {
           qi(e, t, l))
     );
   }
-  function Ci(e, t, n, r, l) {
+  function Ei(e, t, n, r, l) {
     if (null === e) {
       var a = n.type;
       return 'function' != typeof a ||
@@ -8026,11 +8026,11 @@ function D() {
                     break;
                   case 22:
                     if (null !== p.memoizedState) {
-                      Es(f);
+                      Cs(f);
                       continue;
                     }
                 }
-                null !== h ? ((h.return = p), (Ji = h)) : Es(f);
+                null !== h ? ((h.return = p), (Ji = h)) : Cs(f);
               }
               d = d.sibling;
             }
@@ -8139,10 +8139,10 @@ function D() {
             for (Ji = l; null !== Ji; )
               (s = (o = Ji).child),
                 22 === o.tag && null !== o.memoizedState
-                  ? Cs(l)
+                  ? Es(l)
                   : null !== s
                     ? ((s.return = o), (Ji = s))
-                    : Cs(l);
+                    : Es(l);
           for (; null !== a; ) (Ji = a), ws(a), (a = a.sibling);
           (Ji = l), (Zi = i), (Ki = u);
         }
@@ -8254,7 +8254,7 @@ function D() {
       Ji = t.return;
     }
   }
-  function Es(e) {
+  function Cs(e) {
     for (; null !== Ji; ) {
       var t = Ji;
       if (t === e) {
@@ -8269,7 +8269,7 @@ function D() {
       Ji = t.return;
     }
   }
-  function Cs(e) {
+  function Es(e) {
     for (; null !== Ji; ) {
       var t = Ji;
       try {
@@ -8437,7 +8437,7 @@ function D() {
   function au(e, t) {
     if (((Js = -1), (eu = 0), 6 & Ts)) throw Error(n(327));
     var r = e.callbackNode;
-    if (Cu() && e.callbackNode !== r) return null;
+    if (Eu() && e.callbackNode !== r) return null;
     var l = pt(e, e === _s ? Ns : 0);
     if (0 === l) return null;
     if (30 & l || 0 !== (l & e.expiredLanes) || t) t = vu(e, l);
@@ -8512,7 +8512,7 @@ function D() {
             throw Error(n(345));
           case 2:
           case 5:
-            Eu(e, Os, js);
+            Cu(e, Os, js);
             break;
           case 3:
             if (
@@ -8523,10 +8523,10 @@ function D() {
                 tu(), (e.pingedLanes |= e.suspendedLanes & a);
                 break;
               }
-              e.timeoutHandle = ll(Eu.bind(null, e, Os, js), t);
+              e.timeoutHandle = ll(Cu.bind(null, e, Os, js), t);
               break;
             }
-            Eu(e, Os, js);
+            Cu(e, Os, js);
             break;
           case 4:
             if ((su(e, l), (4194240 & l) === l)) break;
@@ -8552,10 +8552,10 @@ function D() {
                               ? 4320
                               : 1960 * Ss(l / 1960)) - l))
             ) {
-              e.timeoutHandle = ll(Eu.bind(null, e, Os, js), l);
+              e.timeoutHandle = ll(Cu.bind(null, e, Os, js), l);
               break;
             }
-            Eu(e, Os, js);
+            Cu(e, Os, js);
             break;
           default:
             throw Error(n(329));
@@ -8592,7 +8592,7 @@ function D() {
   }
   function uu(e) {
     if (6 & Ts) throw Error(n(327));
-    Cu();
+    Eu();
     var t = pt(e, 0);
     if (!(1 & t)) return lu(e, Ge()), null;
     var r = vu(e, t);
@@ -8605,7 +8605,7 @@ function D() {
     return (
       (e.finishedWork = e.current.alternate),
       (e.finishedLanes = t),
-      Eu(e, Os, js),
+      Cu(e, Os, js),
       lu(e, Ge()),
       null
     );
@@ -8620,7 +8620,7 @@ function D() {
     }
   }
   function du(e) {
-    null !== Xs && 0 === Xs.tag && !(6 & Ts) && Cu();
+    null !== Xs && 0 === Xs.tag && !(6 & Ts) && Eu();
     var t = Ts;
     Ts |= 1;
     var n = zs.transition,
@@ -8852,7 +8852,7 @@ function D() {
     } while (null !== t);
     0 === Hs && (Hs = 5);
   }
-  function Eu(e, t, r) {
+  function Cu(e, t, r) {
     var l = wt,
       a = zs.transition;
     try {
@@ -8860,7 +8860,7 @@ function D() {
         (wt = 1),
         (function (e, t, r, l) {
           do {
-            Cu();
+            Eu();
           } while (null !== Xs);
           if (6 & Ts) throw Error(n(327));
           r = e.finishedWork;
@@ -8892,7 +8892,7 @@ function D() {
               Ys ||
               ((Ys = !0),
               _u(nt, function () {
-                return Cu(), null;
+                return Eu(), null;
               })),
             (o = !!(15990 & r.flags)),
             !!(15990 & r.subtreeFlags) || o)
@@ -9054,7 +9054,7 @@ function D() {
               (a = t[r]),
                 l(a.value, { componentStack: a.stack, digest: a.digest });
           if (qs) throw ((qs = !1), (e = Ws), (Ws = null), e);
-          !!(1 & Zs) && 0 !== e.tag && Cu(),
+          !!(1 & Zs) && 0 !== e.tag && Eu(),
             (o = e.pendingLanes),
             1 & o ? (e === Gs ? Ks++ : ((Ks = 0), (Gs = e))) : (Ks = 0),
             Ul();
@@ -9064,7 +9064,7 @@ function D() {
     }
     return null;
   }
-  function Cu() {
+  function Eu() {
     if (null !== Xs) {
       var e = kt(Zs),
         t = zs.transition,
@@ -9331,8 +9331,8 @@ function D() {
         case k:
           (i = 8), (a |= 8);
           break;
-        case E:
-          return ((e = Nu(12, r, t, 2 | a)).elementType = E), (e.lanes = o), e;
+        case C:
+          return ((e = Nu(12, r, t, 2 | a)).elementType = C), (e.lanes = o), e;
         case M:
           return ((e = Nu(13, r, t, a)).elementType = M), (e.lanes = o), e;
         case T:
@@ -9342,7 +9342,7 @@ function D() {
         default:
           if ('object' == typeof e && null !== e)
             switch (e.$$typeof) {
-              case C:
+              case E:
                 i = 10;
                 break e;
               case S:
@@ -9520,7 +9520,7 @@ function D() {
                 case 10:
                   var r = t.type._context,
                     l = t.memoizedProps.value;
-                  Ml(Ca, r._currentValue), (r._currentValue = l);
+                  Ml(Ea, r._currentValue), (r._currentValue = l);
                   break;
                 case 13:
                   if (null !== (r = t.memoizedState))
@@ -9612,10 +9612,10 @@ function D() {
               t = zi(null, t, l, e, r);
               break e;
             case 11:
-              t = Ei(null, t, l, e, r);
+              t = Ci(null, t, l, e, r);
               break e;
             case 14:
-              t = Ci(null, t, l, ri(l.type, e), r);
+              t = Ei(null, t, l, ri(l.type, e), r);
               break e;
           }
           throw Error(n(306, l, ''));
@@ -9666,7 +9666,7 @@ function D() {
                 ra = t,
                 aa = !0,
                 oa = null,
-                r = Ea(t, null, l, r),
+                r = Ca(t, null, l, r),
                 t.child = r;
               r;
 
@@ -9710,7 +9710,7 @@ function D() {
         return (
           (l = t.type),
           (a = t.pendingProps),
-          Ei(e, t, l, (a = t.elementType === l ? a : ri(l, a)), r)
+          Ci(e, t, l, (a = t.elementType === l ? a : ri(l, a)), r)
         );
       case 7:
         return ki(e, t, t.pendingProps, r), t.child;
@@ -9724,7 +9724,7 @@ function D() {
             (a = t.pendingProps),
             (o = t.memoizedProps),
             (i = a.value),
-            Ml(Ca, l._currentValue),
+            Ml(Ea, l._currentValue),
             (l._currentValue = i),
             null !== o)
           )
@@ -9798,7 +9798,7 @@ function D() {
       case 14:
         return (
           (a = ri((l = t.type), t.pendingProps)),
-          Ci(e, t, l, (a = ri(l.type, a)), r)
+          Ei(e, t, l, (a = ri(l.type, a)), r)
         );
       case 15:
         return xi(e, t, t.type, t.pendingProps, r);
@@ -9925,7 +9925,7 @@ function D() {
         Rt.splice(n, 0, e), 0 === n && $t(e);
       }
     }),
-    (Et = function (e) {
+    (Ct = function (e) {
       switch (e.tag) {
         case 3:
           var t = e.stateNode;
@@ -9948,7 +9948,7 @@ function D() {
             Qu(e, 1);
       }
     }),
-    (Ct = function (e) {
+    (Et = function (e) {
       if (13 === e.tag) {
         var t = Ha(e, 134217728);
         if (null !== t) ru(t, e, 134217728, tu());
@@ -9974,7 +9974,7 @@ function D() {
         wt = n;
       }
     }),
-    (Ce = function (e, t, r) {
+    (Ee = function (e, t, r) {
       switch (t) {
         case 'input':
           if ((J(e, r), (t = r.name), 'radio' === r.type && null != t)) {
@@ -9989,7 +9989,7 @@ function D() {
             ) {
               var l = r[t];
               if (l !== e && l.form === e.form) {
-                var a = El(l);
+                var a = Cl(l);
                 if (!a) throw Error(n(90));
                 Y(l), J(l, a);
               }
@@ -10005,7 +10005,7 @@ function D() {
     }),
     (Te = cu),
     (_e = du);
-  var tc = { usingClientEntryPoint: !1, Events: [wl, kl, El, Me, ze, cu] },
+  var tc = { usingClientEntryPoint: !1, Events: [wl, kl, Cl, Me, ze, cu] },
     nc = {
       findFiberByHostInstance: bl,
       bundleType: 0,
@@ -10146,7 +10146,7 @@ function D() {
   );
 }
 var $ = (function () {
-    if (I) return E;
+    if (I) return C;
     I = 1;
     var e =
       (N ||
@@ -10162,9 +10162,9 @@ var $ = (function () {
               console.error(e);
             }
         })(),
-        (C.exports = B())),
-      C.exports);
-    return (E.createRoot = e.createRoot), (E.hydrateRoot = e.hydrateRoot), E;
+        (E.exports = B())),
+      E.exports);
+    return (C.createRoot = e.createRoot), (C.hydrateRoot = e.hydrateRoot), C;
   })(),
   V = z();
 const F = {
@@ -10211,12 +10211,13 @@ const F = {
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-route-icon lucide-route"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>',
 };
 class O {
-  static init() {
+  static init(e) {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
       (this.controlsContainer = document.getElementById('controls')),
       (this.componentNameHeader = document.getElementById('component-name')),
       (this.closeButton = document.createElement('button')),
+      (this.customComponentsConfig = e),
       !this.sidebarElement || !this.controlsContainer)
     )
       return void console.error(
@@ -10241,14 +10242,14 @@ class O {
       (this.layersView.id = 'layers-view'),
       (this.layersView.className = 'layers-view hidden'),
       this.sidebarElement.appendChild(this.layersView);
-    const e = this.layersModeToggle.querySelector('#customize-tab'),
-      t = this.layersModeToggle.querySelector('#attribute-tab'),
-      n = this.layersModeToggle.querySelector('#layers-tab');
-    e.addEventListener('click', () => this.switchToCustomizeMode()),
-      t.addEventListener('click', () => {
+    const t = this.layersModeToggle.querySelector('#customize-tab'),
+      n = this.layersModeToggle.querySelector('#attribute-tab'),
+      r = this.layersModeToggle.querySelector('#layers-tab');
+    t.addEventListener('click', () => this.switchToCustomizeMode()),
+      n.addEventListener('click', () => {
         console.log('attribute tab clicked'), this.switchToAttributeMode();
       }),
-      n.addEventListener('click', () => this.switchToLayersMode()),
+      r.addEventListener('click', () => this.switchToLayersMode()),
       this.sidebarElement.appendChild(this.closeButton),
       (this.closeButton.textContent = '×'),
       this.closeButton.classList.add('close-button'),
@@ -10487,7 +10488,7 @@ class O {
           void 0 === n
             ? void 0
             : n.replace('-component', ''),
-        r = window.customComponents;
+        r = O.customComponentsConfig;
       if (
         (console.log(r, 'config'), t && r && r[t] && r[t].settingsComponent)
       ) {
@@ -10502,60 +10503,6 @@ class O {
           console.log(
             `Mounted React settings component for ${t} (ID: ${e.id})`
           );
-      } else {
-        let n = e.getAttribute('data-custom-settings');
-        if (
-          (!n &&
-            t &&
-            r &&
-            r[t] &&
-            r[t].settings &&
-            (n = JSON.stringify(r[t].settings)),
-          n)
-        )
-          try {
-            const t = JSON.parse(n);
-            t.length > 0 &&
-              t.forEach(t => {
-                const n = document.createElement('button');
-                n.classList.add('custom-setting-button'),
-                  (n.textContent = t.name),
-                  n.addEventListener('click', () => {
-                    console.log(
-                      'DEBUG: Custom setting button clicked:',
-                      t.functionName
-                    );
-                    const n = e.id;
-                    if (!n)
-                      return void console.error(
-                        'No selected component ID found for dispatch.'
-                      );
-                    const r = new CustomEvent(
-                      'pagebuilder:custom-setting-action',
-                      {
-                        detail: {
-                          functionName: t.functionName,
-                          targetComponentId: n,
-                        },
-                        bubbles: !0,
-                        composed: !0,
-                      }
-                    );
-                    document.dispatchEvent(r), U.historyManager.captureState();
-                  }),
-                  this.functionsPanel.appendChild(n);
-              });
-          } catch (e) {
-            console.error('DEBUG: Error parsing data-custom-settings JSON:', e),
-              (this.functionsPanel.innerHTML =
-                '<p>Error loading custom settings.</p>');
-          }
-        else
-          console.log(
-            'DEBUG: No custom settings or React settings component found'
-          ),
-            (this.functionsPanel.innerHTML =
-              '<p>No specific settings available for this component.</p>');
       }
     } else
       console.log(
@@ -10747,7 +10694,9 @@ class O {
     return this.layersViewController;
   }
 }
-(O.selectedComponent = null), (O.settingsReactRoot = null);
+(O.selectedComponent = null),
+  (O.settingsReactRoot = null),
+  (O.customComponentsConfig = null);
 class A {
   constructor(e = 20) {
     this.cellSize = e;
@@ -11456,13 +11405,17 @@ class Z {
                       (r.textContent = e.charAt(0).toUpperCase()),
                       n.appendChild(r);
                   } else {
-                    const { component: r, svg: l, title: a, settings: o } = t;
+                    const {
+                      component: r,
+                      svg: l,
+                      title: a,
+                      settingsComponent: o,
+                    } = t;
                     if (
                       (n.setAttribute('data-tag-name', r),
                       n.setAttribute('title', a || `Drag to add ${e}`),
                       console.log(o, 'config'),
                       o &&
-                        o.length > 0 &&
                         n.setAttribute(
                           'data-custom-settings',
                           JSON.stringify(o)
@@ -11488,7 +11441,8 @@ class Z {
       U.init(this.initialDesign),
       this.sidebar.init(),
       Y.init(),
-      O.init(),
+      console.log(this.dynamicComponents, 'cut'),
+      O.init(this.dynamicComponents.Custom),
       this.createHeaderIfNeeded();
   }
   createHeaderIfNeeded() {

@@ -73,7 +73,8 @@ export class PageBuilder {
 
     this.sidebar.init();
     ShortcutManager.init();
-    CustomizationSidebar.init();
+    console.log(this.dynamicComponents, 'cut');
+    CustomizationSidebar.init(this.dynamicComponents.Custom);
 
     // Create header logic - improved to handle re-initialization
     this.createHeaderIfNeeded();

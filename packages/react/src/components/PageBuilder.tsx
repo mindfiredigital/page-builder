@@ -74,11 +74,63 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
           customElements.define(tagName, ReactComponentElement);
         }
 
+        const settingsTagName = `react-settings-component-${key.toLowerCase()}`;
+
+        if (
+          componentConfig.settingsComponent &&
+          !customElements.get(settingsTagName)
+        ) {
+          class ReactSettingsElement extends HTMLElement {
+            connectedCallback() {
+              const mountPoint = document.createElement('div');
+              this.appendChild(mountPoint);
+
+              const settingsData = this.getAttribute('data-settings');
+              const parsedSettings = settingsData
+                ? JSON.parse(settingsData)
+                : {};
+
+              ReactDOM.createRoot(mountPoint).render(
+                React.createElement(
+                  componentConfig.settingsComponent!,
+                  parsedSettings
+                )
+              );
+            }
+            // You might need to observe attributes here if PageBuilder updates settings dynamically
+            static get observedAttributes() {
+              return ['data-settings'];
+            }
+            attributeChangedCallback(
+              name: string,
+              oldValue: string,
+              newValue: string
+            ) {
+              if (name === 'data-settings' && newValue !== oldValue) {
+                const mountPoint = document.createElement('div');
+                this.appendChild(mountPoint);
+                const settingsData = this.getAttribute('data-settings');
+                const parsedSettings = settingsData
+                  ? JSON.parse(settingsData)
+                  : {};
+
+                ReactDOM.createRoot(mountPoint).render(
+                  React.createElement(
+                    componentConfig.settingsComponent!,
+                    parsedSettings
+                  )
+                );
+              }
+            }
+          }
+          customElements.define(settingsTagName, ReactSettingsElement);
+        }
         // Add to Custom components with web component tag
         modifiedConfig.Custom[key] = {
           component: tagName, // The tagName refers to the custom Web Component tag
           svg: componentConfig.svg,
           title: componentConfig.title,
+          settingsComponent: settingsTagName,
         };
       });
     }
@@ -94,9 +146,9 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
         try {
           const configString = JSON.stringify(processedConfig);
           builderRef.current?.setAttribute('config-data', configString);
+          console.log(configString, 'config');
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
-            console.log(initialDesign, 'init');
           }
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);
