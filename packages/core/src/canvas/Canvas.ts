@@ -87,7 +87,6 @@ export class Canvas {
       Canvas.sidebarElement
     );
     dragDropManager.enable();
-    console.log(initialData, 'initialData');
     // Load existing layout from local storage and render, if any
     if (initialData) {
       // Check for initialData presence and if it's not an empty array
@@ -99,11 +98,6 @@ export class Canvas {
         // Check for savedState presence and if it's not empty
         console.log('Canvas: Restoring state from localStorage.');
         Canvas.restoreState(savedState); // savedState is already PageBuilderDesign
-      } else {
-        console.log(
-          'Canvas: No initial design provided, starting with empty canvas.'
-        );
-        Canvas.clearCanvas(); // Ensure canvas is truly empty if nothing to load
       }
     }
   }
@@ -113,7 +107,6 @@ export class Canvas {
    * The event detail contains the current design state.
    */
   static dispatchDesignChange() {
-    console.log('event');
     if (Canvas.canvasElement) {
       const currentDesign = Canvas.getState();
       const event = new CustomEvent('design-change', {
@@ -198,12 +191,8 @@ export class Canvas {
           dataAttributes[attr.name] = attr.value;
         });
 
-      // Capture props for custom components if they have any
-      // This is a conceptual placeholder; you'd need a way to store/retrieve these.
       let componentProps: Record<string, any> = {};
       if (component.classList.contains('custom-component')) {
-        // How your custom components store their data/props needs to be defined
-        // Example: If props are stored in a data attribute
         const propsJson = component.getAttribute('data-component-props');
         if (propsJson) {
           try {
@@ -483,10 +472,6 @@ export class Canvas {
         element.addEventListener('input', () => {
           Canvas.historyManager.captureState();
         });
-
-        element.addEventListener('blur', () => {
-          Canvas.dispatchDesignChange();
-        });
       }
 
       // Create label for showing class name on hover
@@ -589,6 +574,7 @@ export class Canvas {
 
     element.addEventListener('dragend', (event: DragEvent) => {
       event.preventDefault();
+
       // const canvasRect = Canvas.canvasElement.getBoundingClientRect();
 
       // Calculate movement delta

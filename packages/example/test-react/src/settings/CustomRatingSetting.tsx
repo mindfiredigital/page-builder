@@ -1,48 +1,19 @@
+// CustomRatingSettings.tsx - Using Zustand
 import * as React from 'react';
-import { Box, Button, Typography } from '@mui/material'; // Using MUI components for consistent styling
+import { Box, Button, Typography } from '@mui/material';
+import { useRatingStore } from '../store/RatingStore';
 
 interface CustomRatingSettingsProps {
   targetComponentId: string;
 }
 
-interface PageBuilderCustomSettingEventDetail {
-  functionName: string;
-  targetComponentId?: string;
-}
-
-interface PageBuilderCustomSettingEvent extends CustomEvent {
-  detail: PageBuilderCustomSettingEventDetail;
-}
-
 const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
   targetComponentId,
 }) => {
-  const dispatchAction = React.useCallback(
-    (functionName: string) => {
-      if (!targetComponentId) {
-        console.error('CustomRatingSettings: targetComponentId is missing.');
-        return;
-      }
-
-      const event: PageBuilderCustomSettingEvent = new CustomEvent(
-        'pagebuilder:custom-setting-action',
-        {
-          detail: {
-            functionName: functionName,
-            targetComponentId: targetComponentId,
-          },
-          bubbles: true,
-          composed: true,
-        }
-      );
-
-      document.dispatchEvent(event);
-      console.log(
-        `CustomRatingSettings: Dispatched event '${functionName}' for component ID: ${targetComponentId}`
-      );
-    },
-    [targetComponentId]
-  );
+  const resetRating = useRatingStore(state => state.resetRating);
+  const setRatingToMax = useRatingStore(state => state.setRatingToMax);
+  const incrementRating = useRatingStore(state => state.incrementRating);
+  const decrementRating = useRatingStore(state => state.decrementRating);
 
   return (
     <Box
@@ -62,7 +33,7 @@ const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => dispatchAction('resetRating')}
+        onClick={() => resetRating(targetComponentId)}
         sx={{ textTransform: 'none', borderRadius: '8px' }}
       >
         Reset Rating
@@ -70,7 +41,7 @@ const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => dispatchAction('setRatingToMax')}
+        onClick={() => setRatingToMax(targetComponentId)}
         sx={{ textTransform: 'none', borderRadius: '8px' }}
       >
         Set Max Rating
@@ -78,7 +49,7 @@ const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => dispatchAction('incrementRating')}
+        onClick={() => incrementRating(targetComponentId)}
         sx={{ textTransform: 'none', borderRadius: '8px' }}
       >
         Increment Rating
@@ -86,7 +57,7 @@ const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
       <Button
         variant="outlined"
         color="primary"
-        onClick={() => dispatchAction('decrementRating')}
+        onClick={() => decrementRating(targetComponentId)}
         sx={{ textTransform: 'none', borderRadius: '8px' }}
       >
         Decrement Rating

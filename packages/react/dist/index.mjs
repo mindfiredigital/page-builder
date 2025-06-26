@@ -9,7 +9,6 @@ var PageBuilderReact = ({
 }) => {
   const builderRef = useRef(null);
   const [processedConfig, setProcessedConfig] = useState(config);
-  console.log(initialDesign, "init farams");
   useEffect(() => {
     import("@mindfiredigital/page-builder-web-component").catch((error) => {
       console.error("Failed to load web component:", error);
@@ -39,7 +38,6 @@ var PageBuilderReact = ({
                   React.createElement(componentConfig.component, {
                     componentId
                   })
-                  // <--- PASSING THE PROP HERE
                 );
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
@@ -53,8 +51,6 @@ var PageBuilderReact = ({
           // The tagName refers to the custom Web Component tag
           svg: componentConfig.svg,
           title: componentConfig.title
-          // Note: The actual React component (componentConfig.component) is used internally by ReactComponentElement
-          // and its settings are already in data-custom-settings on the wrapper div (handled by Canvas.ts)
         };
       });
     }
@@ -69,6 +65,7 @@ var PageBuilderReact = ({
           (_a = builderRef.current) == null ? void 0 : _a.setAttribute("config-data", configString);
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
+            console.log(initialDesign, "init");
           }
         } catch (error) {
           console.error("Error setting config-data and initialDesign:", error);

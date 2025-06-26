@@ -16,7 +16,6 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   const builderRef = useRef<PageBuilderElement>(null);
   const [processedConfig, setProcessedConfig] =
     useState<DynamicComponents>(config);
-  console.log(initialDesign, 'init farams');
 
   useEffect(() => {
     import('@mindfiredigital/page-builder-web-component').catch(error => {
@@ -97,6 +96,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
           builderRef.current?.setAttribute('config-data', configString);
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
+            console.log(initialDesign, 'init');
           }
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);

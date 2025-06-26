@@ -21,7 +21,6 @@ export class PageBuilder {
     dynamicComponents = { Basic: [], Extra: [], Custom: {} },
     initialDesign = null
   ) {
-    console.log(initialDesign, 'initial design of component');
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
     this.canvas = new Canvas();

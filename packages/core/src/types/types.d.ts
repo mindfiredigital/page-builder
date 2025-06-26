@@ -80,7 +80,7 @@ declare global {
     component: string;
     svg?: string;
     title?: string;
-    settings?: CustomComponentSetting[];
+    settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
     props?: Record<string, any>;
   }
 

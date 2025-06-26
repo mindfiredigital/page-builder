@@ -4,6 +4,7 @@ import LayersViewController from './LayerViewController.js';
 import { TableComponent } from '../components/TableComponent.js';
 import * as ReactDOM from 'react-dom/client';
 import * as React from 'react';
+import { svgs } from '../icons/svgs.js';
 export class CustomizationSidebar {
   static init() {
     this.sidebarElement = document.getElementById('customization');
@@ -16,14 +17,6 @@ export class CustomizationSidebar {
     }
     // Initialize LayersViewController
     this.layersViewController = new LayersViewController();
-    // Create expandible menu (Customize CSS, Settings Panel)
-    this.expandConfiguration = document.createElement('div');
-    this.expandConfiguration.className = 'expand-config';
-    this.expandConfiguration.id = 'expand-config';
-    this.expandConfiguration.innerHTML = `
-        <button id="css-tab" title="Customize CSS" class="dropdown-btn active">Customize CSS</button>
-        <button id="functionalities-tab" title="Settings Panel" class="dropdown-btn">Settings Panel</button>
-    `;
     // Create functionality panel
     this.functionsPanel = document.createElement('div'); // Initialize the functions panel
     this.functionsPanel.id = 'functions-panel';
@@ -34,6 +27,7 @@ export class CustomizationSidebar {
     this.layersModeToggle.className = 'layers-mode-toggle';
     this.layersModeToggle.innerHTML = `
         <button id="customize-tab" title="Customize" class="active">⚙️</button>
+        <button id="attribute-tab" title="Attribute" >${svgs.attribute}</button>
         <button id="layers-tab" title="Layers"> ☰ </button>
     `;
     // Insert layers toggle before component name
@@ -41,37 +35,11 @@ export class CustomizationSidebar {
       this.layersModeToggle,
       this.componentNameHeader
     );
-    // Insert expand config (with both buttons) after component name
-    this.sidebarElement.insertBefore(
-      this.expandConfiguration,
-      this.componentNameHeader.nextSibling
-    );
     // Insert CSS panel (controlsContainer) and Functionalities panel
     this.sidebarElement.appendChild(this.controlsContainer); // ControlsContainer is the CSS panel
     this.sidebarElement.appendChild(this.functionsPanel); // Functionalities panel
     // Set initial display for controlsContainer to block
     this.controlsContainer.style.display = 'block';
-    // Add event listeners to toggle panels
-    const cssTabBtn = document.getElementById('css-tab');
-    const funcTabBtn = document.getElementById('functionalities-tab');
-    cssTabBtn.addEventListener('click', () => {
-      this.controlsContainer.style.display = 'block';
-      this.functionsPanel.style.display = 'none';
-      cssTabBtn.classList.add('active');
-      funcTabBtn.classList.remove('active');
-      if (this.selectedComponent) {
-        this.populateCssControls(this.selectedComponent); // Repopulate CSS controls for selected component
-      }
-    });
-    funcTabBtn.addEventListener('click', () => {
-      this.functionsPanel.style.display = 'block';
-      this.controlsContainer.style.display = 'none';
-      funcTabBtn.classList.add('active');
-      cssTabBtn.classList.remove('active');
-      if (this.selectedComponent) {
-        this.populateFunctionalityControls(this.selectedComponent); // Populate functionality controls
-      }
-    });
     // Create layers view (This element is now within the sidebar)
     this.layersView = document.createElement('div');
     this.layersView.id = 'layers-view';
@@ -79,8 +47,13 @@ export class CustomizationSidebar {
     this.sidebarElement.appendChild(this.layersView); // Append to sidebar directly
     // Add event listeners for tab switching (Customize vs Layers)
     const customizeTab = this.layersModeToggle.querySelector('#customize-tab');
+    const attributeTab = this.layersModeToggle.querySelector('#attribute-tab');
     const layersTab = this.layersModeToggle.querySelector('#layers-tab');
     customizeTab.addEventListener('click', () => this.switchToCustomizeMode());
+    attributeTab.addEventListener('click', () => {
+      console.log('attribute tab clicked');
+      this.switchToAttributeMode();
+    });
     layersTab.addEventListener('click', () => this.switchToLayersMode());
     // Add the close button to the sidebar
     this.sidebarElement.appendChild(this.closeButton);
@@ -94,19 +67,15 @@ export class CustomizationSidebar {
   // --- Tab Switching Logic ---
   static switchToCustomizeMode() {
     const customizeTab = document.getElementById('customize-tab');
+    const attributeTab = document.getElementById('attribute-tab');
     const layersTab = document.getElementById('layers-tab');
     const layersView = document.getElementById('layers-view');
     const componentName = document.getElementById('component-name');
-    const expandConfig = document.getElementById('expand-config');
+    // const expandConfig = document.getElementById('expand-config')!;
     customizeTab.classList.add('active');
+    attributeTab.classList.remove('active');
     layersTab.classList.remove('active');
     layersView.style.display = 'none'; // Hide layers view
-    expandConfig.style.display = 'flex'; // Show the expand-config container
-    // Ensure the CSS tab is active by default and its panel is shown
-    const cssTabBtn = document.getElementById('css-tab');
-    const funcTabBtn = document.getElementById('functionalities-tab');
-    cssTabBtn.classList.add('active'); // Activate CSS tab
-    funcTabBtn.classList.remove('active'); // Deactivate Functionalities tab
     this.controlsContainer.style.display = 'block'; // Show CSS panel
     this.functionsPanel.style.display = 'none'; // Hide Functionalities panel
     componentName.style.display = 'block'; // Show component name header
@@ -115,26 +84,38 @@ export class CustomizationSidebar {
       this.populateCssControls(this.selectedComponent);
     }
   }
-  static switchToLayersMode() {
-    var _a, _b;
+  static switchToAttributeMode() {
     const customizeTab = document.getElementById('customize-tab');
+    const attributeTab = document.getElementById('attribute-tab');
     const layersTab = document.getElementById('layers-tab');
     const layersView = document.getElementById('layers-view');
     const componentName = document.getElementById('component-name');
-    const expandConfig = document.getElementById('expand-config');
-    layersTab.classList.add('active');
+    attributeTab.classList.add('active');
     customizeTab.classList.remove('active');
-    expandConfig.style.display = 'none'; // Hide expand-config in layers mode
+    layersTab.classList.remove('active');
+    layersView.style.display = 'none'; // Hide layers view
+    this.functionsPanel.style.display = 'block';
+    this.controlsContainer.style.display = 'none';
+    componentName.style.display = 'block';
+    // Populate functionality controls if component is selected
+    if (this.selectedComponent) {
+      this.populateFunctionalityControls(this.selectedComponent);
+    }
+  }
+  static switchToLayersMode() {
+    const customizeTab = document.getElementById('customize-tab');
+    const attributeTab = document.getElementById('attribute-tab');
+    const layersTab = document.getElementById('layers-tab');
+    const layersView = document.getElementById('layers-view');
+    const componentName = document.getElementById('component-name');
+    // const expandConfig = document.getElementById('expand-config')!;
+    layersTab.classList.add('active');
+    attributeTab.classList.remove('active');
+    customizeTab.classList.remove('active');
+    // expandConfig.style.display = 'none'; // Hide expand-config in layers mode
     // Hide both dropdown panels
     this.controlsContainer.style.display = 'none';
     this.functionsPanel.style.display = 'none';
-    (_a = document.getElementById('css-tab')) === null || _a === void 0
-      ? void 0
-      : _a.classList.remove('active');
-    (_b = document.getElementById('functionalities-tab')) === null ||
-    _b === void 0
-      ? void 0
-      : _b.classList.remove('active');
     layersView.style.display = 'block'; // Show layers view
     componentName.style.display = 'none'; // Hide component name header
     LayersViewController.updateLayersView();
@@ -149,19 +130,7 @@ export class CustomizationSidebar {
     this.selectedComponent = component; // Store the selected component
     this.sidebarElement.style.display = 'block';
     this.componentNameHeader.textContent = `Component: ${componentId}`;
-    // By default, activate and populate the CSS tab when sidebar is shown
-    const cssTabBtn = document.getElementById('css-tab');
-    const funcTabBtn = document.getElementById('functionalities-tab');
-    if (
-      !cssTabBtn.classList.contains('active') &&
-      !funcTabBtn.classList.contains('active')
-    ) {
-      cssTabBtn.click(); // Simulate click to activate CSS tab and populate it
-    } else if (cssTabBtn.classList.contains('active')) {
-      this.populateCssControls(component);
-    } else if (funcTabBtn.classList.contains('active')) {
-      this.populateFunctionalityControls(component);
-    }
+    this.switchToCustomizeMode();
   }
   static hideSidebar() {
     if (this.sidebarElement) {
@@ -400,6 +369,7 @@ export class CustomizationSidebar {
           : _b.replace('-component', '');
       // Check if there's a React settings component is provided in the global customComponents config
       const customComponentsConfig = window.customComponents;
+      console.log(customComponentsConfig, 'config');
       if (
         componentType &&
         customComponentsConfig &&

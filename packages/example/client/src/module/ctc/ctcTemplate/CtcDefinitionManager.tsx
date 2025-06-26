@@ -1,3 +1,4 @@
+// src/pages/CtcDefinitionManager.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
@@ -22,7 +23,7 @@ import {
   Alert,
   CircularProgress,
   TableRow,
-  TableCell, // Re-added for loading state
+  TableCell,
 } from '@mui/material';
 import {
   Add,
@@ -30,6 +31,7 @@ import {
   Delete,
   ArrowUpward,
   ArrowDownward,
+  Warning, // Added for custom dialog icon
 } from '@mui/icons-material';
 
 // Assuming these services are available in a 'services' directory
@@ -39,14 +41,14 @@ import {
   updateCtcDefinition,
   deleteCtcDefinition,
 } from '../../../services/services';
-import { CTC_DEFINITION_TYPE, CTC_VALUE_TYPE } from '../../../utils/constant';
+import { CTC_DEFINITION_TYPE, CTC_VALUE_TYPE } from '../../../utils/constant'; // Ensure these constants are defined
 import AppTable from '../../../components/AppTable'; // Import AppTable
 import { ColumnProps } from '../../../types/types'; // Import ColumnProps interface
 
-// Types
-interface CtcDefinition {
+// Types - Exported for use in CtcStore and View.tsx
+export interface CtcDefinition {
   id?: number;
-  ctc_template_id: number;
+  template_id: number;
   ctc_definition_type_id: number;
   ctc_value_type_id: number;
   is_ctc_attribute: boolean;
@@ -54,7 +56,7 @@ interface CtcDefinition {
   title: string;
   value: string;
   priority_order_of_evaluation: number;
-  component_json_path?: string;
+  component_json_path?: string | null; // Can be null now
   created_at?: string;
   updated_at?: string;
 }
@@ -80,13 +82,13 @@ const definitionColumns: ColumnProps[] = [
   { id: 'value', label: 'Value', width: 15, align: 'left' },
   {
     id: 'is_ctc_attribute',
-    label: 'CTC Attribute',
+    label: 'Input Attr.', // Shortened label for display
     width: 7,
     align: 'center',
   },
   {
     id: 'component_json_path',
-    label: 'Component Path',
+    label: 'Comp. Path', // Shortened label for display
     width: 10,
     align: 'left',
   },
@@ -102,16 +104,25 @@ const CtcDefinitionManager: React.FC<Props> = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [editingDefinition, setEditingDefinition] =
     useState<CtcDefinition | null>(null);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}, // Placeholder function
+  });
 
   // Pagination state for AppTable (client-side pagination assumed if backend doesn't support)
   const [page, setPage] = useState(0);
-  const [limit, setLimit] = useState(10);
+  // Changed initial limit to 100 to match common AppTable options and avoid MUI warning
+  const [limit, setLimit] = useState(100);
   const count = definitions.length; // Total count is the length of all fetched definitions
 
   const [formData, setFormData] = useState<Partial<CtcDefinition>>({
-    ctc_template_id: templateId,
+    template_id: templateId,
     ctc_definition_type_id: 1,
     ctc_value_type_id: 1,
     is_ctc_attribute: false,
@@ -147,8 +158,32 @@ const CtcDefinitionManager: React.FC<Props> = ({
     }
   };
 
+  // Helper function to show confirmation dialog
+  const showConfirmDialog = (
+    title: string,
+    message: string,
+    onConfirm: () => void
+  ) => {
+    setConfirmDialog({
+      open: true,
+      title,
+      message,
+      onConfirm,
+    });
+  };
+
+  // Helper function to close confirmation dialog
+  const closeConfirmDialog = () => {
+    setConfirmDialog({
+      open: false,
+      title: '',
+      message: '',
+      onConfirm: () => {},
+    });
+  };
+
   const loadInitialData = useCallback(async () => {
-    setLoading(true);
+    // setLoading(true);
     setError(null);
     try {
       const ctcDefsRes = await fetchCtcDefinitions({ template_id: templateId });
@@ -163,20 +198,22 @@ const CtcDefinitionManager: React.FC<Props> = ({
             a.priority_order_of_evaluation - b.priority_order_of_evaluation
         );
         setDefinitions(sortedDefs);
-        onDefinitionsChange?.(sortedDefs);
+        onDefinitionsChange?.(sortedDefs); // Notify parent (View.tsx) about updated definitions
       } else {
         setDefinitions([]);
-        onDefinitionsChange?.([]);
+        onDefinitionsChange?.([]); // Notify parent even if no definitions
       }
       setPage(0); // Reset page to 0 on data load
     } catch (err: any) {
       console.error('Error loading initial data:', err);
-      setError(`Failed to load data: ${err.message || 'Unknown error'}`);
+      setError(`Failed to load definitions: ${err.message || 'Unknown error'}`);
       setDefinitions([]);
-    } finally {
-      setLoading(false);
+      onDefinitionsChange?.([]); // Notify parent on error too
     }
-  }, [templateId, onDefinitionsChange]);
+    // finally {
+    //   setLoading(false);
+    // }
+  }, [templateId]);
 
   useEffect(() => {
     loadInitialData();
@@ -185,6 +222,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
   const handleOpenDialog = (definition?: CtcDefinition) => {
     if (definition) {
       setEditingDefinition(definition);
+      // Ensure component_json_path is treated as a string for the form
       setFormData({
         ...definition,
         component_json_path: definition.component_json_path || '',
@@ -197,7 +235,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
         CTC_VALUE_TYPE.length > 0 ? CTC_VALUE_TYPE[0].id : 1;
 
       setFormData({
-        ctc_template_id: templateId,
+        template_id: templateId,
         ctc_definition_type_id: defaultDefTypeId,
         ctc_value_type_id: defaultValueTypeId,
         is_ctc_attribute: false,
@@ -225,7 +263,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
     const defaultValueTypeId =
       CTC_VALUE_TYPE.length > 0 ? CTC_VALUE_TYPE[0].id : 1;
     setFormData({
-      ctc_template_id: templateId,
+      template_id: templateId,
       ctc_definition_type_id: defaultDefTypeId,
       ctc_value_type_id: defaultValueTypeId,
       is_ctc_attribute: false,
@@ -243,16 +281,33 @@ const CtcDefinitionManager: React.FC<Props> = ({
       setError('Key and Title are required.');
       return;
     }
-    setLoading(true);
+    // Basic validation for component_json_path if provided
+    if (formData.component_json_path) {
+      try {
+        const parsedPath = JSON.parse(formData.component_json_path);
+        if (!parsedPath.componentId || !parsedPath.propertyPath) {
+          setError(
+            'component_json_path must be a valid JSON with "componentId" and "propertyPath".'
+          );
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+        setError('component_json_path must be a valid JSON string.');
+        return;
+      }
+    }
+
+    // setLoading(true);
     setError(null);
 
     try {
       const dataToSave = {
         ...formData,
         is_ctc_attribute: formData.is_ctc_attribute ? true : false,
+        // Convert empty string component_json_path to null for backend
         component_json_path: formData.component_json_path || null,
       };
-      console.log(dataToSave, 'data');
 
       if (editingDefinition) {
         await updateCtcDefinition(
@@ -267,39 +322,49 @@ const CtcDefinitionManager: React.FC<Props> = ({
     } catch (err: any) {
       console.error('Error saving definition:', err);
       setError(`Failed to save definition: ${err.message || 'Unknown error'}`);
-    } finally {
-      setLoading(false);
     }
+    //  finally {
+    //   setLoading(false);
+    // }
   };
 
   const handleDeleteDefinition = async (definitionId: number) => {
-    if (window.confirm('Are you sure you want to delete this definition?')) {
-      setLoading(true);
-      setError(null);
-      try {
-        await deleteCtcDefinition(definitionId);
-        await loadInitialData();
-      } catch (err: any) {
-        console.error('Error deleting definition:', err);
-        setError(
-          `Failed to delete definition: ${err.message || 'Unknown error'}`
-        );
-      } finally {
-        setLoading(false);
+    const definitionToDelete = definitions.find(def => def.id === definitionId);
+    const definitionTitle = definitionToDelete?.title || 'this definition';
+
+    showConfirmDialog(
+      'Delete Definition',
+      `Are you sure you want to delete "${definitionTitle}"? This action cannot be undone.`,
+      async () => {
+        // setLoading(true);
+        setError(null);
+        try {
+          await deleteCtcDefinition(definitionId);
+          await loadInitialData();
+        } catch (err: any) {
+          console.error('Error deleting definition:', err);
+          setError(
+            `Failed to delete definition: ${err.message || 'Unknown error'}`
+          );
+        }
+        // finally {
+        //   setLoading(false);
+        // }
+        closeConfirmDialog();
       }
-    }
+    );
   };
 
   const handleReorder = async (
     definition: CtcDefinition,
     direction: 'up' | 'down'
   ) => {
-    setLoading(true);
+    // setLoading(true);
     setError(null);
 
     const currentIndex = definitions.findIndex(d => d.id === definition.id);
     if (currentIndex === -1) {
-      setLoading(false);
+      // setLoading(false);
       return;
     }
 
@@ -324,17 +389,21 @@ const CtcDefinitionManager: React.FC<Props> = ({
       };
 
       try {
-        await updateCtcDefinition(updatedCurrentDef.id!, updatedCurrentDef);
-        await updateCtcDefinition(updatedTargetDef.id!, updatedTargetDef);
-        await loadInitialData();
+        // Perform updates in parallel
+        await Promise.all([
+          updateCtcDefinition(updatedCurrentDef.id!, updatedCurrentDef),
+          updateCtcDefinition(updatedTargetDef.id!, updatedTargetDef),
+        ]);
+        await loadInitialData(); // Reload to get the correct sorted order from backend
       } catch (err: any) {
         console.error('Error reordering definitions:', err);
         setError(`Failed to reorder: ${err.message || 'Unknown error'}`);
-      } finally {
-        setLoading(false);
       }
+      //  finally {
+      //   setLoading(false);
+      // }
     } else {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -384,7 +453,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
                       size="small"
                       onClick={() => handleReorder(definition, 'up')}
                       disabled={
-                        loading ||
+                        // loading ||
                         definitions.findIndex(d => d.id === definition.id) === 0
                       }
                     >
@@ -396,9 +465,9 @@ const CtcDefinitionManager: React.FC<Props> = ({
                       size="small"
                       onClick={() => handleReorder(definition, 'down')}
                       disabled={
-                        loading ||
+                        // loading ||
                         definitions.findIndex(d => d.id === definition.id) ===
-                          definitions.length - 1
+                        definitions.length - 1
                       }
                     >
                       <ArrowDownward fontSize="inherit" />
@@ -484,7 +553,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
                     onClick={() => handleOpenDialog(definition)}
                     size="small"
                     color="primary"
-                    disabled={loading}
+                    // disabled={loading}
                   >
                     <Edit />
                   </IconButton>
@@ -494,7 +563,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
                     onClick={() => handleDeleteDefinition(definition.id!)}
                     size="small"
                     color="error"
-                    disabled={loading}
+                    // disabled={loading}
                   >
                     <Delete />
                   </IconButton>
@@ -537,7 +606,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
             variant="contained"
             startIcon={<Add />}
             onClick={() => handleOpenDialog()}
-            disabled={loading}
+            // disabled={loading}
           >
             Add Definition
           </Button>
@@ -565,7 +634,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
           setLimit={setLimit}
           count={count}
           renderRow={renderDefinitionRow}
-          loading={loading}
+          loading={false} // loading={loading}
           // The empty state message is handled by AppTable based on rows.length
         />
       </Paper>
@@ -597,7 +666,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
                 }
                 helperText="Unique identifier for this definition (e.g., basic-salary)"
                 required
-                disabled={loading}
+                // disabled={loading}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -610,11 +679,14 @@ const CtcDefinitionManager: React.FC<Props> = ({
                 }
                 helperText="Display name for this definition"
                 required
-                disabled={loading}
+                // disabled={loading}
               />
             </Grid>
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth disabled={loading}>
+              <FormControl
+                fullWidth
+                // disabled={loading}
+              >
                 <InputLabel>Definition Type</InputLabel>
                 <Select
                   value={formData.ctc_definition_type_id}
@@ -635,7 +707,10 @@ const CtcDefinitionManager: React.FC<Props> = ({
               </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth disabled={loading}>
+              <FormControl
+                fullWidth
+                //  disabled={loading}
+              >
                 <InputLabel>Value Type</InputLabel>
                 <Select
                   value={formData.ctc_value_type_id}
@@ -666,7 +741,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
                 multiline
                 rows={3}
                 helperText="For formulas: use {key} to reference other definitions (e.g., {basic-salary} * 0.4)"
-                disabled={loading}
+                // disabled={loading}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -683,7 +758,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
                 }
                 helperText="Lower numbers are evaluated first (important for formulas)"
                 required
-                disabled={loading}
+                // disabled={loading}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -697,8 +772,8 @@ const CtcDefinitionManager: React.FC<Props> = ({
                     component_json_path: e.target.value,
                   }))
                 }
-                helperText="Path to inject value in Page Builder JSON (e.g., {'componentId': 'abc', 'propertyPath': 'props.data.value'})"
-                disabled={loading}
+                helperText='JSON: {"componentId": "abc", "propertyPath": "props.data.value"}'
+                // disabled={loading}
               />
             </Grid>
             <Grid item xs={12}>
@@ -712,7 +787,7 @@ const CtcDefinitionManager: React.FC<Props> = ({
                         is_ctc_attribute: e.target.checked,
                       }))
                     }
-                    disabled={loading}
+                    // disabled={loading}
                   />
                 }
                 label="Is an Input Attribute (requires user input)"
@@ -721,21 +796,61 @@ const CtcDefinitionManager: React.FC<Props> = ({
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={loading}>
+          <Button
+            onClick={handleCloseDialog}
+            // disabled={loading}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleSaveDefinition}
             variant="contained"
-            disabled={!formData.key || !formData.title || loading}
+            disabled={
+              !formData.key || !formData.title
+              // || loading
+            }
           >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : editingDefinition ? (
-              'Update'
-            ) : (
-              'Create'
-            )}
+            {
+              // loading ? (
+              //   <CircularProgress size={24} color="inherit" />
+              // ) :
+              editingDefinition ? 'Update' : 'Create'
+            }
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Custom Confirmation Dialog */}
+      <Dialog
+        open={confirmDialog.open}
+        onClose={closeConfirmDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center' }}>
+          <Warning color="warning" sx={{ mr: 1 }} />
+          {confirmDialog.title}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">{confirmDialog.message}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={closeConfirmDialog}
+            //  disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmDialog.onConfirm}
+            variant="contained"
+            color="error"
+            // disabled={loading}
+            startIcon={<CircularProgress size={16} />}
+            // {loading ? <CircularProgress size={16} /> : <Delete />}
+          >
+            Delecte
+            {/* {loading ? 'Deleting...' : 'Delete'} */}
           </Button>
         </DialogActions>
       </Dialog>

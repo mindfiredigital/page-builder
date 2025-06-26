@@ -7,12 +7,12 @@ export declare class CustomizationSidebar {
   private static layersModeToggle;
   private static layersView;
   private static layersViewController;
-  private static expandConfiguration;
   private static functionsPanel;
   private static selectedComponent;
   private static settingsReactRoot;
   static init(): void;
   private static switchToCustomizeMode;
+  private static switchToAttributeMode;
   private static switchToLayersMode;
   static showSidebar(componentId: string): void;
   static hideSidebar(): void;

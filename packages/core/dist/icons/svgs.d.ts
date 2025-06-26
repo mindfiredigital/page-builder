@@ -22,4 +22,5 @@ export declare const svgs: {
   delete: string;
   close: string;
   edit: string;
+  attribute: string;
 };
