@@ -1,4 +1,3 @@
-// store/useRatingStore.ts
 import { create } from 'zustand';
 
 interface RatingState {

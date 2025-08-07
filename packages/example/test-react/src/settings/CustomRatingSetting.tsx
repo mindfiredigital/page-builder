@@ -1,4 +1,3 @@
-// CustomRatingSettings.tsx - Using Zustand
 import * as React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { useRatingStore } from '../store/RatingStore';
@@ -7,9 +6,14 @@ interface CustomRatingSettingsProps {
   targetComponentId: string;
 }
 
-const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
-  targetComponentId,
-}) => {
+const CustomRatingSettings = React.forwardRef<
+  unknown,
+  CustomRatingSettingsProps
+>((props, forwardedRef) => {
+  const { targetComponentId } = props;
+
+  console.log(targetComponentId, 'targetId');
+
   const resetRating = useRatingStore(state => state.resetRating);
   const setRatingToMax = useRatingStore(state => state.setRatingToMax);
   const incrementRating = useRatingStore(state => state.incrementRating);
@@ -17,6 +21,7 @@ const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
 
   return (
     <Box
+      ref={forwardedRef}
       sx={{
         p: 2,
         border: '1px solid #e0e0e0',
@@ -64,6 +69,6 @@ const CustomRatingSettings: React.FC<CustomRatingSettingsProps> = ({
       </Button>
     </Box>
   );
-};
+});
 
 export default CustomRatingSettings;

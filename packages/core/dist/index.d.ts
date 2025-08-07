@@ -7,9 +7,11 @@ declare class PageBuilder {
   private static headerInitialized;
   private dynamicComponents;
   private initialDesign;
+  private editable;
   constructor(
     dynamicComponents?: DynamicComponents,
-    initialDesign?: PageBuilderDesign | null
+    initialDesign?: PageBuilderDesign | null,
+    editable?: boolean | null
   );
   static resetHeaderFlag(): void;
   initializeEventListeners(): void;

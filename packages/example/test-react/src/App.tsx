@@ -1,11 +1,9 @@
-// export default App;
 import { PageBuilderReact } from '@mindfiredigital/page-builder-react';
 import ColorPicker from './components/ColorPicker';
 import CustomRating from './components/CustomRating';
 import CustomRatingSettings from './settings/CustomRatingSetting';
 
 const App = () => {
-  // Config object for dynamic components
   const dynamicComponents = {
     Basic: ['button', 'header', 'text', 'table'],
     Extra: ['landingpage'],

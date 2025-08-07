@@ -7,12 +7,16 @@ export declare class Canvas {
   private static sidebarElement;
   static controlsManager: ComponentControlsManager;
   private static gridManager;
+  private static editable;
   static historyManager: HistoryManager;
   static jsonStorage: JSONStorage;
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
   private static componentFactory;
-  static init(initialData?: PageBuilderDesign | null): void;
+  static init(
+    initialData: (PageBuilderDesign | null) | undefined,
+    editable: boolean | null
+  ): void;
   /**
    * Dispatches a custom event indicating that the canvas design has changed.
    * The event detail contains the current design state.

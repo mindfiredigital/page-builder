@@ -40,6 +40,7 @@ interface PageBuilderReactProps {
    * Receives the updated design metadata as an argument.
    */
   onChange?: (newDesign: PageBuilderDesign) => void;
+  editable?: boolean;
 }
 
 declare const PageBuilderReact: React$1.FC<PageBuilderReactProps>;

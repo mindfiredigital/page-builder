@@ -17,6 +17,7 @@ export interface PageBuilderDesign {
 }
 
 export interface PageBuilderElement extends HTMLElement {
+  editable: boolean;
   initialDesign?: PageBuilderDesign | null;
 }
 export interface CustomComponentConfig {
@@ -42,4 +43,5 @@ export interface PageBuilderReactProps {
    * Receives the updated design metadata as an argument.
    */
   onChange?: (newDesign: PageBuilderDesign) => void;
+  editable?: boolean;
 }

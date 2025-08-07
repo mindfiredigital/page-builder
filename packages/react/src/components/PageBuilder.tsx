@@ -12,6 +12,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   customComponents,
   initialDesign,
   onChange,
+  editable = true,
 }) => {
   const builderRef = useRef<PageBuilderElement>(null);
   const [processedConfig, setProcessedConfig] =
@@ -114,6 +115,8 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
                   ? JSON.parse(settingsData)
                   : {};
 
+                console.log('creating here');
+
                 ReactDOM.createRoot(mountPoint).render(
                   React.createElement(
                     componentConfig.settingsComponent!,
@@ -149,6 +152,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
           console.log(configString, 'config');
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
+            builderRef.current.editable = editable;
           }
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);

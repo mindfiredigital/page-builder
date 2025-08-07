@@ -8,7 +8,6 @@ import { svgs } from '../icons/svgs';
 
 type ReactComponentType<P = {}> = React.ComponentType<P>;
 
-// Define the type for customComponentsConfig
 interface CustomComponentConfig {
   [key: string]: {
     component: string;
@@ -23,22 +22,25 @@ export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
   private static controlsContainer: HTMLElement;
   private static componentNameHeader: HTMLElement;
-  private static closeButton: HTMLElement;
+
   private static layersModeToggle: HTMLDivElement;
   private static layersView: HTMLDivElement;
   private static layersViewController: LayersViewController;
   private static functionsPanel: HTMLDivElement;
   private static selectedComponent: HTMLElement | null = null;
   private static settingsReactRoot: ReactDOM.Root | null = null;
-  private static customComponentsConfig: CustomComponentConfig | null = null; // New static property
+  private static customComponentsConfig: CustomComponentConfig | null = null;
+  private static editable: boolean | null;
 
-  static init(customComponentsConfig: CustomComponentConfig) {
-    // Accept config here
+  static init(
+    customComponentsConfig: CustomComponentConfig,
+    editable: boolean | null
+  ) {
     this.sidebarElement = document.getElementById('customization')!;
-    this.controlsContainer = document.getElementById('controls')!; // CSS controls
+    this.controlsContainer = document.getElementById('controls')!;
     this.componentNameHeader = document.getElementById('component-name')!;
-    this.closeButton = document.createElement('button');
-    this.customComponentsConfig = customComponentsConfig; // Store the config
+    this.customComponentsConfig = customComponentsConfig;
+    this.editable = editable;
 
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
@@ -48,60 +50,51 @@ export class CustomizationSidebar {
     this.layersViewController = new LayersViewController();
 
     // Create functionality panel
-    this.functionsPanel = document.createElement('div'); // Initialize the functions panel
+    this.functionsPanel = document.createElement('div');
     this.functionsPanel.id = 'functions-panel';
     this.functionsPanel.className = 'dropdown-panel';
-    this.functionsPanel.style.display = 'none'; // Initially hidden
+    this.functionsPanel.style.display = 'none';
 
-    // Create layers mode toggle (Customize, Layers)
     this.layersModeToggle = document.createElement('div');
     this.layersModeToggle.className = 'layers-mode-toggle';
     this.layersModeToggle.innerHTML = `
-        <button id="customize-tab" title="Customize" class="active">⚙️</button>
+        <button id="customize-tab" title="Customize" class="active">${svgs.settings}</button>
         <button id="attribute-tab" title="Attribute" >${svgs.attribute}</button>
-        <button id="layers-tab" title="Layers"> ☰ </button>
+        <button id="layers-tab" title="Layers"> ${svgs.menu} </button>
     `;
 
-    // Insert layers toggle before component name
     this.sidebarElement.insertBefore(
       this.layersModeToggle,
       this.componentNameHeader
     );
+    this.sidebarElement.appendChild(this.controlsContainer);
+    this.sidebarElement.appendChild(this.functionsPanel);
 
-    // Insert CSS panel (controlsContainer) and Functionalities panel
-    this.sidebarElement.appendChild(this.controlsContainer); // ControlsContainer is the CSS panel
-    this.sidebarElement.appendChild(this.functionsPanel); // Functionalities panel
-
-    // Set initial display for controlsContainer to block
     this.controlsContainer.style.display = 'block';
 
-    // Create layers view (This element is now within the sidebar)
     this.layersView = document.createElement('div');
     this.layersView.id = 'layers-view';
     this.layersView.className = 'layers-view hidden';
-    this.sidebarElement.appendChild(this.layersView); // Append to sidebar directly
-
-    // Add event listeners for tab switching (Customize vs Layers)
+    this.sidebarElement.appendChild(this.layersView);
     const customizeTab = this.layersModeToggle.querySelector('#customize-tab')!;
     const attributeTab = this.layersModeToggle.querySelector('#attribute-tab')!;
     const layersTab = this.layersModeToggle.querySelector('#layers-tab')!;
 
     customizeTab.addEventListener('click', () => this.switchToCustomizeMode());
     attributeTab.addEventListener('click', () => {
-      console.log('attribute tab clicked');
       this.switchToAttributeMode();
     });
     layersTab.addEventListener('click', () => this.switchToLayersMode());
 
     // Add the close button to the sidebar
-    this.sidebarElement.appendChild(this.closeButton);
-    this.closeButton.textContent = '×'; // Close button symbol
-    this.closeButton.classList.add('close-button');
+    // this.sidebarElement.appendChild(this.closeButton);
+    // this.closeButton.textContent = '×'; // Close button symbol
+    // this.closeButton.classList.add('close-button');
 
-    // Add the event listener to hide the sidebar when the close button is clicked
-    this.closeButton.addEventListener('click', () => {
-      this.hideSidebar();
-    });
+    // // Add the event listener to hide the sidebar when the close button is clicked
+    // this.closeButton.addEventListener('click', () => {
+    //   this.hideSidebar();
+    // });
   }
 
   // --- Tab Switching Logic ---
@@ -116,13 +109,12 @@ export class CustomizationSidebar {
     customizeTab.classList.add('active');
     attributeTab.classList.remove('active');
     layersTab.classList.remove('active');
-    layersView.style.display = 'none'; // Hide layers view
+    layersView.style.display = 'none';
 
-    this.controlsContainer.style.display = 'block'; // Show CSS panel
-    this.functionsPanel.style.display = 'none'; // Hide Functionalities panel
+    this.controlsContainer.style.display = 'block';
+    this.functionsPanel.style.display = 'none';
 
-    componentName.style.display = 'block'; // Show component name header
-    // Repopulate CSS controls based on the selected component (if any)
+    componentName.style.display = 'block';
     if (this.selectedComponent) {
       this.populateCssControls(this.selectedComponent);
     }
@@ -181,24 +173,33 @@ export class CustomizationSidebar {
       console.error(`Component with ID "${componentId}" not found.`);
       return;
     }
-    this.selectedComponent = component; // Store the selected component
+    if (!this.editable) {
+      return;
+    }
+    this.selectedComponent = component;
 
     this.sidebarElement.style.display = 'block';
+    this.sidebarElement.classList.add('visible');
+    const menuButton = document.getElementById('menu-btn');
+    if (menuButton) {
+      menuButton.style.backgroundColor = '#e2e8f0';
+      menuButton.style.borderColor = '#cbd5e1';
+    }
     this.componentNameHeader.textContent = `Component: ${componentId}`;
 
     this.switchToCustomizeMode();
   }
 
-  static hideSidebar() {
-    if (this.sidebarElement) {
-      this.sidebarElement.style.display = 'none';
-      this.selectedComponent = null; // Clear selected component
-    }
-  }
+  // static hideSidebar() {
+  //   if (this.sidebarElement) {
+  //     this.sidebarElement.style.display = 'none';
+  //     this.selectedComponent = null; // Clear selected component
+  //   }
+  // }
 
   // --- Populate CSS Controls ---
   private static populateCssControls(component: HTMLElement) {
-    this.controlsContainer.innerHTML = ''; // Clear previous controls
+    this.controlsContainer.innerHTML = '';
     const styles = getComputedStyle(component);
     const isCanvas = component.id.toLowerCase() === 'canvas';
 
@@ -348,21 +349,16 @@ export class CustomizationSidebar {
       );
     }
 
-    this.addListeners(component); // Re-attach listeners for CSS controls
+    this.addListeners(component);
   }
 
-  // --- Populate Functionality Controls (New) ---
   private static populateFunctionalityControls(component: HTMLElement) {
-    this.functionsPanel.innerHTML = ''; // Clear previous controls in the functions panel
-
-    // Handle standard components with specific functionalities (e.g., TableComponent)
+    this.functionsPanel.innerHTML = '';
     if (component.classList.contains('table-component')) {
       const table = component.querySelector('table');
       if (table) {
         const currentRows = table.rows.length;
-        const currentCols = table.rows[0]?.cells.length || 0; // Handle empty table
-
-        // Rows control
+        const currentCols = table.rows[0]?.cells.length || 0;
         const rowsWrapper = document.createElement('div');
         rowsWrapper.classList.add('control-wrapper');
         rowsWrapper.innerHTML = `
@@ -381,15 +377,12 @@ export class CustomizationSidebar {
           debounce(() => {
             const newRowCount = parseInt(rowsInput.value);
             if (!isNaN(newRowCount)) {
-              // Allow 0 rows
-              const tableInstance = new TableComponent(); // Create an instance to call its methods
+              const tableInstance = new TableComponent();
               tableInstance.setRowCount(table, newRowCount);
-              Canvas.historyManager.captureState(); // Capture state after modification
+              Canvas.historyManager.captureState();
             }
           }, 300)
-        ); // Debounce for performance
-
-        // Columns control
+        );
         const colsWrapper = document.createElement('div');
         colsWrapper.classList.add('control-wrapper');
         colsWrapper.innerHTML = `
@@ -408,10 +401,9 @@ export class CustomizationSidebar {
           debounce(() => {
             const newColCount = parseInt(colsInput.value);
             if (!isNaN(newColCount)) {
-              // Allow 0 columns
-              const tableInstance = new TableComponent(); // Create an instance
+              const tableInstance = new TableComponent();
               tableInstance.setColumnCount(table, newColCount);
-              Canvas.historyManager.captureState(); // Capture state
+              Canvas.historyManager.captureState();
             }
           }, 300)
         );
@@ -446,27 +438,23 @@ export class CustomizationSidebar {
         .find(cls => cls.endsWith('-component'))
         ?.replace('-component', '');
 
-      // Use the stored customComponentsConfig
       const customComponentsConfig =
         CustomizationSidebar.customComponentsConfig;
-      console.log(customComponentsConfig, 'config');
       if (
         componentType &&
         customComponentsConfig &&
         customComponentsConfig[componentType] &&
-        customComponentsConfig[componentType].settingsComponent // Check for the new property
+        customComponentsConfig[componentType].settingsComponent
       ) {
         const SettingsReactComponent: ReactComponentType<{
           targetComponentId: string;
         }> = customComponentsConfig[componentType].settingsComponent;
-
-        // Create a dedicated div for React component mounting
         const mountPoint = document.createElement('div');
         mountPoint.id = `react-settings-mount-point-${component.id}`;
         this.functionsPanel.appendChild(mountPoint);
-
-        // Render the React component using ReactDOM.createRoot().render()
         this.settingsReactRoot = ReactDOM.createRoot(mountPoint);
+        console.log('Rendering settings for component with ID:', component.id);
+
         this.settingsReactRoot.render(
           React.createElement(SettingsReactComponent, {
             targetComponentId: component.id,
@@ -485,29 +473,15 @@ export class CustomizationSidebar {
     }
   }
 
-  /**
-   * Unmounts the currently rendered React settings component to prevent memory leaks.
-   */
-  private static unmountSettingsComponent() {
-    if (this.settingsReactRoot) {
-      this.settingsReactRoot.unmount();
-      this.settingsReactRoot = null;
-      console.log('Unmounted React settings component.');
-    }
-  }
-
-  // --- Utility Methods (rgbToHex, createControl, createSelectControl, addListeners) ---
   static rgbToHex(rgb: string): string {
     const result = rgb.match(
       /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/
     );
-    if (!result) return rgb; // If the format is not matched, return the original string
-
+    if (!result) return rgb;
     const r = parseInt(result[1], 10);
     const g = parseInt(result[2], 10);
     const b = parseInt(result[3], 10);
 
-    // Ensure it's in the correct hex format
     return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
   }
 
@@ -521,10 +495,8 @@ export class CustomizationSidebar {
     const wrapper = document.createElement('div');
     wrapper.classList.add('control-wrapper');
 
-    // Check if the control is a color input or a number input
     const isNumber = type === 'number';
 
-    // Format value for number inputs and add a unit dropdown
     if (isNumber && attributes.unit) {
       const unit = attributes.unit;
       wrapper.innerHTML = `
@@ -540,12 +512,11 @@ export class CustomizationSidebar {
                 </div
             `;
     } else {
-      // For color inputs, add a text input to display/edit hex code
       wrapper.innerHTML = `
         <label for="${id}">${label}:</label>
         <div class="input-wrapper">
           <input type="color" id="${id}" value="${value}">
-          <input type="text" id="${id}-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${value}">
+          <input type="text" id="${id}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${value}">
         </div>
       `;
     }
@@ -561,7 +532,6 @@ export class CustomizationSidebar {
       });
     }
 
-    // If it's a color input, update the hex code display
     const colorInput = wrapper.querySelector(
       `input[type="color"]#${id}`
     ) as HTMLInputElement;
@@ -578,14 +548,13 @@ export class CustomizationSidebar {
     if (hexInput) {
       hexInput.addEventListener('input', () => {
         if (colorInput) {
-          colorInput.value = hexInput.value; // Update color input with the new hex code
+          colorInput.value = hexInput.value;
         }
       });
     }
 
     this.controlsContainer.appendChild(wrapper);
 
-    // Update value dynamically when unit changes
     if (unitSelect) {
       unitSelect.addEventListener('change', () => {
         const unit = unitSelect.value;
@@ -621,13 +590,12 @@ export class CustomizationSidebar {
   }
 
   private static addListeners(component: HTMLElement) {
-    // Collect all existing input/select elements dynamically
     const controls: { [key: string]: HTMLInputElement | HTMLSelectElement } = {
       width: document.getElementById('width') as HTMLInputElement,
       height: document.getElementById('height') as HTMLInputElement,
       backgroundColor: document.getElementById(
         'background-color'
-      ) as HTMLInputElement, // Updated ID
+      ) as HTMLInputElement,
       margin: document.getElementById('margin') as HTMLInputElement,
       padding: document.getElementById('padding') as HTMLInputElement,
       alignment: document.getElementById('alignment') as HTMLSelectElement,
@@ -660,11 +628,10 @@ export class CustomizationSidebar {
     });
 
     controls.backgroundColor?.addEventListener('input', () => {
-      // Updated ID
       component.style.backgroundColor = controls.backgroundColor.value;
       (
         document.getElementById('background-color-value') as HTMLInputElement
-      ).value = controls.backgroundColor.value; // Update hex code display
+      ).value = controls.backgroundColor.value;
       captureStateDebounced();
     });
     (

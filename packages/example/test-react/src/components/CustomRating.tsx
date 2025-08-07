@@ -1,4 +1,3 @@
-// CustomRating.tsx - Using Zustand
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';

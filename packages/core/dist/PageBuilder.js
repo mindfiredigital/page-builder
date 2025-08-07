@@ -19,7 +19,8 @@ import { svgs } from './icons/svgs.js';
 export class PageBuilder {
   constructor(
     dynamicComponents = { Basic: [], Extra: [], Custom: {} },
-    initialDesign = null
+    initialDesign = null,
+    editable = true
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -28,6 +29,7 @@ export class PageBuilder {
     this.htmlGenerator = new HTMLGenerator(this.canvas);
     this.jsonStorage = new JSONStorage();
     this.previewPanel = new PreviewPanel();
+    this.editable = editable;
     this.initializeEventListeners();
   }
   // Static method to reset header flag (called during cleanup)
@@ -52,13 +54,12 @@ export class PageBuilder {
     this.setupUndoRedoButtons();
   }
   setupInitialComponents() {
-    createSidebar(this.dynamicComponents);
+    createSidebar(this.dynamicComponents, this.editable);
     // Pass initial design to Canvas.init
-    Canvas.init(this.initialDesign);
+    Canvas.init(this.initialDesign, this.editable);
     this.sidebar.init();
     ShortcutManager.init();
-    console.log(this.dynamicComponents, 'cut');
-    CustomizationSidebar.init(this.dynamicComponents.Custom);
+    CustomizationSidebar.init(this.dynamicComponents.Custom, this.editable);
     // Create header logic - improved to handle re-initialization
     this.createHeaderIfNeeded();
   }
@@ -70,7 +71,7 @@ export class PageBuilder {
       if (appElement && appElement.parentNode) {
         const header = document.createElement('header');
         header.id = 'page-builder-header';
-        header.appendChild(createNavbar());
+        header.appendChild(createNavbar(this.editable));
         appElement.parentNode.insertBefore(header, appElement);
         PageBuilder.headerInitialized = true;
       } else {
@@ -321,7 +322,7 @@ export class PageBuilder {
       width: 100vw;
       height: 100vh;
       background: #f5f5f5;
-      z-index: 1000;
+      z-index: 10000;
       display: flex;
       flex-direction: column;
       align-items: center;

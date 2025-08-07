@@ -5,7 +5,8 @@ var PageBuilderReact = ({
   config,
   customComponents,
   initialDesign,
-  onChange
+  onChange,
+  editable = true
 }) => {
   const builderRef = useRef(null);
   const [processedConfig, setProcessedConfig] = useState(config);
@@ -71,6 +72,7 @@ var PageBuilderReact = ({
                 this.appendChild(mountPoint);
                 const settingsData = this.getAttribute("data-settings");
                 const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
+                console.log("creating here");
                 ReactDOM.createRoot(mountPoint).render(
                   React.createElement(
                     componentConfig.settingsComponent,
@@ -103,6 +105,7 @@ var PageBuilderReact = ({
           console.log(configString, "config");
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
+            builderRef.current.editable = editable;
           }
         } catch (error) {
           console.error("Error setting config-data and initialDesign:", error);

@@ -1,5 +1,8 @@
 import { svgs } from '../icons/svgs';
-export function createSidebar(dynamicComponents: DynamicComponents) {
+export function createSidebar(
+  dynamicComponents: DynamicComponents,
+  editable: boolean | null
+) {
   // We have default values if there is no custom components are specified within parameters
   if (
     !dynamicComponents ||
@@ -29,6 +32,10 @@ export function createSidebar(dynamicComponents: DynamicComponents) {
   if (!sidebar) {
     console.error('Sidebar element not found');
     return;
+  }
+  console.log('sidebar display', editable);
+  if (!editable) {
+    sidebar.style.display = 'none';
   }
 
   // Define your components, icons, and titles as before using it
@@ -90,7 +97,8 @@ export function createSidebar(dynamicComponents: DynamicComponents) {
 
         // Add SVG as innerHTML
         if (icons[componentId]) {
-          iconElement.innerHTML = icons[componentId];
+          iconElement.innerHTML = ` ${icons[componentId]}
+          <div class="drag-text">${componentId}</div>`;
 
           // Optionally style the SVG
           const svgElement = iconElement.querySelector('svg');
@@ -98,7 +106,7 @@ export function createSidebar(dynamicComponents: DynamicComponents) {
             svgElement.classList.add('component-icon');
           }
         } else {
-          console.warn(`Icon not found for component: ${componentId}`);
+          console.warn(`Icon not found for component: ${customTitle}`);
         }
 
         categoryMenu.appendChild(iconElement);
@@ -141,7 +149,8 @@ export function createSidebar(dynamicComponents: DynamicComponents) {
 
           if (svg) {
             // Using provided SVG
-            iconElement.innerHTML = svg;
+            iconElement.innerHTML = iconElement.innerHTML = ` ${svg}
+          <div class="drag-text">${title}</div>`;
 
             // Style the SVG
             const svgElement = iconElement.querySelector('svg');

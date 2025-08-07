@@ -1,1 +1,1 @@
-export declare function createNavbar(): HTMLElement;
+export declare function createNavbar(editable: boolean | null): HTMLElement;

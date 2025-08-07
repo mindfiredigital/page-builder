@@ -51,6 +51,7 @@ var PageBuilderReact = ({
   customComponents,
   initialDesign,
   onChange,
+  editable = true,
 }) => {
   const builderRef = (0, import_react.useRef)(null);
   const [processedConfig, setProcessedConfig] = (0, import_react.useState)(
@@ -128,6 +129,7 @@ var PageBuilderReact = ({
                 const parsedSettings = settingsData
                   ? JSON.parse(settingsData)
                   : {};
+                console.log('creating here');
                 import_client.default
                   .createRoot(mountPoint)
                   .render(
@@ -164,6 +166,7 @@ var PageBuilderReact = ({
           console.log(configString, 'config');
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
+            builderRef.current.editable = editable;
           }
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);

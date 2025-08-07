@@ -5,6 +5,7 @@ var PageBuilderComponent = class extends HTMLElement {
     super();
     this.initialized = false;
     this._initialDesign = null;
+    this._editable = null;
     this.config = { Basic: [], Extra: [], Custom: [] };
     this.template = `<div id="app">
       <div id="sidebar"></div>
@@ -40,8 +41,20 @@ var PageBuilderComponent = class extends HTMLElement {
       }
     }
   }
+  set editable(value) {
+    if (this._editable !== value) {
+      this._editable = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+  // Corrected getter for 'editable'
+  get editable() {
+    return this._editable;
+  }
   set initialDesign(value) {
-    console.log(value, 'value');
     if (this._initialDesign !== value) {
       this._initialDesign = value;
       if (this.initialized) {
@@ -94,12 +107,14 @@ var PageBuilderComponent = class extends HTMLElement {
         app.innerHTML = '';
         this.innerHTML = this.template;
       }
-      this.pageBuilder = new PageBuilder(this.config, this._initialDesign);
+      this.pageBuilder = new PageBuilder(
+        this.config,
+        this._initialDesign,
+        this._editable
+      );
       this.initialized = true;
       console.log(
-        'PageBuilderComponent: PageBuilder initialized successfully with config and initial design.',
-        this._initialDesign,
-        this.config
+        'PageBuilderComponent: PageBuilder initialized successfully with config and initial design.'
       );
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);

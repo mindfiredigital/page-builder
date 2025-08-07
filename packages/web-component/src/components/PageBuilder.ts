@@ -15,6 +15,7 @@ export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
   private initialized = false;
   private _initialDesign: PageBuilderDesign | null = null;
+  private _editable: boolean | null = null;
   private config = { Basic: [], Extra: [], Custom: [] };
   private template = `<div id="app">
       <div id="sidebar"></div>
@@ -51,11 +52,26 @@ export class PageBuilderComponent extends HTMLElement {
         this.config = parsedConfig;
         this.initialized = false;
 
-        this.initializePageBuilder(); // Reinitialize Core when config changes
+        this.initializePageBuilder();
       } catch (e) {
         console.error('Failed to parse config:', e);
       }
     }
+  }
+
+  set editable(value: boolean | null) {
+    if (this._editable !== value) {
+      this._editable = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+
+  // Corrected getter for 'editable'
+  get editable(): boolean | null {
+    return this._editable;
   }
 
   set initialDesign(value: PageBuilderDesign | null) {
@@ -117,13 +133,15 @@ export class PageBuilderComponent extends HTMLElement {
         app.innerHTML = '';
         this.innerHTML = this.template; // Reset the template
       }
-      this.pageBuilder = new PageBuilder(this.config, this._initialDesign);
+      this.pageBuilder = new PageBuilder(
+        this.config,
+        this._initialDesign,
+        this._editable
+      );
 
       this.initialized = true;
       console.log(
-        'PageBuilderComponent: PageBuilder initialized successfully with config and initial design.',
-        this._initialDesign,
-        this.config
+        'PageBuilderComponent: PageBuilder initialized successfully with config and initial design.'
       );
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);

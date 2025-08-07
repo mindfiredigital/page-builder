@@ -16,7 +16,6 @@ export declare class CustomizationSidebar {
   private static sidebarElement;
   private static controlsContainer;
   private static componentNameHeader;
-  private static closeButton;
   private static layersModeToggle;
   private static layersView;
   private static layersViewController;
@@ -24,18 +23,17 @@ export declare class CustomizationSidebar {
   private static selectedComponent;
   private static settingsReactRoot;
   private static customComponentsConfig;
-  static init(customComponentsConfig: CustomComponentConfig): void;
+  private static editable;
+  static init(
+    customComponentsConfig: CustomComponentConfig,
+    editable: boolean | null
+  ): void;
   private static switchToCustomizeMode;
   private static switchToAttributeMode;
   private static switchToLayersMode;
   static showSidebar(componentId: string): void;
-  static hideSidebar(): void;
   private static populateCssControls;
   private static populateFunctionalityControls;
-  /**
-   * Unmounts the currently rendered React settings component to prevent memory leaks.
-   */
-  private static unmountSettingsComponent;
   static rgbToHex(rgb: string): string;
   private static createControl;
   private static createSelectControl;
