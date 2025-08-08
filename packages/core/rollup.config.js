@@ -5,6 +5,7 @@ const { babel } = require('@rollup/plugin-babel');
 const terser = require('@rollup/plugin-terser');
 const postcss = require('rollup-plugin-postcss');
 const { dts } = require('rollup-plugin-dts');
+const replace = require('@rollup/plugin-replace');
 
 module.exports = [
   {
@@ -15,6 +16,11 @@ module.exports = [
       exports: 'auto',
     },
     plugins: [
+      replace({
+        'process.env.NODE_ENV': JSON.stringify('production'), // Or 'development'
+        // Add other process properties here if you find other specific errors (e.g., 'process.version')
+        preventAssignment: true, // Recommended for Rollup 2+
+      }),
       resolve(),
       commonjs(),
       postcss({

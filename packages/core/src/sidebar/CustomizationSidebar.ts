@@ -1,21 +1,46 @@
 import { Canvas } from '../canvas/Canvas';
 import { debounce } from '../utils/utilityFunctions';
 import LayersViewController from './LayerViewController';
+import { TableComponent } from '../components/TableComponent';
+import * as ReactDOM from 'react-dom/client';
+import * as React from 'react';
+import { svgs } from '../icons/svgs';
+
+type ReactComponentType<P = {}> = React.ComponentType<P>;
+
+interface CustomComponentConfig {
+  [key: string]: {
+    component: string;
+    svg?: string;
+    title?: string;
+    settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
+    props?: Record<string, any>;
+  };
+}
+
 export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
   private static controlsContainer: HTMLElement;
   private static componentNameHeader: HTMLElement;
-  private static closeButton: HTMLElement;
+
   private static layersModeToggle: HTMLDivElement;
   private static layersView: HTMLDivElement;
   private static layersViewController: LayersViewController;
-  private static expandConfiguration: HTMLDivElement;
+  private static functionsPanel: HTMLDivElement;
+  private static selectedComponent: HTMLElement | null = null;
+  private static settingsReactRoot: ReactDOM.Root | null = null;
+  private static customComponentsConfig: CustomComponentConfig | null = null;
+  private static editable: boolean | null;
 
-  static init() {
+  static init(
+    customComponentsConfig: CustomComponentConfig,
+    editable: boolean | null
+  ) {
     this.sidebarElement = document.getElementById('customization')!;
     this.controlsContainer = document.getElementById('controls')!;
     this.componentNameHeader = document.getElementById('component-name')!;
-    this.closeButton = document.createElement('button');
+    this.customComponentsConfig = customComponentsConfig;
+    this.editable = editable;
 
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
@@ -24,197 +49,161 @@ export class CustomizationSidebar {
     // Initialize LayersViewController
     this.layersViewController = new LayersViewController();
 
-    // Create expandible menu
-    this.expandConfiguration = document.createElement('div');
-    this.expandConfiguration.className = 'expand-config';
-    this.expandConfiguration.id = 'expand-config';
-    this.expandConfiguration.innerHTML = `
-<button id="css-tab" title="Expand" class="dropdown-btn">Customize CSS</button>
-<button id="functionalities-tab" title="Expand" class="dropdown-btn">Settings Panel</button>
-`;
+    // Create functionality panel
+    this.functionsPanel = document.createElement('div');
+    this.functionsPanel.id = 'functions-panel';
+    this.functionsPanel.className = 'dropdown-panel';
+    this.functionsPanel.style.display = 'none';
 
-    // Create layers mode toggle
     this.layersModeToggle = document.createElement('div');
     this.layersModeToggle.className = 'layers-mode-toggle';
     this.layersModeToggle.innerHTML = `
-    <button id="customize-tab" title="Customize" class="active">⚙️</button>
-    <button id="layers-tab" title="Layers"> ☰ </button>
-  `;
+        <button id="customize-tab" title="Customize" class="active">${svgs.settings}</button>
+        <button id="attribute-tab" title="Attribute" >${svgs.attribute}</button>
+        <button id="layers-tab" title="Layers"> ${svgs.menu} </button>
+    `;
 
-    // Insert layers toggle before component name
     this.sidebarElement.insertBefore(
       this.layersModeToggle,
       this.componentNameHeader
     );
+    this.sidebarElement.appendChild(this.controlsContainer);
+    this.sidebarElement.appendChild(this.functionsPanel);
 
-    // Insert expand config (with both buttons) before the controls container
-    this.sidebarElement.insertBefore(
-      this.expandConfiguration,
-      this.controlsContainer
-    );
+    this.controlsContainer.style.display = 'block';
 
-    // Insert controlsContainer right before the functionalities button inside expandConfiguration
-    const funcButton = this.expandConfiguration.querySelector(
-      '#functionalities-tab'
-    )!;
-    this.expandConfiguration.insertBefore(this.controlsContainer, funcButton);
-
-    // Create panels for CSS and Function tabs
-    const cssPanel = this.controlsContainer; // reuse controlsContainer
-    cssPanel.style.display = 'none'; // Initially hidden until CSS tab is clicked
-    const funcPanel = document.createElement('div');
-    funcPanel.id = 'functions-panel';
-    funcPanel.className = 'dropdown-panel hidden';
-    funcPanel.style.display = 'none';
-    funcPanel.innerHTML = '<p>Functionality settings will appear here.</p>';
-
-    this.sidebarElement.appendChild(funcPanel);
-
-    // Add event listeners to toggle panels
-    const cssTabBtn = document.getElementById('css-tab')!;
-    const funcTabBtn = document.getElementById('functionalities-tab')!;
-
-    // CSS tab dropdown behavior
-    cssTabBtn.addEventListener('click', () => {
-      // Toggle CSS panel
-      if (cssPanel.style.display === 'block') {
-        cssPanel.style.display = 'none';
-        cssTabBtn.classList.remove('active');
-      } else {
-        cssPanel.style.display = 'block';
-        cssTabBtn.classList.add('active');
-        // Hide functions panel if it's open
-        funcPanel.style.display = 'none';
-        funcTabBtn.classList.remove('active');
-      }
-    });
-
-    // Functions tab dropdown behavior
-    funcTabBtn.addEventListener('click', () => {
-      // Toggle Functions panel
-      if (funcPanel.style.display === 'block') {
-        funcPanel.style.display = 'none';
-        funcTabBtn.classList.remove('active');
-      } else {
-        funcPanel.style.display = 'block';
-        funcTabBtn.classList.add('active');
-        // Hide CSS panel if it's open
-        cssPanel.style.display = 'none';
-        cssTabBtn.classList.remove('active');
-      }
-    });
-
-    // Create layers view
     this.layersView = document.createElement('div');
     this.layersView.id = 'layers-view';
     this.layersView.className = 'layers-view hidden';
-    this.controlsContainer.appendChild(this.layersView);
-
-    // Add event listeners for tab switching
+    this.sidebarElement.appendChild(this.layersView);
     const customizeTab = this.layersModeToggle.querySelector('#customize-tab')!;
+    const attributeTab = this.layersModeToggle.querySelector('#attribute-tab')!;
     const layersTab = this.layersModeToggle.querySelector('#layers-tab')!;
 
     customizeTab.addEventListener('click', () => this.switchToCustomizeMode());
+    attributeTab.addEventListener('click', () => {
+      this.switchToAttributeMode();
+    });
     layersTab.addEventListener('click', () => this.switchToLayersMode());
 
     // Add the close button to the sidebar
-    this.sidebarElement.appendChild(this.closeButton);
-    this.closeButton.textContent = '×'; // Close button symbol
-    this.closeButton.classList.add('close-button');
+    // this.sidebarElement.appendChild(this.closeButton);
+    // this.closeButton.textContent = '×'; // Close button symbol
+    // this.closeButton.classList.add('close-button');
 
-    // Add the event listener to hide the sidebar when the close button is clicked
-    this.closeButton.addEventListener('click', () => {
-      this.hideSidebar();
-    });
+    // // Add the event listener to hide the sidebar when the close button is clicked
+    // this.closeButton.addEventListener('click', () => {
+    //   this.hideSidebar();
+    // });
   }
 
+  // --- Tab Switching Logic ---
   private static switchToCustomizeMode() {
     const customizeTab = document.getElementById('customize-tab')!;
+    const attributeTab = document.getElementById('attribute-tab')!;
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
     const componentName = document.getElementById('component-name')!;
-    const expandConfig = document.getElementById('expand-config')!;
+    // const expandConfig = document.getElementById('expand-config')!;
 
     customizeTab.classList.add('active');
+    attributeTab.classList.remove('active');
     layersTab.classList.remove('active');
-    layersView.classList.add('hidden');
-
-    // Show the expand-config in customize mode
-    expandConfig.style.display = 'flex';
-
-    // Don't automatically show controls container - wait for user to click the CSS tab
     layersView.style.display = 'none';
+
+    this.controlsContainer.style.display = 'block';
+    this.functionsPanel.style.display = 'none';
+
     componentName.style.display = 'block';
+    if (this.selectedComponent) {
+      this.populateCssControls(this.selectedComponent);
+    }
+  }
+
+  private static switchToAttributeMode() {
+    const customizeTab = document.getElementById('customize-tab')!;
+    const attributeTab = document.getElementById('attribute-tab')!;
+    const layersTab = document.getElementById('layers-tab')!;
+    const layersView = document.getElementById('layers-view')!;
+    const componentName = document.getElementById('component-name')!;
+
+    attributeTab.classList.add('active');
+    customizeTab.classList.remove('active');
+    layersTab.classList.remove('active');
+    layersView.style.display = 'none'; // Hide layers view
+
+    this.functionsPanel.style.display = 'block';
+    this.controlsContainer.style.display = 'none';
+    componentName.style.display = 'block';
+
+    // Populate functionality controls if component is selected
+    if (this.selectedComponent) {
+      this.populateFunctionalityControls(this.selectedComponent);
+    }
   }
 
   private static switchToLayersMode() {
     const customizeTab = document.getElementById('customize-tab')!;
+    const attributeTab = document.getElementById('attribute-tab')!;
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
     const componentName = document.getElementById('component-name')!;
-    const expandConfig = document.getElementById('expand-config')!;
-    const cssPanel = document.getElementById('controls')!;
-    const funcPanel = document.getElementById('functions-panel')!;
-    const cssTabBtn = document.getElementById('css-tab')!;
-    const funcTabBtn = document.getElementById('functionalities-tab')!;
+    // const expandConfig = document.getElementById('expand-config')!;
 
     layersTab.classList.add('active');
+    attributeTab.classList.remove('active');
     customizeTab.classList.remove('active');
 
-    // Hide expand-config in layers mode
-    expandConfig.style.display = 'none';
+    // expandConfig.style.display = 'none'; // Hide expand-config in layers mode
 
     // Hide both dropdown panels
-    cssPanel.style.display = 'none';
-    funcPanel.style.display = 'none';
-    cssTabBtn.classList.remove('active');
-    funcTabBtn.classList.remove('active');
+    this.controlsContainer.style.display = 'none';
+    this.functionsPanel.style.display = 'none';
 
-    // Ensure only the layers view is visible
-    layersView.style.display = 'block';
-    componentName.style.display = 'none';
+    layersView.style.display = 'block'; // Show layers view
+    componentName.style.display = 'none'; // Hide component name header
 
-    // Update the layers view using the new LayersViewController
     LayersViewController.updateLayersView();
   }
 
-  public static updateLayersView() {
-    LayersViewController.updateLayersView();
-  }
-
+  // --- Sidebar Display Management ---
   static showSidebar(componentId: string) {
-    const customizeTab = document.getElementById('customize-tab')!;
-    const layersTab = document.getElementById('layers-tab')!;
-    const layersView = document.getElementById('layers-view')!;
-    const controlsContainer = document.getElementById('controls')!;
-
-    // Ensure we're in customize mode when showing sidebar
-    customizeTab.classList.add('active');
-    layersTab.classList.remove('active');
-    layersView.classList.add('hidden');
-    controlsContainer.classList.remove('hidden');
-
-    // Existing showSidebar logic follows...
     const component = document.getElementById(componentId);
-    console.log(`Showing sidebar for: ${componentId}`);
     if (!component) {
       console.error(`Component with ID "${componentId}" not found.`);
       return;
     }
-
-    // Check if the component is a canvas itself
-    const isCanvas = componentId.toLowerCase() === 'canvas';
+    if (!this.editable) {
+      return;
+    }
+    this.selectedComponent = component;
 
     this.sidebarElement.style.display = 'block';
-    this.controlsContainer.innerHTML = '';
-
-    // Set the component name in the header
+    this.sidebarElement.classList.add('visible');
+    const menuButton = document.getElementById('menu-btn');
+    if (menuButton) {
+      menuButton.style.backgroundColor = '#e2e8f0';
+      menuButton.style.borderColor = '#cbd5e1';
+    }
     this.componentNameHeader.textContent = `Component: ${componentId}`;
 
-    // Dynamically create controls
-    const styles = getComputedStyle(component);
+    this.switchToCustomizeMode();
+  }
 
-    // Controls Display Control
+  // static hideSidebar() {
+  //   if (this.sidebarElement) {
+  //     this.sidebarElement.style.display = 'none';
+  //     this.selectedComponent = null; // Clear selected component
+  //   }
+  // }
+
+  // --- Populate CSS Controls ---
+  private static populateCssControls(component: HTMLElement) {
+    this.controlsContainer.innerHTML = '';
+    const styles = getComputedStyle(component);
+    const isCanvas = component.id.toLowerCase() === 'canvas';
+
+    // Re-create all CSS controls
     this.createSelectControl('Display', 'display', styles.display || 'block', [
       'block',
       'inline',
@@ -223,8 +212,6 @@ export class CustomizationSidebar {
       'grid',
       'none',
     ]);
-
-    // Exclude some controls for canvas
     if (!isCanvas) {
       this.createControl('Width', 'width', 'number', component.offsetWidth, {
         min: 0,
@@ -260,14 +247,18 @@ export class CustomizationSidebar {
       );
     }
 
-    this.createControl('Color', 'color', 'color', styles.backgroundColor);
+    this.createControl(
+      'Background Color',
+      'background-color', // Changed ID to be more specific
+      'color',
+      styles.backgroundColor
+    );
     this.createSelectControl('Text Alignment', 'alignment', styles.textAlign, [
       'left',
       'center',
       'right',
     ]);
 
-    // Controls for fonts
     this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
       'Arial',
       'Verdana',
@@ -290,7 +281,6 @@ export class CustomizationSidebar {
       }
     );
 
-    // Controls for text color editing
     this.createControl(
       'Text Color',
       'text-color',
@@ -298,7 +288,6 @@ export class CustomizationSidebar {
       styles.color || '#000000'
     );
 
-    // Controls for border width
     this.createControl(
       'Border Width',
       'border-width',
@@ -311,7 +300,6 @@ export class CustomizationSidebar {
       }
     );
 
-    // Controls for Border Style
     this.createSelectControl(
       'Border Style',
       'border-style',
@@ -328,7 +316,6 @@ export class CustomizationSidebar {
         'outset',
       ]
     );
-    // Controls for Border Color
     this.createControl(
       'Border Color',
       'border-color',
@@ -336,21 +323,153 @@ export class CustomizationSidebar {
       styles.borderColor || '#000000'
     );
 
-    // Convert the background color to hex format
-    const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
-
-    // Set the color input to the component's background color in hex format
-    const colorInput = document.getElementById('color') as HTMLInputElement;
-    if (colorInput) {
-      colorInput.value = colorHex; // Set to valid hex color value
+    // Update color input value to hex for background color
+    const bgColorInput = document.getElementById(
+      'background-color'
+    ) as HTMLInputElement;
+    if (bgColorInput) {
+      bgColorInput.value = CustomizationSidebar.rgbToHex(
+        styles.backgroundColor
+      );
     }
-    // Add event listeners for live updates
+    // Update color input value to hex for text color
+    const textColorInput = document.getElementById(
+      'text-color'
+    ) as HTMLInputElement;
+    if (textColorInput) {
+      textColorInput.value = CustomizationSidebar.rgbToHex(styles.color);
+    }
+    // Update color input value to hex for border color
+    const borderColorInput = document.getElementById(
+      'border-color'
+    ) as HTMLInputElement;
+    if (borderColorInput) {
+      borderColorInput.value = CustomizationSidebar.rgbToHex(
+        styles.borderColor
+      );
+    }
+
     this.addListeners(component);
   }
 
-  static hideSidebar() {
-    if (this.sidebarElement) {
-      this.sidebarElement.style.display = 'none';
+  private static populateFunctionalityControls(component: HTMLElement) {
+    this.functionsPanel.innerHTML = '';
+    if (component.classList.contains('table-component')) {
+      const table = component.querySelector('table');
+      if (table) {
+        const currentRows = table.rows.length;
+        const currentCols = table.rows[0]?.cells.length || 0;
+        const rowsWrapper = document.createElement('div');
+        rowsWrapper.classList.add('control-wrapper');
+        rowsWrapper.innerHTML = `
+                  <label for="table-rows">Number of Rows:</label>
+                  <div class="input-wrapper">
+                    <input type="number" id="table-rows" value="${currentRows}" min="0">
+                  </div>
+              `;
+        this.functionsPanel.appendChild(rowsWrapper);
+
+        const rowsInput = rowsWrapper.querySelector(
+          '#table-rows'
+        ) as HTMLInputElement;
+        rowsInput.addEventListener(
+          'input',
+          debounce(() => {
+            const newRowCount = parseInt(rowsInput.value);
+            if (!isNaN(newRowCount)) {
+              const tableInstance = new TableComponent();
+              tableInstance.setRowCount(table, newRowCount);
+              Canvas.historyManager.captureState();
+            }
+          }, 300)
+        );
+        const colsWrapper = document.createElement('div');
+        colsWrapper.classList.add('control-wrapper');
+        colsWrapper.innerHTML = `
+                  <label for="table-cols">Number of Columns:</label>
+                  <div class="input-wrapper">
+                    <input type="number" id="table-cols" value="${currentCols}" min="0">
+                  </div>
+              `;
+        this.functionsPanel.appendChild(colsWrapper);
+
+        const colsInput = colsWrapper.querySelector(
+          '#table-cols'
+        ) as HTMLInputElement;
+        colsInput.addEventListener(
+          'input',
+          debounce(() => {
+            const newColCount = parseInt(colsInput.value);
+            if (!isNaN(newColCount)) {
+              const tableInstance = new TableComponent();
+              tableInstance.setColumnCount(table, newColCount);
+              Canvas.historyManager.captureState();
+            }
+          }, 300)
+        );
+
+        //header row
+        const headerWrapper = document.createElement('div');
+        headerWrapper.classList.add('control-wrapper');
+        headerWrapper.innerHTML = `
+          <label for="table-header">Create Header:</label>
+          <div class="input-wrapper">
+            <input type="checkbox" id="table-header"  min="0">
+          </div
+        `;
+        this.functionsPanel.appendChild(headerWrapper);
+        const headerInput = headerWrapper.querySelector(
+          '#table-header'
+        ) as HTMLInputElement;
+        headerInput.addEventListener(
+          'input',
+          debounce(() => {
+            const isHeader = headerInput.checked;
+            if (isHeader) {
+              const tableInstance = new TableComponent();
+              tableInstance.createHeder(table);
+              Canvas.historyManager.captureState();
+            }
+          }, 300)
+        );
+      }
+    } else if (component.classList.contains('custom-component')) {
+      const componentType = Array.from(component.classList)
+        .find(cls => cls.endsWith('-component'))
+        ?.replace('-component', '');
+
+      const customComponentsConfig =
+        CustomizationSidebar.customComponentsConfig;
+      if (
+        componentType &&
+        customComponentsConfig &&
+        customComponentsConfig[componentType] &&
+        customComponentsConfig[componentType].settingsComponent
+      ) {
+        const SettingsReactComponent: ReactComponentType<{
+          targetComponentId: string;
+        }> = customComponentsConfig[componentType].settingsComponent;
+        const mountPoint = document.createElement('div');
+        mountPoint.id = `react-settings-mount-point-${component.id}`;
+        this.functionsPanel.appendChild(mountPoint);
+        this.settingsReactRoot = ReactDOM.createRoot(mountPoint);
+        console.log('Rendering settings for component with ID:', component.id);
+
+        this.settingsReactRoot.render(
+          React.createElement(SettingsReactComponent, {
+            targetComponentId: component.id,
+          })
+        );
+        console.log(
+          `Mounted React settings component for ${componentType} (ID: ${component.id})`
+        );
+      }
+    } else {
+      console.log(
+        'DEBUG: Component is not a custom component and not a table component.'
+      );
+      this.functionsPanel.innerHTML =
+        '<p>No specific settings for this component.</p>';
     }
   }
 
@@ -358,13 +477,11 @@ export class CustomizationSidebar {
     const result = rgb.match(
       /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/
     );
-    if (!result) return rgb; // If the format is not matched, return the original string
-
+    if (!result) return rgb;
     const r = parseInt(result[1], 10);
     const g = parseInt(result[2], 10);
     const b = parseInt(result[3], 10);
 
-    // Ensure it's in the correct hex format
     return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
   }
 
@@ -378,14 +495,13 @@ export class CustomizationSidebar {
     const wrapper = document.createElement('div');
     wrapper.classList.add('control-wrapper');
 
-    // Check if the control is a color input or a number input
     const isNumber = type === 'number';
 
-    // Format value for number inputs and add a unit dropdown
     if (isNumber && attributes.unit) {
       const unit = attributes.unit;
       wrapper.innerHTML = `
-                  <label for="${id}">${label}:</label>
+                <label for="${id}">${label}:</label>
+                <div class="input-wrapper">
                   <input type="${type}" id="${id}" value="${value}">
                   <select id="${id}-unit">
                       <option value="px" ${unit === 'px' ? 'selected' : ''}>px</option>
@@ -393,13 +509,16 @@ export class CustomizationSidebar {
                       <option value="vh" ${unit === 'vh' ? 'selected' : ''}>vh</option>
                       <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
                   </select>
-              `;
+                </div
+            `;
     } else {
       wrapper.innerHTML = `
-          <label for="${id}">${label}:</label>
+        <label for="${id}">${label}:</label>
+        <div class="input-wrapper">
           <input type="color" id="${id}" value="${value}">
-          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${value}">
-        `;
+          <input type="text" id="${id}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${value}">
+        </div>
+      `;
     }
 
     const input = wrapper.querySelector('input') as HTMLInputElement;
@@ -413,31 +532,29 @@ export class CustomizationSidebar {
       });
     }
 
-    // If it's a color input, update the hex code display
-    const colorinput = wrapper.querySelector(
-      'input[type="color"]'
+    const colorInput = wrapper.querySelector(
+      `input[type="color"]#${id}`
     ) as HTMLInputElement;
-    const hexInput = wrapper.querySelector('#color-value') as HTMLInputElement;
+    const hexInput = wrapper.querySelector(`#${id}-value`) as HTMLInputElement;
 
-    if (colorinput) {
-      colorinput.addEventListener('input', () => {
+    if (colorInput) {
+      colorInput.addEventListener('input', () => {
         if (hexInput) {
-          hexInput.value = colorinput.value; // Update hex code display
+          hexInput.value = colorInput.value; // Update hex code display
         }
       });
     }
 
     if (hexInput) {
       hexInput.addEventListener('input', () => {
-        if (colorinput) {
-          colorinput.value = hexInput.value; // Update color input with the new hex code
+        if (colorInput) {
+          colorInput.value = hexInput.value;
         }
       });
     }
 
     this.controlsContainer.appendChild(wrapper);
 
-    // Update value dynamically when unit changes
     if (unitSelect) {
       unitSelect.addEventListener('change', () => {
         const unit = unitSelect.value;
@@ -458,21 +575,27 @@ export class CustomizationSidebar {
     const selectOptions = options
       .map(
         option =>
-          `<option value="${option}" ${option === currentValue ? 'selected' : ''}>${option}</option>`
+          `<option value="${option}" ${
+            option === currentValue ? 'selected' : ''
+          }>${option}</option>`
       )
       .join('');
     wrapper.innerHTML = `
-              <label for="${id}">${label}:</label>
-              <select id="${id}">${selectOptions}</select>
-          `;
+                <label for="${id}">${label}:</label>
+                <div class="input-wrapper">
+                  <select id="${id}">${selectOptions}</select>
+                </div>
+            `;
     this.controlsContainer.appendChild(wrapper);
   }
 
   private static addListeners(component: HTMLElement) {
-    const controls = {
+    const controls: { [key: string]: HTMLInputElement | HTMLSelectElement } = {
       width: document.getElementById('width') as HTMLInputElement,
       height: document.getElementById('height') as HTMLInputElement,
-      color: document.getElementById('color') as HTMLInputElement,
+      backgroundColor: document.getElementById(
+        'background-color'
+      ) as HTMLInputElement,
       margin: document.getElementById('margin') as HTMLInputElement,
       padding: document.getElementById('padding') as HTMLInputElement,
       alignment: document.getElementById('alignment') as HTMLSelectElement,
@@ -485,12 +608,11 @@ export class CustomizationSidebar {
       fontFamily: document.getElementById('font-family') as HTMLSelectElement,
     };
 
-    if (!controls) return;
-
     const captureStateDebounced = debounce(() => {
       Canvas.historyManager.captureState();
     }, 300);
 
+    // Attach listeners only if the element exists
     controls.width?.addEventListener('input', () => {
       const unit = (document.getElementById('width-unit') as HTMLSelectElement)
         .value;
@@ -505,12 +627,20 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
-    controls.color?.addEventListener('input', () => {
-      component.style.backgroundColor = controls.color.value;
-      const colorValueSpan = document.querySelector('#color-value');
-      if (colorValueSpan) {
-        colorValueSpan.textContent = controls.color.value; // Update color hex code display
-      }
+    controls.backgroundColor?.addEventListener('input', () => {
+      component.style.backgroundColor = controls.backgroundColor.value;
+      (
+        document.getElementById('background-color-value') as HTMLInputElement
+      ).value = controls.backgroundColor.value;
+      captureStateDebounced();
+    });
+    (
+      document.getElementById('background-color-value') as HTMLInputElement
+    )?.addEventListener('input', e => {
+      const target = e.target as HTMLInputElement;
+      component.style.backgroundColor = target.value;
+      (document.getElementById('background-color') as HTMLInputElement).value =
+        target.value;
       captureStateDebounced();
     });
 
@@ -542,13 +672,22 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
-    //Controls for editing text color
     controls.textColor?.addEventListener('input', () => {
       component.style.color = controls.textColor.value;
+      (document.getElementById('text-color-value') as HTMLInputElement).value =
+        controls.textColor.value;
+      captureStateDebounced();
+    });
+    (
+      document.getElementById('text-color-value') as HTMLInputElement
+    )?.addEventListener('input', e => {
+      const target = e.target as HTMLInputElement;
+      component.style.color = target.value;
+      (document.getElementById('text-color') as HTMLInputElement).value =
+        target.value;
       captureStateDebounced();
     });
 
-    //Controls for editing border width
     controls.borderWidth?.addEventListener('input', () => {
       const unit = (
         document.getElementById('border-width-unit') as HTMLSelectElement
@@ -557,25 +696,33 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
-    //Controls for border style
     controls.borderStyle?.addEventListener('change', () => {
       component.style.borderStyle = controls.borderStyle.value;
       captureStateDebounced();
     });
 
-    //Controls for border color
     controls.borderColor?.addEventListener('input', () => {
       component.style.borderColor = controls.borderColor.value;
+      (
+        document.getElementById('border-color-value') as HTMLInputElement
+      ).value = controls.borderColor.value;
+      captureStateDebounced();
+    });
+    (
+      document.getElementById('border-color-value') as HTMLInputElement
+    )?.addEventListener('input', e => {
+      const target = e.target as HTMLInputElement;
+      component.style.borderColor = target.value;
+      (document.getElementById('border-color') as HTMLInputElement).value =
+        target.value;
       captureStateDebounced();
     });
 
-    //Controls for display edit
     controls.display?.addEventListener('change', () => {
       component.style.display = controls.display.value;
       captureStateDebounced();
     });
 
-    //Controls for fonts
     controls.fontFamily?.addEventListener('change', () => {
       component.style.fontFamily = controls.fontFamily.value;
       captureStateDebounced();

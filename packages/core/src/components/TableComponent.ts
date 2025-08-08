@@ -84,6 +84,100 @@ export class TableComponent {
   }
 
   /**
+   * Sets the total number of rows in the table. Adds or removes rows as needed.
+   * Preserves existing content where possible.
+   * @param table The HTMLTableElement to modify.
+   * @param targetRowCount The desired total number of rows.
+   */
+  setRowCount(table: HTMLTableElement, targetRowCount: number): void {
+    if (!table) return;
+
+    const currentRowCount = table.rows.length;
+    const currentColumnCount = table.rows[0]?.cells.length || 0; // Assuming uniform columns
+
+    if (targetRowCount < 0) targetRowCount = 0; // Prevent negative rows
+
+    if (targetRowCount > currentRowCount) {
+      // Add rows
+      for (let i = currentRowCount; i < targetRowCount; i++) {
+        const row = document.createElement('tr');
+        for (let j = 0; j < currentColumnCount; j++) {
+          const cell = document.createElement('td');
+          cell.textContent = `R${i + 1}C${j + 1}`;
+          cell.style.border = '1px solid #000';
+          cell.style.padding = '8px';
+          row.appendChild(cell);
+        }
+        table.appendChild(row);
+      }
+    } else if (targetRowCount < currentRowCount) {
+      // Remove rows
+      for (let i = currentRowCount - 1; i >= targetRowCount; i--) {
+        table.deleteRow(i);
+      }
+    }
+  }
+
+  /**
+   * Sets the total number of columns in the table. Adds or removes columns as needed.
+   * Preserves existing content where possible.
+   * @param table The HTMLTableElement to modify.
+   * @param targetColumnCount The desired total number of columns.
+   */
+  setColumnCount(table: HTMLTableElement, targetColumnCount: number): void {
+    if (!table || table.rows.length === 0) return; // No rows to modify
+
+    const currentRowCount = table.rows.length;
+    const currentColumnCount = table.rows[0].cells.length; // Assuming uniform columns
+
+    if (targetColumnCount < 0) targetColumnCount = 0; // Prevent negative columns
+
+    for (let i = 0; i < currentRowCount; i++) {
+      const row = table.rows[i];
+      if (targetColumnCount > currentColumnCount) {
+        // Add columns
+        for (let j = currentColumnCount; j < targetColumnCount; j++) {
+          const cell = document.createElement('td');
+          cell.textContent = `R${i + 1}C${j + 1}`;
+          cell.style.border = '1px solid #000';
+          cell.style.padding = '8px';
+          row.appendChild(cell);
+        }
+      } else if (targetColumnCount < currentColumnCount) {
+        // Remove columns
+        for (let j = currentColumnCount - 1; j >= targetColumnCount; j--) {
+          row.deleteCell(j);
+        }
+      }
+    }
+  }
+
+  /**
+   * Converts the first row of a table into a header row.
+   *
+   * This function takes an HTML table element as input and modifies its first row.
+   * It replaces each `<td>` element in the first row with a `<th>` element,
+   * preserving the content and attributes of the original `<td>` elements.
+   *
+   * @param table The HTMLTableElement to modify.
+   * @returns void
+   */
+
+  createHeder(table: HTMLTableElement): void {
+    if (!table || table.rows.length === 0) return;
+
+    const firstRow = table.rows[0];
+    for (let i = 0; i < firstRow.cells.length; i++) {
+      const tdElement = firstRow.cells[i];
+      const thElement = document.createElement('th');
+      thElement.innerHTML = tdElement.innerHTML;
+      for (const attr of Array.from(tdElement.attributes)) {
+        thElement.setAttribute(attr.name, attr.value);
+      }
+      tdElement.parentNode?.replaceChild(thElement, tdElement);
+    }
+  }
+  /**
    * This method helps to restore the functionality of the buttons present within
    * table component container
    * This method comes to handy when you need to restore the saved page or doing

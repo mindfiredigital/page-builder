@@ -1,3 +1,4 @@
 export declare function createSidebar(
-  dynamicComponents: DynamicComponents
+  dynamicComponents: DynamicComponents,
+  editable: boolean | null
 ): void;

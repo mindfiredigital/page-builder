@@ -3,7 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 var PageBuilderReact = ({
   config,
-  customComponents
+  customComponents,
+  initialDesign,
+  onChange,
+  editable = true
 }) => {
   const builderRef = useRef(null);
   const [processedConfig, setProcessedConfig] = useState(config);
@@ -13,7 +16,9 @@ var PageBuilderReact = ({
     });
   }, []);
   useEffect(() => {
-    const modifiedConfig = JSON.parse(JSON.stringify(config));
+    const modifiedConfig = JSON.parse(
+      JSON.stringify(config)
+    );
     if (customComponents) {
       modifiedConfig.Custom = modifiedConfig.Custom || {};
       Object.entries(customComponents).forEach(([key, componentConfig]) => {
@@ -24,12 +29,16 @@ var PageBuilderReact = ({
         const tagName = `react-component-${key.toLowerCase()}`;
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
+            // This `this` refers to the instance of the Web Component (e.g., <react-component-customrating id="CustomRating1">)
             connectedCallback() {
               const mountPoint = document.createElement("div");
               this.appendChild(mountPoint);
+              const componentId = this.id;
               try {
                 ReactDOM.createRoot(mountPoint).render(
-                  React.createElement(componentConfig.component)
+                  React.createElement(componentConfig.component, {
+                    componentId
+                  })
                 );
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
@@ -38,10 +47,49 @@ var PageBuilderReact = ({
           }
           customElements.define(tagName, ReactComponentElement);
         }
+        const settingsTagName = `react-settings-component-${key.toLowerCase()}`;
+        if (componentConfig.settingsComponent && !customElements.get(settingsTagName)) {
+          class ReactSettingsElement extends HTMLElement {
+            connectedCallback() {
+              const mountPoint = document.createElement("div");
+              this.appendChild(mountPoint);
+              const settingsData = this.getAttribute("data-settings");
+              const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
+              ReactDOM.createRoot(mountPoint).render(
+                React.createElement(
+                  componentConfig.settingsComponent,
+                  parsedSettings
+                )
+              );
+            }
+            // You might need to observe attributes here if PageBuilder updates settings dynamically
+            static get observedAttributes() {
+              return ["data-settings"];
+            }
+            attributeChangedCallback(name, oldValue, newValue) {
+              if (name === "data-settings" && newValue !== oldValue) {
+                const mountPoint = document.createElement("div");
+                this.appendChild(mountPoint);
+                const settingsData = this.getAttribute("data-settings");
+                const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
+                console.log("creating here");
+                ReactDOM.createRoot(mountPoint).render(
+                  React.createElement(
+                    componentConfig.settingsComponent,
+                    parsedSettings
+                  )
+                );
+              }
+            }
+          }
+          customElements.define(settingsTagName, ReactSettingsElement);
+        }
         modifiedConfig.Custom[key] = {
           component: tagName,
+          // The tagName refers to the custom Web Component tag
           svg: componentConfig.svg,
-          title: componentConfig.title
+          title: componentConfig.title,
+          settingsComponent: settingsTagName
         };
       });
     }
@@ -49,14 +97,39 @@ var PageBuilderReact = ({
   }, [config, customComponents]);
   useEffect(() => {
     if (builderRef.current) {
-      try {
-        const configString = JSON.stringify(processedConfig);
-        builderRef.current.setAttribute("config-data", configString);
-      } catch (error) {
-        console.error("Error setting config-data:", error);
-      }
+      setTimeout(() => {
+        var _a;
+        try {
+          const configString = JSON.stringify(processedConfig);
+          (_a = builderRef.current) == null ? void 0 : _a.setAttribute("config-data", configString);
+          console.log(configString, "config");
+          if (builderRef.current) {
+            builderRef.current.initialDesign = initialDesign;
+            builderRef.current.editable = editable;
+          }
+        } catch (error) {
+          console.error("Error setting config-data and initialDesign:", error);
+        }
+      }, 100);
     }
-  }, [processedConfig]);
+  }, [processedConfig, initialDesign]);
+  useEffect(() => {
+    const webComponent = builderRef.current;
+    const handleDesignChange = (event) => {
+      const customEvent = event;
+      if (onChange) {
+        onChange(customEvent.detail);
+      }
+    };
+    if (webComponent) {
+      webComponent.addEventListener("design-change", handleDesignChange);
+    }
+    return () => {
+      if (webComponent) {
+        webComponent.removeEventListener("design-change", handleDesignChange);
+      }
+    };
+  }, [onChange]);
   return /* @__PURE__ */ React.createElement("page-builder", { ref: builderRef });
 };
 export {

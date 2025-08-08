@@ -2,7 +2,6 @@ import { Canvas } from './Canvas';
 
 export class ComponentControlsManager {
   private canvas: typeof Canvas;
-  //Image imports
   private icons = {
     delete:
       'https://res.cloudinary.com/dodvwsaqj/image/upload/v1737366522/delete-2-svgrepo-com_fwkzn7.svg',
@@ -33,7 +32,6 @@ export class ComponentControlsManager {
       }
     }
     const deleteIcon = this.createDeleteIcon(element);
-    // Append the delete icon to controlsDiv, for future we can add other buttons to this controls div
     controlsDiv.appendChild(deleteIcon);
   }
 
@@ -51,7 +49,6 @@ export class ComponentControlsManager {
       deleteIcon.classList.add('delete-icon');
       element.appendChild(deleteIcon);
     }
-    // Attach the click event handler
     deleteIcon.onclick = e => {
       e.stopPropagation();
       this.handleDelete(element);
@@ -73,5 +70,6 @@ export class ComponentControlsManager {
       .filter(comp => comp !== element);
     this.canvas.setComponents(updatedComponents);
     this.canvas.historyManager.captureState();
+    this.canvas.dispatchDesignChange();
   }
 }

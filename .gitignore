@@ -1,4 +1,6 @@
 # Node modules
 node_modules/
 
+./packages/example/client
+./packages/example/.env
 .turbo
