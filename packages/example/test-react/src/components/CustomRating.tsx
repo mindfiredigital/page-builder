@@ -21,6 +21,7 @@ const CustomRating = React.forwardRef<HTMLDivElement, CustomRatingProps>(
       event: React.SyntheticEvent<Element, Event>,
       newValue: number | null
     ) => {
+      console.log(event, 'event');
       setValue(currentComponentId, newValue);
     };
 
