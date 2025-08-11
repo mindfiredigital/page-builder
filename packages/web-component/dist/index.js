@@ -2,6 +2,7 @@
 import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 var PageBuilderComponent = class extends HTMLElement {
   constructor() {
+    console.log('is it even being called');
     super();
     this.initialized = false;
     this._initialDesign = null;
@@ -34,18 +35,23 @@ var PageBuilderComponent = class extends HTMLElement {
       try {
         const parsedConfig = JSON.parse(newValue);
         this.config = parsedConfig;
-        this.initialized = false;
-        this.initializePageBuilder();
+        if (
+          this.hasValidConfig() &&
+          Object.keys(this.config.Custom).length > 0
+        ) {
+          this.initialized = false;
+          this.initializePageBuilder();
+        }
       } catch (e) {
         console.error('Failed to parse config:', e);
       }
     }
   }
   set editable(value) {
+    console.log('called');
     if (this._editable !== value) {
       this._editable = value;
-      if (this.initialized) {
-        this.initialized = false;
+      if (this.isConnected && this.hasValidConfig()) {
         this.initializePageBuilder();
       }
     }
@@ -57,12 +63,8 @@ var PageBuilderComponent = class extends HTMLElement {
   set initialDesign(value) {
     if (this._initialDesign !== value) {
       this._initialDesign = value;
-      if (this.initialized) {
-        this.initialized = false;
-        if (value !== null || this.initialized) {
-          this.initialized = false;
-          this.initializePageBuilder();
-        }
+      if (this.isConnected && this.hasValidConfig()) {
+        this.initializePageBuilder();
       }
     }
   }
@@ -94,7 +96,8 @@ var PageBuilderComponent = class extends HTMLElement {
   }
   // Initializes the PageBuilder instance
   initializePageBuilder() {
-    if (this.initialized) {
+    console.log('init');
+    if (this.initialized || !this.hasValidConfig()) {
       return;
     }
     try {

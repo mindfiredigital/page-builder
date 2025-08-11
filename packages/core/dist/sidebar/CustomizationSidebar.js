@@ -2,8 +2,6 @@ import { Canvas } from '../canvas/Canvas.js';
 import { debounce } from '../utils/utilityFunctions.js';
 import LayersViewController from './LayerViewController.js';
 import { TableComponent } from '../components/TableComponent.js';
-import * as ReactDOM from 'react-dom/client';
-import * as React from 'react';
 import { svgs } from '../icons/svgs.js';
 export class CustomizationSidebar {
   static init(customComponentsConfig, editable) {
@@ -369,22 +367,25 @@ export class CustomizationSidebar {
         componentType &&
         customComponentsConfig &&
         customComponentsConfig[componentType] &&
-        customComponentsConfig[componentType].settingsComponent
+        // Check for the string-based tag name property.
+        customComponentsConfig[componentType].settingsComponentTagName
       ) {
-        const SettingsReactComponent =
-          customComponentsConfig[componentType].settingsComponent;
-        const mountPoint = document.createElement('div');
-        mountPoint.id = `react-settings-mount-point-${component.id}`;
-        this.functionsPanel.appendChild(mountPoint);
-        this.settingsReactRoot = ReactDOM.createRoot(mountPoint);
-        console.log('Rendering settings for component with ID:', component.id);
-        this.settingsReactRoot.render(
-          React.createElement(SettingsReactComponent, {
-            targetComponentId: component.id,
-          })
+        // Get the string tag name from the config.
+        const settingsComponentTagName =
+          customComponentsConfig[componentType].settingsComponentTagName;
+        // Now, use the string variable to query for the element.
+        let settingsElement = this.functionsPanel.querySelector(
+          settingsComponentTagName
         );
-        console.log(
-          `Mounted React settings component for ${componentType} (ID: ${component.id})`
+        if (!settingsElement) {
+          // Use the string variable to create the element.
+          settingsElement = document.createElement(settingsComponentTagName);
+          this.functionsPanel.appendChild(settingsElement);
+        }
+        // Set the attribute as before.
+        settingsElement.setAttribute(
+          'data-settings',
+          JSON.stringify({ targetComponentId: component.id })
         );
       }
     } else {

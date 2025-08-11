@@ -36,6 +36,7 @@ export class PageBuilderComponent extends HTMLElement {
     </div>`;
 
   constructor() {
+    console.log('is it even being called');
     super();
     // Set inner HTML only if no child elements exist
   }
@@ -50,9 +51,14 @@ export class PageBuilderComponent extends HTMLElement {
       try {
         const parsedConfig = JSON.parse(newValue);
         this.config = parsedConfig;
-        this.initialized = false;
+        if (
+          this.hasValidConfig() &&
+          Object.keys(this.config.Custom).length > 0
+        ) {
+          this.initialized = false;
 
-        this.initializePageBuilder();
+          this.initializePageBuilder();
+        }
       } catch (e) {
         console.error('Failed to parse config:', e);
       }
@@ -60,10 +66,10 @@ export class PageBuilderComponent extends HTMLElement {
   }
 
   set editable(value: boolean | null) {
+    console.log('called');
     if (this._editable !== value) {
       this._editable = value;
-      if (this.initialized) {
-        this.initialized = false;
+      if (this.isConnected && this.hasValidConfig()) {
         this.initializePageBuilder();
       }
     }
@@ -77,12 +83,8 @@ export class PageBuilderComponent extends HTMLElement {
   set initialDesign(value: PageBuilderDesign | null) {
     if (this._initialDesign !== value) {
       this._initialDesign = value;
-      if (this.initialized) {
-        this.initialized = false;
-        if (value !== null || this.initialized) {
-          this.initialized = false;
-          this.initializePageBuilder();
-        }
+      if (this.isConnected && this.hasValidConfig()) {
+        this.initializePageBuilder();
       }
     }
   }
@@ -119,7 +121,8 @@ export class PageBuilderComponent extends HTMLElement {
 
   // Initializes the PageBuilder instance
   private initializePageBuilder() {
-    if (this.initialized) {
+    console.log('init'); // This log will now appear
+    if (this.initialized || !this.hasValidConfig()) {
       return;
     }
 
@@ -127,18 +130,17 @@ export class PageBuilderComponent extends HTMLElement {
       const app = this.querySelector('#app');
       if (app === null) {
         console.error('Error: #app element not found.');
-        return; // Exit if #app is not found
+        return;
       }
       if (app && this.pageBuilder) {
         app.innerHTML = '';
-        this.innerHTML = this.template; // Reset the template
+        this.innerHTML = this.template;
       }
       this.pageBuilder = new PageBuilder(
         this.config,
         this._initialDesign,
         this._editable
       );
-
       this.initialized = true;
       console.log(
         'PageBuilderComponent: PageBuilder initialized successfully with config and initial design.'

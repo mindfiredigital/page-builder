@@ -9,6 +9,7 @@ interface CustomComponentConfig {
     settingsComponent?: ReactComponentType<{
       targetComponentId: string;
     }>;
+    settingsComponentTagName?: string;
     props?: Record<string, any>;
   };
 }

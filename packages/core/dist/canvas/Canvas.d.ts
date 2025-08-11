@@ -31,6 +31,7 @@ export declare class Canvas {
     type: string,
     customSettings?: string | null
   ): HTMLElement | null;
+  static updateCanvasHeight(): void;
   static generateUniqueClass(
     type: string,
     isContainerComponent?: boolean,

@@ -19,6 +19,7 @@ export interface PageBuilderDesign {
 export interface PageBuilderElement extends HTMLElement {
   editable: boolean;
   initialDesign?: PageBuilderDesign | null;
+  getDebugInfo?: any;
 }
 export interface CustomComponentConfig {
   component: React.ComponentType<any> | string;

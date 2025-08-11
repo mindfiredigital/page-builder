@@ -305,6 +305,7 @@ export class Canvas {
       Canvas.historyManager.captureState();
     }
     Canvas.dispatchDesignChange();
+    Canvas.updateCanvasHeight();
   }
   static reorderComponent(fromIndex, toIndex) {
     if (
@@ -379,6 +380,29 @@ export class Canvas {
     }
     return element;
   }
+  static updateCanvasHeight() {
+    let maxBottom = 0;
+    // Get all components on the canvas
+    const components = Canvas.canvasElement.querySelectorAll(
+      '.editable-component'
+    );
+    components.forEach(component => {
+      const rect = component.getBoundingClientRect();
+      // Calculate the bottom position of the element relative to the canvas
+      const componentBottom = rect.top + rect.height;
+      if (componentBottom > maxBottom) {
+        maxBottom = componentBottom;
+      }
+    });
+    // Get the canvas's current position and height
+    const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+    // Calculate the minimum required height
+    const newMinHeight = maxBottom - canvasRect.top + 50; // Add 50px of padding
+    if (newMinHeight > canvasRect.height) {
+      // Apply the new minimum height to the canvas
+      Canvas.canvasElement.style.minHeight = `${newMinHeight}px`;
+    }
+  }
   static generateUniqueClass(
     type,
     isContainerComponent = false,
@@ -450,9 +474,9 @@ export class Canvas {
       let newY = elementStartY + deltaY;
       // Constrain within canvas boundaries
       const maxX = Canvas.canvasElement.offsetWidth - element.offsetWidth;
-      const maxY = Canvas.canvasElement.offsetHeight - element.offsetHeight;
+      // const maxY = Canvas.canvasElement.offsetHeight - element.offsetHeight;
       newX = Math.max(0, Math.min(newX, maxX));
-      newY = Math.max(0, Math.min(newY, maxY));
+      // newY = Math.max(0, Math.min(newY, maxY));
       // Set new position
       element.style.left = `${newX}px`;
       element.style.top = `${newY}px`;
@@ -461,6 +485,7 @@ export class Canvas {
       // Capture the state after dragging
       Canvas.historyManager.captureState();
       Canvas.dispatchDesignChange();
+      Canvas.updateCanvasHeight();
     });
   }
   // Unused for now, remove it later

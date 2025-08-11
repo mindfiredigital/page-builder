@@ -69,17 +69,31 @@ export class GridManager {
    * Supports grid-based snapping behavior during drag-and-drop.
    * Returns an object containing the grid-aligned X and Y coordinates.
    */
-  mousePositionAtGridCorner(event: DragEvent, canvasElement: HTMLElement): any {
-    const gridCellSize = 20;
-    const canvasRect = canvasElement.getBoundingClientRect();
+  mousePositionAtGridCorner(event: DragEvent, canvas: HTMLElement) {
+    const canvasRect = canvas.getBoundingClientRect();
 
-    const mouseX = event.clientX - canvasRect.left;
-    const mouseY = event.clientY - canvasRect.top;
+    // Get scroll positions
+    const scrollLeft = canvas.scrollLeft;
+    const scrollTop = canvas.scrollTop;
 
-    const gridX = Math.floor(mouseX / gridCellSize) * gridCellSize;
-    const gridY = Math.floor(mouseY / gridCellSize) * gridCellSize;
+    // Calculate mouse position relative to canvas content (including scrolled area)
+    const mouseX = event.clientX - canvasRect.left + scrollLeft;
+    const mouseY = event.clientY - canvasRect.top + scrollTop;
 
-    return { gridX, gridY };
+    // Grid size (adjust as needed)
+    const gridSize = 10;
+
+    // Snap to grid
+    const gridX = Math.round(mouseX / gridSize) * gridSize;
+    const gridY = Math.round(mouseY / gridSize) * gridSize;
+
+    // Account for canvas padding
+    const padding = 20;
+
+    return {
+      gridX: Math.max(padding, gridX - padding),
+      gridY: Math.max(padding, gridY - padding),
+    };
   }
 
   /**
