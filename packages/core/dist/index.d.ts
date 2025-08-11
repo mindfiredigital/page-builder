@@ -6,9 +6,17 @@ declare class PageBuilder {
   private previewPanel;
   private static headerInitialized;
   private dynamicComponents;
-  constructor(dynamicComponents?: DynamicComponents);
+  private initialDesign;
+  private editable;
+  constructor(
+    dynamicComponents?: DynamicComponents,
+    initialDesign?: PageBuilderDesign | null,
+    editable?: boolean | null
+  );
+  static resetHeaderFlag(): void;
   initializeEventListeners(): void;
   setupInitialComponents(): void;
+  private createHeaderIfNeeded;
   setupSaveButton(): void;
   setupResetButton(): void;
   /**

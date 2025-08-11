@@ -1,26 +1,25 @@
-// Declare a global namespace for commonly used types across the project
 declare global {
   // Define a type for component configuration options
   interface ComponentConfig {
-    type: string; // The type of the component (e.g., "Text", "Image", "Button")
-    id: string; // Unique identifier for each component instance
-    content?: string; // Optional content for text-based components
-    styles?: ComponentStyles; // Optional styles for customizing appearance
+    type: string;
+    id: string;
+    content?: string;
+    styles?: ComponentStyles;
   }
 
   // Define a type for styles to apply on components
   interface ComponentStyles {
-    color?: string; // Text or background color
-    fontSize?: string; // Font size for text components
-    padding?: string; // Padding around the component
-    margin?: string; // Margin around the component
-    [key: string]: any; // Allow additional CSS properties dynamically
+    color?: string;
+    fontSize?: string;
+    padding?: string;
+    margin?: string;
+    [key: string]: any;
   }
 
   // Define an interface for components stored on the canvas
   interface CanvasComponent {
-    element: HTMLElement; // The HTML element of the component
-    config: ComponentConfig; // Configuration options for the component
+    element: HTMLElement;
+    config: ComponentConfig;
   }
 
   // Define types for drag and drop events
@@ -30,9 +29,37 @@ declare global {
     onDragOver: (event: DragEvent) => void;
   }
 
+  interface PageComponent {
+    id: string;
+    type: string;
+    content: string;
+    position: { x: number; y: number };
+    dimensions: { width: number; height: number };
+    style: { [key: string]: string };
+    inlineStyle: string;
+    classes: string[];
+    dataAttributes: { [key: string]: string };
+    imageSrc?: string | null;
+    videoSrc?: string | null;
+    props?: Record<string, any>;
+  }
+
   // Define type for JSON data format for saving/loading
   interface LayoutData {
-    components: ComponentConfig[]; // Array of component configurations on the canvas
+    components: ComponentConfig[];
+  }
+
+  // Assuming your PageBuilderDesign type looks something like this:
+  interface PageBuilderDesign {
+    pages?: Array<{
+      id: string;
+      components: Array<{
+        type: string;
+        id: string;
+        props: Record<string, any>;
+      }>;
+    }>;
+    [key: string]: any;
   }
 
   // Define interface for Dynamic components
@@ -42,11 +69,19 @@ declare global {
     Custom: Record<string, CustomComponentConfig>;
   }
 
+  // New interface for custom component settings
+  interface CustomComponentSetting {
+    name: string;
+    functionName: string;
+  }
+
   // Define interface for each custom component and its details
   interface CustomComponentConfig {
     component: string;
-    svg?: string; // Optional SVG icon string
-    title?: string; // Optional custom title
+    svg?: string;
+    title?: string;
+    settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
+    props?: Record<string, any>;
   }
 
   // Define a union type for different device preview modes

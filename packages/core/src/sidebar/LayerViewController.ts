@@ -1,342 +1,229 @@
-import { Canvas } from '../canvas/Canvas'; // Assuming a Canvas management class
-import { HTMLGenerator } from '../services/HTMLGenerator';
+export default class LayersViewController {
+  private static layersContainer: HTMLElement;
 
-interface LayerItem {
-  id: string;
-  children?: LayerItem[];
-  isVisible?: boolean;
-  isLocked?: boolean;
-  depth?: number;
-}
+  static updateLayersView() {
+    const layersView = document.getElementById('layers-view');
+    if (!layersView) return;
 
-class LayersViewController {
-  private static layersView: HTMLElement | null = null;
-  private static canvasRoot: HTMLElement | null = null;
-  private static draggedItem: HTMLElement | null = null;
+    // Clear existing content
+    layersView.innerHTML = '';
 
-  constructor(
-    layersViewSelector: string = '#layers-view',
-    canvasRootSelector: string = '#page'
-  ) {
-    // Ensure elements exist before assignment
-    this.initializeElements(layersViewSelector, canvasRootSelector);
-  }
+    // Add search/filter input
+    const searchContainer = document.createElement('div');
+    searchContainer.className = 'layers-search';
+    searchContainer.innerHTML = `
+      <input type="text" placeholder="Search layers..." id="layers-search-input">
+    `;
+    layersView.appendChild(searchContainer);
 
-  /**
-   * Initialize layers view and canvas root elements
-   */
-  private initializeElements(
-    layersViewSelector: string,
-    canvasRootSelector: string
-  ) {
-    // Try to find layers view
-    LayersViewController.layersView =
-      document.querySelector(layersViewSelector);
-    if (!LayersViewController.layersView) {
-      // Create layers view if it doesn't exist
-      LayersViewController.layersView = document.createElement('div');
-      LayersViewController.layersView.id = 'layers-view';
-      LayersViewController.layersView.className = 'layers-view';
+    // Create layers container
+    const layersContainer = document.createElement('div');
+    layersContainer.className = 'layers-container';
+    layersView.appendChild(layersContainer);
 
-      // Optional: Add the layers view to the document
-      // You might want to append this to a specific container
-      document.body.appendChild(LayersViewController.layersView);
-
-      console.warn(`Layers view element created: ${layersViewSelector}`);
+    // Get canvas and build layer tree
+    const canvas = document.getElementById('canvas');
+    if (canvas) {
+      this.buildLayerTree(canvas, layersContainer, 0);
     }
 
-    // Try to find canvas root
-    LayersViewController.canvasRoot =
-      document.querySelector(canvasRootSelector);
-    if (!LayersViewController.canvasRoot) {
-      console.error(`Canvas root element not found: ${canvasRootSelector}`);
-      // Fallback to body if no specific root is found
-      LayersViewController.canvasRoot = document.body;
-    }
-  }
-
-  /**
-   * Recursive function to build layer hierarchy from DOM
-   */
-  private static buildLayerHierarchyFromDOM(
-    rootElement: HTMLElement
-  ): LayerItem[] {
-    const htmlGenerator = new HTMLGenerator(new Canvas());
-    const generatedHTML = htmlGenerator.generateHTML();
-
-    // Parse the generated HTML into a DOM tree
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(generatedHTML, 'text/html');
-
-    // Recursively traverse the DOM to build LayerItem hierarchy
-    const traverseDom = (
-      element: Element,
-      depth: number = 0
-    ): LayerItem | null => {
-      const htmlElement = element as HTMLElement; // Assert the element is an HTMLElement
-      // Skip elements without an `id` attribute
-      if (!htmlElement.id) {
-        return null;
-      }
-
-      const layer: LayerItem = {
-        id: htmlElement.id,
-        isVisible: htmlElement.style?.display !== 'none', // Check visibility only for HTMLElements
-        isLocked: htmlElement.getAttribute('data-locked') === 'true',
-        depth,
-        children: [],
-      };
-
-      Array.from(element.children).forEach(child => {
-        const childLayer = traverseDom(child, depth + 1);
-        if (childLayer) {
-          layer.children!.push(childLayer);
-        }
+    // Add search functionality
+    const searchInput = document.getElementById(
+      'layers-search-input'
+    ) as HTMLInputElement;
+    if (searchInput) {
+      searchInput.addEventListener('input', e => {
+        const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
+        this.filterLayers(layersContainer, searchTerm);
       });
-
-      return layer;
-    };
-
-    const rootElements = Array.from(doc.body.children);
-
-    // Build the hierarchy and filter out any `null` layers
-    return rootElements
-      .map(element => traverseDom(element))
-      .filter(layer => layer !== null) as LayerItem[];
-  }
-
-  /**
-   * Render the layers view with nested structure
-   */
-  public static updateLayersView() {
-    if (!this.layersView || !this.canvasRoot) {
-      console.error('Layers view or canvas root not initialized');
-      return;
     }
-
-    // Clear existing layers
-    this.layersView.innerHTML = '';
-
-    // Build hierarchy from DOM
-    const hierarchy = this.buildLayerHierarchyFromDOM(this.canvasRoot);
-
-    // Create layers list
-    const layersList = document.createElement('ul');
-    layersList.className = 'layers-list';
-
-    // Render layer items
-    this.renderLayerItems(layersList, hierarchy);
-
-    // Append to layers view
-    this.layersView.appendChild(layersList);
   }
 
-  /**
-   * Render layer items recursively
-   */
-  private static renderLayerItems(
-    parentElement: HTMLElement,
-    layers: LayerItem[],
-    depth: number = 0
+  private static buildLayerTree(
+    element: HTMLElement,
+    container: HTMLElement,
+    level: number
   ) {
-    const list = document.createElement('ul');
-    list.className = 'layer-list';
-    parentElement.appendChild(list);
+    const children = Array.from(element.children).filter(
+      child =>
+        child.classList.contains('editable-component') ||
+        child.classList.contains('component')
+    );
 
-    layers.forEach(layer => {
-      // List item to contain everything related to this layer
-      const listItem = document.createElement('li');
-      listItem.className = 'layer-item-container';
-      list.appendChild(listItem);
+    children.forEach(child => {
+      const layerItem = this.createLayerItem(child as HTMLElement, level);
+      container.appendChild(layerItem);
 
-      // The actual layer item element
-      const layerItem = this.createLayerItemElement(layer);
-      layerItem.style.paddingLeft = `${depth * 12}px`;
-      listItem.appendChild(layerItem);
+      // Check for nested components
+      const nestedComponents = Array.from(child.children).filter(
+        nested =>
+          nested.classList.contains('editable-component') ||
+          nested.classList.contains('component')
+      );
 
-      // Handle nested children
-      if (layer.children && layer.children.length > 0) {
-        const expandToggle = document.createElement('span');
-        expandToggle.className = 'layer-expand-toggle';
-        expandToggle.textContent = '▶';
-        layerItem.insertBefore(expandToggle, layerItem.firstChild);
+      if (nestedComponents.length > 0) {
+        const childrenContainer = document.createElement('div');
+        childrenContainer.className = 'layer-children collapsed';
 
-        // Created a container for children
-        const childContainer = document.createElement('div');
-        childContainer.className = 'child-container';
-        childContainer.style.display = 'none';
-        listItem.appendChild(childContainer);
+        // Add expand/collapse functionality
+        const expandToggle = layerItem.querySelector('.layer-expand-toggle');
+        if (expandToggle) {
+          expandToggle.addEventListener('click', e => {
+            e.stopPropagation();
+            this.toggleLayerExpansion(
+              expandToggle as HTMLElement,
+              childrenContainer
+            );
+          });
+        }
 
-        // Recursively render children
-        this.renderLayerItems(childContainer, layer.children, depth + 1);
-
-        // Toggle expand/collapse
-        expandToggle.addEventListener('click', () => {
-          const isExpanded = childContainer.style.display === 'block';
-
-          if (isExpanded) {
-            childContainer.style.display = 'none';
-            expandToggle.textContent = '▶';
-          } else {
-            childContainer.style.display = 'block';
-            expandToggle.textContent = '▼';
-          }
-        });
+        this.buildLayerTree(child as HTMLElement, childrenContainer, level + 1);
+        container.appendChild(childrenContainer);
       }
     });
   }
 
-  /**
-   * Create a layer item element with advanced interactions
-   */
-  private static createLayerItemElement(layer: LayerItem): HTMLElement {
-    const layerItem = document.createElement('li');
+  private static createLayerItem(
+    element: HTMLElement,
+    level: number
+  ): HTMLElement {
+    const layerItem = document.createElement('div');
     layerItem.className = 'layer-item';
-    layerItem.dataset.layerId = layer.id;
+    layerItem.setAttribute('data-component-id', element.id);
+    layerItem.setAttribute('data-type', this.getComponentType(element));
 
-    // Visibility toggle
-    const visibilityToggle = document.createElement('span');
-    visibilityToggle.className = 'layer-visibility';
-    visibilityToggle.innerHTML = layer.isVisible ? '👁️' : '👁️‍🗨️';
-    visibilityToggle.addEventListener('click', () =>
-      this.toggleLayerVisibility(layer)
+    // Check if element has children
+    const hasChildren = Array.from(element.children).some(
+      child =>
+        child.classList.contains('editable-component') ||
+        child.classList.contains('component')
     );
 
-    // Layer name with type
-    const layerName = document.createElement('span');
-    layerName.className = 'layer-name';
-    layerName.textContent = `${layer.id}`;
-    layerName.addEventListener('click', () => this.selectLayer(layer));
+    layerItem.innerHTML = `
+      <div class="layer-content">
+        ${hasChildren ? '<button class="layer-expand-toggle">▶</button>' : '<span style="width: 16px;"></span>'}
+        <span class="layer-name">${this.getComponentName(element)}</span>
+      </div>
+      <div class="layer-actions">
+        <button class="layer-action-btn layer-visibility-btn" title="Toggle visibility">
+          👁️
+        </button>
+        <button class="layer-action-btn layer-delete-btn" title="Delete">
+          🗑️
+        </button>
+      </div>
+    `;
 
-    // Lock toggle
-    const lockToggle = document.createElement('span');
-    lockToggle.className = 'layer-lock';
-    lockToggle.innerHTML = layer.isLocked ? '🔒' : '🔓';
-    lockToggle.addEventListener('click', () => this.toggleLayerLock(layer));
+    // Add click handler for layer selection
+    layerItem.addEventListener('click', e => {
+      e.stopPropagation();
+      this.selectLayer(layerItem, element);
+    });
 
-    // Drag and drop functionality
-    layerItem.draggable = true;
-    layerItem.addEventListener('dragstart', e =>
-      this.handleDragStart(e, layer)
-    );
-    layerItem.addEventListener('dragover', this.handleDragOver);
-    layerItem.addEventListener('drop', e => this.handleDrop(e, layer));
+    // Add action handlers
+    const visibilityBtn = layerItem.querySelector('.layer-visibility-btn');
+    const deleteBtn = layerItem.querySelector('.layer-delete-btn');
 
-    // Append elements
-    layerItem.appendChild(visibilityToggle);
-    layerItem.appendChild(layerName);
-    layerItem.appendChild(lockToggle);
+    if (visibilityBtn) {
+      visibilityBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        this.toggleVisibility(element, visibilityBtn as HTMLElement);
+      });
+    }
+
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        this.deleteComponent(element, layerItem);
+      });
+    }
 
     return layerItem;
   }
-  /**
-   * Toggle layer visibility
-   */
-  private static toggleLayerVisibility(layer: LayerItem) {
-    const component = document.getElementById(layer.id);
-    if (!component) return;
 
-    if (component.style.display === 'none') {
-      component.style.display = component.dataset.originalDisplay || '';
-      layer.isVisible = true;
+  private static toggleLayerExpansion(
+    toggle: HTMLElement,
+    childrenContainer: HTMLElement
+  ) {
+    const isExpanded = childrenContainer.classList.contains('expanded');
+
+    if (isExpanded) {
+      childrenContainer.classList.remove('expanded');
+      childrenContainer.classList.add('collapsed');
+      toggle.classList.remove('expanded');
     } else {
-      component.dataset.originalDisplay = component.style.display;
-      component.style.display = 'none';
-      layer.isVisible = false;
+      childrenContainer.classList.remove('collapsed');
+      childrenContainer.classList.add('expanded');
+      toggle.classList.add('expanded');
     }
-
-    this.updateLayersView();
   }
 
-  /**
-   * Toggle layer lock state
-   */
-  private static toggleLayerLock(layer: LayerItem) {
-    const component = document.getElementById(layer.id);
-    if (!component) return;
+  private static selectLayer(layerItem: HTMLElement, element: HTMLElement) {
+    // Remove previous selection
+    document.querySelectorAll('.layer-item.selected').forEach(item => {
+      item.classList.remove('selected');
+    });
 
-    layer.isLocked = !layer.isLocked;
-    if (layer.isLocked) {
-      component.setAttribute('data-locked', 'true');
-      component.style.pointerEvents = 'none';
+    // Add selection to current item
+    layerItem.classList.add('selected');
+
+    // Show customization sidebar for selected component
+    if (typeof (window as any).CustomizationSidebar !== 'undefined') {
+      (window as any).CustomizationSidebar.showSidebar(element.id);
+    }
+  }
+
+  private static toggleVisibility(element: HTMLElement, button: HTMLElement) {
+    const isHidden = element.style.display === 'none';
+
+    if (isHidden) {
+      element.style.display = '';
+      button.classList.remove('hidden');
     } else {
-      component.removeAttribute('data-locked');
-      component.style.pointerEvents = 'auto';
-    }
-
-    this.updateLayersView();
-  }
-
-  /**
-   * Select and customize a specific layer
-   */
-  private static selectLayer(layer: LayerItem) {
-    // Switch to customize mode for the selected layer
-    this.switchToCustomizeMode(layer.id);
-  }
-
-  /**
-   * Drag and drop handling methods
-   */
-  private static handleDragStart(e: DragEvent, layer: LayerItem) {
-    if (e.dataTransfer) {
-      e.dataTransfer.setData('text/plain', layer.id);
-      this.draggedItem = e.target as HTMLElement;
+      element.style.display = 'none';
+      button.classList.add('hidden');
     }
   }
 
-  private static handleDragOver(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+  private static deleteComponent(element: HTMLElement, layerItem: HTMLElement) {
+    if (confirm('Are you sure you want to delete this component?')) {
+      element.remove();
+      layerItem.remove();
 
-  private static handleDrop(e: DragEvent, targetLayer: LayerItem) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!e.dataTransfer) return;
-
-    const fromIndex = parseInt(e.dataTransfer?.getData('text/plain') || '-1');
-    const toIndex = parseInt(targetLayer.id || '-1');
-
-    // Implement complex reordering logic
-    Canvas.reorderComponent(fromIndex, toIndex);
-
-    // Refresh the layers view
-    this.updateLayersView();
-  }
-
-  /**
-   * Switch to layer customization mode
-   */
-  private static switchToCustomizeMode(layerId: string) {
-    // Implement layer-specific customization
-    // This could open a sidebar, highlight the component, etc.
-    const sidebar = document.getElementById('customize-sidebar');
-    if (sidebar) {
-      sidebar.style.display = 'block';
-      // Load specific layer properties
-      this.loadLayerProperties(layerId);
+      // Update layers view
+      this.updateLayersView();
     }
   }
 
-  /**
-   * Load layer-specific properties into the sidebar
-   */
-  private static loadLayerProperties(layerId: string) {
-    const component = document.getElementById(layerId);
-    if (!component) return;
+  private static getComponentType(element: HTMLElement): string {
+    if (element.classList.contains('text-component')) return 'text';
+    if (element.classList.contains('button-component')) return 'button';
+    if (element.classList.contains('image-component')) return 'image';
+    if (element.classList.contains('container-component')) return 'container';
+    return 'component';
+  }
 
-    // Example: Populate sidebar with component properties
-    const propertiesContainer = document.getElementById('layer-properties');
-    if (propertiesContainer) {
-      propertiesContainer.innerHTML = `
-        <h3>Layer Properties: ${layerId}</h3>
-        <div>Visibility: ${component.style.display !== 'none' ? 'Visible' : 'Hidden'}</div>
-        <div>Locked: ${component.getAttribute('data-locked') === 'true' ? 'Yes' : 'No'}</div>
-      `;
-    }
+  private static getComponentName(element: HTMLElement): string {
+    // Try to get a meaningful name
+    if (element.id) return element.id;
+
+    const type = this.getComponentType(element);
+    const index =
+      Array.from(element.parentElement?.children || [])
+        .filter(child => child.classList.contains(element.classList[0]))
+        .indexOf(element) + 1;
+
+    return `${type.charAt(0).toUpperCase() + type.slice(1)} ${index}`;
+  }
+
+  private static filterLayers(container: HTMLElement, searchTerm: string) {
+    const layerItems = container.querySelectorAll('.layer-item');
+
+    layerItems.forEach(item => {
+      const layerName =
+        item.querySelector('.layer-name')?.textContent?.toLowerCase() || '';
+      const matches = layerName.includes(searchTerm);
+      (item as HTMLElement).style.display = matches ? 'flex' : 'none';
+    });
   }
 }
-
-export default LayersViewController;

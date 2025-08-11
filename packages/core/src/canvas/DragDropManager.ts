@@ -15,6 +15,14 @@ export class DragDropManager {
         const dragEvent = event as DragEvent;
         console.log(`Dragging component: ${item.id}`); // Debug log
         dragEvent.dataTransfer?.setData('component-type', item.id);
+        const settingsData = item.getAttribute('data-component-settings');
+        if (settingsData) {
+          dragEvent.dataTransfer?.setData('custom-settings', settingsData);
+          console.log(
+            `Setting custom settings from DOM:`,
+            JSON.parse(settingsData)
+          );
+        }
       });
     });
   }

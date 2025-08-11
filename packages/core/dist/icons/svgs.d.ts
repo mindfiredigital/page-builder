@@ -22,4 +22,8 @@ export declare const svgs: {
   delete: string;
   close: string;
   edit: string;
+  attribute: string;
+  settings: string;
+  menu: string;
+  customizationMenu: string;
 };

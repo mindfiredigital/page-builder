@@ -1,5 +1,5 @@
 import { svgs } from '../icons/svgs.js';
-export function createSidebar(dynamicComponents) {
+export function createSidebar(dynamicComponents, editable) {
   // We have default values if there is no custom components are specified within parameters
   if (
     !dynamicComponents ||
@@ -29,6 +29,10 @@ export function createSidebar(dynamicComponents) {
   if (!sidebar) {
     console.error('Sidebar element not found');
     return;
+  }
+  console.log('sidebar display', editable);
+  if (!editable) {
+    sidebar.style.display = 'none';
   }
   // Define your components, icons, and titles as before using it
   const icons = {
@@ -82,14 +86,15 @@ export function createSidebar(dynamicComponents) {
         iconElement.setAttribute('title', customTitle);
         // Add SVG as innerHTML
         if (icons[componentId]) {
-          iconElement.innerHTML = icons[componentId];
+          iconElement.innerHTML = ` ${icons[componentId]}
+          <div class="drag-text">${componentId}</div>`;
           // Optionally style the SVG
           const svgElement = iconElement.querySelector('svg');
           if (svgElement) {
             svgElement.classList.add('component-icon');
           }
         } else {
-          console.warn(`Icon not found for component: ${componentId}`);
+          console.warn(`Icon not found for component: ${customTitle}`);
         }
         categoryMenu.appendChild(iconElement);
       });
@@ -114,12 +119,21 @@ export function createSidebar(dynamicComponents) {
           iconElement.appendChild(letterSpan);
         } else {
           // Handling new format with CustomComponentConfig
-          const { component, svg, title } = config;
+          const { component, svg, title, settingsComponent } = config;
           iconElement.setAttribute('data-tag-name', component);
           iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
+          console.log(settingsComponent, 'config');
+          // Store custom settings as a JSON string
+          if (settingsComponent) {
+            iconElement.setAttribute(
+              'data-custom-settings',
+              JSON.stringify(settingsComponent)
+            );
+          }
           if (svg) {
             // Using provided SVG
-            iconElement.innerHTML = svg;
+            iconElement.innerHTML = iconElement.innerHTML = ` ${svg}
+          <div class="drag-text">${title}</div>`;
             // Style the SVG
             const svgElement = iconElement.querySelector('svg');
             if (svgElement) {
