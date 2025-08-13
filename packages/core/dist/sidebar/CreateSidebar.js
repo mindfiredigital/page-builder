@@ -31,7 +31,7 @@ export function createSidebar(dynamicComponents, editable) {
     return;
   }
   console.log('sidebar display', editable);
-  if (!editable) {
+  if (editable === false) {
     sidebar.style.display = 'none';
   }
   // Define your components, icons, and titles as before using it
@@ -122,7 +122,6 @@ export function createSidebar(dynamicComponents, editable) {
           const { component, svg, title, settingsComponent } = config;
           iconElement.setAttribute('data-tag-name', component);
           iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
-          console.log(settingsComponent, 'configure');
           // Store custom settings as a JSON string
           if (settingsComponent) {
             iconElement.setAttribute(

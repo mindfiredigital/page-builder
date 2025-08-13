@@ -307,12 +307,10 @@ export class Canvas {
           LinkComponent.restore(component);
         }
 
-        // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
       }
     });
-    // Reinitialize the drop-preview after restoring the state
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
   }
 
@@ -448,7 +446,6 @@ export class Canvas {
       const uniqueClass = Canvas.generateUniqueClass(type);
       element.setAttribute('id', uniqueClass);
 
-      // Conditionally set contenteditable attribute
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
@@ -458,13 +455,11 @@ export class Canvas {
         });
       }
 
-      // Create label for showing class name on hover
       const label = document.createElement('span');
       label.className = 'component-label';
       label.textContent = uniqueClass;
       element.appendChild(label);
 
-      //Add control for each component
       Canvas.controlsManager.addControlButtons(element);
     }
 
@@ -480,19 +475,14 @@ export class Canvas {
 
     components.forEach(component => {
       const rect = component.getBoundingClientRect();
-      // Calculate the bottom position of the element relative to the canvas
       const componentBottom = rect.top + rect.height;
       if (componentBottom > maxBottom) {
         maxBottom = componentBottom;
       }
     });
-    // Get the canvas's current position and height
     const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-    // Calculate the minimum required height
-    const newMinHeight = maxBottom - canvasRect.top + 50; // Add 50px of padding
-
+    const newMinHeight = maxBottom - canvasRect.top + 50;
     if (newMinHeight > canvasRect.height) {
-      // Apply the new minimum height to the canvas
       Canvas.canvasElement.style.minHeight = `${newMinHeight}px`;
     }
   }

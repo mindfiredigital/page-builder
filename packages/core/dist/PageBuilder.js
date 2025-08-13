@@ -177,7 +177,6 @@ export class PageBuilder {
     const exportButton = document.getElementById('export-pdf-btn');
     if (exportButton) {
       exportButton.addEventListener('click', () => {
-        console.log('clicked on pdf');
         const htmlGenerator = new HTMLGenerator(new Canvas());
         const html = htmlGenerator.generateHTML();
         const css = htmlGenerator.generateCSS();

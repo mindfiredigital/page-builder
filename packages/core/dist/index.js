@@ -8,16 +8,14 @@ class e {
       e.addEventListener('dragstart', t => {
         var n, o;
         const s = t;
-        console.log(`Dragging component: ${e.id}`),
-          null === (n = s.dataTransfer) ||
-            void 0 === n ||
-            n.setData('component-type', e.id);
+        null === (n = s.dataTransfer) ||
+          void 0 === n ||
+          n.setData('component-type', e.id);
         const i = e.getAttribute('data-component-settings');
         i &&
           (null === (o = s.dataTransfer) ||
             void 0 === o ||
-            o.setData('custom-settings', i),
-          console.log('Setting custom settings from DOM:', JSON.parse(i)));
+            o.setData('custom-settings', i));
       });
     });
   }
@@ -1321,7 +1319,7 @@ class f {
   static showSidebar(e) {
     const t = document.getElementById(e);
     if (!t) return void console.error(`Component with ID "${e}" not found.`);
-    if (!this.editable) return;
+    if (!1 === this.editable) return;
     (this.selectedComponent = t),
       (this.sidebarElement.style.display = 'block'),
       this.sidebarElement.classList.add('visible');
@@ -2495,7 +2493,7 @@ class I {
         });
       const n = document.getElementById('sidebar');
       if (!n) return void console.error('Sidebar element not found');
-      console.log('sidebar display', t), t || (n.style.display = 'none');
+      console.log('sidebar display', t), !1 === t && (n.style.display = 'none');
       const o = {
           button: w.button,
           header: w.header,
@@ -2573,7 +2571,6 @@ class I {
                     if (
                       (o.setAttribute('data-tag-name', n),
                       o.setAttribute('title', i || `Drag to add ${e}`),
-                      console.log(l, 'configure'),
                       l &&
                         o.setAttribute(
                           'data-custom-settings',
@@ -2665,22 +2662,23 @@ class I {
                         title: 'Preview in Mobile',
                       },
                     ],
-                s = e
-                  ? [
-                      { id: 'view-btn', icon: n.view, title: 'View' },
-                      { id: 'save-btn', icon: n.save, title: 'Save Layout' },
-                      { id: 'reset-btn', icon: n.reset, title: 'Reset' },
-                      { id: 'export-btn', icon: n.export, title: 'Export' },
-                      {
-                        id: 'menu-btn',
-                        icon: n.menu,
-                        title: 'Customization Menu',
-                      },
-                    ]
-                  : [
-                      { id: 'view-btn', icon: n.view, title: 'View' },
-                      { id: 'export-btn', icon: n.export, title: 'Export' },
-                    ],
+                s =
+                  !0 === e || null === e
+                    ? [
+                        { id: 'view-btn', icon: n.view, title: 'View' },
+                        { id: 'save-btn', icon: n.save, title: 'Save Layout' },
+                        { id: 'reset-btn', icon: n.reset, title: 'Reset' },
+                        { id: 'export-btn', icon: n.export, title: 'Export' },
+                        {
+                          id: 'menu-btn',
+                          icon: n.menu,
+                          title: 'Customization Menu',
+                        },
+                      ]
+                    : [
+                        { id: 'view-btn', icon: n.view, title: 'View' },
+                        { id: 'export-btn', icon: n.export, title: 'Export' },
+                      ],
                 i = document.createElement('div');
               i.classList.add('left-buttons'),
                 o.forEach(({ id: e, icon: t, title: n }) => {
@@ -2838,7 +2836,6 @@ class I {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        console.log('clicked on pdf');
         const e = new M(new x()),
           t = e.generateHTML(),
           n = e.generateCSS(),

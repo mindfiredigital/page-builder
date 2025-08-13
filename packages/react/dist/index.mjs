@@ -10,17 +10,10 @@ var PageBuilderReact = ({
 }) => {
   const builderRef = useRef(null);
   const [processedConfig, setProcessedConfig] = useState(config);
-  const [isComponentReady, setIsComponentReady] = useState(false);
   useEffect(() => {
-    const loadComponent = async () => {
-      try {
-        await import("@mindfiredigital/page-builder-web-component");
-        setIsComponentReady(true);
-      } catch (error) {
-        console.error("Failed to load web component:", error);
-      }
-    };
-    loadComponent();
+    import("@mindfiredigital/page-builder-web-component").catch((error) => {
+      console.error("Failed to load web component:", error);
+    });
   }, []);
   useEffect(() => {
     const modifiedConfig = JSON.parse(
@@ -36,12 +29,8 @@ var PageBuilderReact = ({
         const tagName = `react-component-${key.toLowerCase()}`;
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
+            // This `this` refers to the instance of the Web Component (e.g., <react-component-customrating id="CustomRating1">)
             connectedCallback() {
-              console.log(
-                "PageBuilderComponent connected. First child:",
-                this.firstElementChild
-              );
-              this.innerHTML = "";
               const mountPoint = document.createElement("div");
               this.appendChild(mountPoint);
               const componentId = this.id;
@@ -56,40 +45,34 @@ var PageBuilderReact = ({
               }
             }
           }
-          console.log("Defining custom element tag1:", tagName);
           customElements.define(tagName, ReactComponentElement);
         }
         const settingsTagName = `react-settings-component-${key.toLowerCase()}`;
         if (componentConfig.settingsComponent && !customElements.get(settingsTagName)) {
           class ReactSettingsElement extends HTMLElement {
             connectedCallback() {
-              this.innerHTML = "";
               const mountPoint = document.createElement("div");
               this.appendChild(mountPoint);
               const settingsData = this.getAttribute("data-settings");
               const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
-              try {
-                ReactDOM.createRoot(mountPoint).render(
-                  React.createElement(
-                    componentConfig.settingsComponent,
-                    parsedSettings
-                  )
-                );
-              } catch (error) {
-                console.error(`Error rendering settings component:`, error);
-              }
+              ReactDOM.createRoot(mountPoint).render(
+                React.createElement(
+                  componentConfig.settingsComponent,
+                  parsedSettings
+                )
+              );
             }
+            // You might need to observe attributes here if PageBuilder updates settings dynamically
             static get observedAttributes() {
               return ["data-settings"];
             }
             attributeChangedCallback(name, oldValue, newValue) {
               if (name === "data-settings" && newValue !== oldValue) {
-                console.log("rendering");
-                this.innerHTML = "";
                 const mountPoint = document.createElement("div");
                 this.appendChild(mountPoint);
                 const settingsData = this.getAttribute("data-settings");
                 const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
+                console.log("creating here");
                 ReactDOM.createRoot(mountPoint).render(
                   React.createElement(
                     componentConfig.settingsComponent,
@@ -99,41 +82,37 @@ var PageBuilderReact = ({
               }
             }
           }
-          console.log("Custom components:", customComponents);
-          console.log("Generated tagName:", tagName);
-          console.log("Defining custom element tag 2:", tagName);
           customElements.define(settingsTagName, ReactSettingsElement);
         }
         modifiedConfig.Custom[key] = {
           component: tagName,
-          svg: typeof componentConfig.svg === "string" ? componentConfig.svg.trim() : "",
+          // The tagName refers to the custom Web Component tag
+          svg: componentConfig.svg,
           title: componentConfig.title,
-          settingsComponent: componentConfig.settingsComponent,
-          settingsComponentTagName: settingsTagName
+          settingsComponent: settingsTagName
         };
       });
     }
     setProcessedConfig(modifiedConfig);
   }, [config, customComponents]);
   useEffect(() => {
-    var _a;
-    if (isComponentReady && builderRef.current) {
-      console.log("config 2 okay");
-      try {
-        const configString = JSON.stringify(processedConfig);
-        (_a = builderRef.current) == null ? void 0 : _a.setAttribute("config-data", configString);
-        console.log(configString, "config");
-        if (builderRef.current) {
-          console.log("init done y");
-          builderRef.current.initialDesign = initialDesign;
-          builderRef.current.editable = editable;
-          console.log(initialDesign, "initial design 2");
+    if (builderRef.current) {
+      setTimeout(() => {
+        var _a;
+        try {
+          const configString = JSON.stringify(processedConfig);
+          (_a = builderRef.current) == null ? void 0 : _a.setAttribute("config-data", configString);
+          console.log(configString, "config");
+          if (builderRef.current) {
+            builderRef.current.initialDesign = initialDesign;
+            builderRef.current.editable = editable;
+          }
+        } catch (error) {
+          console.error("Error setting config-data and initialDesign:", error);
         }
-      } catch (error) {
-        console.error("Error setting config-data and initialDesign:", error);
-      }
+      }, 100);
     }
-  }, [isComponentReady, processedConfig, initialDesign, editable]);
+  }, [processedConfig, initialDesign]);
   useEffect(() => {
     const webComponent = builderRef.current;
     const handleDesignChange = (event) => {
@@ -151,9 +130,6 @@ var PageBuilderReact = ({
       }
     };
   }, [onChange]);
-  if (!isComponentReady) {
-    return /* @__PURE__ */ React.createElement("div", null, "Loading Page Builder...");
-  }
   return /* @__PURE__ */ React.createElement("page-builder", { ref: builderRef });
 };
 export {

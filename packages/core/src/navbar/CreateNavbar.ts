@@ -56,18 +56,19 @@ export function createNavbar(editable: boolean | null) {
         },
       ];
 
-  const rightButtons = editable
-    ? [
-        { id: 'view-btn', icon: icons.view, title: 'View' },
-        { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
-        { id: 'reset-btn', icon: icons.reset, title: 'Reset' },
-        { id: 'export-btn', icon: icons.export, title: 'Export' },
-        { id: 'menu-btn', icon: icons.menu, title: 'Customization Menu' },
-      ]
-    : [
-        { id: 'view-btn', icon: icons.view, title: 'View' },
-        { id: 'export-btn', icon: icons.export, title: 'Export' },
-      ];
+  const rightButtons =
+    editable === true || editable === null
+      ? [
+          { id: 'view-btn', icon: icons.view, title: 'View' },
+          { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
+          { id: 'reset-btn', icon: icons.reset, title: 'Reset' },
+          { id: 'export-btn', icon: icons.export, title: 'Export' },
+          { id: 'menu-btn', icon: icons.menu, title: 'Customization Menu' },
+        ]
+      : [
+          { id: 'view-btn', icon: icons.view, title: 'View' },
+          { id: 'export-btn', icon: icons.export, title: 'Export' },
+        ];
 
   const leftContainer = document.createElement('div');
   leftContainer.classList.add('left-buttons');

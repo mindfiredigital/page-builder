@@ -29,8 +29,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "release": "turbo run build && pnpm publish --access public",
-    "prepack": "pnpm run build"
+    "release": "turbo run build && pnpm publish --access public"
   },
   "keywords": [
     "pagebuilder",

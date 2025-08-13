@@ -118,7 +118,7 @@ export class CustomizationSidebar {
       console.error(`Component with ID "${componentId}" not found.`);
       return;
     }
-    if (!this.editable) {
+    if (this.editable === false) {
       return;
     }
     this.selectedComponent = component;

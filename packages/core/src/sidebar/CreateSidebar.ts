@@ -34,7 +34,7 @@ export function createSidebar(
     return;
   }
   console.log('sidebar display', editable);
-  if (!editable) {
+  if (editable === false) {
     sidebar.style.display = 'none';
   }
 
@@ -138,7 +138,6 @@ export function createSidebar(
 
           iconElement.setAttribute('data-tag-name', component);
           iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
-          console.log(settingsComponent, 'configure');
           // Store custom settings as a JSON string
           if (settingsComponent) {
             iconElement.setAttribute(

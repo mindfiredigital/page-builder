@@ -64,3 +64,62 @@ export class ComponentControlsManager {
     this.canvas.dispatchDesignChange();
   }
 }
+// import { Canvas } from './Canvas.js';
+// export class ComponentControlsManager {
+//   private canvas: typeof Canvas;
+//   private icons = {
+//     delete:
+//       'https://res.cloudinary.com/dodvwsaqj/image/upload/v1737366522/delete-2-svgrepo-com_fwkzn7.svg',
+//   };
+//   constructor(canvas: typeof Canvas) {
+//     this.canvas = canvas;
+//   }
+//   /**
+//    * Add a div for each components in which we can add control buttons.
+//    * This is a more generalized approach.
+//    */
+//   public addControlButtons(element: HTMLElement): void {
+//     let controlsDiv = element.querySelector(
+//       '.component-controls'
+//     ) as HTMLElement;
+//     if (!controlsDiv) {
+//       controlsDiv = document.createElement('div');
+//       controlsDiv.className = 'component-controls';
+//       element.prepend(controlsDiv);
+//     }
+//     // Clear existing controls to avoid duplicates
+//     // controlsDiv.innerHTML = '';
+//     const deleteIcon = this.createDeleteIcon(element);
+//     controlsDiv.appendChild(deleteIcon);
+//   }
+//   /**
+//    * First check if there is already deleteIcon within element.
+//    * Creating delete icon and adding click event for the delete icon.
+//    */
+//   private createDeleteIcon(element: HTMLElement): HTMLImageElement {
+//     const deleteIcon = document.createElement('img');
+//     deleteIcon.src = this.icons.delete;
+//     deleteIcon.alt = 'Delete';
+//     deleteIcon.classList.add('delete-icon');
+//     deleteIcon.onclick = e => {
+//       e.stopPropagation();
+//       this.handleDelete(element);
+//     };
+//     return deleteIcon;
+//   }
+//   /**
+//    * This function handles the deletion of a component.
+//    * It captures the current state and state after deletion for undo/redo functionality.
+//    * Then it removes the component from the canvas and updates the component list.
+//    */
+//   private handleDelete(element: HTMLElement): void {
+//     this.canvas.historyManager.captureState();
+//     element.remove();
+//     const updatedComponents = this.canvas
+//       .getComponents()
+//       .filter(comp => comp !== element);
+//     this.canvas.setComponents(updatedComponents);
+//     this.canvas.historyManager.captureState();
+//     this.canvas.dispatchDesignChange();
+//   }
+// }

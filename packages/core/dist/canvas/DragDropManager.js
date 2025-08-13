@@ -10,7 +10,6 @@ export class DragDropManager {
       item.addEventListener('dragstart', event => {
         var _a, _b;
         const dragEvent = event;
-        console.log(`Dragging component: ${item.id}`); // Debug log
         (_a = dragEvent.dataTransfer) === null || _a === void 0
           ? void 0
           : _a.setData('component-type', item.id);
@@ -19,10 +18,6 @@ export class DragDropManager {
           (_b = dragEvent.dataTransfer) === null || _b === void 0
             ? void 0
             : _b.setData('custom-settings', settingsData);
-          console.log(
-            `Setting custom settings from DOM:`,
-            JSON.parse(settingsData)
-          );
         }
       });
     });
