@@ -67,6 +67,7 @@ export class Canvas {
     Canvas.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
+    Canvas.canvasElement.classList.add('preview-desktop');
     Canvas.canvasElement.addEventListener('click', (event: MouseEvent) => {
       const component = event.target as HTMLElement;
       if (component) {
@@ -88,12 +89,10 @@ export class Canvas {
     );
     dragDropManager.enable();
     if (initialData) {
-      console.log('Canvas: Restoring state from initialData prop.');
       Canvas.restoreState(initialData);
     } else {
       const savedState = Canvas.jsonStorage.load();
       if (savedState) {
-        console.log('Canvas: Restoring state from localStorage.');
         Canvas.restoreState(savedState);
       }
     }
@@ -112,7 +111,7 @@ export class Canvas {
         composed: true,
       });
       Canvas.canvasElement.dispatchEvent(event);
-      console.log('Canvas: Dispatched design-change event');
+      // console.log('Canvas: Dispatched design-change event');
     }
   }
 
@@ -141,42 +140,21 @@ export class Canvas {
       const computedStyles = window.getComputedStyle(component);
       const styles: { [key: string]: string } = {};
 
-      const stylesToCapture = [
-        'position',
-        'top',
-        'left',
-        'right',
-        'bottom',
-        'width',
-        'height',
-        'min-width',
-        'min-height',
-        'max-width',
-        'max-height',
-        'margin',
-        'padding',
-        'background-color',
-        'background-image',
-        'border',
-        'border-radius',
-        'transform',
-        'opacity',
-        'z-index',
-        'display',
-        'flex-direction',
-        'justify-content',
-        'align-items',
-        'flex-wrap',
-        'font-size',
-        'font-weight',
-        'color',
-        'text-align',
-        'line-height',
-      ];
+      for (let i = 0; i < computedStyles.length; i++) {
+        const prop = computedStyles[i];
+        const value = computedStyles.getPropertyValue(prop);
 
-      stylesToCapture.forEach(prop => {
-        styles[prop] = computedStyles.getPropertyValue(prop);
-      });
+        // Exclude values that are not useful for static HTML
+        if (
+          value &&
+          value !== 'initial' &&
+          value !== 'auto' &&
+          value !== 'none' &&
+          value !== ''
+        ) {
+          styles[prop] = value;
+        }
+      }
 
       const dataAttributes: { [key: string]: string } = {};
       Array.from(component.attributes)
@@ -381,7 +359,7 @@ export class Canvas {
     }
 
     Canvas.dispatchDesignChange();
-    Canvas.updateCanvasHeight();
+    // Canvas.updateCanvasHeight();
   }
 
   public static reorderComponent(fromIndex: number, toIndex: number): void {
@@ -466,26 +444,27 @@ export class Canvas {
     return element;
   }
 
-  static updateCanvasHeight() {
-    let maxBottom = 0;
-    // Get all components on the canvas
-    const components = Canvas.canvasElement.querySelectorAll(
-      '.editable-component'
-    );
+  // static updateCanvasHeight() {
+  //   console.log('update canvas');
+  //   let maxBottom = 0;
+  //   // Get all components on the canvas
+  //   const components = Canvas.canvasElement.querySelectorAll(
+  //     '.editable-component'
+  //   );
 
-    components.forEach(component => {
-      const rect = component.getBoundingClientRect();
-      const componentBottom = rect.top + rect.height;
-      if (componentBottom > maxBottom) {
-        maxBottom = componentBottom;
-      }
-    });
-    const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-    const newMinHeight = maxBottom - canvasRect.top + 50;
-    if (newMinHeight > canvasRect.height) {
-      Canvas.canvasElement.style.minHeight = `${newMinHeight}px`;
-    }
-  }
+  //   components.forEach(component => {
+  //     const rect = component.getBoundingClientRect();
+  //     const componentBottom = rect.top + rect.height;
+  //     if (componentBottom > maxBottom) {
+  //       maxBottom = componentBottom;
+  //     }
+  //   });
+  //   const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+  //   const newMinHeight = maxBottom - canvasRect.top + 50;
+  //   if (newMinHeight > canvasRect.height) {
+  //     Canvas.canvasElement.style.minHeight = `${newMinHeight}px`;
+  //   }
+  // }
 
   static generateUniqueClass(
     type: string,
@@ -591,7 +570,7 @@ export class Canvas {
       // Capture the state after dragging
       Canvas.historyManager.captureState();
       Canvas.dispatchDesignChange();
-      Canvas.updateCanvasHeight();
+      // Canvas.updateCanvasHeight();
     });
   }
 

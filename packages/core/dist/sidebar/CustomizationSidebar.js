@@ -389,9 +389,6 @@ export class CustomizationSidebar {
         );
       }
     } else {
-      console.log(
-        'DEBUG: Component is not a custom component and not a table component.'
-      );
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
     }

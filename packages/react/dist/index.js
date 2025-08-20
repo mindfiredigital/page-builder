@@ -74,7 +74,6 @@ var PageBuilderReact = ({
         const tagName = `react-component-${key.toLowerCase()}`;
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
-            // This `this` refers to the instance of the Web Component (e.g., <react-component-customrating id="CustomRating1">)
             connectedCallback() {
               const mountPoint = document.createElement('div');
               this.appendChild(mountPoint);
@@ -102,34 +101,38 @@ var PageBuilderReact = ({
         ) {
           class ReactSettingsElement extends HTMLElement {
             connectedCallback() {
+              this.innerHTML = '';
               const mountPoint = document.createElement('div');
               this.appendChild(mountPoint);
               const settingsData = this.getAttribute('data-settings');
               const parsedSettings = settingsData
                 ? JSON.parse(settingsData)
                 : {};
-              import_client.default
-                .createRoot(mountPoint)
-                .render(
-                  import_react.default.createElement(
-                    componentConfig.settingsComponent,
-                    parsedSettings
-                  )
-                );
+              try {
+                import_client.default
+                  .createRoot(mountPoint)
+                  .render(
+                    import_react.default.createElement(
+                      componentConfig.settingsComponent,
+                      parsedSettings
+                    )
+                  );
+              } catch (error) {
+                console.error(`Error rendering settings component:`, error);
+              }
             }
-            // You might need to observe attributes here if PageBuilder updates settings dynamically
             static get observedAttributes() {
               return ['data-settings'];
             }
             attributeChangedCallback(name, oldValue, newValue) {
               if (name === 'data-settings' && newValue !== oldValue) {
+                this.innerHTML = '';
                 const mountPoint = document.createElement('div');
                 this.appendChild(mountPoint);
                 const settingsData = this.getAttribute('data-settings');
                 const parsedSettings = settingsData
                   ? JSON.parse(settingsData)
                   : {};
-                console.log('creating here');
                 import_client.default
                   .createRoot(mountPoint)
                   .render(
@@ -145,10 +148,10 @@ var PageBuilderReact = ({
         }
         modifiedConfig.Custom[key] = {
           component: tagName,
-          // The tagName refers to the custom Web Component tag
           svg: componentConfig.svg,
           title: componentConfig.title,
           settingsComponent: settingsTagName,
+          settingsComponentTagName: settingsTagName,
         };
       });
     }
@@ -163,7 +166,6 @@ var PageBuilderReact = ({
           (_a = builderRef.current) == null
             ? void 0
             : _a.setAttribute('config-data', configString);
-          console.log(configString, 'config');
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;

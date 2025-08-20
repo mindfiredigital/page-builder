@@ -7,6 +7,8 @@ export declare class HTMLGenerator {
   private getBaseHTML;
   private cleanupElements;
   generateCSS(): string;
+  private handleSVGElement;
+  private generateSVGSpecificSelector;
   private generateUniqueSelector;
   applyCSS(css: string): void;
 }

@@ -422,6 +422,7 @@ export class PageBuilder {
       button.addEventListener('click', () => {
         iframe.style.width = size.width;
         iframe.style.height = size.height;
+        iframe.style.transition = 'all 0.5s ease';
       });
       responsivenessContainer.appendChild(button);
     });

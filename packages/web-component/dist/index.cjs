@@ -134,9 +134,6 @@ var PageBuilderComponent = class extends HTMLElement {
         this._editable
       );
       this.initialized = true;
-      console.log(
-        "PageBuilderComponent: PageBuilder initialized successfully with config and initial design."
-      );
     } catch (error) {
       console.error("Failed to initialize PageBuilder:", error);
       this.initialized = false;

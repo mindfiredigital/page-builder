@@ -33,7 +33,6 @@ export function createSidebar(
     console.error('Sidebar element not found');
     return;
   }
-  console.log('sidebar display', editable);
   if (editable === false) {
     sidebar.style.display = 'none';
   }
