@@ -460,7 +460,7 @@ export class PageBuilder {
         icon: svgs.mobile,
         title: 'Desktop',
         width: '375px',
-        height: '90%',
+        height: '100%',
       },
       {
         icon: svgs.tablet,

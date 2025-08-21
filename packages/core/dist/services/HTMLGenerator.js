@@ -12,7 +12,6 @@ export class HTMLGenerator {
     }
     const cleanCanvas = canvasElement.cloneNode(true);
     this.cleanupElements(cleanCanvas);
-    // console.log(cleanCanvas, 'clean');
     return this.getBaseHTML(cleanCanvas.innerHTML);
   }
   getBaseHTML(bodyContent = 'children') {
@@ -50,17 +49,12 @@ export class HTMLGenerator {
     ];
     Array.from(element.children).forEach(child => {
       const childElement = child;
-      // Remove specified attributes
       attributesToRemove.forEach(attr => {
         childElement.removeAttribute(attr);
       });
-      // Remove specified classes but keep editable-component
       classesToRemove.forEach(classToRemove => {
         childElement.classList.remove(classToRemove);
       });
-      // DON'T remove positioning styles - this was your mistake
-      // The absolute positioning is needed for preview to match canvas
-      // Remove control elements
       const elementsToRemove = childElement.querySelectorAll(
         '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input'
       );
@@ -142,11 +136,9 @@ export class HTMLGenerator {
       for (let i = 0; i < computedStyles.length; i++) {
         const prop = computedStyles[i];
         const value = computedStyles.getPropertyValue(prop);
-        // console.log(component, 'compoenent');
         if (prop === 'resize') {
           continue;
         }
-        // Your original condition to filter out unwanted values
         if (
           value &&
           value !== 'initial' &&
@@ -158,7 +150,6 @@ export class HTMLGenerator {
         }
       }
       const selector = this.generateUniqueSelector(component);
-      // console.log(selector, componentStyles, 'selector');
       if (!processedSelectors.has(selector) && componentStyles.length > 0) {
         processedSelectors.add(selector);
         styles.push(`
@@ -201,11 +192,7 @@ export class HTMLGenerator {
           componentStyles.push(`${prop}: ${value} !important;`);
         }
       });
-      if (
-        componentStyles.length > 0 &&
-        !processedSelectors.has(specificSelector)
-      ) {
-        processedSelectors.add(specificSelector);
+      if (componentStyles.length > 0) {
         styles.push(`
         ${specificSelector} {
           ${componentStyles.join('\n  ')}
@@ -244,7 +231,6 @@ export class HTMLGenerator {
         : parentSVG.parentElement;
     let selector = '';
     if (parentContainer) {
-      // Use parent container context
       if (parentContainer.id) {
         selector += `#${parentContainer.id} `;
       } else if (parentContainer.className) {
@@ -286,49 +272,32 @@ export class HTMLGenerator {
     if (element.id) {
       return `#${element.id}`;
     }
-    // if (element instanceof SVGElement) {
-    //   const classAttributeValue = element.getAttribute('class');
-    //   if (classAttributeValue) {
-    //     return `.${classAttributeValue.toString().split(' ').join('.')}`;
-    //   }
-    // }
-    // if (element.className) {
-    //   return `.${element.className.toString().split(' ').join('.')}`;
-    // }
-    // // Create a tag-based selector with index for uniqueness
-    // const parent = element.parentElement;
-    // if (parent) {
-    //   const siblings = Array.from(parent.children);
-    //   const index = siblings.indexOf(element);
-    //   console.log('no class /tag/parent', element.tagName.toLowerCase());
-    //   return `${element.tagName.toLowerCase()}:nth-child(${index + 1})`;
-    // }
-    if (element.className) {
-      const cleanClasses = element.className
-        .toString()
-        .split(' ')
-        .filter(
-          cls =>
-            !cls.includes('component-') &&
-            !cls.includes('delete-') &&
-            !cls.includes('resizer')
-        )
-        .join('.');
-      if (cleanClasses) {
-        // Make it more specific by adding index to avoid conflicts
-        return index !== undefined
-          ? `.${cleanClasses}:nth-of-type(${index + 1})`
-          : `.${cleanClasses}`;
+    if (element instanceof SVGElement) {
+      const classAttributeValue = element.getAttribute('class');
+      if (classAttributeValue) {
+        return `.${classAttributeValue.toString().split(' ').join('.')}`;
       }
     }
-    // Create a tag-based selector with index for uniqueness
-    const parent = element.parentElement;
-    if (parent) {
-      const siblings = Array.from(parent.children);
-      const elementIndex = siblings.indexOf(element);
-      return `${element.tagName.toLowerCase()}:nth-child(${elementIndex + 1})`;
+    if (element.className) {
+      return `.${element.className.toString().split(' ').join('.')}`;
     }
-    console.log('no class /tag', element.tagName.toLowerCase(), element);
+    const parent = element.parentElement;
+    let parentClasses = '';
+    if (parent && parent.className) {
+      const classes = parent.className.split(' ');
+      const cleanClasses = classes.filter(
+        cls =>
+          !cls.includes('component-') &&
+          !cls.includes('delete-') &&
+          !cls.includes('resizer')
+      );
+      if (cleanClasses.length > 0) {
+        parentClasses = '.' + cleanClasses.join('.');
+      }
+    }
+    if (parent) {
+      return `${parentClasses} ${element.tagName.toLowerCase()})`.trim();
+    }
     return element.tagName.toLowerCase();
   }
   applyCSS(css) {

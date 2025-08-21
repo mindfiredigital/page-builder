@@ -2229,7 +2229,7 @@ class S {
       'rect' === e.tagName.toLowerCase() ||
       'polygon' === e.tagName.toLowerCase()
     ) {
-      const l = this.generateSVGSpecificSelector(e, s);
+      const i = this.generateSVGSpecificSelector(e, s);
       [
         'fill',
         'stroke',
@@ -2246,9 +2246,7 @@ class S {
           t.push(`${e}: ${s} !important;`);
       }),
         t.length > 0 &&
-          !i.has(l) &&
-          (i.add(l),
-          o.push(`\n        ${l} {\n          ${t.join('\n  ')}\n        }`));
+          o.push(`\n        ${i} {\n          ${t.join('\n  ')}\n        }`);
     } else {
       for (let e = 0; e < n.length; e++) {
         const s = n[e],
@@ -2302,28 +2300,27 @@ class S {
   }
   generateUniqueSelector(e, t) {
     if (e.id) return `#${e.id}`;
-    if (e.className) {
-      const n = e.className
-        .toString()
+    if (e instanceof SVGElement) {
+      const t = e.getAttribute('class');
+      if (t) return `.${t.toString().split(' ').join('.')}`;
+    }
+    if (e.className) return `.${e.className.toString().split(' ').join('.')}`;
+    const n = e.parentElement;
+    let s = '';
+    if (n && n.className) {
+      const e = n.className
         .split(' ')
         .filter(
           e =>
             !e.includes('component-') &&
             !e.includes('delete-') &&
             !e.includes('resizer')
-        )
-        .join('.');
-      if (n) return void 0 !== t ? `.${n}:nth-of-type(${t + 1})` : `.${n}`;
+        );
+      e.length > 0 && (s = '.' + e.join('.'));
     }
-    const n = e.parentElement;
-    if (n) {
-      const t = Array.from(n.children).indexOf(e);
-      return `${e.tagName.toLowerCase()}:nth-child(${t + 1})`;
-    }
-    return (
-      console.log('no class /tag', e.tagName.toLowerCase(), e),
-      e.tagName.toLowerCase()
-    );
+    return n
+      ? `${s} ${e.tagName.toLowerCase()})`.trim()
+      : e.tagName.toLowerCase();
   }
   applyCSS(e) {
     this.styleElement.textContent = e;
@@ -3004,7 +3001,7 @@ class $ {
       '\n      display: flex;\n      gap: 10px;\n      margin-bottom: 10px;\n    ';
     return (
       [
-        { icon: w.mobile, title: 'Desktop', width: '375px', height: '90%' },
+        { icon: w.mobile, title: 'Desktop', width: '375px', height: '100%' },
         { icon: w.tablet, title: 'Tablet', width: '768px', height: '90%' },
         { icon: w.desktop, title: 'Mobile', width: '97%', height: '90%' },
       ].forEach(n => {
