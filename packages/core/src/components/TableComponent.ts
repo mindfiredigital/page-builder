@@ -158,22 +158,7 @@ export class TableComponent {
     cell.setAttribute('data-attribute-key', attribute.key);
     cell.setAttribute('data-attribute-type', attribute.type);
 
-    // Update cell content based on attribute type
-    // switch (attribute.type) {
-    //   case 'Input':
-    //     cell.textContent = result[attribute.key] || attribute.key;
-    //     break;
-    //   case 'Constant':
-    //   case 'Formula':
     cell.textContent = `${attribute.key}: ${attribute.value}`;
-    //     break;
-    //   case 'Image':
-    //     // For image type, you might want to show just the key or a placeholder
-    //     cell.textContent = `${attribute.key} (Image)`;
-    //     break;
-    //   default:
-    //     cell.textContent = attribute.key;
-    // }
 
     // Add visual indication that this cell has an attribute
     cell.style.backgroundColor = '#e6f3ff';

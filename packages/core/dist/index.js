@@ -550,7 +550,7 @@ function c(e, t, n, o) {
 class p {
   constructor() {
     var e, t;
-    (this.resolvePromise = null), (this.attributes = []), this.addStyles();
+    (this.resolvePromise = null), (this.attributes = []);
     const n = document.getElementById('modal');
     n
       ? (this.modalElement = n)
@@ -574,14 +574,6 @@ class p {
           this.onSave();
         });
   }
-  addStyles() {
-    if (document.getElementById('modal-styles')) return;
-    const e = document.createElement('style');
-    (e.id = 'modal-styles'),
-      (e.textContent =
-        "\n      .modal-overlay {\n        position: fixed;\n        top: 0;\n        left: 0;\n        right: 0;\n        bottom: 0;\n        background-color: rgba(0, 0, 0, 0.6);\n        z-index: 10000;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        padding: 20px;\n        backdrop-filter: blur(2px);\n      }\n\n      .modal-content {\n        position: relative;\n        z-index: 10001;\n        width: 100%;\n        max-width: 500px;\n        background-color: white;\n        border-radius: 12px;\n        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);\n        overflow: hidden;\n        animation: fadeInScale 0.2s ease-out;\n        border: 1px solid rgba(0, 0, 0, 0.05);\n      }\n\n      @keyframes fadeInScale {\n        from {\n          opacity: 0;\n          transform: scale(0.95) translate3d(0, -10px, 0);\n        }\n        to {\n          opacity: 1;\n          transform: scale(1) translate3d(0, 0, 0);\n        }\n      }\n\n      .modal-header {\n        background-color: #fafafa;\n        border-bottom: 1px solid #e5e5e5;\n        padding: 20px 24px;\n      }\n\n      .modal-header-content {\n        display: flex;\n        justify-content: space-between;\n        align-items: center;\n      }\n\n      .modal-title {\n        font-size: 18px;\n        font-weight: 600;\n        color: #111827;\n        margin: 0;\n        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n      }\n\n      .modal-close-button {\n        background: none;\n        border: none;\n        color: #6b7280;\n        cursor: pointer;\n        padding: 6px;\n        border-radius: 6px;\n        transition: all 0.2s ease;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n      }\n\n      .modal-close-button:hover {\n        color: #374151;\n        background-color: #f3f4f6;\n      }\n\n      .modal-close-button svg {\n        width: 20px;\n        height: 20px;\n      }\n\n      .modal-body {\n        padding: 24px;\n        max-height: 60vh;\n        overflow-y: auto;\n      }\n\n      .modal-form {\n        display: flex;\n        flex-direction: column;\n        gap: 20px;\n      }\n\n      .form-field {\n        display: flex;\n        flex-direction: column;\n      }\n\n      .form-label {\n        font-size: 13px;\n        font-weight: 600;\n        color: #374151;\n        margin-bottom: 8px;\n        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n        text-transform: uppercase;\n        letter-spacing: 0.025em;\n      }\n\n      .form-input {\n        padding: 12px 14px;\n        border: 1px solid #d1d5db;\n        border-radius: 8px;\n        font-size: 14px;\n        transition: all 0.2s ease;\n        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n        background-color: white;\n      }\n\n      .form-input:focus {\n        outline: none;\n        border-color: #2563eb;\n        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);\n        background-color: #fefefe;\n      }\n\n      .form-input:disabled {\n        background-color: #f9fafb;\n        color: #6b7280;\n        cursor: not-allowed;\n      }\n\n      .form-display-value {\n        color: #374151;\n        background-color: #f8fafc;\n        padding: 12px 14px;\n        border-radius: 8px;\n        user-select: text;\n        font-size: 14px;\n        border: 1px solid #e2e8f0;\n        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n      }\n\n      .image-wrapper {\n        display: flex;\n        flex-direction: column;\n        align-items: center;\n        gap: 12px;\n      }\n\n      .image-preview {\n        width: 100%;\n        max-width: 240px;\n        border-radius: 8px;\n        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\n        object-fit: contain;\n        max-height: 160px;\n        border: 1px solid #e5e7eb;\n      }\n\n      .image-input {\n        width: 100%;\n      }\n\n      .error-text {\n        color: #dc2626;\n        font-size: 13px;\n        font-weight: 500;\n      }\n\n      .modal-footer {\n        background-color: #fafafa;\n        border-top: 1px solid #e5e5e5;\n        padding: 16px 24px;\n        display: flex;\n        justify-content: flex-end;\n        gap: 12px;\n      }\n\n      .save-button {\n        padding: 10px 20px;\n        background-color: #2563eb;\n        color: white;\n        border: none;\n        border-radius: 8px;\n        font-size: 14px;\n        font-weight: 600;\n        cursor: pointer;\n        transition: all 0.2s ease;\n        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\n        min-width: 80px;\n      }\n\n      .save-button:hover {\n        background-color: #1d4ed8;\n        transform: translateY(-1px);\n        box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);\n      }\n\n      .save-button:active {\n        transform: translateY(0);\n      }\n\n      .save-button:focus {\n        outline: none;\n        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);\n      }\n\n      /* Hide modal by default */\n      .modal-hidden {\n        display: none !important;\n      }\n    "),
-      document.head.appendChild(e);
-  }
   createModalElement() {
     const e = document.createElement('div');
     return (
@@ -598,65 +590,58 @@ class p {
       e.forEach(e => {
         const t = document.createElement('div');
         t.className = 'form-field';
-        const n = document.createElement('label');
-        let o;
-        switch (
-          ((n.className = 'form-label'),
-          (n.textContent = e.title),
-          n.setAttribute('for', e.id),
+        const n = document.createElement('div');
+        (n.className = 'form-field-header'),
+          n.setAttribute('data-attr-id', e.id);
+        const o = document.createElement('button');
+        (o.className = 'expand-button'),
+          (o.type = 'button'),
+          (o.innerHTML =
+            '\n        <svg class="expand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />\n        </svg>\n      ');
+        const s = document.createElement('div');
+        s.className = 'title-key-container';
+        const i = document.createElement('span');
+        (i.className = 'form-title'), (i.textContent = e.title);
+        const l = document.createElement('span');
+        (l.className = 'form-key'),
+          (l.textContent = `(${e.key})`),
+          s.appendChild(i),
+          s.appendChild(l),
+          n.appendChild(o),
+          n.appendChild(s);
+        const a = document.createElement('div');
+        a.className = 'form-value-container form-value-collapsed';
+        const r = document.createElement('label');
+        let d;
+        (r.className = 'form-label'),
+          (r.textContent = 'Value:'),
+          r.setAttribute('for', e.id);
+        const c = document.createElement('span');
+        (c.id = e.id),
+          (c.textContent = e.value.toString()),
+          (c.className = 'form-display-value'),
+          (d = c),
+          a.appendChild(r),
+          a.appendChild(d),
           t.appendChild(n),
-          e.type)
-        ) {
-          case 'Input':
-            const t = document.createElement('input');
-            (t.id = e.id),
-              (t.type = 'number' == typeof e.value ? 'number' : 'text'),
-              (t.value = e.value || e.default_value || ''),
-              (t.disabled = !1 === e.editable),
-              (t.className = 'form-input'),
-              (o = t);
-            break;
-          case 'Constant':
-          case 'Formula':
-            const n = document.createElement('span');
-            (n.id = e.id),
-              (n.textContent = e.value.toString()),
-              (n.className = 'form-display-value'),
-              (o = n);
-            break;
-          case 'Image':
-            const s = document.createElement('div');
-            s.className = 'image-wrapper';
-            const i = document.createElement('img');
-            (i.id = `${e.id}-preview`),
-              (i.src =
-                e.value.toString() ||
-                'https://placehold.co/200x100?text=No+Image'),
-              (i.alt = `Preview for ${e.title}`),
-              (i.className = 'image-preview'),
-              (i.onerror = () =>
-                (i.src = 'https://placehold.co/200x100?text=Image+Load+Error'));
-            const l = document.createElement('input');
-            (l.id = e.id),
-              (l.type = 'text'),
-              (l.placeholder = 'Enter image URL'),
-              (l.value = e.value.toString() || ''),
-              (l.className = 'form-input image-input'),
-              l.addEventListener('input', () => {
-                i.src = l.value || 'https://placehold.co/200x100?text=No+Image';
-              }),
-              s.appendChild(i),
-              s.appendChild(l),
-              (o = s);
-            break;
-          default:
-            const a = document.createElement('p');
-            (a.textContent = `Unsupported type: ${e.type}`),
-              (a.className = 'error-text'),
-              (o = a);
-        }
-        t.appendChild(o), this.contentContainer.appendChild(t);
+          t.appendChild(a),
+          this.contentContainer.appendChild(t),
+          n.addEventListener('click', () => {
+            this.toggleFieldExpansion(e.id);
+          });
       });
+  }
+  toggleFieldExpansion(e) {
+    const t = this.modalElement.querySelector(`[data-attr-id="${e}"]`),
+      n = null == t ? void 0 : t.nextElementSibling,
+      o = null == t ? void 0 : t.querySelector('.expand-icon');
+    if (n && o) {
+      !n.classList.contains('form-value-collapsed')
+        ? (n.classList.add('form-value-collapsed'),
+          (o.style.transform = 'rotate(0deg)'))
+        : (n.classList.remove('form-value-collapsed'),
+          (o.style.transform = 'rotate(90deg)'));
+    }
   }
   show(e) {
     return (
@@ -1526,7 +1511,7 @@ const C = {
   customizationMenu:
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush"><path d="m11 10 3 3"/><path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/><path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/></svg>',
 };
-class x {
+class E {
   static init(e, t, n) {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1730,11 +1715,11 @@ class x {
         t.borderColor || '#000000'
       );
     const o = document.getElementById('background-color');
-    o && (o.value = x.rgbToHex(t.backgroundColor));
+    o && (o.value = E.rgbToHex(t.backgroundColor));
     const s = document.getElementById('text-color');
-    s && (s.value = x.rgbToHex(t.color));
+    s && (s.value = E.rgbToHex(t.color));
     const i = document.getElementById('border-color');
-    i && (i.value = x.rgbToHex(t.borderColor)), this.addListeners(e);
+    i && (i.value = E.rgbToHex(t.borderColor)), this.addListeners(e);
   }
   static populateFunctionalityControls(e) {
     var t, n;
@@ -1827,7 +1812,7 @@ class x {
           void 0 === n
             ? void 0
             : n.replace('-component', ''),
-        o = x.customComponentsConfig;
+        o = E.customComponentsConfig;
       if (t && o && o[t] && o[t].settingsComponentTagName) {
         const n = o[t].settingsComponentTagName;
         let s = this.functionsPanel.querySelector(n);
@@ -2019,10 +2004,10 @@ class x {
     return this.layersViewController;
   }
 }
-(x.selectedComponent = null),
-  (x.customComponentsConfig = null),
-  (x.basicComponentsConfig = null);
-class E {
+(E.selectedComponent = null),
+  (E.customComponentsConfig = null),
+  (E.basicComponentsConfig = null);
+class L {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -2061,13 +2046,13 @@ class E {
     return this.cellSize;
   }
 }
-var L;
+var x;
 class k {
   static getComponents() {
-    return L.components;
+    return x.components;
   }
   static setComponents(e) {
-    L.components = e;
+    x.components = e;
   }
   static init(t = null, n, o) {
     var s;
@@ -2079,53 +2064,53 @@ class k {
           : s.filter(e => 'Formula' == e.type);
     (this.tableAttributeConfig = l),
       i && i.attributes && i.attributes.length,
-      (L.canvasElement = document.getElementById('canvas')),
-      (L.sidebarElement = document.getElementById('sidebar')),
+      (x.canvasElement = document.getElementById('canvas')),
+      (x.sidebarElement = document.getElementById('sidebar')),
       window.addEventListener('table-design-change', () => {
-        L.dispatchDesignChange();
+        x.dispatchDesignChange();
       }),
-      L.canvasElement.addEventListener('drop', L.onDrop.bind(L)),
-      L.canvasElement.addEventListener('dragover', e => e.preventDefault()),
-      L.canvasElement.classList.add('preview-desktop'),
-      L.canvasElement.addEventListener('click', e => {
+      x.canvasElement.addEventListener('drop', x.onDrop.bind(x)),
+      x.canvasElement.addEventListener('dragover', e => e.preventDefault()),
+      x.canvasElement.classList.add('preview-desktop'),
+      x.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && x.showSidebar(t.id);
+        t && E.showSidebar(t.id);
       }),
-      (L.canvasElement.style.position = 'relative'),
-      (this.lastCanvasWidth = L.canvasElement.offsetWidth),
-      (L.historyManager = new g(L.canvasElement)),
-      (L.jsonStorage = new v()),
-      (L.controlsManager = new y(L)),
-      (L.gridManager = new E()),
-      L.gridManager.initializeDropPreview(L.canvasElement);
-    if ((new e(L.canvasElement, L.sidebarElement).enable(), t))
-      L.restoreState(t);
+      (x.canvasElement.style.position = 'relative'),
+      (this.lastCanvasWidth = x.canvasElement.offsetWidth),
+      (x.historyManager = new g(x.canvasElement)),
+      (x.jsonStorage = new v()),
+      (x.controlsManager = new y(x)),
+      (x.gridManager = new L()),
+      x.gridManager.initializeDropPreview(x.canvasElement);
+    if ((new e(x.canvasElement, x.sidebarElement).enable(), t))
+      x.restoreState(t);
     else {
-      const e = L.jsonStorage.load();
-      e && L.restoreState(e);
+      const e = x.jsonStorage.load();
+      e && x.restoreState(e);
     }
   }
   static dispatchDesignChange() {
-    if (L.canvasElement && this.editable) {
-      const e = L.getState(),
+    if (x.canvasElement && this.editable) {
+      const e = x.getState(),
         t = new CustomEvent('design-change', {
           detail: e,
           bubbles: !0,
           composed: !0,
         });
-      L.canvasElement.dispatchEvent(t);
+      x.canvasElement.dispatchEvent(t);
     }
   }
   static clearCanvas() {
-    (L.canvasElement.innerHTML = ''),
-      (L.components = []),
-      L.historyManager.captureState(),
-      L.gridManager.initializeDropPreview(L.canvasElement),
-      L.gridManager.initializeDropPreview(L.canvasElement),
-      L.dispatchDesignChange();
+    (x.canvasElement.innerHTML = ''),
+      (x.components = []),
+      x.historyManager.captureState(),
+      x.gridManager.initializeDropPreview(x.canvasElement),
+      x.gridManager.initializeDropPreview(x.canvasElement),
+      x.dispatchDesignChange();
   }
   static getState() {
-    return L.components.map(e => {
+    return x.components.map(e => {
       const t = e.classList[0].split(/\d/)[0].replace('-component', ''),
         n = e.querySelector('img'),
         o = n ? n.src : null,
@@ -2176,11 +2161,11 @@ class k {
     });
   }
   static restoreState(e) {
-    (L.canvasElement.innerHTML = ''),
-      (L.components = []),
+    (x.canvasElement.innerHTML = ''),
+      (x.components = []),
       e.forEach(e => {
         const t = e.dataAttributes['data-custom-settings'] || null,
-          o = L.createComponent(e.type, t, e.content);
+          o = x.createComponent(e.type, t, e.content);
         if (o) {
           if (
             (e.classes.includes('custom-component') ||
@@ -2206,8 +2191,8 @@ class k {
               Object.entries(e.dataAttributes).forEach(([e, t]) => {
                 o.setAttribute(e, t);
               }),
-            L.controlsManager.addControlButtons(o),
-            L.addDraggableListeners(o),
+            x.controlsManager.addControlButtons(o),
+            x.addDraggableListeners(o),
             o.classList.contains('container-component') &&
               l.restoreContainer(o),
             (o.classList.contains('twoCol-component') ||
@@ -2216,11 +2201,11 @@ class k {
             'image' === e.type && n.restoreImageUpload(o, e.imageSrc),
             'table' === e.type && u.restore(o),
             'link' === e.type && m.restore(o),
-            L.canvasElement.appendChild(o),
-            L.components.push(o);
+            x.canvasElement.appendChild(o),
+            x.components.push(o);
         }
       }),
-      L.gridManager.initializeDropPreview(L.canvasElement);
+      x.gridManager.initializeDropPreview(x.canvasElement);
   }
   static onDrop(e) {
     var t, n;
@@ -2249,11 +2234,11 @@ class k {
     }
     const { gridX: i, gridY: l } = this.gridManager.mousePositionAtGridCorner(
         e,
-        L.canvasElement
+        x.canvasElement
       ),
-      a = L.createComponent(o, s);
+      a = x.createComponent(o, s);
     if (a) {
-      const t = L.generateUniqueClass(o);
+      const t = x.generateUniqueClass(o);
       (a.id = t),
         a.classList.add(t),
         (a.style.position = 'absolute'),
@@ -2262,12 +2247,12 @@ class k {
           : ((a.style.position = 'absolute'),
             (a.style.left = `${i}px`),
             (a.style.top = `${l}px`)),
-        L.components.push(a),
-        L.canvasElement.appendChild(a),
-        L.addDraggableListeners(a),
-        L.historyManager.captureState();
+        x.components.push(a),
+        x.canvasElement.appendChild(a),
+        x.addDraggableListeners(a),
+        x.historyManager.captureState();
     }
-    L.dispatchDesignChange();
+    x.dispatchDesignChange();
   }
   static reorderComponent(e, t) {
     if (
@@ -2286,11 +2271,11 @@ class k {
         o.appendChild(e);
       })),
       this.historyManager.captureState(),
-      L.dispatchDesignChange();
+      x.dispatchDesignChange();
   }
   static createComponent(e, t = null, n) {
     let o = null;
-    const s = L.componentFactory[e];
+    const s = x.componentFactory[e];
     if (s) o = s();
     else {
       const t = document.querySelector(`[data-component='${e}']`),
@@ -2303,29 +2288,29 @@ class k {
     }
     if (o) {
       new ResizeObserver(e => {
-        L.dispatchDesignChange();
+        x.dispatchDesignChange();
       }).observe(o),
         o.classList.add('editable-component'),
         'container' != e && o.classList.add('component-resizer');
-      const t = L.generateUniqueClass(e);
+      const t = x.generateUniqueClass(e);
       o.setAttribute('id', t),
         'image' === e
           ? o.setAttribute('contenteditable', 'false')
           : (o.setAttribute('contenteditable', 'true'),
             o.addEventListener('input', () => {
-              L.historyManager.captureState();
+              x.historyManager.captureState();
             }));
       const n = document.createElement('span');
       (n.className = 'component-label'),
         (n.textContent = t),
         o.appendChild(n),
-        L.controlsManager.addControlButtons(o);
+        x.controlsManager.addControlButtons(o);
     }
     return o;
   }
   static generateUniqueClass(e, t = !1, n = null) {
     if (t && n) {
-      let t = L.components.find(e => e.classList.contains(n));
+      let t = x.components.find(e => e.classList.contains(n));
       if (!t && ((t = document.querySelector(`.${n}`)), !t))
         return `${n}-${e}1`;
       const o = Array.from(t.children),
@@ -2348,7 +2333,7 @@ class k {
       const t = new RegExp(`${e}(\\d+)`);
       let n = 0;
       return (
-        L.components.forEach(e => {
+        x.components.forEach(e => {
           e.classList.forEach(e => {
             const o = e.match(t);
             if (o) {
@@ -2373,8 +2358,8 @@ class k {
       a.dataTransfer &&
         ((t = a.clientX),
         (n = a.clientY),
-        (i = L.canvasElement.scrollLeft),
-        (l = L.canvasElement.scrollTop),
+        (i = x.canvasElement.scrollLeft),
+        (l = x.canvasElement.scrollTop),
         (o = parseFloat(e.style.left) || 0),
         (s = parseFloat(e.style.top) || 0),
         (a.dataTransfer.effectAllowed = 'move'),
@@ -2382,42 +2367,42 @@ class k {
     }),
       e.addEventListener('dragend', a => {
         a.preventDefault();
-        const r = L.canvasElement.scrollLeft,
-          d = L.canvasElement.scrollTop,
+        const r = x.canvasElement.scrollLeft,
+          d = x.canvasElement.scrollTop,
           c = r - i,
           p = d - l,
           u = a.clientX - t,
           m = a.clientY - n;
         let h = o + u + c,
           g = s + m + p;
-        const v = L.canvasElement.getBoundingClientRect(),
-          y = a.clientX - v.left + L.canvasElement.scrollLeft,
-          b = a.clientY - v.top + L.canvasElement.scrollTop,
-          f = L.canvasElement.getBoundingClientRect(),
+        const v = x.canvasElement.getBoundingClientRect(),
+          y = a.clientX - v.left + x.canvasElement.scrollLeft,
+          b = a.clientY - v.top + x.canvasElement.scrollTop,
+          f = x.canvasElement.getBoundingClientRect(),
           w = t - f.left + i,
           C = n - f.top + l;
         (h = y + (o - w)), (g = b + (s - C));
-        const x = e.getBoundingClientRect(),
-          E = L.canvasElement.scrollWidth - x.width,
-          k = L.canvasElement.scrollHeight - x.height;
-        (h = Math.max(0, Math.min(h, E))),
+        const E = e.getBoundingClientRect(),
+          L = x.canvasElement.scrollWidth - E.width,
+          k = x.canvasElement.scrollHeight - E.height;
+        (h = Math.max(0, Math.min(h, L))),
           (g = Math.max(0, Math.min(g, k))),
           (e.style.left = `${h}px`),
           (e.style.top = `${g}px`),
           (e.style.cursor = 'grab'),
-          L.historyManager.captureState(),
-          L.dispatchDesignChange();
+          x.historyManager.captureState(),
+          x.dispatchDesignChange();
       });
   }
 }
-(L = k),
+(x = k),
   (k.components = []),
   (k.componentFactory = {
     button: () => new s().create(),
     header: () => new i().create(),
     image: () => new n().create(),
-    video: () => new o(() => L.historyManager.captureState()).create(),
-    table: () => new u().create(2, 2, void 0, L.tableAttributeConfig),
+    video: () => new o(() => x.historyManager.captureState()).create(),
+    table: () => new u().create(2, 2, void 0, x.tableAttributeConfig),
     text: () => new t().create(),
     container: () => new l().create(),
     twoCol: () => new r().create(),
@@ -2449,7 +2434,7 @@ S &&
     const t = e.target;
     t !== S && M.selectElement(t);
   });
-class B {
+class H {
   constructor(e) {
     this.canvas = e;
   }
@@ -2474,7 +2459,7 @@ class B {
       }
   }
 }
-class H {
+class B {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -2836,8 +2821,8 @@ class T {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
       (this.canvas = new k()),
-      (this.sidebar = new B(this.canvas)),
-      (this.htmlGenerator = new H(this.canvas)),
+      (this.sidebar = new H(this.canvas)),
+      (this.htmlGenerator = new B(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new z()),
       (this.editable = n),
@@ -2849,8 +2834,8 @@ class T {
   }
   initializeEventListeners() {
     (this.canvas = new k()),
-      (this.sidebar = new B(this.canvas)),
-      (this.htmlGenerator = new H(this.canvas)),
+      (this.sidebar = new H(this.canvas)),
+      (this.htmlGenerator = new B(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new z()),
       this.setupInitialComponents(),
@@ -3015,7 +3000,7 @@ class T {
       k.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
       this.sidebar.init(),
       I.init(),
-      x.init(
+      E.init(
         this.dynamicComponents.Custom,
         this.editable,
         this.dynamicComponents.Basic
@@ -3254,7 +3239,7 @@ class T {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new H(new k()),
+        const e = new B(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = (function (e) {
@@ -3286,7 +3271,7 @@ class T {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new H(new k()),
+        const e = new B(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = window.open('', '_blank');
