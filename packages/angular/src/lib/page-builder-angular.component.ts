@@ -4,7 +4,6 @@ import {
   AfterViewInit,
   ViewChild,
   ElementRef,
-  Type,
   ComponentRef,
   CUSTOM_ELEMENTS_SCHEMA,
   ApplicationRef,
@@ -13,29 +12,10 @@ import {
   createComponent,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// Define the interface for the custom components
-export interface PageBuilderCustomComponent {
-  component: Type<any>;
-  svg: string;
-  title: string;
-  settingsComponent?: Type<any>;
-}
-
-// Define the interface for the main page builder config
-interface DynamicComponents {
-  Basic: any[];
-  Extra: any[];
-  Custom: Record<
-    string,
-    {
-      component: string;
-      svg: string;
-      title: string;
-      settingsComponent?: string;
-    }
-  >;
-}
+import {
+  DynamicComponents,
+  PageBuilderCustomComponent,
+} from './models/custom-styles.interface';
 
 @Component({
   selector: 'mf-page-builder',

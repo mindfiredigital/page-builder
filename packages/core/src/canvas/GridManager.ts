@@ -72,22 +72,17 @@ export class GridManager {
   mousePositionAtGridCorner(event: DragEvent, canvas: HTMLElement) {
     const canvasRect = canvas.getBoundingClientRect();
 
-    // Get scroll positions
     const scrollLeft = canvas.scrollLeft;
     const scrollTop = canvas.scrollTop;
 
-    // Calculate mouse position relative to canvas content (including scrolled area)
     const mouseX = event.clientX - canvasRect.left + scrollLeft;
     const mouseY = event.clientY - canvasRect.top + scrollTop;
 
-    // Grid size (adjust as needed)
     const gridSize = 10;
 
-    // Snap to grid
     const gridX = Math.round(mouseX / gridSize) * gridSize;
     const gridY = Math.round(mouseY / gridSize) * gridSize;
 
-    // Account for canvas padding
     const padding = 20;
 
     return {
