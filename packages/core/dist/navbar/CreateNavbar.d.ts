@@ -1,1 +1,4 @@
-export declare function createNavbar(editable: boolean | null): HTMLElement;
+export declare function createNavbar(
+  editable: boolean | null,
+  brandTitle?: string
+): HTMLElement;

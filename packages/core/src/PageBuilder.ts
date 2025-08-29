@@ -27,11 +27,17 @@ export class PageBuilder {
   private dynamicComponents;
   private initialDesign: PageBuilderDesign | null;
   private editable: boolean | null;
+  private brandTitle: string | undefined;
 
   constructor(
-    dynamicComponents: DynamicComponents = { Basic: [], Extra: [], Custom: {} },
+    dynamicComponents: DynamicComponents = {
+      Basic: { components: [] },
+      Extra: [],
+      Custom: {},
+    },
     initialDesign: PageBuilderDesign | null = null,
-    editable: boolean | null = true
+    editable: boolean | null = true,
+    brandTitle?: string
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -41,6 +47,7 @@ export class PageBuilder {
     this.jsonStorage = new JSONStorage();
     this.previewPanel = new PreviewPanel();
     this.editable = editable;
+    this.brandTitle = brandTitle;
     this.initializeEventListeners();
   }
 
@@ -72,11 +79,19 @@ export class PageBuilder {
     createSidebar(this.dynamicComponents, this.editable);
 
     // Pass initial design to Canvas.init
-    Canvas.init(this.initialDesign, this.editable);
+    Canvas.init(
+      this.initialDesign,
+      this.editable,
+      this.dynamicComponents.Basic
+    );
 
     this.sidebar.init();
     ShortcutManager.init();
-    CustomizationSidebar.init(this.dynamicComponents.Custom, this.editable);
+    CustomizationSidebar.init(
+      this.dynamicComponents.Custom,
+      this.editable,
+      this.dynamicComponents.Basic
+    );
 
     // Create header logic - improved to handle re-initialization
     this.createHeaderIfNeeded();
@@ -91,7 +106,7 @@ export class PageBuilder {
       if (appElement && appElement.parentNode) {
         const header = document.createElement('header');
         header.id = 'page-builder-header';
-        header.appendChild(createNavbar(this.editable));
+        header.appendChild(createNavbar(this.editable, this.brandTitle));
         appElement.parentNode.insertBefore(header, appElement);
         PageBuilder.headerInitialized = true;
       } else {
@@ -146,13 +161,11 @@ export class PageBuilder {
       const dropdown = document.createElement('div');
       dropdown.classList.add('export-dropdown');
 
-      // Create Option 1
       const option1 = document.createElement('div');
       option1.textContent = 'HTML';
       option1.classList.add('export-option');
       option1.id = 'export-html-btn';
 
-      // Create Option 2
       const option2 = document.createElement('div');
       option2.textContent = 'PDF';
       option2.classList.add('export-option');
@@ -224,7 +237,7 @@ export class PageBuilder {
               <head>
                 <title>Export PDF</title>
                 <style>
-                  ${css} /* Generated CSS */
+                  ${css} 
                   body {
                     margin: 0;
                     padding: 20px;
@@ -466,13 +479,13 @@ export class PageBuilder {
         icon: svgs.tablet,
         title: 'Tablet',
         width: '768px',
-        height: '90%',
+        height: '100%',
       },
       {
         icon: svgs.desktop,
         title: 'Mobile',
         width: '97%',
-        height: '90%',
+        height: '100%',
       },
     ];
 

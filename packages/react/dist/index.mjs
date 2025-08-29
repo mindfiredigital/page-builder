@@ -6,9 +6,11 @@ var PageBuilderReact = ({
   customComponents,
   initialDesign,
   onChange,
-  editable = true
+  editable = true,
+  brandTitle
 }) => {
   const builderRef = useRef(null);
+  const eventCountRef = useRef(0);
   const [processedConfig, setProcessedConfig] = useState(config);
   useEffect(() => {
     import("@mindfiredigital/page-builder-web-component").catch((error) => {
@@ -108,6 +110,7 @@ var PageBuilderReact = ({
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
+            builderRef.current.brandTitle = brandTitle;
           }
         } catch (error) {
           console.error("Error setting config-data and initialDesign:", error);
@@ -120,6 +123,10 @@ var PageBuilderReact = ({
     const handleDesignChange = (event) => {
       const customEvent = event;
       if (onChange) {
+        eventCountRef.current += 1;
+        if (eventCountRef.current <= 2) {
+          return;
+        }
         onChange(customEvent.detail);
       }
     };

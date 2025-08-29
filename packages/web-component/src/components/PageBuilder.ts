@@ -16,6 +16,7 @@ export class PageBuilderComponent extends HTMLElement {
   private initialized = false;
   private _initialDesign: PageBuilderDesign | null = null;
   private _editable: boolean | null = null;
+  private _brandTitle?: string;
   private config = { Basic: [], Extra: [], Custom: [] };
   private template = `<div id="app">
       <div id="sidebar"></div>
@@ -72,6 +73,20 @@ export class PageBuilderComponent extends HTMLElement {
   // Corrected getter for 'editable'
   get editable(): boolean | null {
     return this._editable;
+  }
+
+  set brandTitle(value: string | undefined) {
+    if (this._brandTitle !== value) {
+      this._brandTitle = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+
+  get brandTitle(): string | undefined {
+    return this._brandTitle;
   }
 
   set initialDesign(value: PageBuilderDesign | null) {
@@ -131,18 +146,16 @@ export class PageBuilderComponent extends HTMLElement {
       }
       if (app && this.pageBuilder) {
         app.innerHTML = '';
-        this.innerHTML = this.template; // Reset the template
+        this.innerHTML = this.template;
       }
       this.pageBuilder = new PageBuilder(
         this.config,
         this._initialDesign,
-        this._editable
+        this._editable,
+        this._brandTitle
       );
 
       this.initialized = true;
-      // console.log(
-      //   'PageBuilderComponent: PageBuilder initialized successfully with config and initial design.'
-      // );
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);
       this.initialized = false;

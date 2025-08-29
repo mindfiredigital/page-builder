@@ -1,3 +1,4 @@
+var _a;
 import { DragDropManager } from './DragDropManager.js';
 import { DeleteElementHandler } from './DeleteElement.js';
 import { LandingPageTemplate } from './../templates/LandingPageTemplate.js';
@@ -21,43 +22,65 @@ import { MultiColumnContainer } from '../services/MultiColumnContainer.js';
 import { GridManager } from './GridManager.js';
 export class Canvas {
   static getComponents() {
-    return Canvas.components;
+    return _a.components;
   }
   static setComponents(components) {
-    Canvas.components = components;
+    _a.components = components;
   }
-  static init(initialData = null, editable) {
+  static init(initialData = null, editable, basicComponentsConfig) {
+    var _b;
     this.editable = editable;
-    Canvas.canvasElement = document.getElementById('canvas');
-    Canvas.sidebarElement = document.getElementById('sidebar');
-    Canvas.canvasElement.addEventListener('drop', Canvas.onDrop.bind(Canvas));
-    Canvas.canvasElement.addEventListener('dragover', event =>
+    const tableComponent = basicComponentsConfig.components.find(
+      component => component.name === 'table'
+    );
+    const tableConfig =
+      (_b =
+        tableComponent === null || tableComponent === void 0
+          ? void 0
+          : tableComponent.attributes) === null || _b === void 0
+        ? void 0
+        : _b.filter(attribute => attribute.type == 'Formula');
+    this.tableAttributeConfig = tableConfig;
+    if (
+      tableComponent &&
+      tableComponent.attributes &&
+      tableComponent.attributes.length > 0
+    ) {
+    }
+    _a.canvasElement = document.getElementById('canvas');
+    _a.sidebarElement = document.getElementById('sidebar');
+    window.addEventListener('table-design-change', () => {
+      _a.dispatchDesignChange();
+    });
+    _a.canvasElement.addEventListener('drop', _a.onDrop.bind(_a));
+    _a.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
-    Canvas.canvasElement.classList.add('preview-desktop');
-    Canvas.canvasElement.addEventListener('click', event => {
+    _a.canvasElement.classList.add('preview-desktop');
+    _a.canvasElement.addEventListener('click', event => {
       const component = event.target;
       if (component) {
         CustomizationSidebar.showSidebar(component.id);
       }
     });
-    Canvas.canvasElement.style.position = 'relative';
-    Canvas.historyManager = new HistoryManager(Canvas.canvasElement);
-    Canvas.jsonStorage = new JSONStorage();
-    Canvas.controlsManager = new ComponentControlsManager(Canvas);
-    Canvas.gridManager = new GridManager();
-    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
+    _a.canvasElement.style.position = 'relative';
+    this.lastCanvasWidth = _a.canvasElement.offsetWidth;
+    _a.historyManager = new HistoryManager(_a.canvasElement);
+    _a.jsonStorage = new JSONStorage();
+    _a.controlsManager = new ComponentControlsManager(_a);
+    _a.gridManager = new GridManager();
+    _a.gridManager.initializeDropPreview(_a.canvasElement);
     const dragDropManager = new DragDropManager(
-      Canvas.canvasElement,
-      Canvas.sidebarElement
+      _a.canvasElement,
+      _a.sidebarElement
     );
     dragDropManager.enable();
     if (initialData) {
-      Canvas.restoreState(initialData);
+      _a.restoreState(initialData);
     } else {
-      const savedState = Canvas.jsonStorage.load();
+      const savedState = _a.jsonStorage.load();
       if (savedState) {
-        Canvas.restoreState(savedState);
+        _a.restoreState(savedState);
       }
     }
   }
@@ -66,27 +89,27 @@ export class Canvas {
    * The event detail contains the current design state.
    */
   static dispatchDesignChange() {
-    if (Canvas.canvasElement && this.editable) {
-      const currentDesign = Canvas.getState();
+    if (_a.canvasElement && this.editable) {
+      const currentDesign = _a.getState();
       const event = new CustomEvent('design-change', {
         detail: currentDesign,
         bubbles: true,
         composed: true,
       });
-      Canvas.canvasElement.dispatchEvent(event);
+      _a.canvasElement.dispatchEvent(event);
       // console.log('Canvas: Dispatched design-change event');
     }
   }
   static clearCanvas() {
-    Canvas.canvasElement.innerHTML = '';
-    Canvas.components = [];
-    Canvas.historyManager.captureState();
-    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
-    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
-    Canvas.dispatchDesignChange();
+    _a.canvasElement.innerHTML = '';
+    _a.components = [];
+    _a.historyManager.captureState();
+    _a.gridManager.initializeDropPreview(_a.canvasElement);
+    _a.gridManager.initializeDropPreview(_a.canvasElement);
+    _a.dispatchDesignChange();
   }
   static getState() {
-    return Canvas.components.map(component => {
+    return _a.components.map(component => {
       const baseType = component.classList[0]
         .split(/\d/)[0]
         .replace('-component', '');
@@ -150,14 +173,15 @@ export class Canvas {
     });
   }
   static restoreState(state) {
-    Canvas.canvasElement.innerHTML = '';
-    Canvas.components = [];
+    _a.canvasElement.innerHTML = '';
+    _a.components = [];
     state.forEach(componentData => {
       const customSettings =
         componentData.dataAttributes['data-custom-settings'] || null;
-      const component = Canvas.createComponent(
+      const component = _a.createComponent(
         componentData.type,
-        customSettings
+        customSettings,
+        componentData.content
       );
       if (component) {
         if (!componentData.classes.includes('custom-component')) {
@@ -196,8 +220,8 @@ export class Canvas {
           );
         }
         // Add control buttons and listeners
-        Canvas.controlsManager.addControlButtons(component);
-        Canvas.addDraggableListeners(component);
+        _a.controlsManager.addControlButtons(component);
+        _a.addDraggableListeners(component);
         // Component-specific restoration
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreContainer(component);
@@ -218,26 +242,26 @@ export class Canvas {
         if (componentData.type === 'link') {
           LinkComponent.restore(component);
         }
-        Canvas.canvasElement.appendChild(component);
-        Canvas.components.push(component);
+        _a.canvasElement.appendChild(component);
+        _a.components.push(component);
       }
     });
-    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
+    _a.gridManager.initializeDropPreview(_a.canvasElement);
   }
   static onDrop(event) {
-    var _a, _b;
+    var _b, _c;
     event.preventDefault();
     if (event.target.classList.contains('container-component')) {
       return;
     }
     const componentType =
-      (_a = event.dataTransfer) === null || _a === void 0
-        ? void 0
-        : _a.getData('component-type');
-    let customSettings =
       (_b = event.dataTransfer) === null || _b === void 0
         ? void 0
-        : _b.getData('custom-settings');
+        : _b.getData('component-type');
+    let customSettings =
+      (_c = event.dataTransfer) === null || _c === void 0
+        ? void 0
+        : _c.getData('custom-settings');
     if (!componentType) {
       return;
     }
@@ -256,11 +280,11 @@ export class Canvas {
     }
     const { gridX, gridY } = this.gridManager.mousePositionAtGridCorner(
       event,
-      Canvas.canvasElement
+      _a.canvasElement
     );
-    const component = Canvas.createComponent(componentType, customSettings);
+    const component = _a.createComponent(componentType, customSettings);
     if (component) {
-      const uniqueClass = Canvas.generateUniqueClass(componentType);
+      const uniqueClass = _a.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
       component.style.position = 'absolute';
@@ -275,12 +299,12 @@ export class Canvas {
         component.style.left = `${gridX}px`;
         component.style.top = `${gridY}px`;
       }
-      Canvas.components.push(component);
-      Canvas.canvasElement.appendChild(component);
-      Canvas.addDraggableListeners(component);
-      Canvas.historyManager.captureState();
+      _a.components.push(component);
+      _a.canvasElement.appendChild(component);
+      _a.addDraggableListeners(component);
+      _a.historyManager.captureState();
     }
-    Canvas.dispatchDesignChange();
+    _a.dispatchDesignChange();
     // Canvas.updateCanvasHeight();
   }
   static reorderComponent(fromIndex, toIndex) {
@@ -303,11 +327,11 @@ export class Canvas {
       });
     }
     this.historyManager.captureState();
-    Canvas.dispatchDesignChange();
+    _a.dispatchDesignChange();
   }
-  static createComponent(type, customSettings = null) {
+  static createComponent(type, customSettings = null, props) {
     let element = null;
-    const componentFactoryFunction = Canvas.componentFactory[type];
+    const componentFactoryFunction = _a.componentFactory[type];
     if (componentFactoryFunction) {
       element = componentFactoryFunction();
     } else {
@@ -321,6 +345,7 @@ export class Canvas {
       if (tagName) {
         element = document.createElement(tagName);
         element.classList.add(`${type}-component`, 'custom-component');
+        element.classList.add(`${type}-component`, 'custom-component');
         element.setAttribute('data-component-type', type);
       } else {
         return null;
@@ -328,58 +353,38 @@ export class Canvas {
     }
     if (element) {
       const resizeObserver = new ResizeObserver(entries => {
-        Canvas.dispatchDesignChange();
+        _a.dispatchDesignChange();
       });
       resizeObserver.observe(element);
       element.classList.add('editable-component');
       if (type != 'container') {
         element.classList.add('component-resizer');
       }
-      const uniqueClass = Canvas.generateUniqueClass(type);
+      const uniqueClass = _a.generateUniqueClass(type);
       element.setAttribute('id', uniqueClass);
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
         element.setAttribute('contenteditable', 'true');
         element.addEventListener('input', () => {
-          Canvas.historyManager.captureState();
+          _a.historyManager.captureState();
         });
       }
       const label = document.createElement('span');
       label.className = 'component-label';
       label.textContent = uniqueClass;
       element.appendChild(label);
-      Canvas.controlsManager.addControlButtons(element);
+      _a.controlsManager.addControlButtons(element);
     }
     return element;
   }
-  // static updateCanvasHeight() {
-  //   console.log('update canvas');
-  //   let maxBottom = 0;
-  //   // Get all components on the canvas
-  //   const components = Canvas.canvasElement.querySelectorAll(
-  //     '.editable-component'
-  //   );
-  //   components.forEach(component => {
-  //     const rect = component.getBoundingClientRect();
-  //     const componentBottom = rect.top + rect.height;
-  //     if (componentBottom > maxBottom) {
-  //       maxBottom = componentBottom;
-  //     }
-  //   });
-  //   const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-  //   const newMinHeight = maxBottom - canvasRect.top + 50;
-  //   if (newMinHeight > canvasRect.height) {
-  //     Canvas.canvasElement.style.minHeight = `${newMinHeight}px`;
-  //   }
-  // }
   static generateUniqueClass(
     type,
     isContainerComponent = false,
     containerClass = null
   ) {
     if (isContainerComponent && containerClass) {
-      let containerElement = Canvas.components.find(component =>
+      let containerElement = _a.components.find(component =>
         component.classList.contains(containerClass)
       );
       if (!containerElement) {
@@ -404,7 +409,7 @@ export class Canvas {
     } else {
       const typePattern = new RegExp(`${type}(\\d+)`);
       let maxNumber = 0;
-      Canvas.components.forEach(component => {
+      _a.components.forEach(component => {
         component.classList.forEach(className => {
           const match = className.match(typePattern);
           if (match) {
@@ -423,59 +428,82 @@ export class Canvas {
     let dragStartY = 0;
     let elementStartX = 0;
     let elementStartY = 0;
+    let canvasScrollStartX = 0;
+    let canvasScrollStartY = 0;
     element.addEventListener('dragstart', event => {
       if (event.dataTransfer) {
-        const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-        const rect = element.getBoundingClientRect();
+        // Store exact mouse position at drag start
         dragStartX = event.clientX;
         dragStartY = event.clientY;
-        elementStartX = rect.left - canvasRect.left;
-        elementStartY = rect.top - canvasRect.top;
+        // Store canvas scroll position at drag start
+        canvasScrollStartX = _a.canvasElement.scrollLeft;
+        canvasScrollStartY = _a.canvasElement.scrollTop;
+        // Get current element position relative to canvas
+        elementStartX = parseFloat(element.style.left) || 0;
+        elementStartY = parseFloat(element.style.top) || 0;
         event.dataTransfer.effectAllowed = 'move';
         element.style.cursor = 'grabbing';
       }
     });
     element.addEventListener('dragend', event => {
       event.preventDefault();
-      const deltaX = event.clientX - dragStartX;
-      const deltaY = event.clientY - dragStartY;
-      // Calculate new position
-      let newX = elementStartX + deltaX;
-      let newY = elementStartY + deltaY;
-      // Constrain within canvas boundaries
-      const maxX = Canvas.canvasElement.offsetWidth - element.offsetWidth;
-      // const maxY = Canvas.canvasElement.offsetHeight - element.offsetHeight;
+      // Get current canvas scroll position
+      const canvasScrollCurrentX = _a.canvasElement.scrollLeft;
+      const canvasScrollCurrentY = _a.canvasElement.scrollTop;
+      // Calculate scroll delta (how much the canvas scrolled during drag)
+      const scrollDeltaX = canvasScrollCurrentX - canvasScrollStartX;
+      const scrollDeltaY = canvasScrollCurrentY - canvasScrollStartY;
+      // Calculate mouse movement delta
+      const mouseDeltaX = event.clientX - dragStartX;
+      const mouseDeltaY = event.clientY - dragStartY;
+      // Calculate new position accounting for both mouse movement and scroll changes
+      let newX = elementStartX + mouseDeltaX + scrollDeltaX;
+      let newY = elementStartY + mouseDeltaY + scrollDeltaY;
+      // Alternative approach: Use the actual mouse position relative to canvas
+      // This is more accurate when dealing with scrolling
+      const canvasRect = _a.canvasElement.getBoundingClientRect();
+      const actualMouseX =
+        event.clientX - canvasRect.left + _a.canvasElement.scrollLeft;
+      const actualMouseY =
+        event.clientY - canvasRect.top + _a.canvasElement.scrollTop;
+      // Calculate the offset between drag start mouse position and element position
+      const canvasRectStart = _a.canvasElement.getBoundingClientRect();
+      const dragStartMouseX =
+        dragStartX - canvasRectStart.left + canvasScrollStartX;
+      const dragStartMouseY =
+        dragStartY - canvasRectStart.top + canvasScrollStartY;
+      const offsetX = elementStartX - dragStartMouseX;
+      const offsetY = elementStartY - dragStartMouseY;
+      // Use actual mouse position for more precise positioning
+      newX = actualMouseX + offsetX;
+      newY = actualMouseY + offsetY;
+      // Constrain within canvas boundaries (accounting for scroll area)
+      const elementRect = element.getBoundingClientRect();
+      const maxX = _a.canvasElement.scrollWidth - elementRect.width;
+      const maxY = _a.canvasElement.scrollHeight - elementRect.height;
       newX = Math.max(0, Math.min(newX, maxX));
-      // newY = Math.max(0, Math.min(newY, maxY));
+      newY = Math.max(0, Math.min(newY, maxY));
       // Set new position
       element.style.left = `${newX}px`;
       element.style.top = `${newY}px`;
       // Reset cursor
       element.style.cursor = 'grab';
       // Capture the state after dragging
-      Canvas.historyManager.captureState();
-      Canvas.dispatchDesignChange();
-      // Canvas.updateCanvasHeight();
-    });
-  }
-  // Unused for now, remove it later
-  static exportLayout() {
-    return Canvas.components.map(component => {
-      return {
-        type: component.className,
-        content: component.innerHTML,
-      };
+      _a.historyManager.captureState();
+      _a.dispatchDesignChange();
     });
   }
 }
+_a = Canvas;
 Canvas.components = [];
 Canvas.componentFactory = {
   button: () => new ButtonComponent().create(),
   header: () => new HeaderComponent().create(),
   image: () => new ImageComponent().create(),
   video: () =>
-    new VideoComponent(() => Canvas.historyManager.captureState()).create(),
-  table: () => new TableComponent().create(2, 2),
+    new VideoComponent(() => _a.historyManager.captureState()).create(),
+  table: () =>
+    new TableComponent().create(2, 2, undefined, _a.tableAttributeConfig),
   text: () => new TextComponent().create(),
   container: () => new ContainerComponent().create(),
   twoCol: () => new TwoColumnContainer().create(),

@@ -12,8 +12,6 @@ const CustomRatingSettings = React.forwardRef<
 >((props, forwardedRef) => {
   const { targetComponentId } = props;
 
-  console.log(targetComponentId, 'targetId');
-
   const resetRating = useRatingStore(state => state.resetRating);
   const setRatingToMax = useRatingStore(state => state.setRatingToMax);
   const incrementRating = useRatingStore(state => state.incrementRating);

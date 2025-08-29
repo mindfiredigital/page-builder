@@ -1,92 +1,87 @@
 import * as i0 from '@angular/core';
-import { Component, Input, NgModule } from '@angular/core';
-import * as i1 from '@angular/common';
+import { createComponent, Component, CUSTOM_ELEMENTS_SCHEMA, Input, ViewChild, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 
 class PageBuilderComponent {
-    elementRef;
-    onInitialize;
-    customStyles = {};
-    pageBuilder = null;
-    constructor(elementRef) {
-        this.elementRef = elementRef;
-    }
-    ngOnInit() {
-        // Initial setup if needed
+    injector;
+    appRef;
+    envInjector;
+    config;
+    customComponents = {};
+    pageBuilderEl;
+    // Correctly inject dependencies in the constructor
+    constructor(injector, appRef, envInjector) {
+        this.injector = injector;
+        this.appRef = appRef;
+        this.envInjector = envInjector;
     }
     ngAfterViewInit() {
-        this.setupPageBuilder();
+        this.processCustomComponents();
     }
-    ngOnDestroy() {
-        this.pageBuilder = null;
-    }
-    getWrapperStyles() {
-        return {
-            margin: 'auto',
-            width: '100%',
-            height: '100%',
-            ...this.customStyles.wrapper,
+    processCustomComponents() {
+        const processedConfig = {
+            ...this.config,
+            Custom: this.config?.Custom || {},
         };
-    }
-    setupDOMStructure() {
-        const wrapper = this.elementRef.nativeElement.querySelector('div');
-        if (!wrapper)
-            return;
-        // Clear existing content
-        wrapper.innerHTML = '';
-        // Create the main app container
-        const appDiv = document.createElement('div');
-        appDiv.id = 'app';
-        // Create required inner elements
-        appDiv.innerHTML = `
-      <div id="sidebar"></div>
-      <div id="canvas" class="canvas"></div>
-      <div id="customization">
-        <h4 id="component-name">Component: None</h4>
-        <div id="controls"></div>
-        <div id="layers-view" class="hidden"></div>
-      </div>
-      <div id="notification" class="notification hidden"></div>
-      <div id="dialog" class="dialog hidden">
-        <div class="dialog-content">
-          <p id="dialog-message"></p>
-          <button id="dialog-yes" class="dialog-btn">Yes</button>
-          <button id="dialog-no" class="dialog-btn">No</button>
-        </div>
-      </div>
-    `;
-        wrapper.appendChild(appDiv);
-    }
-    setupPageBuilder() {
-        try {
-            if (!this.pageBuilder) {
-                this.setupDOMStructure();
-                // Create new PageBuilder instance
-                const pageBuilder = new PageBuilder();
-                this.pageBuilder = pageBuilder;
-                if (this.onInitialize) {
-                    this.onInitialize(pageBuilder);
+        Object.entries(this.customComponents).forEach(([key, componentConfig]) => {
+            const tagName = `ng-component-${key.toLowerCase()}`;
+            if (!customElements.get(tagName)) {
+                // Capture the injected dependencies from the parent component's scope.
+                const injector = this.injector;
+                const appRef = this.appRef;
+                const envInjector = this.envInjector;
+                // The class accesses the captured dependencies via closure
+                class AngularHostElement extends HTMLElement {
+                    componentRef = null;
+                    connectedCallback() {
+                        // Create the component in-place using the captured dependencies
+                        this.componentRef = createComponent(componentConfig.component, {
+                            environmentInjector: envInjector,
+                            elementInjector: injector,
+                            hostElement: this,
+                        });
+                        // Attach change detection
+                        appRef.attachView(this.componentRef.hostView);
+                        // Append the component's root node into this custom element
+                        this.appendChild(this.componentRef.location.nativeElement);
+                    }
+                    disconnectedCallback() {
+                        if (this.componentRef) {
+                            appRef.detachView(this.componentRef.hostView);
+                            this.componentRef.destroy();
+                            this.componentRef = null;
+                        }
+                    }
                 }
-                // Trigger DOMContentLoaded to initialize PageBuilder
-                const event = new Event('DOMContentLoaded');
-                document.dispatchEvent(event);
+                customElements.define(tagName, AngularHostElement);
             }
-        }
-        catch (error) {
-            console.error('Error initializing PageBuilder:', error);
-        }
+            processedConfig.Custom[key] = {
+                component: tagName,
+                svg: componentConfig.svg,
+                title: componentConfig.title,
+            };
+        });
+        this.pageBuilderEl.nativeElement.setAttribute('config-data', JSON.stringify(processedConfig));
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0", ngImport: i0, type: PageBuilderComponent, deps: [{ token: i0.ElementRef }], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "19.1.0", type: PageBuilderComponent, isStandalone: true, selector: "mf-page-builder", inputs: { onInitialize: "onInitialize", customStyles: "customStyles" }, ngImport: i0, template: ` <div #wrapper [ngStyle]="getWrapperStyles()"></div> `, isInline: true, styles: ["@import\"../../../node_modules/@mindfiredigital/page-builder/dist/styles/main.css\";\n"], dependencies: [{ kind: "ngmodule", type: CommonModule }, { kind: "directive", type: i1.NgStyle, selector: "[ngStyle]", inputs: ["ngStyle"] }] });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "19.1.0", ngImport: i0, type: PageBuilderComponent, deps: [{ token: i0.Injector }, { token: i0.ApplicationRef }, { token: i0.EnvironmentInjector }], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "19.1.0", type: PageBuilderComponent, isStandalone: true, selector: "mf-page-builder", inputs: { config: "config", customComponents: "customComponents" }, viewQueries: [{ propertyName: "pageBuilderEl", first: true, predicate: ["pageBuilderEl"], descendants: true }], ngImport: i0, template: `<page-builder #pageBuilderEl></page-builder>`, isInline: true, dependencies: [{ kind: "ngmodule", type: CommonModule }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.1.0", ngImport: i0, type: PageBuilderComponent, decorators: [{
             type: Component,
-            args: [{ selector: 'mf-page-builder', standalone: true, imports: [CommonModule], template: ` <div #wrapper [ngStyle]="getWrapperStyles()"></div> `, styles: ["@import\"../../../node_modules/@mindfiredigital/page-builder/dist/styles/main.css\";\n"] }]
-        }], ctorParameters: () => [{ type: i0.ElementRef }], propDecorators: { onInitialize: [{
+            args: [{
+                    selector: 'mf-page-builder',
+                    standalone: true,
+                    imports: [CommonModule],
+                    template: `<page-builder #pageBuilderEl></page-builder>`,
+                    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+                }]
+        }], ctorParameters: () => [{ type: i0.Injector }, { type: i0.ApplicationRef }, { type: i0.EnvironmentInjector }], propDecorators: { config: [{
                 type: Input
-            }], customStyles: [{
+            }], customComponents: [{
                 type: Input
+            }], pageBuilderEl: [{
+                type: ViewChild,
+                args: ['pageBuilderEl']
             }] } });
 
 class PageBuilderModule {

@@ -62,9 +62,26 @@ declare global {
     [key: string]: any;
   }
 
+  export interface ComponentAttribute {
+    id: string;
+    type: 'Constant' | 'Formula' | 'Input' | 'Image';
+    title: string;
+    key: string;
+    value: string | number | boolean;
+    execute_order: number;
+    execution_fun?: Function;
+    editable?: boolean;
+    default_value?: string | boolean | null;
+    trigger?: 'blur' | 'input' | 'input' | 'click' | 'focus';
+  }
+
+  export interface BasicComponent {
+    components: { name: string; attributes?: ComponentAttribute[] }[];
+    globalExecuteFunction?: Function;
+  }
   // Define interface for Dynamic components
   interface DynamicComponents {
-    Basic: string[];
+    Basic: BasicComponent;
     Extra: string[];
     Custom: Record<string, CustomComponentConfig>;
   }

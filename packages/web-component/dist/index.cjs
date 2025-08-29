@@ -80,6 +80,18 @@ var PageBuilderComponent = class extends HTMLElement {
   get editable() {
     return this._editable;
   }
+  set brandTitle(value) {
+    if (this._brandTitle !== value) {
+      this._brandTitle = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+  get brandTitle() {
+    return this._brandTitle;
+  }
   set initialDesign(value) {
     if (this._initialDesign !== value) {
       this._initialDesign = value;
@@ -131,7 +143,8 @@ var PageBuilderComponent = class extends HTMLElement {
       this.pageBuilder = new import_PageBuilder.PageBuilder(
         this.config,
         this._initialDesign,
-        this._editable
+        this._editable,
+        this._brandTitle
       );
       this.initialized = true;
     } catch (error) {

@@ -80,9 +80,9 @@ importers:
       '@angular/core':
         specifier: '>=15.0.0'
         version: 19.1.0(rxjs@7.8.2)(zone.js@0.15.0)
-      '@mindfiredigital/page-builder':
+      '@mindfiredigital/page-builder-web-component':
         specifier: workspace:*
-        version: link:../core
+        version: link:../web-component
     devDependencies:
       '@angular/cli':
         specifier: ^19.1.5
@@ -283,9 +283,9 @@ importers:
       '@angular/ssr':
         specifier: ^19.1.5
         version: 19.1.5(@angular/common@19.1.0)(@angular/core@19.1.0)(@angular/platform-server@19.1.0)(@angular/router@19.1.0)
-      '@mindfiredigital/page-builder-web-component':
+      '@mindfiredigital/page-builder-angular':
         specifier: workspace:*
-        version: link:../../web-component
+        version: link:../../angular
       css-loader:
         specifier: ^7.1.2
         version: 7.1.2(webpack@5.101.0)

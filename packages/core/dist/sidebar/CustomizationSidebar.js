@@ -4,11 +4,12 @@ import LayersViewController from './LayerViewController.js';
 import { TableComponent } from '../components/TableComponent.js';
 import { svgs } from '../icons/svgs.js';
 export class CustomizationSidebar {
-  static init(customComponentsConfig, editable) {
+  static init(customComponentsConfig, editable, BasicComponent) {
     this.sidebarElement = document.getElementById('customization');
     this.controlsContainer = document.getElementById('controls');
     this.componentNameHeader = document.getElementById('component-name');
     this.customComponentsConfig = customComponentsConfig;
+    this.basicComponentsConfig = BasicComponent;
     this.editable = editable;
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
@@ -47,14 +48,6 @@ export class CustomizationSidebar {
       this.switchToAttributeMode();
     });
     layersTab.addEventListener('click', () => this.switchToLayersMode());
-    // Add the close button to the sidebar
-    // this.sidebarElement.appendChild(this.closeButton);
-    // this.closeButton.textContent = '×'; // Close button symbol
-    // this.closeButton.classList.add('close-button');
-    // // Add the event listener to hide the sidebar when the close button is clicked
-    // this.closeButton.addEventListener('click', () => {
-    //   this.hideSidebar();
-    // });
   }
   // --- Tab Switching Logic ---
   static switchToCustomizeMode() {
@@ -132,12 +125,6 @@ export class CustomizationSidebar {
     this.componentNameHeader.textContent = `Component: ${componentId}`;
     this.switchToCustomizeMode();
   }
-  // static hideSidebar() {
-  //   if (this.sidebarElement) {
-  //     this.sidebarElement.style.display = 'none';
-  //     this.selectedComponent = null; // Clear selected component
-  //   }
-  // }
   // --- Populate CSS Controls ---
   static populateCssControls(component) {
     this.controlsContainer.innerHTML = '';
@@ -283,76 +270,119 @@ export class CustomizationSidebar {
     this.functionsPanel.innerHTML = '';
     if (component.classList.contains('table-component')) {
       const table = component.querySelector('table');
-      if (table) {
-        const currentRows = table.rows.length;
-        const currentCols =
-          ((_a = table.rows[0]) === null || _a === void 0
-            ? void 0
-            : _a.cells.length) || 0;
-        const rowsWrapper = document.createElement('div');
-        rowsWrapper.classList.add('control-wrapper');
-        rowsWrapper.innerHTML = `
+      if (this.basicComponentsConfig) {
+        const tableComponent = this.basicComponentsConfig.components.find(
+          component => component.name === 'table'
+        );
+        if (
+          tableComponent &&
+          tableComponent.attributes &&
+          tableComponent.attributes.length > 0
+        ) {
+          tableComponent.attributes.map(attribute => {
+            const box = document.createElement('div');
+            if (attribute.type === 'Input') {
+              box.innerHTML = `
+            <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
+                <div class="input-wrapper type-input-div">
+                  <input type="text" class="type-input" id=${attribute.key}  ${!attribute.editable ? 'disabled' : ''}  value=${attribute.default_value ? attribute.default_value : ''} >
+                </div>
+            `;
+              this.functionsPanel.appendChild(box);
+              if (attribute.trigger) {
+                const trigger_element = document.getElementById(attribute.key);
+                trigger_element === null || trigger_element === void 0
+                  ? void 0
+                  : trigger_element.addEventListener(attribute.trigger, () => {
+                      var _a, _b;
+                      if (
+                        (_a = this.basicComponentsConfig) === null ||
+                        _a === void 0
+                          ? void 0
+                          : _a.globalExecuteFunction
+                      ) {
+                        (_b = this.basicComponentsConfig) === null ||
+                        _b === void 0
+                          ? void 0
+                          : _b.globalExecuteFunction();
+                      }
+                    });
+              }
+            }
+          });
+        }
+      } else {
+        if (table) {
+          const currentRows = table.rows.length;
+          const currentCols =
+            ((_a = table.rows[0]) === null || _a === void 0
+              ? void 0
+              : _a.cells.length) || 0;
+          const rowsWrapper = document.createElement('div');
+          rowsWrapper.classList.add('control-wrapper');
+          rowsWrapper.innerHTML = `
                   <label for="table-rows">Number of Rows:</label>
                   <div class="input-wrapper">
                     <input type="number" id="table-rows" value="${currentRows}" min="0">
                   </div>
               `;
-        this.functionsPanel.appendChild(rowsWrapper);
-        const rowsInput = rowsWrapper.querySelector('#table-rows');
-        rowsInput.addEventListener(
-          'input',
-          debounce(() => {
-            const newRowCount = parseInt(rowsInput.value);
-            if (!isNaN(newRowCount)) {
-              const tableInstance = new TableComponent();
-              tableInstance.setRowCount(table, newRowCount);
-              Canvas.historyManager.captureState();
-            }
-          }, 300)
-        );
-        const colsWrapper = document.createElement('div');
-        colsWrapper.classList.add('control-wrapper');
-        colsWrapper.innerHTML = `
+          this.functionsPanel.appendChild(rowsWrapper);
+          const rowsInput = rowsWrapper.querySelector('#table-rows');
+          rowsInput.addEventListener(
+            'input',
+            debounce(() => {
+              const newRowCount = parseInt(rowsInput.value);
+              if (!isNaN(newRowCount)) {
+                const tableInstance = new TableComponent();
+                tableInstance.setRowCount(table, newRowCount);
+                Canvas.historyManager.captureState();
+              }
+            }, 300)
+          );
+          const colsWrapper = document.createElement('div');
+          colsWrapper.classList.add('control-wrapper');
+          colsWrapper.innerHTML = `
                   <label for="table-cols">Number of Columns:</label>
                   <div class="input-wrapper">
                     <input type="number" id="table-cols" value="${currentCols}" min="0">
                   </div>
               `;
-        this.functionsPanel.appendChild(colsWrapper);
-        const colsInput = colsWrapper.querySelector('#table-cols');
-        colsInput.addEventListener(
-          'input',
-          debounce(() => {
-            const newColCount = parseInt(colsInput.value);
-            if (!isNaN(newColCount)) {
-              const tableInstance = new TableComponent();
-              tableInstance.setColumnCount(table, newColCount);
-              Canvas.historyManager.captureState();
-            }
-          }, 300)
-        );
-        //header row
-        const headerWrapper = document.createElement('div');
-        headerWrapper.classList.add('control-wrapper');
-        headerWrapper.innerHTML = `
+          this.functionsPanel.appendChild(colsWrapper);
+          const colsInput = colsWrapper.querySelector('#table-cols');
+          colsInput.addEventListener(
+            'input',
+            debounce(() => {
+              const newColCount = parseInt(colsInput.value);
+              if (!isNaN(newColCount)) {
+                const tableInstance = new TableComponent();
+                tableInstance.setColumnCount(table, newColCount);
+                Canvas.historyManager.captureState();
+              }
+            }, 300)
+          );
+          //header row
+          const headerWrapper = document.createElement('div');
+          headerWrapper.classList.add('control-wrapper');
+          headerWrapper.innerHTML = `
           <label for="table-header">Create Header:</label>
           <div class="input-wrapper">
             <input type="checkbox" id="table-header"  min="0">
           </div
         `;
-        this.functionsPanel.appendChild(headerWrapper);
-        const headerInput = headerWrapper.querySelector('#table-header');
-        headerInput.addEventListener(
-          'input',
-          debounce(() => {
-            const isHeader = headerInput.checked;
-            if (isHeader) {
-              const tableInstance = new TableComponent();
-              tableInstance.createHeder(table);
-              Canvas.historyManager.captureState();
-            }
-          }, 300)
-        );
+          this.functionsPanel.appendChild(headerWrapper);
+          const headerInput = headerWrapper.querySelector('#table-header');
+          headerInput.addEventListener(
+            'input',
+            debounce(() => {
+              const isHeader = headerInput.checked;
+              if (isHeader) {
+                const tableInstance = new TableComponent();
+                tableInstance.createHeder(table);
+                Canvas.historyManager.captureState();
+              }
+            }, 300)
+          );
+        }
       }
     } else if (component.classList.contains('custom-component')) {
       const componentType =
@@ -497,6 +527,7 @@ export class CustomizationSidebar {
       fontFamily: document.getElementById('font-family'),
     };
     const captureStateDebounced = debounce(() => {
+      Canvas.dispatchDesignChange();
       Canvas.historyManager.captureState();
     }, 300);
     // Attach listeners only if the element exists
@@ -622,5 +653,5 @@ export class CustomizationSidebar {
   }
 }
 CustomizationSidebar.selectedComponent = null;
-CustomizationSidebar.settingsReactRoot = null;
 CustomizationSidebar.customComponentsConfig = null;
+CustomizationSidebar.basicComponentsConfig = null;

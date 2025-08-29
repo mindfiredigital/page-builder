@@ -1,103 +1,122 @@
 import {
   Component,
-  OnInit,
-  OnDestroy,
-  ElementRef,
   Input,
   AfterViewInit,
+  ViewChild,
+  ElementRef,
+  Type,
+  ComponentRef,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ApplicationRef,
+  Injector,
+  EnvironmentInjector,
+  createComponent,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
-import { CustomStyles } from './models/custom-styles.interface';
+
+// Define the interface for the custom components
+export interface PageBuilderCustomComponent {
+  component: Type<any>;
+  svg: string;
+  title: string;
+  settingsComponent?: Type<any>;
+}
+
+// Define the interface for the main page builder config
+interface DynamicComponents {
+  Basic: any[];
+  Extra: any[];
+  Custom: Record<
+    string,
+    {
+      component: string;
+      svg: string;
+      title: string;
+      settingsComponent?: string;
+    }
+  >;
+}
 
 @Component({
   selector: 'mf-page-builder',
   standalone: true,
   imports: [CommonModule],
-  template: ` <div #wrapper [ngStyle]="getWrapperStyles()"></div> `,
-  styleUrls: ['./styles/styles.scss'],
+  template: `<page-builder #pageBuilderEl></page-builder>`,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class PageBuilderComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() onInitialize?: (pageBuilder: PageBuilder) => void;
-  @Input() customStyles: CustomStyles = {};
+export class PageBuilderComponent implements AfterViewInit {
+  @Input() config!: DynamicComponents;
+  @Input() customComponents: Record<string, PageBuilderCustomComponent> = {};
 
-  private pageBuilder: PageBuilder | null = null;
+  @ViewChild('pageBuilderEl') pageBuilderEl!: ElementRef<HTMLElement>;
 
-  constructor(private elementRef: ElementRef) {}
-
-  ngOnInit(): void {
-    // Initial setup if needed
-  }
+  // Correctly inject dependencies in the constructor
+  constructor(
+    private injector: Injector,
+    private appRef: ApplicationRef,
+    private envInjector: EnvironmentInjector
+  ) {}
 
   ngAfterViewInit(): void {
-    this.setupPageBuilder();
+    this.processCustomComponents();
   }
 
-  ngOnDestroy(): void {
-    this.pageBuilder = null;
-  }
-
-  public getWrapperStyles() {
-    return {
-      margin: 'auto',
-      width: '100%',
-      height: '100%',
-      ...this.customStyles.wrapper,
+  private processCustomComponents(): void {
+    const processedConfig: DynamicComponents = {
+      ...this.config,
+      Custom: this.config?.Custom || {},
     };
-  }
 
-  private setupDOMStructure(): void {
-    const wrapper = this.elementRef.nativeElement.querySelector('div');
-    if (!wrapper) return;
+    Object.entries(this.customComponents).forEach(([key, componentConfig]) => {
+      const tagName = `ng-component-${key.toLowerCase()}`;
 
-    // Clear existing content
-    wrapper.innerHTML = '';
+      if (!customElements.get(tagName)) {
+        // Capture the injected dependencies from the parent component's scope.
+        const injector = this.injector;
+        const appRef = this.appRef;
+        const envInjector = this.envInjector;
 
-    // Create the main app container
-    const appDiv = document.createElement('div');
-    appDiv.id = 'app';
+        // The class accesses the captured dependencies via closure
+        class AngularHostElement extends HTMLElement {
+          private componentRef: ComponentRef<any> | null = null;
 
-    // Create required inner elements
-    appDiv.innerHTML = `
-      <div id="sidebar"></div>
-      <div id="canvas" class="canvas"></div>
-      <div id="customization">
-        <h4 id="component-name">Component: None</h4>
-        <div id="controls"></div>
-        <div id="layers-view" class="hidden"></div>
-      </div>
-      <div id="notification" class="notification hidden"></div>
-      <div id="dialog" class="dialog hidden">
-        <div class="dialog-content">
-          <p id="dialog-message"></p>
-          <button id="dialog-yes" class="dialog-btn">Yes</button>
-          <button id="dialog-no" class="dialog-btn">No</button>
-        </div>
-      </div>
-    `;
+          connectedCallback() {
+            // Create the component in-place using the captured dependencies
+            this.componentRef = createComponent(componentConfig.component, {
+              environmentInjector: envInjector,
+              elementInjector: injector,
+              hostElement: this,
+            });
 
-    wrapper.appendChild(appDiv);
-  }
+            // Attach change detection
+            appRef.attachView(this.componentRef.hostView);
 
-  private setupPageBuilder(): void {
-    try {
-      if (!this.pageBuilder) {
-        this.setupDOMStructure();
+            // Append the component's root node into this custom element
+            this.appendChild(this.componentRef.location.nativeElement);
+          }
 
-        // Create new PageBuilder instance
-        const pageBuilder = new PageBuilder();
-        this.pageBuilder = pageBuilder;
-
-        if (this.onInitialize) {
-          this.onInitialize(pageBuilder);
+          disconnectedCallback() {
+            if (this.componentRef) {
+              appRef.detachView(this.componentRef.hostView);
+              this.componentRef.destroy();
+              this.componentRef = null;
+            }
+          }
         }
 
-        // Trigger DOMContentLoaded to initialize PageBuilder
-        const event = new Event('DOMContentLoaded');
-        document.dispatchEvent(event);
+        customElements.define(tagName, AngularHostElement);
       }
-    } catch (error) {
-      console.error('Error initializing PageBuilder:', error);
-    }
+
+      processedConfig.Custom[key] = {
+        component: tagName,
+        svg: componentConfig.svg,
+        title: componentConfig.title,
+      };
+    });
+
+    this.pageBuilderEl.nativeElement.setAttribute(
+      'config-data',
+      JSON.stringify(processedConfig)
+    );
   }
 }

@@ -2,8 +2,6 @@ import { Canvas } from '../canvas/Canvas';
 import { debounce } from '../utils/utilityFunctions';
 import LayersViewController from './LayerViewController';
 import { TableComponent } from '../components/TableComponent';
-import * as ReactDOM from 'react-dom/client';
-import * as React from 'react';
 import { svgs } from '../icons/svgs';
 
 type ReactComponentType<P = {}> = React.ComponentType<P>;
@@ -23,24 +21,26 @@ export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
   private static controlsContainer: HTMLElement;
   private static componentNameHeader: HTMLElement;
-
   private static layersModeToggle: HTMLDivElement;
   private static layersView: HTMLDivElement;
   private static layersViewController: LayersViewController;
   private static functionsPanel: HTMLDivElement;
   private static selectedComponent: HTMLElement | null = null;
-  private static settingsReactRoot: ReactDOM.Root | null = null;
   private static customComponentsConfig: CustomComponentConfig | null = null;
+  private static basicComponentsConfig: BasicComponent | null = null;
+
   private static editable: boolean | null;
 
   static init(
     customComponentsConfig: CustomComponentConfig,
-    editable: boolean | null
+    editable: boolean | null,
+    BasicComponent: BasicComponent
   ) {
     this.sidebarElement = document.getElementById('customization')!;
     this.controlsContainer = document.getElementById('controls')!;
     this.componentNameHeader = document.getElementById('component-name')!;
     this.customComponentsConfig = customComponentsConfig;
+    this.basicComponentsConfig = BasicComponent;
     this.editable = editable;
 
     if (!this.sidebarElement || !this.controlsContainer) {
@@ -86,16 +86,6 @@ export class CustomizationSidebar {
       this.switchToAttributeMode();
     });
     layersTab.addEventListener('click', () => this.switchToLayersMode());
-
-    // Add the close button to the sidebar
-    // this.sidebarElement.appendChild(this.closeButton);
-    // this.closeButton.textContent = '×'; // Close button symbol
-    // this.closeButton.classList.add('close-button');
-
-    // // Add the event listener to hide the sidebar when the close button is clicked
-    // this.closeButton.addEventListener('click', () => {
-    //   this.hideSidebar();
-    // });
   }
 
   // --- Tab Switching Logic ---
@@ -190,13 +180,6 @@ export class CustomizationSidebar {
 
     this.switchToCustomizeMode();
   }
-
-  // static hideSidebar() {
-  //   if (this.sidebarElement) {
-  //     this.sidebarElement.style.display = 'none';
-  //     this.selectedComponent = null; // Clear selected component
-  //   }
-  // }
 
   // --- Populate CSS Controls ---
   private static populateCssControls(component: HTMLElement) {
@@ -357,82 +340,116 @@ export class CustomizationSidebar {
     this.functionsPanel.innerHTML = '';
     if (component.classList.contains('table-component')) {
       const table = component.querySelector('table');
-      if (table) {
-        const currentRows = table.rows.length;
-        const currentCols = table.rows[0]?.cells.length || 0;
-        const rowsWrapper = document.createElement('div');
-        rowsWrapper.classList.add('control-wrapper');
-        rowsWrapper.innerHTML = `
+      if (this.basicComponentsConfig) {
+        const tableComponent = this.basicComponentsConfig.components.find(
+          component => component.name === 'table'
+        );
+        if (
+          tableComponent &&
+          tableComponent.attributes &&
+          tableComponent.attributes.length > 0
+        ) {
+          tableComponent.attributes.map(attribute => {
+            const box = document.createElement('div');
+            if (attribute.type === 'Input') {
+              box.innerHTML = `
+            <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
+                <div class="input-wrapper type-input-div">
+                  <input type="text" class="type-input" id=${attribute.key}  ${
+                    !attribute.editable ? 'disabled' : ''
+                  }  value=${attribute.default_value ? attribute.default_value : ''} >
+                </div>
+            `;
+              this.functionsPanel.appendChild(box);
+              if (attribute.trigger) {
+                const trigger_element = document.getElementById(attribute.key);
+                trigger_element?.addEventListener(attribute.trigger, () => {
+                  if (this.basicComponentsConfig?.globalExecuteFunction) {
+                    this.basicComponentsConfig?.globalExecuteFunction();
+                  }
+                });
+              }
+            }
+          });
+        }
+      } else {
+        if (table) {
+          const currentRows = table.rows.length;
+          const currentCols = table.rows[0]?.cells.length || 0;
+          const rowsWrapper = document.createElement('div');
+          rowsWrapper.classList.add('control-wrapper');
+          rowsWrapper.innerHTML = `
                   <label for="table-rows">Number of Rows:</label>
                   <div class="input-wrapper">
                     <input type="number" id="table-rows" value="${currentRows}" min="0">
                   </div>
               `;
-        this.functionsPanel.appendChild(rowsWrapper);
+          this.functionsPanel.appendChild(rowsWrapper);
 
-        const rowsInput = rowsWrapper.querySelector(
-          '#table-rows'
-        ) as HTMLInputElement;
-        rowsInput.addEventListener(
-          'input',
-          debounce(() => {
-            const newRowCount = parseInt(rowsInput.value);
-            if (!isNaN(newRowCount)) {
-              const tableInstance = new TableComponent();
-              tableInstance.setRowCount(table, newRowCount);
-              Canvas.historyManager.captureState();
-            }
-          }, 300)
-        );
-        const colsWrapper = document.createElement('div');
-        colsWrapper.classList.add('control-wrapper');
-        colsWrapper.innerHTML = `
+          const rowsInput = rowsWrapper.querySelector(
+            '#table-rows'
+          ) as HTMLInputElement;
+          rowsInput.addEventListener(
+            'input',
+            debounce(() => {
+              const newRowCount = parseInt(rowsInput.value);
+              if (!isNaN(newRowCount)) {
+                const tableInstance = new TableComponent();
+                tableInstance.setRowCount(table, newRowCount);
+                Canvas.historyManager.captureState();
+              }
+            }, 300)
+          );
+          const colsWrapper = document.createElement('div');
+          colsWrapper.classList.add('control-wrapper');
+          colsWrapper.innerHTML = `
                   <label for="table-cols">Number of Columns:</label>
                   <div class="input-wrapper">
                     <input type="number" id="table-cols" value="${currentCols}" min="0">
                   </div>
               `;
-        this.functionsPanel.appendChild(colsWrapper);
+          this.functionsPanel.appendChild(colsWrapper);
 
-        const colsInput = colsWrapper.querySelector(
-          '#table-cols'
-        ) as HTMLInputElement;
-        colsInput.addEventListener(
-          'input',
-          debounce(() => {
-            const newColCount = parseInt(colsInput.value);
-            if (!isNaN(newColCount)) {
-              const tableInstance = new TableComponent();
-              tableInstance.setColumnCount(table, newColCount);
-              Canvas.historyManager.captureState();
-            }
-          }, 300)
-        );
+          const colsInput = colsWrapper.querySelector(
+            '#table-cols'
+          ) as HTMLInputElement;
+          colsInput.addEventListener(
+            'input',
+            debounce(() => {
+              const newColCount = parseInt(colsInput.value);
+              if (!isNaN(newColCount)) {
+                const tableInstance = new TableComponent();
+                tableInstance.setColumnCount(table, newColCount);
+                Canvas.historyManager.captureState();
+              }
+            }, 300)
+          );
 
-        //header row
-        const headerWrapper = document.createElement('div');
-        headerWrapper.classList.add('control-wrapper');
-        headerWrapper.innerHTML = `
+          //header row
+          const headerWrapper = document.createElement('div');
+          headerWrapper.classList.add('control-wrapper');
+          headerWrapper.innerHTML = `
           <label for="table-header">Create Header:</label>
           <div class="input-wrapper">
             <input type="checkbox" id="table-header"  min="0">
           </div
         `;
-        this.functionsPanel.appendChild(headerWrapper);
-        const headerInput = headerWrapper.querySelector(
-          '#table-header'
-        ) as HTMLInputElement;
-        headerInput.addEventListener(
-          'input',
-          debounce(() => {
-            const isHeader = headerInput.checked;
-            if (isHeader) {
-              const tableInstance = new TableComponent();
-              tableInstance.createHeder(table);
-              Canvas.historyManager.captureState();
-            }
-          }, 300)
-        );
+          this.functionsPanel.appendChild(headerWrapper);
+          const headerInput = headerWrapper.querySelector(
+            '#table-header'
+          ) as HTMLInputElement;
+          headerInput.addEventListener(
+            'input',
+            debounce(() => {
+              const isHeader = headerInput.checked;
+              if (isHeader) {
+                const tableInstance = new TableComponent();
+                tableInstance.createHeder(table);
+                Canvas.historyManager.captureState();
+              }
+            }, 300)
+          );
+        }
       }
     } else if (component.classList.contains('custom-component')) {
       const componentType = Array.from(component.classList)
@@ -611,6 +628,7 @@ export class CustomizationSidebar {
     };
 
     const captureStateDebounced = debounce(() => {
+      Canvas.dispatchDesignChange();
       Canvas.historyManager.captureState();
     }, 300);
 

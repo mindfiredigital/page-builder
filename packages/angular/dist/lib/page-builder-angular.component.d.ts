@@ -1,33 +1,53 @@
-import { OnInit, OnDestroy, ElementRef, AfterViewInit } from '@angular/core';
-import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
-import { CustomStyles } from './models/custom-styles.interface';
+import {
+  AfterViewInit,
+  ElementRef,
+  Type,
+  ApplicationRef,
+  Injector,
+  EnvironmentInjector,
+} from '@angular/core';
 import * as i0 from '@angular/core';
-export declare class PageBuilderComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
-  private elementRef;
-  onInitialize?: (pageBuilder: PageBuilder) => void;
-  customStyles: CustomStyles;
-  private pageBuilder;
-  constructor(elementRef: ElementRef);
-  ngOnInit(): void;
+export interface PageBuilderCustomComponent {
+  component: Type<any>;
+  svg: string;
+  title: string;
+  settingsComponent?: Type<any>;
+}
+interface DynamicComponents {
+  Basic: any[];
+  Extra: any[];
+  Custom: Record<
+    string,
+    {
+      component: string;
+      svg: string;
+      title: string;
+      settingsComponent?: string;
+    }
+  >;
+}
+export declare class PageBuilderComponent implements AfterViewInit {
+  private injector;
+  private appRef;
+  private envInjector;
+  config: DynamicComponents;
+  customComponents: Record<string, PageBuilderCustomComponent>;
+  pageBuilderEl: ElementRef<HTMLElement>;
+  constructor(
+    injector: Injector,
+    appRef: ApplicationRef,
+    envInjector: EnvironmentInjector
+  );
   ngAfterViewInit(): void;
-  ngOnDestroy(): void;
-  getWrapperStyles(): {
-    margin: string;
-    width: string;
-    height: string;
-  };
-  private setupDOMStructure;
-  private setupPageBuilder;
+  private processCustomComponents;
   static ɵfac: i0.ɵɵFactoryDeclaration<PageBuilderComponent, never>;
   static ɵcmp: i0.ɵɵComponentDeclaration<
     PageBuilderComponent,
     'mf-page-builder',
     never,
     {
-      onInitialize: { alias: 'onInitialize'; required: false };
-      customStyles: { alias: 'customStyles'; required: false };
+      config: { alias: 'config'; required: false };
+      customComponents: { alias: 'customComponents'; required: false };
     },
     {},
     never,
@@ -36,3 +56,4 @@ export declare class PageBuilderComponent
     never
   >;
 }
+export {};

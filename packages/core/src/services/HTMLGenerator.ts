@@ -111,6 +111,10 @@ export class HTMLGenerator {
           border-collapse: collapse ;
 
       }
+          .editable-component{
+          border:none !important;
+          box-shadow:none !important;
+          }
 
       `);
 
@@ -245,7 +249,7 @@ export class HTMLGenerator {
         }
       }
 
-      const selector = this.generateUniqueSelector(component, index);
+      const selector = this.generateUniqueSelector(component);
       if (!processedSelectors.has(selector) && componentStyles.length > 0) {
         processedSelectors.add(selector);
 
@@ -305,37 +309,71 @@ export class HTMLGenerator {
     return selector || `${element.tagName.toLowerCase()}-${index}`;
   }
 
-  private generateUniqueSelector(element: Element, index?: number): string {
+  private generateUniqueSelector(element: Element): string {
+    // If the element has an ID, that is the most unique selector
     if (element.id) {
       return `#${element.id}`;
     }
+
     if (element instanceof SVGElement) {
       const classAttributeValue = element.getAttribute('class');
       if (classAttributeValue) {
         return `.${classAttributeValue.toString().split(' ').join('.')}`;
       }
     }
+
     if (element.className) {
       return `.${element.className.toString().split(' ').join('.')}`;
     }
-    const parent = element.parentElement;
-    let parentClasses = '';
-    if (parent && parent.className) {
-      const classes = parent.className.split(' ');
-      const cleanClasses = classes.filter(
+
+    const selectorPath: string[] = [];
+    let currentElement: Element | null = element;
+
+    while (
+      currentElement &&
+      currentElement.tagName.toLowerCase() !== 'body' &&
+      !currentElement.id
+    ) {
+      const parent = currentElement.parentElement as HTMLElement;
+      if (!parent) break;
+
+      const siblings = Array.from(parent.children);
+      const siblingsOfSameType = siblings.filter(
+        child => child.tagName === currentElement!.tagName
+      );
+
+      let selector = currentElement.tagName.toLowerCase();
+
+      if (siblingsOfSameType.length > 1) {
+        const index = siblingsOfSameType.indexOf(currentElement) + 1;
+        selector += `:nth-of-type(${index})`;
+      }
+
+      // Add classes to the selector if they exist
+      const cleanClasses = Array.from(currentElement.classList).filter(
         cls =>
           !cls.includes('component-') &&
           !cls.includes('delete-') &&
           !cls.includes('resizer')
       );
       if (cleanClasses.length > 0) {
-        parentClasses = '.' + cleanClasses.join('.');
+        selector += `.${cleanClasses.join('.')}`;
+      }
+
+      selectorPath.unshift(selector);
+      currentElement = parent;
+    }
+
+    if (currentElement) {
+      if (currentElement.id) {
+        selectorPath.unshift(`#${currentElement.id}`);
+      } else {
+        selectorPath.unshift(currentElement.tagName.toLowerCase());
       }
     }
-    if (parent) {
-      return `${parentClasses} ${element.tagName.toLowerCase()})`.trim();
-    }
-    return element.tagName.toLowerCase();
+
+    // The final selector is the joined path
+    return selectorPath.join(' > ');
   }
 
   applyCSS(css: string) {

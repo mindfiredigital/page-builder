@@ -1,3 +1,5 @@
+// import { Canvas } from './Canvas';
+
 export class PreviewPanel {
   setPreviewMode(size: 'desktop' | 'tablet' | 'mobile') {
     const canvas = document.getElementById('canvas')!;
@@ -11,5 +13,8 @@ export class PreviewPanel {
 
     // Add the new preview class
     canvas.classList.add(`preview-${size}`);
+    // setTimeout(() => {
+    //   Canvas.handleResponsiveResize();
+    // }, 200);
   }
 }

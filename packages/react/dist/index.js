@@ -52,8 +52,10 @@ var PageBuilderReact = ({
   initialDesign,
   onChange,
   editable = true,
+  brandTitle,
 }) => {
   const builderRef = (0, import_react.useRef)(null);
+  const eventCountRef = (0, import_react.useRef)(0);
   const [processedConfig, setProcessedConfig] = (0, import_react.useState)(
     config
   );
@@ -169,6 +171,7 @@ var PageBuilderReact = ({
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
+            builderRef.current.brandTitle = brandTitle;
           }
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);
@@ -181,6 +184,10 @@ var PageBuilderReact = ({
     const handleDesignChange = event => {
       const customEvent = event;
       if (onChange) {
+        eventCountRef.current += 1;
+        if (eventCountRef.current <= 2) {
+          return;
+        }
         onChange(customEvent.detail);
       }
     };
