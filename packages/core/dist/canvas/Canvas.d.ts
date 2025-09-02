@@ -10,12 +10,15 @@ export declare class Canvas {
   private static editable;
   static historyManager: HistoryManager;
   static jsonStorage: JSONStorage;
+  static lastCanvasWidth: number | null;
+  private static tableAttributeConfig;
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
   private static componentFactory;
   static init(
     initialData: (PageBuilderDesign | null) | undefined,
-    editable: boolean | null
+    editable: boolean | null,
+    basicComponentsConfig: BasicComponent
   ): void;
   /**
    * Dispatches a custom event indicating that the canvas design has changed.
@@ -29,7 +32,8 @@ export declare class Canvas {
   static reorderComponent(fromIndex: number, toIndex: number): void;
   static createComponent(
     type: string,
-    customSettings?: string | null
+    customSettings?: string | null,
+    props?: string
   ): HTMLElement | null;
   static generateUniqueClass(
     type: string,
@@ -37,8 +41,4 @@ export declare class Canvas {
     containerClass?: string | null
   ): string;
   static addDraggableListeners(element: HTMLElement): void;
-  static exportLayout(): {
-    type: string;
-    content: string;
-  }[];
 }

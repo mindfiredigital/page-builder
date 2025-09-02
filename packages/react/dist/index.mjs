@@ -6,9 +6,11 @@ var PageBuilderReact = ({
   customComponents,
   initialDesign,
   onChange,
-  editable = true
+  editable = true,
+  brandTitle
 }) => {
   const builderRef = useRef(null);
+  const eventCountRef = useRef(0);
   const [processedConfig, setProcessedConfig] = useState(config);
   useEffect(() => {
     import("@mindfiredigital/page-builder-web-component").catch((error) => {
@@ -29,7 +31,6 @@ var PageBuilderReact = ({
         const tagName = `react-component-${key.toLowerCase()}`;
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
-            // This `this` refers to the instance of the Web Component (e.g., <react-component-customrating id="CustomRating1">)
             connectedCallback() {
               const mountPoint = document.createElement("div");
               this.appendChild(mountPoint);
@@ -51,28 +52,32 @@ var PageBuilderReact = ({
         if (componentConfig.settingsComponent && !customElements.get(settingsTagName)) {
           class ReactSettingsElement extends HTMLElement {
             connectedCallback() {
+              this.innerHTML = "";
               const mountPoint = document.createElement("div");
               this.appendChild(mountPoint);
               const settingsData = this.getAttribute("data-settings");
               const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
-              ReactDOM.createRoot(mountPoint).render(
-                React.createElement(
-                  componentConfig.settingsComponent,
-                  parsedSettings
-                )
-              );
+              try {
+                ReactDOM.createRoot(mountPoint).render(
+                  React.createElement(
+                    componentConfig.settingsComponent,
+                    parsedSettings
+                  )
+                );
+              } catch (error) {
+                console.error(`Error rendering settings component:`, error);
+              }
             }
-            // You might need to observe attributes here if PageBuilder updates settings dynamically
             static get observedAttributes() {
               return ["data-settings"];
             }
             attributeChangedCallback(name, oldValue, newValue) {
               if (name === "data-settings" && newValue !== oldValue) {
+                this.innerHTML = "";
                 const mountPoint = document.createElement("div");
                 this.appendChild(mountPoint);
                 const settingsData = this.getAttribute("data-settings");
                 const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
-                console.log("creating here");
                 ReactDOM.createRoot(mountPoint).render(
                   React.createElement(
                     componentConfig.settingsComponent,
@@ -86,10 +91,10 @@ var PageBuilderReact = ({
         }
         modifiedConfig.Custom[key] = {
           component: tagName,
-          // The tagName refers to the custom Web Component tag
           svg: componentConfig.svg,
           title: componentConfig.title,
-          settingsComponent: settingsTagName
+          settingsComponent: settingsTagName,
+          settingsComponentTagName: settingsTagName
         };
       });
     }
@@ -102,10 +107,10 @@ var PageBuilderReact = ({
         try {
           const configString = JSON.stringify(processedConfig);
           (_a = builderRef.current) == null ? void 0 : _a.setAttribute("config-data", configString);
-          console.log(configString, "config");
           if (builderRef.current) {
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
+            builderRef.current.brandTitle = brandTitle;
           }
         } catch (error) {
           console.error("Error setting config-data and initialDesign:", error);
@@ -118,6 +123,10 @@ var PageBuilderReact = ({
     const handleDesignChange = (event) => {
       const customEvent = event;
       if (onChange) {
+        eventCountRef.current += 1;
+        if (eventCountRef.current <= 2) {
+          return;
+        }
         onChange(customEvent.detail);
       }
     };

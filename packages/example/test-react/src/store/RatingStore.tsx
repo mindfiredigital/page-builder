@@ -17,14 +17,14 @@ export const useRatingStore = create<RatingState>((set, get) => ({
     set(state => ({
       ratings: { ...state.ratings, [componentId]: 0 },
     }));
-    console.log(`Rating (${componentId}): Reset to 0`);
+  
   },
 
   setRatingToMax: (componentId: string) => {
     set(state => ({
       ratings: { ...state.ratings, [componentId]: 5 },
     }));
-    console.log(`Rating (${componentId}): Set to max (5)`);
+   
   },
 
   incrementRating: (componentId: string) => {

@@ -18,7 +18,7 @@
   "peerDependencies": {
     "@angular/common": ">=15.0.0",
     "@angular/core": ">=15.0.0",
-    "@mindfiredigital/page-builder": "workspace:*"
+    "@mindfiredigital/page-builder-web-component": "workspace:*"
   },
   "sideEffects": false,
   "devDependencies": {

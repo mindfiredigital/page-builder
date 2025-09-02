@@ -9,10 +9,12 @@ export declare class PageBuilder {
   private dynamicComponents;
   private initialDesign;
   private editable;
+  private brandTitle;
   constructor(
     dynamicComponents?: DynamicComponents,
     initialDesign?: PageBuilderDesign | null,
-    editable?: boolean | null
+    editable?: boolean | null,
+    brandTitle?: string
   );
   static resetHeaderFlag(): void;
   initializeEventListeners(): void;

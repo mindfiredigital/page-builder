@@ -1,5 +1,4 @@
 import LayersViewController from './LayerViewController';
-import * as React from 'react';
 type ReactComponentType<P = {}> = React.ComponentType<P>;
 interface CustomComponentConfig {
   [key: string]: {
@@ -9,6 +8,7 @@ interface CustomComponentConfig {
     settingsComponent?: ReactComponentType<{
       targetComponentId: string;
     }>;
+    settingsComponentTagName?: string;
     props?: Record<string, any>;
   };
 }
@@ -21,12 +21,13 @@ export declare class CustomizationSidebar {
   private static layersViewController;
   private static functionsPanel;
   private static selectedComponent;
-  private static settingsReactRoot;
   private static customComponentsConfig;
+  private static basicComponentsConfig;
   private static editable;
   static init(
     customComponentsConfig: CustomComponentConfig,
-    editable: boolean | null
+    editable: boolean | null,
+    BasicComponent: BasicComponent
   ): void;
   private static switchToCustomizeMode;
   private static switchToAttributeMode;

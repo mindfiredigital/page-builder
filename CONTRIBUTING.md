@@ -85,6 +85,129 @@ Here are some ways you can contribute to the project:
    pnpm lint         # Run linting
    ```
 
+## Local Package Testing
+
+Before publishing or submitting a PR, you should test your packages locally to ensure they work correctly in real-world scenarios. Here's how to test packages locally using `pnpm pack`:
+
+### Testing Individual Packages
+
+1. **Build the packages**:
+
+   ```bash
+   pnpm turbo run build
+   ```
+
+2. **Navigate to the package you want to test** and create a tarball:
+
+   ```bash
+   cd packages/core
+   pnpm pack
+   # This creates a .tgz file like: page-builder-core-1.0.0.tgz
+   ```
+
+3. **Copy the full path** of the generated `.tgz` file:
+
+   ```bash
+   # Example path (adjust according to your actual path)
+   /path/to/page-builder/packages/core/page-builder-core-1.0.0.tgz
+   ```
+
+4. **In your test project**, install the local package:
+   ```bash
+   npm install /path/to/page-builder/packages/core/page-builder-core-1.0.0.tgz
+   ```
+
+### Testing Framework-Specific Packages
+
+#### Testing React Package
+
+The React package has dependencies on both the `core` and `web-component` packages. You need to pack and install all three:
+
+1. **Pack all required packages**:
+
+   ```bash
+   # Pack core package
+   cd packages/core
+   pnpm pack
+
+   # Pack web-component package
+   cd ../web-component
+   pnpm pack
+
+   # Pack react package
+   cd ../react
+   pnpm pack
+   ```
+
+2. **Install all packages in your test React project**:
+   ```bash
+   # Install in dependency order: core → web-component → react
+   npm install /path/to/page-builder/packages/core/page-builder-core-1.0.0.tgz
+   npm install /path/to/page-builder/packages/web-component/page-builder-web-component-1.0.0.tgz
+   npm install /path/to/page-builder/packages/react/page-builder-react-1.0.0.tgz
+   ```
+
+#### Testing Angular Package
+
+Similar to React, Angular package also depends on `core` and `web-component` packages:
+
+1. **Pack all required packages**:
+
+   ```bash
+   # Pack core package
+   cd packages/core
+   pnpm pack
+
+   # Pack web-component package
+   cd ../web-component
+   pnpm pack
+
+   # Pack angular package
+   cd ../angular
+   pnpm pack
+   ```
+
+2. **Install all packages in your test Angular project**:
+   ```bash
+   # Install in dependency order: core → web-component → angular
+   npm install /path/to/page-builder/packages/core/page-builder-core-1.0.0.tgz
+   npm install /path/to/page-builder/packages/web-component/page-builder-web-component-1.0.0.tgz
+   npm install /path/to/page-builder/packages/angular/page-builder-angular-1.0.0.tgz
+   ```
+
+### Testing Best Practices
+
+1. **Clean Installation**: Always test with a fresh `node_modules` by deleting it before installing your local packages.
+
+2. **Version Conflicts**: If you encounter version conflicts, ensure you're using the same version numbers across all interdependent packages.
+
+3. **Test Different Scenarios**:
+
+   - Fresh project setup
+   - Upgrading from previous version
+   - Different Node.js versions
+   - Different package managers (npm, yarn, pnpm)
+
+4. **Cleanup**: After testing, remove the `.tgz` files:
+   ```bash
+   find packages -name "*.tgz" -delete
+   ```
+
+### Alternative: Using `npm link`
+
+For development purposes, you can also use `npm link` for faster iteration:
+
+```bash
+# In the package directory
+cd packages/core
+npm link
+
+# In your test project
+npm link @page-builder/core
+```
+
+**Note**: `npm link` creates symlinks and may behave differently than actual package installation, so always do final testing with `pnpm pack` method.
+
 ## Commit Message Format
 
 We follow a strict conventional commit message format to ensure consistent and meaningful commit messages. This format helps in automated versioning, changelog generation, and release management in our monorepo structure.

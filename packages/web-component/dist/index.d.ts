@@ -14,6 +14,7 @@ declare class PageBuilderComponent extends HTMLElement {
   private initialized;
   private _initialDesign;
   private _editable;
+  private _brandTitle?;
   private config;
   private template;
   constructor();
@@ -25,6 +26,8 @@ declare class PageBuilderComponent extends HTMLElement {
   ): void;
   set editable(value: boolean | null);
   get editable(): boolean | null;
+  set brandTitle(value: string | undefined);
+  get brandTitle(): string | undefined;
   set initialDesign(value: PageBuilderDesign | null);
   get initialDesign(): PageBuilderDesign | null;
   connectedCallback(): void;

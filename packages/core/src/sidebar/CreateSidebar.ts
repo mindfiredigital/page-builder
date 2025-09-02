@@ -6,35 +6,37 @@ export function createSidebar(
   // We have default values if there is no custom components are specified within parameters
   if (
     !dynamicComponents ||
-    (dynamicComponents.Basic.length === 0 &&
+    (dynamicComponents.Basic.components.length === 0 &&
       dynamicComponents.Extra.length === 0 &&
       Object.keys(dynamicComponents.Custom).length === 0)
   ) {
     dynamicComponents = {
-      Basic: [
-        'button',
-        'header',
-        'text',
-        'image',
-        'video',
-        'container',
-        'twoCol',
-        'threeCol',
-        'table',
-        'link',
-      ],
+      Basic: {
+        components: [
+          { name: 'button' },
+          { name: 'header' },
+          { name: 'text' },
+          { name: 'image' },
+          { name: 'video' },
+          { name: 'container' },
+          { name: 'twoCol' },
+          { name: 'threeCol' },
+          { name: 'table' },
+          { name: 'link' },
+        ],
+      },
       // Add portfolio for version 2
       Extra: ['landingpage'],
       Custom: {},
     };
   }
   const sidebar = document.getElementById('sidebar')!;
+  sidebar.classList.add('visible');
   if (!sidebar) {
     console.error('Sidebar element not found');
     return;
   }
-  console.log('sidebar display', editable);
-  if (!editable) {
+  if (editable === false) {
     sidebar.style.display = 'none';
   }
 
@@ -49,7 +51,6 @@ export function createSidebar(
     twoCol: svgs.twocol,
     threeCol: svgs.threecol,
     table: svgs.table,
-    // portfolio: 'dist/icons/portfolio.png',
     landingpage: svgs.landing,
     link: svgs.hyperlink,
   };
@@ -86,6 +87,43 @@ export function createSidebar(
     // Handling standard dynamic components (Basic and Extra)
     if (Array.isArray(components)) {
       components.forEach((componentId: string) => {
+        // let componentId: string;
+
+        const iconElement = document.createElement('div');
+        iconElement.classList.add('draggable');
+        iconElement.id = componentId;
+        iconElement.setAttribute('draggable', 'true');
+        iconElement.setAttribute('data-component', componentId);
+
+        const customTitle = titles[componentId] || `Drag to add ${componentId}`;
+        iconElement.setAttribute('title', customTitle);
+
+        // Add SVG as innerHTML
+        if (icons[componentId]) {
+          iconElement.innerHTML = ` ${icons[componentId]}
+          <div class="drag-text">${componentId}</div>`;
+
+          // Optionally style the SVG
+          const svgElement = iconElement.querySelector('svg');
+          if (svgElement) {
+            svgElement.classList.add('component-icon');
+          }
+        } else {
+          console.warn(`Icon not found for component: ${customTitle}`);
+        }
+
+        categoryMenu.appendChild(iconElement);
+      });
+    } else if (category === 'Basic' && typeof components === 'object') {
+      components.components.forEach((component: BasicComponent) => {
+        let componentId!: string;
+        if (
+          typeof component === 'object' &&
+          component !== null &&
+          'name' in component
+        ) {
+          componentId = component.name as string;
+        }
         const iconElement = document.createElement('div');
         iconElement.classList.add('draggable');
         iconElement.id = componentId;
@@ -138,7 +176,6 @@ export function createSidebar(
 
           iconElement.setAttribute('data-tag-name', component);
           iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
-          console.log(settingsComponent, 'config');
           // Store custom settings as a JSON string
           if (settingsComponent) {
             iconElement.setAttribute(

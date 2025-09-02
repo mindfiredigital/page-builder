@@ -1,6 +1,9 @@
 import { svgs } from '../icons/svgs';
 
-export function createNavbar(editable: boolean | null) {
+export function createNavbar(
+  editable: boolean | null,
+  brandTitle = 'Page Builder'
+) {
   const navbar = document.createElement('nav');
   navbar.id = 'preview-navbar';
 
@@ -15,6 +18,7 @@ export function createNavbar(editable: boolean | null) {
     redo: svgs.redo,
     reset: svgs.reset,
     menu: svgs.customizationMenu,
+    sidebarMenu: svgs.sidebarMenu,
   };
 
   // Array of button data with only titles
@@ -37,6 +41,11 @@ export function createNavbar(editable: boolean | null) {
         },
         { id: 'undo-btn', icon: icons.undo, title: 'Undo button' },
         { id: 'redo-btn', icon: icons.redo, title: 'Redo button' },
+        {
+          id: 'sidebar-menu',
+          icon: icons.sidebarMenu,
+          title: 'Sidebar Menu',
+        },
       ]
     : [
         {
@@ -56,18 +65,19 @@ export function createNavbar(editable: boolean | null) {
         },
       ];
 
-  const rightButtons = editable
-    ? [
-        { id: 'view-btn', icon: icons.view, title: 'View' },
-        { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
-        { id: 'reset-btn', icon: icons.reset, title: 'Reset' },
-        { id: 'export-btn', icon: icons.export, title: 'Export' },
-        { id: 'menu-btn', icon: icons.menu, title: 'Customization Menu' },
-      ]
-    : [
-        { id: 'view-btn', icon: icons.view, title: 'View' },
-        { id: 'export-btn', icon: icons.export, title: 'Export' },
-      ];
+  const rightButtons =
+    editable === true || editable === null
+      ? [
+          { id: 'view-btn', icon: icons.view, title: 'View' },
+          { id: 'save-btn', icon: icons.save, title: 'Save Layout' },
+          { id: 'reset-btn', icon: icons.reset, title: 'Reset' },
+          { id: 'export-btn', icon: icons.export, title: 'Export' },
+          { id: 'menu-btn', icon: icons.menu, title: 'Customization Menu' },
+        ]
+      : [
+          { id: 'view-btn', icon: icons.view, title: 'View' },
+          { id: 'export-btn', icon: icons.export, title: 'Export' },
+        ];
 
   const leftContainer = document.createElement('div');
   leftContainer.classList.add('left-buttons');
@@ -77,6 +87,7 @@ export function createNavbar(editable: boolean | null) {
     button.id = id;
     button.classList.add('preview-btn');
     button.title = title;
+    button.style.color = '#000';
 
     // Insert the SVG directly as innerHTML
     button.innerHTML = icon;
@@ -85,12 +96,34 @@ export function createNavbar(editable: boolean | null) {
     if (svgElement) {
       svgElement.classList.add('nav-icon');
     }
+    if (button.id === 'sidebar-menu') {
+      button.style.backgroundColor = '#e2e8f0';
+      button.style.borderColor = '#cbd5e1';
+      button.onclick = () => {
+        const sidebar = document.getElementById('sidebar');
+        const hasClass = sidebar?.classList.contains('visible');
+        if (sidebar) {
+          if (hasClass) {
+            sidebar.classList.remove('visible');
+            sidebar.style.display = 'none';
+            button.style.backgroundColor = '#ffffff';
+            button.style.border = 'none';
+            button.style.border = '1px solid #ffffff';
+          } else {
+            sidebar.style.display = 'block';
+            sidebar.classList.add('visible');
+            button.style.backgroundColor = '#e2e8f0';
+            button.style.borderColor = '#cbd5e1';
+          }
+        }
+      };
+    }
     leftContainer.appendChild(button);
   });
 
   const centerText = document.createElement('div');
   centerText.classList.add('center-text');
-  centerText.textContent = 'Page Builder';
+  centerText.textContent = brandTitle;
 
   const rightContainer = document.createElement('div');
   rightContainer.classList.add('right-buttons');
@@ -100,6 +133,7 @@ export function createNavbar(editable: boolean | null) {
     button.id = id;
     button.classList.add('preview-btn');
     button.title = title;
+    button.style.color = '#000';
 
     // Insert the SVG directly as innerHTML
     button.innerHTML = icon;
@@ -110,7 +144,6 @@ export function createNavbar(editable: boolean | null) {
     }
     rightContainer.appendChild(button);
     if (id === 'menu-btn') {
-      button.style.color = '#000';
       if (button) {
         button.onclick = () => {
           const customizeTab = document.getElementById('customization');
