@@ -44,7 +44,7 @@ export class UserPortfolioTemplate {
     containerElement.appendChild(nameElement);
     // Image Section with placeholder text and upload functionality
     const imageSection = new ImageComponent();
-    const imageElement = imageSection.create();
+    const imageElement = imageSection.create(null, null);
     imageElement.style.borderRadius = '50%';
     imageElement.style.width = '140px';
     imageElement.style.height = '140px';

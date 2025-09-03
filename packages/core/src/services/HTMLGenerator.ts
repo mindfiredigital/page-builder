@@ -69,7 +69,7 @@ export class HTMLGenerator {
       });
 
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input'
+        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input, .cell-controls,.add-row-button'
       );
       elementsToRemove.forEach(el => el.remove());
 
@@ -112,7 +112,7 @@ export class HTMLGenerator {
 
       }
           .editable-component{
-          border:none !important;
+          
           box-shadow:none !important;
           }
 

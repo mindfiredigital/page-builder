@@ -1,5 +1,6 @@
+import { Canvas } from '../canvas/Canvas.js';
 export class ImageComponent {
-  create(src = null) {
+  create(src = null, tableAttributeConfig) {
     // Create a container for the image and label
     const container = document.createElement('div');
     container.classList.add('image-component');
@@ -85,6 +86,9 @@ export class ImageComponent {
           uploadText.style.display = 'none';
           // Make background transparent after image is loaded
           container.style.backgroundColor = 'transparent';
+          Canvas === null || Canvas === void 0
+            ? void 0
+            : Canvas.dispatchDesignChange();
         }
       };
       reader.readAsDataURL(file);

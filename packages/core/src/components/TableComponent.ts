@@ -1,3 +1,4 @@
+import { Canvas } from '../canvas/Canvas';
 import { ModalComponent } from './ModalManager';
 
 export class TableComponent {
@@ -14,71 +15,46 @@ export class TableComponent {
     isPreview: boolean = false,
     tableAttributeConfig: ComponentAttribute[] | undefined | [] | null
   ): HTMLElement {
-    // Store the table attribute config for later use
     TableComponent.tableAttributeConfig = tableAttributeConfig || [];
 
-    // Create a container for the table
     const container = document.createElement('div');
     container.classList.add('table-component');
+    const tableId = Canvas.generateUniqueClass('table');
+    container.id = tableId;
+    container.style.minWidth = '400px';
+    container.style.margin = '0 auto 16px auto';
+    container.style.border = '1px solid #d1d5db';
+    container.style.borderRadius = '8px';
 
-    // Create the table element
-    const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.overflow = 'auto';
-    table.style.borderCollapse = 'collapse';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
 
-    // Generate table rows and cells
+    const tableWrapper = document.createElement('div');
+    tableWrapper.style.display = 'flex';
+    tableWrapper.style.flexDirection = 'column';
+    tableWrapper.classList.add('table-wrapper');
     for (let i = 0; i < rowCount; i++) {
-      const row = document.createElement('tr');
-      for (let j = 0; j < columnCount; j++) {
-        const cell = document.createElement('td');
-        cell.textContent = `R${i + 1}C${j + 1}`;
-        cell.style.border = '1px solid #000';
-        cell.style.padding = '8px';
-        cell.style.cursor = 'pointer';
-        cell.style.transition = 'background-color 0.2s ease';
-
-        // Add hover effect
-        cell.addEventListener('mouseenter', () => {
-          cell.style.backgroundColor = '#f0f8ff';
-        });
-
-        cell.addEventListener('mouseleave', () => {
-          cell.style.backgroundColor = '';
-        });
-
-        // Add click event listener to open modal
-        cell.addEventListener('click', () => {
-          this.handleCellClick(cell);
-        });
-
-        row.appendChild(cell);
-      }
-      table.appendChild(row);
+      const row = this.createTableRow(i, columnCount, tableId);
+      tableWrapper.appendChild(row);
     }
 
-    // Add table to container
-    container.appendChild(table);
+    container.appendChild(tableWrapper);
 
-    // Add buttons only if not in preview mode
     if (!isPreview) {
-      const buttonContainer = document.createElement('div');
-      buttonContainer.classList.add('button-container');
-      buttonContainer.style.marginTop = '10px';
-      buttonContainer.style.display = 'flex';
-      buttonContainer.style.gap = '10px';
-
-      // Add Row button
       const addRowButton = document.createElement('button');
       addRowButton.textContent = 'Add Row';
-      addRowButton.addEventListener('click', () => this.addRow(table));
-      buttonContainer.appendChild(addRowButton);
+      addRowButton.className = 'add-row-button';
+      this.styleButton(addRowButton, '#2563eb', '#1d4ed8');
 
-      // Add Column button
-      const addColumnButton = document.createElement('button');
-      addColumnButton.textContent = 'Add Column';
-      addColumnButton.addEventListener('click', () => this.addColumn(table));
-      buttonContainer.appendChild(addColumnButton);
+      addRowButton.addEventListener('click', () => {
+        this.addRow(tableWrapper, tableId);
+      });
+
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.textAlign = 'center';
+      buttonContainer.style.marginTop = '10px';
+      buttonContainer.style.marginBottom = '10px';
+      buttonContainer.appendChild(addRowButton);
 
       container.appendChild(buttonContainer);
     }
@@ -86,12 +62,191 @@ export class TableComponent {
     return container;
   }
 
-  /**
-   * Handles cell click events to open the modal with table configuration
-   * @param cell The clicked table cell element
-   */
-  private async handleCellClick(cell: HTMLTableCellElement): Promise<void> {
-    // Check if modal component is available and table config exists
+  private createTableRow(
+    rowIndex: number,
+    cellCount: number,
+    tableId: string
+  ): HTMLElement {
+    const rowDiv = document.createElement('div');
+    rowDiv.style.display = 'grid';
+    rowDiv.style.gridTemplateColumns = `repeat(${cellCount}, 1fr)`;
+    rowDiv.className = 'table-row';
+
+    for (let j = 0; j < cellCount; j++) {
+      const cell = this.createTableCell(rowIndex, j, tableId);
+      rowDiv.appendChild(cell);
+    }
+
+    return rowDiv;
+  }
+
+  private createTableCell(
+    rowIndex: number,
+    cellIndex: number,
+    tableId: string
+  ): HTMLElement {
+    const cell = document.createElement('div');
+    cell.className = 'table-cell';
+
+    cell.id = `table-cell-T-${tableId}-R${rowIndex}-C${cellIndex}`;
+    cell.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
+    cell.style.border = '1px solid #d1d5db';
+    cell.style.padding = '8px 12px';
+    cell.style.minHeight = '50px';
+    cell.style.position = 'relative';
+    cell.style.cursor = 'pointer';
+    cell.style.transition = 'background-color 0.2s ease';
+    cell.style.display = 'flex';
+    cell.style.alignItems = 'center';
+    cell.style.justifyContent = 'center';
+
+    // Add hover effect
+    cell.addEventListener('mouseenter', () => {
+      if (!cell.hasAttribute('data-attribute-key')) {
+        cell.style.backgroundColor = '#f0f8ff';
+      }
+    });
+
+    cell.addEventListener('mouseleave', () => {
+      if (!cell.hasAttribute('data-attribute-key')) {
+        cell.style.backgroundColor = '';
+      }
+    });
+
+    // Create control buttons container
+    const controlsContainer = document.createElement('div');
+    controlsContainer.className = 'cell-controls';
+    controlsContainer.style.position = 'absolute';
+    controlsContainer.style.bottom = '5px';
+    controlsContainer.style.right = '5px';
+    controlsContainer.style.display = 'flex';
+    controlsContainer.style.gap = '4px';
+    controlsContainer.style.alignItems = 'center';
+    controlsContainer.style.justifyContent = 'center';
+
+    // Add Cell button
+    const addCellButton = document.createElement('button');
+    addCellButton.textContent = '+';
+    addCellButton.className = 'add-cell-button';
+    addCellButton.style.width = '20px';
+    addCellButton.style.height = '20px';
+    addCellButton.style.border = 'none';
+    addCellButton.style.borderRadius = '3px';
+    addCellButton.style.backgroundColor = '#10b981';
+    addCellButton.style.color = 'white';
+    addCellButton.style.fontSize = '12px';
+    addCellButton.style.cursor = 'pointer';
+    addCellButton.style.display = 'flex';
+    addCellButton.style.alignItems = 'center';
+    addCellButton.style.justifyContent = 'center';
+    addCellButton.style.fontWeight = 'bold';
+
+    addCellButton.addEventListener('mouseenter', () => {
+      addCellButton.style.backgroundColor = '#059669';
+    });
+
+    addCellButton.addEventListener('mouseleave', () => {
+      addCellButton.style.backgroundColor = '#10b981';
+    });
+
+    addCellButton.addEventListener('click', e => {
+      e.stopPropagation();
+      this.addCellToRow(cell, tableId);
+    });
+
+    // Delete Cell button
+    const deleteCellButton = document.createElement('button');
+    deleteCellButton.innerHTML = '×';
+    deleteCellButton.className = 'delete-cell-button';
+    deleteCellButton.style.width = '20px';
+    deleteCellButton.style.height = '20px';
+    deleteCellButton.style.border = 'none';
+    deleteCellButton.style.borderRadius = '3px';
+    deleteCellButton.style.backgroundColor = '#ef4444';
+    deleteCellButton.style.color = 'white';
+    deleteCellButton.style.fontSize = '14px';
+    deleteCellButton.style.cursor = 'pointer';
+    deleteCellButton.style.display = 'flex';
+    deleteCellButton.style.alignItems = 'center';
+    deleteCellButton.style.justifyContent = 'center';
+    deleteCellButton.style.fontWeight = 'bold';
+
+    deleteCellButton.addEventListener('mouseenter', () => {
+      deleteCellButton.style.backgroundColor = '#dc2626';
+    });
+
+    deleteCellButton.addEventListener('mouseleave', () => {
+      deleteCellButton.style.backgroundColor = '#ef4444';
+    });
+
+    deleteCellButton.addEventListener('click', e => {
+      e.stopPropagation();
+      this.deleteCell(cell);
+    });
+
+    controlsContainer.appendChild(addCellButton);
+    controlsContainer.appendChild(deleteCellButton);
+    cell.appendChild(controlsContainer);
+
+    return cell;
+  }
+
+  private addCellToRow(referenceCell: HTMLElement, tableId: string): void {
+    const row = referenceCell.parentElement;
+    if (!row) return;
+
+    const rowIndex = Array.from(row.parentElement!.children).indexOf(row);
+    const currentCellCount = row.children.length;
+
+    const newCell = this.createTableCell(rowIndex, currentCellCount, tableId);
+    row.appendChild(newCell);
+
+    row.style.gridTemplateColumns = `repeat(${currentCellCount + 1}, 1fr)`;
+  }
+
+  private deleteCell(cellToDelete: HTMLElement): void {
+    const row = cellToDelete.parentElement;
+    if (!row) return;
+
+    const cellCount = row.children.length;
+
+    row.removeChild(cellToDelete);
+
+    if (cellCount === 1) {
+      const tableWrapper = row.parentElement;
+      if (tableWrapper && tableWrapper.children.length > 1) {
+        tableWrapper.removeChild(row);
+      }
+    } else {
+      row.style.gridTemplateColumns = `repeat(${cellCount - 1}, 1fr)`;
+    }
+  }
+
+  private styleButton(
+    button: HTMLButtonElement,
+    bgColor: string,
+    hoverColor: string
+  ): void {
+    button.style.padding = '8px 16px';
+    button.style.backgroundColor = bgColor;
+    button.style.color = 'white';
+    button.style.border = 'none';
+    button.style.borderRadius = '6px';
+    button.style.fontSize = '14px';
+    button.style.fontWeight = '500';
+    button.style.cursor = 'pointer';
+    button.style.transition = 'background-color 0.2s ease';
+
+    button.addEventListener('mouseenter', () => {
+      button.style.backgroundColor = hoverColor;
+    });
+
+    button.addEventListener('mouseleave', () => {
+      button.style.backgroundColor = bgColor;
+    });
+  }
+
+  async handleCellClick(cell: HTMLElement): Promise<void> {
     if (
       !this.modalComponent ||
       !TableComponent.tableAttributeConfig ||
@@ -102,35 +257,25 @@ export class TableComponent {
     }
 
     try {
-      // Open modal with table configuration
       const result = await this.modalComponent.show(
         TableComponent.tableAttributeConfig
       );
 
       if (result) {
-        // Find which attribute was selected based on the result
         const selectedAttribute = this.findSelectedAttribute(result);
 
         if (selectedAttribute) {
-          // Update cell content with the selected attribute's key or value
           this.updateCellContent(cell, selectedAttribute, result);
         }
       }
-      // If result is null (modal was closed), keep existing cell content
     } catch (error) {
       console.error('Error handling cell click:', error);
     }
   }
 
-  /**
-   * Finds the selected attribute based on modal result
-   * @param result The result from the modal
-   * @returns The selected ComponentAttribute or null
-   */
   private findSelectedAttribute(
     result: Record<string, any>
   ): ComponentAttribute | null {
-    // Look for the attribute that has a meaningful change or selection
     for (const attr of TableComponent.tableAttributeConfig) {
       if (
         result.hasOwnProperty(attr.key) &&
@@ -143,291 +288,127 @@ export class TableComponent {
     return null;
   }
 
-  /**
-   * Updates the cell content based on the selected attribute
-   * @param cell The table cell to update
-   * @param attribute The selected attribute
-   * @param result The modal result
-   */
+  seedFormulaValues(table: HTMLElement, values: Record<string, any>) {
+    const cells = table.querySelectorAll('div[data-attribute-key]');
+    cells.forEach(cell => {
+      const key = cell.getAttribute('data-attribute-key');
+      if (key && values.hasOwnProperty(key)) {
+        cell.textContent = values[key];
+        (cell as HTMLElement).style.color = '#000000';
+      }
+    });
+    Canvas.dispatchDesignChange();
+  }
+
   private updateCellContent(
-    cell: HTMLTableCellElement,
+    cell: HTMLElement,
     attribute: ComponentAttribute,
     result: Record<string, any>
   ): void {
-    // Store the attribute key as data attribute for future reference
     cell.setAttribute('data-attribute-key', attribute.key);
     cell.setAttribute('data-attribute-type', attribute.type);
 
-    // Update cell content based on attribute type
-    // switch (attribute.type) {
-    //   case 'Input':
-    //     cell.textContent = result[attribute.key] || attribute.key;
-    //     break;
-    //   case 'Constant':
-    //   case 'Formula':
-    cell.textContent = `${attribute.key}: ${attribute.value}`;
-    //     break;
-    //   case 'Image':
-    //     // For image type, you might want to show just the key or a placeholder
-    //     cell.textContent = `${attribute.key} (Image)`;
-    //     break;
-    //   default:
-    //     cell.textContent = attribute.key;
-    // }
+    const controlsElement = cell.querySelector('.cell-controls');
+    cell.textContent = `${attribute.title}`;
 
-    // Add visual indication that this cell has an attribute
-    cell.style.backgroundColor = '#e6f3ff';
-    cell.style.fontWeight = 'bold';
+    if (controlsElement) {
+      cell.appendChild(controlsElement);
+    }
+    cell.style.fontSize = '10px';
+    cell.style.color = 'rgb(188 191 198)';
+    cell.style.fontWeight = '500';
+    Canvas?.dispatchDesignChange();
   }
 
-  /**
-   * Sets the modal component for this table instance
-   * @param modalComponent The modal component instance
-   */
   setModalComponent(modalComponent: ModalComponent): void {
     this.modalComponent = modalComponent;
   }
 
-  addRow(table: HTMLTableElement): void {
-    const rowCount = table.rows.length;
-    const columnCount = table.rows[0]?.cells.length || 0;
-    const row = document.createElement('tr');
+  addRow(tableWrapper: HTMLElement, tableId: string): void {
+    const rowCount = tableWrapper.children.length;
 
-    for (let i = 0; i < columnCount; i++) {
-      const cell = document.createElement('td');
-      cell.textContent = `R${rowCount + 1}C${i + 1}`;
-      cell.style.border = '1px solid #000';
-      cell.style.padding = '8px';
-      cell.style.cursor = 'pointer';
-      cell.style.transition = 'background-color 0.2s ease';
-
-      // Add hover effect
-      cell.addEventListener('mouseenter', () => {
-        cell.style.backgroundColor = '#f0f8ff';
-      });
-
-      cell.addEventListener('mouseleave', () => {
-        cell.style.backgroundColor = '';
-      });
-
-      // Add click event listener
-      cell.addEventListener('click', () => {
-        this.handleCellClick(cell);
-      });
-
-      row.appendChild(cell);
-    }
-
-    table.appendChild(row);
+    const newRow = this.createTableRow(rowCount, 1, tableId);
+    tableWrapper.appendChild(newRow);
   }
 
-  addColumn(table: HTMLTableElement): void {
-    const rowCount = table.rows.length;
+  setRowCount(tableWrapper: HTMLElement, targetRowCount: number): void {
+    if (!tableWrapper) return;
 
-    for (let i = 0; i < rowCount; i++) {
-      const cell = document.createElement('td');
-      cell.textContent = `R${i + 1}C${table.rows[i].cells.length + 1}`;
-      cell.style.border = '1px solid #000';
-      cell.style.padding = '8px';
-      cell.style.cursor = 'pointer';
-      cell.style.transition = 'background-color 0.2s ease';
-
-      // Add hover effect
-      cell.addEventListener('mouseenter', () => {
-        cell.style.backgroundColor = '#f0f8ff';
-      });
-
-      cell.addEventListener('mouseleave', () => {
-        cell.style.backgroundColor = '';
-      });
-
-      // Add click event listener
-      cell.addEventListener('click', () => {
-        this.handleCellClick(cell);
-      });
-
-      table.rows[i].appendChild(cell);
-    }
-  }
-
-  setRowCount(table: HTMLTableElement, targetRowCount: number): void {
-    if (!table) return;
-
-    const currentRowCount = table.rows.length;
-    const currentColumnCount = table.rows[0]?.cells.length || 0;
-
+    const currentRowCount = tableWrapper.children.length;
+    const closestTable = tableWrapper.closest('.table-component');
+    const tableId = closestTable?.id;
     if (targetRowCount < 0) targetRowCount = 0;
 
     if (targetRowCount > currentRowCount) {
       // Add rows
       for (let i = currentRowCount; i < targetRowCount; i++) {
-        const row = document.createElement('tr');
-        for (let j = 0; j < currentColumnCount; j++) {
-          const cell = document.createElement('td');
-          cell.textContent = `R${i + 1}C${j + 1}`;
-          cell.style.border = '1px solid #000';
-          cell.style.padding = '8px';
-          cell.style.cursor = 'pointer';
-          cell.style.transition = 'background-color 0.2s ease';
-
-          // Add hover effect
-          cell.addEventListener('mouseenter', () => {
-            cell.style.backgroundColor = '#f0f8ff';
-          });
-
-          cell.addEventListener('mouseleave', () => {
-            cell.style.backgroundColor = '';
-          });
-
-          // Add click event listener
-          cell.addEventListener('click', () => {
-            this.handleCellClick(cell);
-          });
-
-          row.appendChild(cell);
-        }
-        table.appendChild(row);
+        this.addRow(tableWrapper, tableId!);
       }
     } else if (targetRowCount < currentRowCount) {
       // Remove rows
       for (let i = currentRowCount - 1; i >= targetRowCount; i--) {
-        table.deleteRow(i);
+        const rowToRemove = tableWrapper.children[i];
+        tableWrapper.removeChild(rowToRemove);
       }
     }
   }
 
-  setColumnCount(table: HTMLTableElement, targetColumnCount: number): void {
-    if (!table || table.rows.length === 0) return;
+  createHeder(tableWrapper: HTMLElement): void {
+    if (!tableWrapper || tableWrapper.children.length === 0) return;
 
-    const currentRowCount = table.rows.length;
-    const currentColumnCount = table.rows[0].cells.length;
+    const firstRow = tableWrapper.children[0] as HTMLElement;
+    const cells = firstRow.querySelectorAll('.table-cell');
 
-    if (targetColumnCount < 0) targetColumnCount = 0;
-
-    for (let i = 0; i < currentRowCount; i++) {
-      const row = table.rows[i];
-      if (targetColumnCount > currentColumnCount) {
-        // Add columns
-        for (let j = currentColumnCount; j < targetColumnCount; j++) {
-          const cell = document.createElement('td');
-          cell.textContent = `R${i + 1}C${j + 1}`;
-          cell.style.border = '1px solid #000';
-          cell.style.padding = '8px';
-          cell.style.cursor = 'pointer';
-          cell.style.transition = 'background-color 0.2s ease';
-
-          // Add hover effect
-          cell.addEventListener('mouseenter', () => {
-            cell.style.backgroundColor = '#f0f8ff';
-          });
-
-          cell.addEventListener('mouseleave', () => {
-            cell.style.backgroundColor = '';
-          });
-
-          // Add click event listener
-          cell.addEventListener('click', () => {
-            this.handleCellClick(cell);
-          });
-
-          row.appendChild(cell);
-        }
-      } else if (targetColumnCount < currentColumnCount) {
-        // Remove columns
-        for (let j = currentColumnCount - 1; j >= targetColumnCount; j--) {
-          row.deleteCell(j);
-        }
-      }
-    }
-  }
-
-  createHeder(table: HTMLTableElement): void {
-    if (!table || table.rows.length === 0) return;
-
-    const firstRow = table.rows[0];
-    for (let i = 0; i < firstRow.cells.length; i++) {
-      const tdElement = firstRow.cells[i];
-      const thElement = document.createElement('th');
-      thElement.innerHTML = tdElement.innerHTML;
-
-      // Copy all attributes
-      for (const attr of Array.from(tdElement.attributes)) {
-        thElement.setAttribute(attr.name, attr.value);
-      }
-
-      // Ensure header styling
-      thElement.style.cursor = 'pointer';
-      thElement.style.transition = 'background-color 0.2s ease';
-
-      // Add hover effect for header
-      thElement.addEventListener('mouseenter', () => {
-        thElement.style.backgroundColor = '#f0f8ff';
-      });
-
-      thElement.addEventListener('mouseleave', () => {
-        thElement.style.backgroundColor = '';
-      });
-
-      // Add click event listener for header
-      thElement.addEventListener('click', () => {
-        this.handleCellClick(thElement as any); // Cast to work with headers
-      });
-
-      tdElement.parentNode?.replaceChild(thElement, tdElement);
-    }
+    cells.forEach((cell, index) => {
+      const cellElement = cell as HTMLElement;
+      cellElement.style.fontWeight = 'bold';
+      cellElement.style.backgroundColor = '#f8fafc';
+      cellElement.style.borderBottom = '2px solid #374151';
+    });
   }
 
   static restore(container: HTMLElement): void {
     const instance = new TableComponent();
-    const table = container.querySelector('table');
-    if (!table) {
-      console.error('No table found in container');
+    const tableWrapper = container.querySelector('.table-wrapper');
+    const closestTable = tableWrapper?.closest('.table-component');
+    const tableId = closestTable?.id;
+    if (!tableWrapper) {
+      console.error('No table wrapper found in container');
       return;
     }
 
-    // Restore cell click functionality
-    const cells = table.querySelectorAll('td, th');
+    const cells = tableWrapper.querySelectorAll('.table-cell');
     cells.forEach(cell => {
-      const cellElement = cell as HTMLTableCellElement;
-      cellElement.style.cursor = 'pointer';
-      cellElement.style.transition = 'background-color 0.2s ease';
+      const cellElement = cell as HTMLElement;
 
-      // Add hover effects
-      cellElement.addEventListener('mouseenter', () => {
-        cellElement.style.backgroundColor = '#f0f8ff';
-      });
+      const controls = cellElement.querySelector('.cell-controls');
+      if (controls) {
+        const addButton = controls.querySelector('.add-cell-button');
+        const deleteButton = controls.querySelector('.delete-cell-button');
 
-      cellElement.addEventListener('mouseleave', () => {
-        cellElement.style.backgroundColor = '';
-      });
+        if (addButton) {
+          addButton.addEventListener('click', e => {
+            e.stopPropagation();
+            instance.addCellToRow(cellElement, tableId!);
+          });
+        }
 
-      // Add click event listener
-      cellElement.addEventListener('click', () => {
-        instance.handleCellClick(cellElement);
-      });
-    });
-
-    // Restore button functionality
-    const buttonContainer = container.querySelector('.button-container');
-    if (!buttonContainer) {
-      console.error('No button container found');
-      return;
-    }
-
-    const buttons = buttonContainer.querySelectorAll('button');
-    buttons.forEach(button => {
-      const newButton = button.cloneNode(true) as HTMLButtonElement;
-      button.parentNode?.replaceChild(newButton, button);
-
-      if (newButton.textContent === 'Add Row') {
-        newButton.addEventListener('click', () =>
-          instance.addRow(table as HTMLTableElement)
-        );
-      } else if (newButton.textContent === 'Add Column') {
-        newButton.addEventListener('click', () =>
-          instance.addColumn(table as HTMLTableElement)
-        );
+        if (deleteButton) {
+          deleteButton.addEventListener('click', e => {
+            e.stopPropagation();
+            instance.deleteCell(cellElement);
+          });
+        }
       }
     });
+
+    const addRowButton = container.querySelector(
+      '.add-row-button'
+    ) as HTMLButtonElement;
+    if (addRowButton) {
+      addRowButton.addEventListener('click', () => {
+        instance.addRow(tableWrapper as HTMLElement, tableId!);
+      });
+    }
   }
 }

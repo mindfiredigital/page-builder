@@ -1,5 +1,8 @@
 export declare class ImageComponent {
-  create(src?: string | null): HTMLElement;
+  create(
+    src: string | null | undefined,
+    tableAttributeConfig: ComponentAttribute[] | undefined | [] | null
+  ): HTMLElement;
   static handleFileChange(
     event: Event,
     container: HTMLElement,

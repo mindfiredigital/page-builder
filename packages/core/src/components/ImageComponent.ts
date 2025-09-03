@@ -1,5 +1,10 @@
+import { Canvas } from '../canvas/Canvas';
+
 export class ImageComponent {
-  create(src: string | null = null): HTMLElement {
+  create(
+    src: string | null = null,
+    tableAttributeConfig: ComponentAttribute[] | undefined | [] | null
+  ): HTMLElement {
     // Create a container for the image and label
     const container = document.createElement('div');
     container.classList.add('image-component');
@@ -102,6 +107,7 @@ export class ImageComponent {
           uploadText.style.display = 'none';
           // Make background transparent after image is loaded
           container.style.backgroundColor = 'transparent';
+          Canvas?.dispatchDesignChange();
         }
       };
 

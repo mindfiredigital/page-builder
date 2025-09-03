@@ -28,7 +28,7 @@ export class Canvas {
     _a.components = components;
   }
   static init(initialData = null, editable, basicComponentsConfig) {
-    var _b;
+    var _b, _c;
     this.editable = editable;
     const tableComponent = basicComponentsConfig.components.find(
       component => component.name === 'table'
@@ -41,6 +41,17 @@ export class Canvas {
         ? void 0
         : _b.filter(attribute => attribute.type == 'Formula');
     this.tableAttributeConfig = tableConfig;
+    const ImageComponent = basicComponentsConfig.components.find(
+      component => component.name === 'image'
+    );
+    const ImageConfig =
+      (_c =
+        ImageComponent === null || ImageComponent === void 0
+          ? void 0
+          : ImageComponent.attributes) === null || _c === void 0
+        ? void 0
+        : _c.filter(attribute => attribute.type == 'Formula');
+    this.ImageAttributeConfig = ImageConfig;
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -97,7 +108,7 @@ export class Canvas {
         composed: true,
       });
       _a.canvasElement.dispatchEvent(event);
-      // console.log('Canvas: Dispatched design-change event');
+      _a.jsonStorage.save(currentDesign);
     }
   }
   static clearCanvas() {
@@ -499,7 +510,7 @@ Canvas.components = [];
 Canvas.componentFactory = {
   button: () => new ButtonComponent().create(),
   header: () => new HeaderComponent().create(),
-  image: () => new ImageComponent().create(),
+  image: () => new ImageComponent().create(undefined, _a.ImageAttributeConfig),
   video: () =>
     new VideoComponent(() => _a.historyManager.captureState()).create(),
   table: () =>

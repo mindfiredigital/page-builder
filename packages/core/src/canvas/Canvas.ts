@@ -33,6 +33,8 @@ export class Canvas {
   public static jsonStorage: JSONStorage;
   public static lastCanvasWidth: number | null;
   private static tableAttributeConfig: ComponentAttribute[] | undefined;
+  private static ImageAttributeConfig: ComponentAttribute[] | undefined;
+
   public static getComponents(): HTMLElement[] {
     return Canvas.components;
   }
@@ -45,7 +47,8 @@ export class Canvas {
     {
       button: () => new ButtonComponent().create(),
       header: () => new HeaderComponent().create(),
-      image: () => new ImageComponent().create(),
+      image: () =>
+        new ImageComponent().create(undefined, this.ImageAttributeConfig),
       video: () =>
         new VideoComponent(() => Canvas.historyManager.captureState()).create(),
       table: () =>
@@ -71,6 +74,13 @@ export class Canvas {
       attribute => attribute.type == 'Formula'
     );
     this.tableAttributeConfig = tableConfig;
+    const ImageComponent = basicComponentsConfig.components.find(
+      component => component.name === 'image'
+    );
+    const ImageConfig = ImageComponent?.attributes?.filter(
+      attribute => attribute.type == 'Formula'
+    );
+    this.ImageAttributeConfig = ImageConfig;
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -131,7 +141,7 @@ export class Canvas {
         composed: true,
       });
       Canvas.canvasElement.dispatchEvent(event);
-      // console.log('Canvas: Dispatched design-change event');
+      Canvas.jsonStorage.save(currentDesign);
     }
   }
 

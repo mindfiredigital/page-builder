@@ -12,6 +12,7 @@ export declare class Canvas {
   static jsonStorage: JSONStorage;
   static lastCanvasWidth: number | null;
   private static tableAttributeConfig;
+  private static ImageAttributeConfig;
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
   private static componentFactory;
