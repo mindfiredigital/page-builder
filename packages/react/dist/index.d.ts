@@ -20,8 +20,11 @@ interface ComponentAttribute {
 }
 
 interface BasicComponent {
-  components: { name: string; attributes?: ComponentAttribute[] }[];
-  globalExecuteFunction?: Function;
+  components: {
+    name: string;
+    attributes?: ComponentAttribute[];
+    globalExecuteFunction?: Function;
+  }[];
 }
 
 interface PageBuilderDesign {

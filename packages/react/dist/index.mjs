@@ -10,7 +10,6 @@ var PageBuilderReact = ({
   brandTitle
 }) => {
   const builderRef = useRef(null);
-  const eventCountRef = useRef(0);
   const [processedConfig, setProcessedConfig] = useState(config);
   useEffect(() => {
     import("@mindfiredigital/page-builder-web-component").catch((error) => {
@@ -18,9 +17,7 @@ var PageBuilderReact = ({
     });
   }, []);
   useEffect(() => {
-    const modifiedConfig = JSON.parse(
-      JSON.stringify(config)
-    );
+    const modifiedConfig = config;
     if (customComponents) {
       modifiedConfig.Custom = modifiedConfig.Custom || {};
       Object.entries(customComponents).forEach(([key, componentConfig]) => {
@@ -108,6 +105,7 @@ var PageBuilderReact = ({
           const configString = JSON.stringify(processedConfig);
           (_a = builderRef.current) == null ? void 0 : _a.setAttribute("config-data", configString);
           if (builderRef.current) {
+            builderRef.current.configData = processedConfig;
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
@@ -123,10 +121,6 @@ var PageBuilderReact = ({
     const handleDesignChange = (event) => {
       const customEvent = event;
       if (onChange) {
-        eventCountRef.current += 1;
-        if (eventCountRef.current <= 2) {
-          return;
-        }
         onChange(customEvent.detail);
       }
     };

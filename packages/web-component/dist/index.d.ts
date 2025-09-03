@@ -18,12 +18,6 @@ declare class PageBuilderComponent extends HTMLElement {
   private config;
   private template;
   constructor();
-  static get observedAttributes(): string[];
-  attributeChangedCallback(
-    name: string,
-    oldValue: string,
-    newValue: string
-  ): void;
   set editable(value: boolean | null);
   get editable(): boolean | null;
   set brandTitle(value: string | undefined);
@@ -32,6 +26,8 @@ declare class PageBuilderComponent extends HTMLElement {
   get initialDesign(): PageBuilderDesign | null;
   connectedCallback(): void;
   private hasValidConfig;
+  set configData(value: any);
+  get configData(): any;
   private initializePageBuilder;
 }
 

@@ -26,21 +26,21 @@ var PageBuilderComponent = class extends HTMLElement {
     </div>`;
   }
   // Observe 'config-data' attribute to detect changes
-  static get observedAttributes() {
-    return ['config-data'];
-  }
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'config-data' && newValue !== oldValue) {
-      try {
-        const parsedConfig = JSON.parse(newValue);
-        this.config = parsedConfig;
-        this.initialized = false;
-        this.initializePageBuilder();
-      } catch (e) {
-        console.error('Failed to parse config:', e);
-      }
-    }
-  }
+  // static get observedAttributes() {
+  //   return ['config-data'];
+  // }
+  // attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  //   if (name === 'config-data' && newValue !== oldValue) {
+  //     try {
+  //       const parsedConfig = JSON.parse(newValue);
+  //       this.config = parsedConfig;
+  //       this.initialized = false;
+  //       this.initializePageBuilder();
+  //     } catch (e) {
+  //       console.error('Failed to parse config:', e);
+  //     }
+  //   }
+  // }
   set editable(value) {
     if (this._editable !== value) {
       this._editable = value;
@@ -103,6 +103,14 @@ var PageBuilderComponent = class extends HTMLElement {
         ((_b = this.config.Extra) == null ? void 0 : _b.length) > 0 ||
         (this.config.Custom && Object.keys(this.config.Custom).length > 0))
     );
+  }
+  set configData(value) {
+    this.config = value;
+    this.initialized = false;
+    this.initializePageBuilder();
+  }
+  get configData() {
+    return this.config;
   }
   // Initializes the PageBuilder instance
   initializePageBuilder() {

@@ -18,8 +18,11 @@ export interface ComponentAttribute {
 }
 
 export interface BasicComponent {
-  components: { name: string; attributes?: ComponentAttribute[] }[];
-  globalExecuteFunction?: Function;
+  components: {
+    name: string;
+    attributes?: ComponentAttribute[];
+    globalExecuteFunction?: Function;
+  }[];
 }
 
 export interface PageBuilderDesign {
@@ -35,6 +38,7 @@ export interface PageBuilderDesign {
 }
 
 export interface PageBuilderElement extends HTMLElement {
+  configData: any;
   editable: boolean;
   initialDesign?: PageBuilderDesign | null;
   getDebugInfo?: any;

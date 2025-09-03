@@ -55,7 +55,6 @@ var PageBuilderReact = ({
   brandTitle,
 }) => {
   const builderRef = (0, import_react.useRef)(null);
-  const eventCountRef = (0, import_react.useRef)(0);
   const [processedConfig, setProcessedConfig] = (0, import_react.useState)(
     config
   );
@@ -65,7 +64,7 @@ var PageBuilderReact = ({
     });
   }, []);
   (0, import_react.useEffect)(() => {
-    const modifiedConfig = JSON.parse(JSON.stringify(config));
+    const modifiedConfig = config;
     if (customComponents) {
       modifiedConfig.Custom = modifiedConfig.Custom || {};
       Object.entries(customComponents).forEach(([key, componentConfig]) => {
@@ -169,6 +168,7 @@ var PageBuilderReact = ({
             ? void 0
             : _a.setAttribute('config-data', configString);
           if (builderRef.current) {
+            builderRef.current.configData = processedConfig;
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
@@ -184,10 +184,6 @@ var PageBuilderReact = ({
     const handleDesignChange = event => {
       const customEvent = event;
       if (onChange) {
-        eventCountRef.current += 1;
-        if (eventCountRef.current <= 2) {
-          return;
-        }
         onChange(customEvent.detail);
       }
     };

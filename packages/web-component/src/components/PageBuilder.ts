@@ -41,25 +41,6 @@ export class PageBuilderComponent extends HTMLElement {
     // Set inner HTML only if no child elements exist
   }
 
-  // Observe 'config-data' attribute to detect changes
-  static get observedAttributes() {
-    return ['config-data'];
-  }
-
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === 'config-data' && newValue !== oldValue) {
-      try {
-        const parsedConfig = JSON.parse(newValue);
-        this.config = parsedConfig;
-        this.initialized = false;
-
-        this.initializePageBuilder();
-      } catch (e) {
-        console.error('Failed to parse config:', e);
-      }
-    }
-  }
-
   set editable(value: boolean | null) {
     if (this._editable !== value) {
       this._editable = value;
@@ -132,6 +113,15 @@ export class PageBuilderComponent extends HTMLElement {
     );
   }
 
+  set configData(value: any) {
+    this.config = value;
+    this.initialized = false;
+    this.initializePageBuilder();
+  }
+
+  get configData() {
+    return this.config;
+  }
   // Initializes the PageBuilder instance
   private initializePageBuilder() {
     if (this.initialized) {

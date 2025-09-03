@@ -1,31 +1,15 @@
 import {
   AfterViewInit,
   ElementRef,
-  Type,
   ApplicationRef,
   Injector,
   EnvironmentInjector,
 } from '@angular/core';
+import {
+  DynamicComponents,
+  PageBuilderCustomComponent,
+} from './models/custom-styles.interface';
 import * as i0 from '@angular/core';
-export interface PageBuilderCustomComponent {
-  component: Type<any>;
-  svg: string;
-  title: string;
-  settingsComponent?: Type<any>;
-}
-interface DynamicComponents {
-  Basic: any[];
-  Extra: any[];
-  Custom: Record<
-    string,
-    {
-      component: string;
-      svg: string;
-      title: string;
-      settingsComponent?: string;
-    }
-  >;
-}
 export declare class PageBuilderComponent implements AfterViewInit {
   private injector;
   private appRef;
@@ -56,4 +40,3 @@ export declare class PageBuilderComponent implements AfterViewInit {
     never
   >;
 }
-export {};
