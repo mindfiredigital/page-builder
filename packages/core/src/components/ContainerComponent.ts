@@ -368,7 +368,7 @@ export class ContainerComponent {
       // If the child is an image component, restore the image upload feature
       if (child.classList.contains('image-component')) {
         const imageSrc = child.querySelector('img')?.getAttribute('src') || ''; // Get the saved image source
-        ImageComponent.restoreImageUpload(child, imageSrc);
+        ImageComponent.restoreImageUpload(child, imageSrc, null);
       }
 
       // If the child is itself a container, restore it recursively

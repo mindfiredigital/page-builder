@@ -51,22 +51,6 @@ var PageBuilderComponent = class extends HTMLElement {
       </div>
     </div>`;
   }
-  // Observe 'config-data' attribute to detect changes
-  // static get observedAttributes() {
-  //   return ['config-data'];
-  // }
-  // attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-  //   if (name === 'config-data' && newValue !== oldValue) {
-  //     try {
-  //       const parsedConfig = JSON.parse(newValue);
-  //       this.config = parsedConfig;
-  //       this.initialized = false;
-  //       this.initializePageBuilder();
-  //     } catch (e) {
-  //       console.error('Failed to parse config:', e);
-  //     }
-  //   }
-  // }
   set editable(value) {
     if (this._editable !== value) {
       this._editable = value;

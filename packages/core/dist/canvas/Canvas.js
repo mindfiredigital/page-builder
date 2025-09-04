@@ -28,7 +28,7 @@ export class Canvas {
     _a.components = components;
   }
   static init(initialData = null, editable, basicComponentsConfig) {
-    var _b, _c;
+    var _b;
     this.editable = editable;
     const tableComponent = basicComponentsConfig.components.find(
       component => component.name === 'table'
@@ -39,19 +39,18 @@ export class Canvas {
           ? void 0
           : tableComponent.attributes) === null || _b === void 0
         ? void 0
-        : _b.filter(attribute => attribute.type == 'Formula');
+        : _b.filter(
+            attribute =>
+              attribute.type == 'Formula' || attribute.type === 'Constant'
+          );
     this.tableAttributeConfig = tableConfig;
     const ImageComponent = basicComponentsConfig.components.find(
       component => component.name === 'image'
     );
-    const ImageConfig =
-      (_c =
-        ImageComponent === null || ImageComponent === void 0
-          ? void 0
-          : ImageComponent.attributes) === null || _c === void 0
+    this.ImageAttributeConfig =
+      ImageComponent === null || ImageComponent === void 0
         ? void 0
-        : _c.filter(attribute => attribute.type == 'Formula');
-    this.ImageAttributeConfig = ImageConfig;
+        : ImageComponent.globalExecuteFunction;
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -245,10 +244,14 @@ export class Canvas {
           MultiColumnContainer.restoreColumn(component);
         }
         if (componentData.type === 'image') {
-          ImageComponent.restoreImageUpload(component, componentData.imageSrc);
+          ImageComponent.restoreImageUpload(
+            component,
+            componentData.imageSrc,
+            this.editable
+          );
         }
         if (componentData.type === 'table') {
-          TableComponent.restore(component);
+          TableComponent.restore(component, this.editable);
         }
         if (componentData.type === 'link') {
           LinkComponent.restore(component);

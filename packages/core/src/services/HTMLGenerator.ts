@@ -111,14 +111,53 @@ export class HTMLGenerator {
           border-collapse: collapse ;
 
       }
-          .editable-component{
-          
-          box-shadow:none !important;
-          }
-
+         
       `);
 
     const elements = canvasElement.querySelectorAll('*');
+    const stylesToCapture = [
+      'position',
+      'top',
+      'left',
+      'right',
+      'bottom',
+      'width',
+      'height',
+      'min-width',
+      'min-height',
+      'max-width',
+      'max-height',
+      'margin',
+      'padding',
+      'background-color',
+      'background-image',
+      'border',
+      'border-radius',
+      'transform',
+      'opacity',
+      'z-index',
+      'display',
+      'flex-direction',
+      'justify-content',
+      'align-items',
+      'flex-wrap',
+      'font-size',
+      'font-weight',
+      'color',
+      'text-align',
+      'line-height',
+      'font-family',
+      'box-shadow',
+      'overflow',
+      'fill',
+      'cursor',
+      'transition',
+      'border-bottom',
+      'border-top',
+      'border-left',
+      'border-right',
+      'box-sizing',
+    ];
 
     const classesToExclude = [
       'component-controls',
@@ -131,7 +170,7 @@ export class HTMLGenerator {
       'edit-link',
     ];
 
-    elements.forEach((component, index) => {
+    elements.forEach(component => {
       // Skip excluded elements
       if (classesToExclude.some(cls => component.classList.contains(cls))) {
         return;
@@ -139,50 +178,45 @@ export class HTMLGenerator {
 
       const computedStyles = window.getComputedStyle(component);
       const componentStyles: string[] = [];
-      if (
-        component instanceof SVGElement ||
-        (component.closest('svg') &&
-          ['path', 'circle', 'rect', 'polygon'].includes(
-            component.tagName.toLowerCase()
-          ))
-      ) {
-        this.handleSVGElement(
-          component,
-          componentStyles,
-          computedStyles,
-          index,
-          styles,
-          processedSelectors
-        );
-        return;
-      }
-      for (let i = 0; i < computedStyles.length; i++) {
-        const prop = computedStyles[i];
-        const value = computedStyles.getPropertyValue(prop);
-        if (prop === 'resize') {
-          continue;
-        }
+      const isSVG = component instanceof SVGElement || component.closest('svg');
 
-        if (
+      // Loop through the predefined styles to capture
+      stylesToCapture.forEach(prop => {
+        const value = computedStyles.getPropertyValue(prop);
+        const hasValue =
           value &&
-          value !== 'initial' &&
-          value !== 'auto' &&
           value !== 'none' &&
-          value !== ''
-        ) {
+          value !== '' &&
+          value !== 'initial' &&
+          value !== 'auto';
+
+        if (hasValue) {
+          if (prop === 'background-color' && value === 'rgba(0, 0, 0, 0)') {
+            return;
+          }
+          if (prop === 'border-width' && value === '0px') {
+            return;
+          }
+          if (prop === 'color' && value === 'rgb(0, 0, 0)' && !isSVG) {
+            return;
+          }
+          if (prop === 'font-weight' && value === '400') {
+            return;
+          }
+
           componentStyles.push(`${prop}: ${value};`);
         }
-      }
+      });
 
       const selector = this.generateUniqueSelector(component);
 
       if (!processedSelectors.has(selector) && componentStyles.length > 0) {
         processedSelectors.add(selector);
-
         styles.push(`
-        ${selector} {
-          ${componentStyles.join('\n  ')}
-        }`);
+          ${selector} {
+            ${componentStyles.join('\n  ')}
+          }
+        `);
       }
     });
 
@@ -310,69 +344,48 @@ export class HTMLGenerator {
   }
 
   private generateUniqueSelector(element: Element): string {
-    // If the element has an ID, that is the most unique selector
     if (element.id) {
       return `#${element.id}`;
-    }
-
-    if (element instanceof SVGElement) {
-      const classAttributeValue = element.getAttribute('class');
-      if (classAttributeValue) {
-        return `.${classAttributeValue.toString().split(' ').join('.')}`;
-      }
-    }
-
-    if (element.className) {
-      return `.${element.className.toString().split(' ').join('.')}`;
     }
 
     const selectorPath: string[] = [];
     let currentElement: Element | null = element;
 
-    while (
-      currentElement &&
-      currentElement.tagName.toLowerCase() !== 'body' &&
-      !currentElement.id
-    ) {
-      const parent = currentElement.parentElement as HTMLElement;
-      if (!parent) break;
-
-      const siblings = Array.from(parent.children);
-      const siblingsOfSameType = siblings.filter(
-        child => child.tagName === currentElement!.tagName
-      );
-
+    while (currentElement && currentElement.tagName.toLowerCase() !== 'body') {
       let selector = currentElement.tagName.toLowerCase();
+      let parent = currentElement.parentElement as HTMLElement;
 
-      if (siblingsOfSameType.length > 1) {
-        const index = siblingsOfSameType.indexOf(currentElement) + 1;
-        selector += `:nth-of-type(${index})`;
+      if (currentElement.id) {
+        selectorPath.unshift(`#${currentElement.id}`);
+        break;
       }
 
-      // Add classes to the selector if they exist
       const cleanClasses = Array.from(currentElement.classList).filter(
         cls =>
           !cls.includes('component-') &&
           !cls.includes('delete-') &&
-          !cls.includes('resizer')
+          !cls.includes('resizer') &&
+          !cls.includes('selected')
       );
       if (cleanClasses.length > 0) {
         selector += `.${cleanClasses.join('.')}`;
+      }
+
+      if (parent) {
+        const siblingsOfSameType = Array.from(parent.children).filter(
+          child => child.tagName === currentElement!.tagName
+        );
+
+        if (siblingsOfSameType.length > 1) {
+          const index = siblingsOfSameType.indexOf(currentElement) + 1;
+          selector += `:nth-of-type(${index})`;
+        }
       }
 
       selectorPath.unshift(selector);
       currentElement = parent;
     }
 
-    if (currentElement) {
-      if (currentElement.id) {
-        selectorPath.unshift(`#${currentElement.id}`);
-      } else {
-        selectorPath.unshift(currentElement.tagName.toLowerCase());
-      }
-    }
-
-    // The final selector is the joined path
     return selectorPath.join(' > ');
   }
 

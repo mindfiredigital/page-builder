@@ -393,34 +393,40 @@ export class CustomizationSidebar {
             const box = document.createElement('div');
             if (attribute.type === 'Input') {
               box.innerHTML = `
-            <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
+                <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
                 <div class="input-wrapper type-input-div">
                   <input type="text" class="type-input" id=${attribute.key}  ${
                     !attribute.editable ? 'disabled' : ''
                   }  value=${attribute.default_value ? attribute.default_value : ''} >
                 </div>
-            `;
+              `;
+
               this.functionsPanel.appendChild(box);
+
+              const inputElement = document.getElementById(attribute.key);
+
               if (attribute.trigger) {
-                const trigger_element = document.getElementById(attribute.key);
-                trigger_element?.addEventListener(
-                  attribute.trigger,
-                  async () => {
-                    if (tableComponent.globalExecuteFunction) {
-                      const result =
-                        await tableComponent.globalExecuteFunction();
-                      console.log(result, 'res');
-                      if (result && typeof result === 'object') {
-                        const tableInstance = new TableComponent();
-                        tableInstance.seedFormulaValues(
-                          table as HTMLElement,
-                          result
-                        ); // pushes values into cells
-                        Canvas.historyManager.captureState();
-                      }
+                inputElement?.addEventListener(attribute.trigger, async () => {
+                  if (tableComponent.globalExecuteFunction) {
+                    const inputValues: { [key: string]: string } = {};
+                    const allInputs =
+                      this.functionsPanel.querySelectorAll('.type-input');
+                    allInputs.forEach(input => {
+                      const inputEl = input as HTMLInputElement;
+                      inputValues[inputEl.id] = inputEl.value;
+                    });
+                    const result =
+                      await tableComponent.globalExecuteFunction(inputValues);
+                    if (result && typeof result === 'object') {
+                      const tableInstance = new TableComponent();
+                      tableInstance.seedFormulaValues(
+                        table as HTMLElement,
+                        result
+                      );
+                      Canvas.historyManager.captureState();
                     }
                   }
-                );
+                });
               }
             }
           });
@@ -471,57 +477,6 @@ export class CustomizationSidebar {
         const tableComponent = new TableComponent();
         tableComponent.handleCellClick(component);
       });
-    } else if (component.classList.contains('image-component')) {
-      const box = document.createElement('div');
-      box.innerHTML = `
-        <label for="imageUpload" class="type-input-label">Upload Image</label>
-        <div class="input-wrapper type-input-div">
-            <input type="file" class="type-input" id="imageUpload" accept="image/*">
-        </div>
-    `;
-      this.functionsPanel.appendChild(box);
-      const imageInput = document.getElementById('imageUpload');
-      if (imageInput) {
-        imageInput.addEventListener('change', async event => {
-          const file = (event.target as HTMLInputElement).files?.[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-
-          reader.onload = async readerEvent => {
-            const base64String = readerEvent.target?.result as string;
-
-            const imageComponentConfig =
-              this.basicComponentsConfig?.components.find(
-                comp => comp.name === 'image'
-              );
-            console.log(imageComponentConfig);
-            if (imageComponentConfig?.globalExecuteFunction) {
-              try {
-                const result =
-                  await imageComponentConfig.globalExecuteFunction(
-                    base64String
-                  );
-                const image = component.querySelector('img');
-                if (result && image) {
-                  console.log(
-                    'Image uploaded successfully:',
-                    component,
-                    image,
-                    result
-                  );
-
-                  image.src = result.url;
-                  Canvas.dispatchDesignChange;
-                }
-              } catch (error) {
-                console.error('Error uploading image:', error);
-              }
-            }
-          };
-          reader.readAsDataURL(file);
-        });
-      }
     } else {
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';

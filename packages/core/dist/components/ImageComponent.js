@@ -1,6 +1,40 @@
+var __awaiter =
+  (this && this.__awaiter) ||
+  function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P
+        ? value
+        : new P(function (resolve) {
+            resolve(value);
+          });
+    }
+    return new (P || (P = Promise))(function (resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator['throw'](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done
+          ? resolve(result.value)
+          : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  };
 import { Canvas } from '../canvas/Canvas.js';
 export class ImageComponent {
-  create(src = null, tableAttributeConfig) {
+  create(src = null, imageAttributeConfig) {
+    ImageComponent.imageAttributeConfig = imageAttributeConfig;
     // Create a container for the image and label
     const container = document.createElement('div');
     container.classList.add('image-component');
@@ -78,27 +112,38 @@ export class ImageComponent {
     if (file) {
       const reader = new FileReader();
       reader.onload = function () {
-        const base64String = reader.result;
-        const imageElement = container.querySelector('img');
-        if (imageElement) {
-          imageElement.src = base64String;
-          imageElement.style.display = 'block';
-          uploadText.style.display = 'none';
-          // Make background transparent after image is loaded
-          container.style.backgroundColor = 'transparent';
-          Canvas === null || Canvas === void 0
-            ? void 0
-            : Canvas.dispatchDesignChange();
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+          const base64String = reader.result;
+          const imageElement = container.querySelector('img');
+          if (imageElement) {
+            if (ImageComponent.imageAttributeConfig) {
+              const result =
+                yield ImageComponent.imageAttributeConfig(base64String);
+              imageElement.src = result.url;
+            } else {
+              imageElement.src = base64String;
+            }
+            imageElement.style.display = 'block';
+            uploadText.style.display = 'none';
+            container.style.backgroundColor = 'transparent';
+            Canvas === null || Canvas === void 0
+              ? void 0
+              : Canvas.dispatchDesignChange();
+          }
+        });
       };
       reader.readAsDataURL(file);
     }
   }
-  static restoreImageUpload(component, src) {
+  static restoreImageUpload(component, src, editable) {
     const uploadText = component.querySelector('div:not(.upload-btn)');
     const fileInput = component.querySelector('input[type="file"]');
     const pencilButton = component.querySelector('.upload-btn');
     const imageElement = component.querySelector('img');
+    if (editable === false) {
+      pencilButton.remove();
+      return;
+    }
     // Restore event listeners
     fileInput.addEventListener('change', event =>
       this.handleFileChange(event, component, uploadText)

@@ -33,7 +33,7 @@ export class Canvas {
   public static jsonStorage: JSONStorage;
   public static lastCanvasWidth: number | null;
   private static tableAttributeConfig: ComponentAttribute[] | undefined;
-  private static ImageAttributeConfig: ComponentAttribute[] | undefined;
+  private static ImageAttributeConfig: Function | undefined;
 
   public static getComponents(): HTMLElement[] {
     return Canvas.components;
@@ -71,16 +71,13 @@ export class Canvas {
       component => component.name === 'table'
     );
     const tableConfig = tableComponent?.attributes?.filter(
-      attribute => attribute.type == 'Formula'
+      attribute => attribute.type == 'Formula' || attribute.type === 'Constant'
     );
     this.tableAttributeConfig = tableConfig;
     const ImageComponent = basicComponentsConfig.components.find(
       component => component.name === 'image'
     );
-    const ImageConfig = ImageComponent?.attributes?.filter(
-      attribute => attribute.type == 'Formula'
-    );
-    this.ImageAttributeConfig = ImageConfig;
+    this.ImageAttributeConfig = ImageComponent?.globalExecuteFunction;
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -304,11 +301,15 @@ export class Canvas {
         }
 
         if (componentData.type === 'image') {
-          ImageComponent.restoreImageUpload(component, componentData.imageSrc);
+          ImageComponent.restoreImageUpload(
+            component,
+            componentData.imageSrc,
+            this.editable
+          );
         }
 
         if (componentData.type === 'table') {
-          TableComponent.restore(component);
+          TableComponent.restore(component, this.editable);
         }
 
         if (componentData.type === 'link') {
@@ -471,7 +472,6 @@ export class Canvas {
       label.className = 'component-label';
       label.textContent = uniqueClass;
       element.appendChild(label);
-
       Canvas.controlsManager.addControlButtons(element);
     }
 

@@ -20,7 +20,5 @@ export declare class TableComponent {
   private updateCellContent;
   setModalComponent(modalComponent: ModalComponent): void;
   addRow(tableWrapper: HTMLElement, tableId: string): void;
-  setRowCount(tableWrapper: HTMLElement, targetRowCount: number): void;
-  createHeder(tableWrapper: HTMLElement): void;
-  static restore(container: HTMLElement): void;
+  static restore(container: HTMLElement, editable: boolean | null): void;
 }

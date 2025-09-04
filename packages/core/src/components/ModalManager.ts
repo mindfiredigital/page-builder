@@ -233,13 +233,11 @@ export class ModalComponent {
       const selectedAttribute = this.attributes.find(
         attr => attr.key === selectedKey
       );
-      console.log('selected attr', selectedAttribute);
 
       if (selectedAttribute) {
         // Return only the value of the selected attribute
         newValues[selectedAttribute.key] = selectedAttribute.value;
       }
-      console.log(newValues, selectedKey);
     }
 
     this.hide();

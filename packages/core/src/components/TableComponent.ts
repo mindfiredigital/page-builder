@@ -21,8 +21,7 @@ export class TableComponent {
     container.classList.add('table-component');
     const tableId = Canvas.generateUniqueClass('table');
     container.id = tableId;
-    container.style.minWidth = '400px';
-    container.style.margin = '0 auto 16px auto';
+    container.style.minWidth = '250px';
     container.style.border = '1px solid #d1d5db';
     container.style.borderRadius = '8px';
 
@@ -92,26 +91,13 @@ export class TableComponent {
     cell.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
     cell.style.border = '1px solid #d1d5db';
     cell.style.padding = '8px 12px';
-    cell.style.minHeight = '50px';
+    cell.style.minHeight = '45px';
     cell.style.position = 'relative';
     cell.style.cursor = 'pointer';
     cell.style.transition = 'background-color 0.2s ease';
     cell.style.display = 'flex';
     cell.style.alignItems = 'center';
     cell.style.justifyContent = 'center';
-
-    // Add hover effect
-    cell.addEventListener('mouseenter', () => {
-      if (!cell.hasAttribute('data-attribute-key')) {
-        cell.style.backgroundColor = '#f0f8ff';
-      }
-    });
-
-    cell.addEventListener('mouseleave', () => {
-      if (!cell.hasAttribute('data-attribute-key')) {
-        cell.style.backgroundColor = '';
-      }
-    });
 
     // Create control buttons container
     const controlsContainer = document.createElement('div');
@@ -128,8 +114,8 @@ export class TableComponent {
     const addCellButton = document.createElement('button');
     addCellButton.textContent = '+';
     addCellButton.className = 'add-cell-button';
-    addCellButton.style.width = '20px';
-    addCellButton.style.height = '20px';
+    addCellButton.style.width = '15px';
+    addCellButton.style.height = '15px';
     addCellButton.style.border = 'none';
     addCellButton.style.borderRadius = '3px';
     addCellButton.style.backgroundColor = '#10b981';
@@ -158,8 +144,8 @@ export class TableComponent {
     const deleteCellButton = document.createElement('button');
     deleteCellButton.innerHTML = '×';
     deleteCellButton.className = 'delete-cell-button';
-    deleteCellButton.style.width = '20px';
-    deleteCellButton.style.height = '20px';
+    deleteCellButton.style.width = '15px';
+    deleteCellButton.style.height = '15px';
     deleteCellButton.style.border = 'none';
     deleteCellButton.style.borderRadius = '3px';
     deleteCellButton.style.backgroundColor = '#ef4444';
@@ -265,7 +251,7 @@ export class TableComponent {
         const selectedAttribute = this.findSelectedAttribute(result);
 
         if (selectedAttribute) {
-          this.updateCellContent(cell, selectedAttribute, result);
+          this.updateCellContent(cell, selectedAttribute);
         }
       }
     } catch (error) {
@@ -291,10 +277,14 @@ export class TableComponent {
   seedFormulaValues(table: HTMLElement, values: Record<string, any>) {
     const cells = table.querySelectorAll('div[data-attribute-key]');
     cells.forEach(cell => {
+      const controlsElement = cell.querySelector('.cell-controls');
       const key = cell.getAttribute('data-attribute-key');
       if (key && values.hasOwnProperty(key)) {
         cell.textContent = values[key];
         (cell as HTMLElement).style.color = '#000000';
+      }
+      if (controlsElement) {
+        cell.appendChild(controlsElement);
       }
     });
     Canvas.dispatchDesignChange();
@@ -302,21 +292,23 @@ export class TableComponent {
 
   private updateCellContent(
     cell: HTMLElement,
-    attribute: ComponentAttribute,
-    result: Record<string, any>
+    attribute: ComponentAttribute
   ): void {
     cell.setAttribute('data-attribute-key', attribute.key);
-    cell.setAttribute('data-attribute-type', attribute.type);
 
     const controlsElement = cell.querySelector('.cell-controls');
-    cell.textContent = `${attribute.title}`;
-
+    if (attribute.type === 'Formula') {
+      cell.textContent = `${attribute.title}`;
+      cell.style.fontSize = '10px';
+      cell.style.color = 'rgb(188 191 198)';
+      cell.style.fontWeight = '500';
+    } else if (attribute.type === 'Constant') {
+      cell.textContent = `${attribute.value}`;
+    }
     if (controlsElement) {
       cell.appendChild(controlsElement);
     }
-    cell.style.fontSize = '10px';
-    cell.style.color = 'rgb(188 191 198)';
-    cell.style.fontWeight = '500';
+
     Canvas?.dispatchDesignChange();
   }
 
@@ -331,43 +323,7 @@ export class TableComponent {
     tableWrapper.appendChild(newRow);
   }
 
-  setRowCount(tableWrapper: HTMLElement, targetRowCount: number): void {
-    if (!tableWrapper) return;
-
-    const currentRowCount = tableWrapper.children.length;
-    const closestTable = tableWrapper.closest('.table-component');
-    const tableId = closestTable?.id;
-    if (targetRowCount < 0) targetRowCount = 0;
-
-    if (targetRowCount > currentRowCount) {
-      // Add rows
-      for (let i = currentRowCount; i < targetRowCount; i++) {
-        this.addRow(tableWrapper, tableId!);
-      }
-    } else if (targetRowCount < currentRowCount) {
-      // Remove rows
-      for (let i = currentRowCount - 1; i >= targetRowCount; i--) {
-        const rowToRemove = tableWrapper.children[i];
-        tableWrapper.removeChild(rowToRemove);
-      }
-    }
-  }
-
-  createHeder(tableWrapper: HTMLElement): void {
-    if (!tableWrapper || tableWrapper.children.length === 0) return;
-
-    const firstRow = tableWrapper.children[0] as HTMLElement;
-    const cells = firstRow.querySelectorAll('.table-cell');
-
-    cells.forEach((cell, index) => {
-      const cellElement = cell as HTMLElement;
-      cellElement.style.fontWeight = 'bold';
-      cellElement.style.backgroundColor = '#f8fafc';
-      cellElement.style.borderBottom = '2px solid #374151';
-    });
-  }
-
-  static restore(container: HTMLElement): void {
+  static restore(container: HTMLElement, editable: boolean | null): void {
     const instance = new TableComponent();
     const tableWrapper = container.querySelector('.table-wrapper');
     const closestTable = tableWrapper?.closest('.table-component');
@@ -382,6 +338,10 @@ export class TableComponent {
       const cellElement = cell as HTMLElement;
 
       const controls = cellElement.querySelector('.cell-controls');
+      if (editable === false) {
+        controls?.remove();
+        return;
+      }
       if (controls) {
         const addButton = controls.querySelector('.add-cell-button');
         const deleteButton = controls.querySelector('.delete-cell-button');

@@ -316,7 +316,7 @@ export class ContainerComponent {
           ((_a = child.querySelector('img')) === null || _a === void 0
             ? void 0
             : _a.getAttribute('src')) || ''; // Get the saved image source
-        ImageComponent.restoreImageUpload(child, imageSrc);
+        ImageComponent.restoreImageUpload(child, imageSrc, null);
       }
       // If the child is itself a container, restore it recursively
       if (child.classList.contains('container-component')) {

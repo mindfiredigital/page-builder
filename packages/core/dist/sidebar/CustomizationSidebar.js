@@ -355,25 +355,33 @@ export class CustomizationSidebar {
             const box = document.createElement('div');
             if (attribute.type === 'Input') {
               box.innerHTML = `
-            <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
+                <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
                 <div class="input-wrapper type-input-div">
                   <input type="text" class="type-input" id=${attribute.key}  ${!attribute.editable ? 'disabled' : ''}  value=${attribute.default_value ? attribute.default_value : ''} >
                 </div>
-            `;
+              `;
               this.functionsPanel.appendChild(box);
+              const inputElement = document.getElementById(attribute.key);
               if (attribute.trigger) {
-                const trigger_element = document.getElementById(attribute.key);
-                trigger_element === null || trigger_element === void 0
+                inputElement === null || inputElement === void 0
                   ? void 0
-                  : trigger_element.addEventListener(attribute.trigger, () =>
+                  : inputElement.addEventListener(attribute.trigger, () =>
                       __awaiter(this, void 0, void 0, function* () {
                         if (tableComponent.globalExecuteFunction) {
+                          const inputValues = {};
+                          const allInputs =
+                            this.functionsPanel.querySelectorAll('.type-input');
+                          allInputs.forEach(input => {
+                            const inputEl = input;
+                            inputValues[inputEl.id] = inputEl.value;
+                          });
                           const result =
-                            yield tableComponent.globalExecuteFunction();
-                          console.log(result, 'res');
+                            yield tableComponent.globalExecuteFunction(
+                              inputValues
+                            );
                           if (result && typeof result === 'object') {
                             const tableInstance = new TableComponent();
-                            tableInstance.seedFormulaValues(table, result); // pushes values into cells
+                            tableInstance.seedFormulaValues(table, result);
                             Canvas.historyManager.captureState();
                           }
                         }
@@ -427,69 +435,6 @@ export class CustomizationSidebar {
         const tableComponent = new TableComponent();
         tableComponent.handleCellClick(component);
       });
-    } else if (component.classList.contains('image-component')) {
-      const box = document.createElement('div');
-      box.innerHTML = `
-        <label for="imageUpload" class="type-input-label">Upload Image</label>
-        <div class="input-wrapper type-input-div">
-            <input type="file" class="type-input" id="imageUpload" accept="image/*">
-        </div>
-    `;
-      this.functionsPanel.appendChild(box);
-      const imageInput = document.getElementById('imageUpload');
-      if (imageInput) {
-        imageInput.addEventListener('change', event =>
-          __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            const file =
-              (_a = event.target.files) === null || _a === void 0
-                ? void 0
-                : _a[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = readerEvent =>
-              __awaiter(this, void 0, void 0, function* () {
-                var _a, _b;
-                const base64String =
-                  (_a = readerEvent.target) === null || _a === void 0
-                    ? void 0
-                    : _a.result;
-                const imageComponentConfig =
-                  (_b = this.basicComponentsConfig) === null || _b === void 0
-                    ? void 0
-                    : _b.components.find(comp => comp.name === 'image');
-                console.log(imageComponentConfig);
-                if (
-                  imageComponentConfig === null ||
-                  imageComponentConfig === void 0
-                    ? void 0
-                    : imageComponentConfig.globalExecuteFunction
-                ) {
-                  try {
-                    const result =
-                      yield imageComponentConfig.globalExecuteFunction(
-                        base64String
-                      );
-                    const image = component.querySelector('img');
-                    if (result && image) {
-                      console.log(
-                        'Image uploaded successfully:',
-                        component,
-                        image,
-                        result
-                      );
-                      image.src = result.url;
-                      Canvas.dispatchDesignChange;
-                    }
-                  } catch (error) {
-                    console.error('Error uploading image:', error);
-                  }
-                }
-              });
-            reader.readAsDataURL(file);
-          })
-        );
-      }
     } else {
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
