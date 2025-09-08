@@ -561,6 +561,7 @@ class p {
   constructor() {
     var e, t;
     (this.resolvePromise = null), (this.attributes = []);
+    (this.resolvePromise = null), (this.attributes = []);
     const n = document.getElementById('modal');
     n
       ? (this.modalElement = n)
@@ -599,65 +600,66 @@ class p {
       (this.attributes = e),
       e.forEach(e => {
         const t = document.createElement('div');
-        (t.className = 'form-field'), t.setAttribute('data-attr-key', e.key);
-        const n = document.createElement('div');
-        (n.className = 'form-field-header'),
-          n.setAttribute('data-attr-id', e.id),
-          t.addEventListener('click', () => {
-            this.contentContainer.querySelectorAll('.form-field').forEach(e => {
-              e.classList.remove('selected');
-            }),
-              t.classList.add('selected');
-          });
-        const o = document.createElement('button');
-        (o.className = 'expand-button'),
-          (o.type = 'button'),
-          (o.innerHTML =
-            '\n        <svg class="expand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />\n        </svg>\n      ');
-        const s = document.createElement('div');
-        s.className = 'title-key-container';
-        const i = document.createElement('span');
-        (i.className = 'form-title'), (i.textContent = e.title);
-        const l = document.createElement('span');
-        (l.className = 'form-key'),
-          (l.textContent = `(${e.key})`),
-          s.appendChild(i),
-          s.appendChild(l),
-          n.appendChild(o),
-          n.appendChild(s);
-        const a = document.createElement('div');
-        a.className = 'form-value-container form-value-collapsed';
-        const r = document.createElement('label');
-        let d;
-        (r.className = 'form-label'),
-          (r.textContent = 'Value:'),
-          r.setAttribute('for', e.id);
-        const c = document.createElement('span');
-        (c.id = e.id),
-          (c.textContent = e.value.toString()),
-          (c.className = 'form-display-value'),
-          (d = c),
-          a.appendChild(r),
-          a.appendChild(d),
+        t.className = 'form-field';
+        const n = document.createElement('label');
+        let o;
+        switch (
+          ((n.className = 'form-label'),
+          (n.textContent = e.title),
+          n.setAttribute('for', e.id),
           t.appendChild(n),
-          t.appendChild(a),
-          this.contentContainer.appendChild(t),
-          n.addEventListener('click', () => {
-            this.toggleFieldExpansion(e.id);
-          });
+          e.type)
+        ) {
+          case 'Input':
+            const t = document.createElement('input');
+            (t.id = e.id),
+              (t.type = 'number' == typeof e.value ? 'number' : 'text'),
+              (t.value = e.value || e.default_value || ''),
+              (t.disabled = !1 === e.editable),
+              (t.className = 'form-input'),
+              (o = t);
+            break;
+          case 'Constant':
+          case 'Formula':
+            const n = document.createElement('span');
+            (n.id = e.id),
+              (n.textContent = e.value.toString()),
+              (n.className = 'form-display-value'),
+              (o = n);
+            break;
+          case 'Image':
+            const s = document.createElement('div');
+            s.className = 'image-wrapper';
+            const i = document.createElement('img');
+            (i.id = `${e.id}-preview`),
+              (i.src =
+                e.value.toString() ||
+                'https://placehold.co/200x100?text=No+Image'),
+              (i.alt = `Preview for ${e.title}`),
+              (i.className = 'image-preview'),
+              (i.onerror = () =>
+                (i.src = 'https://placehold.co/200x100?text=Image+Load+Error'));
+            const l = document.createElement('input');
+            (l.id = e.id),
+              (l.type = 'text'),
+              (l.placeholder = 'Enter image URL'),
+              (l.value = e.value.toString() || ''),
+              (l.className = 'form-input image-input'),
+              l.addEventListener('input', () => {
+                i.src = l.value || 'https://placehold.co/200x100?text=No+Image';
+              }),
+              s.appendChild(i),
+              s.appendChild(l),
+              (o = s);
+            break;
+          default:
+            const a = document.createElement('p');
+            (a.textContent = `Unsupported type: ${e.type}`),
+              (a.className = 'error-text'),
+              (o = a);
+        }
+        t.appendChild(o), this.contentContainer.appendChild(t);
       });
-  }
-  toggleFieldExpansion(e) {
-    const t = this.modalElement.querySelector(`[data-attr-id="${e}"]`),
-      n = null == t ? void 0 : t.nextElementSibling,
-      o = null == t ? void 0 : t.querySelector('.expand-icon');
-    if (n && o) {
-      !n.classList.contains('form-value-collapsed')
-        ? (n.classList.add('form-value-collapsed'),
-          (o.style.transform = 'rotate(0deg)'))
-        : (n.classList.remove('form-value-collapsed'),
-          (o.style.transform = 'rotate(90deg)'));
-    }
   }
   show(e) {
     return (
@@ -1518,7 +1520,7 @@ const w = {
   customizationMenu:
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush"><path d="m11 10 3 3"/><path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/><path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/></svg>',
 };
-class C {
+class x {
   static init(e, t, n) {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1763,11 +1765,11 @@ class C {
         t.borderColor || '#000000'
       );
     const o = document.getElementById('background-color');
-    o && (o.value = C.rgbToHex(t.backgroundColor));
+    o && (o.value = x.rgbToHex(t.backgroundColor));
     const s = document.getElementById('text-color');
-    s && (s.value = C.rgbToHex(t.color));
+    s && (s.value = x.rgbToHex(t.color));
     const i = document.getElementById('border-color');
-    i && (i.value = C.rgbToHex(t.borderColor)), this.addListeners(e);
+    i && (i.value = x.rgbToHex(t.borderColor)), this.addListeners(e);
   }
   static populateFunctionalityControls(e) {
     var t;
@@ -1818,11 +1820,11 @@ class C {
             (t = Array.from(e.classList).find(e => e.endsWith('-component'))) ||
           void 0 === t
             ? void 0
-            : t.replace('-component', ''),
-        o = C.customComponentsConfig;
-      if (n && o && o[n] && o[n].settingsComponentTagName) {
-        const t = o[n].settingsComponentTagName;
-        let s = this.functionsPanel.querySelector(t);
+            : n.replace('-component', ''),
+        o = x.customComponentsConfig;
+      if (t && o && o[t] && o[t].settingsComponentTagName) {
+        const n = o[t].settingsComponentTagName;
+        let s = this.functionsPanel.querySelector(n);
         s ||
           ((s = document.createElement(t)), this.functionsPanel.appendChild(s)),
           s.setAttribute(
@@ -2048,9 +2050,9 @@ class C {
     return this.layersViewController;
   }
 }
-(C.selectedComponent = null),
-  (C.customComponentsConfig = null),
-  (C.basicComponentsConfig = null);
+(x.selectedComponent = null),
+  (x.customComponentsConfig = null),
+  (x.basicComponentsConfig = null);
 class E {
   constructor(e = 20) {
     this.cellSize = e;
@@ -2090,8 +2092,8 @@ class E {
     return this.cellSize;
   }
 }
-var x;
-class L {
+var L;
+class k {
   static getComponents() {
     return x.components;
   }
@@ -2120,17 +2122,17 @@ class L {
       x.canvasElement.classList.add('preview-desktop'),
       x.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && C.showSidebar(t.id);
+        t && x.showSidebar(t.id);
       }),
-      (x.canvasElement.style.position = 'relative'),
-      (this.lastCanvasWidth = x.canvasElement.offsetWidth),
-      (x.historyManager = new g(x.canvasElement)),
-      (x.jsonStorage = new v()),
-      (x.controlsManager = new y(x)),
-      (x.gridManager = new E()),
-      x.gridManager.initializeDropPreview(x.canvasElement);
-    if ((new e(x.canvasElement, x.sidebarElement).enable(), t))
-      x.restoreState(t);
+      (L.canvasElement.style.position = 'relative'),
+      (this.lastCanvasWidth = L.canvasElement.offsetWidth),
+      (L.historyManager = new g(L.canvasElement)),
+      (L.jsonStorage = new v()),
+      (L.controlsManager = new y(L)),
+      (L.gridManager = new E()),
+      L.gridManager.initializeDropPreview(L.canvasElement);
+    if ((new e(L.canvasElement, L.sidebarElement).enable(), t))
+      L.restoreState(t);
     else {
       const e = x.jsonStorage.load();
       e && x.restoreState(e);
@@ -2144,7 +2146,7 @@ class L {
           bubbles: !0,
           composed: !0,
         });
-      x.canvasElement.dispatchEvent(t), x.jsonStorage.save(e);
+      L.canvasElement.dispatchEvent(t);
     }
   }
   static clearCanvas() {
@@ -2211,8 +2213,8 @@ class L {
       (x.components = []),
       e.forEach(e => {
         const t = e.dataAttributes['data-custom-settings'] || null,
-          n = x.createComponent(e.type, t, e.content);
-        if (n) {
+          o = L.createComponent(e.type, t, e.content);
+        if (o) {
           if (
             (e.classes.includes('custom-component') ||
               (n.innerHTML = e.content),
@@ -2237,19 +2239,18 @@ class L {
               Object.entries(e.dataAttributes).forEach(([e, t]) => {
                 n.setAttribute(e, t);
               }),
-            x.controlsManager.addControlButtons(n),
-            x.addDraggableListeners(n),
-            n.classList.contains('container-component') &&
-              a.restoreContainer(n),
-            (n.classList.contains('twoCol-component') ||
-              n.classList.contains('threeCol-component')) &&
-              r.restoreColumn(n),
-            'image' === e.type &&
-              o.restoreImageUpload(n, e.imageSrc, this.editable),
-            'table' === e.type && u.restore(n, this.editable),
-            'link' === e.type && m.restore(n),
-            x.canvasElement.appendChild(n),
-            x.components.push(n);
+            L.controlsManager.addControlButtons(o),
+            L.addDraggableListeners(o),
+            o.classList.contains('container-component') &&
+              l.restoreContainer(o),
+            (o.classList.contains('twoCol-component') ||
+              o.classList.contains('threeCol-component')) &&
+              a.restoreColumn(o),
+            'image' === e.type && n.restoreImageUpload(o, e.imageSrc),
+            'table' === e.type && u.restore(o),
+            'link' === e.type && m.restore(o),
+            L.canvasElement.appendChild(o),
+            L.components.push(o);
         }
       }),
       x.gridManager.initializeDropPreview(x.canvasElement);
@@ -2442,14 +2443,14 @@ class L {
       });
   }
 }
-(x = L),
-  (L.components = []),
-  (L.componentFactory = {
-    button: () => new i().create(),
-    header: () => new l().create(),
-    image: () => new o().create(void 0, x.ImageAttributeConfig),
-    video: () => new s(() => x.historyManager.captureState()).create(),
-    table: () => new u().create(2, 2, void 0, x.tableAttributeConfig),
+(L = k),
+  (k.components = []),
+  (k.componentFactory = {
+    button: () => new s().create(),
+    header: () => new i().create(),
+    image: () => new n().create(),
+    video: () => new o(() => L.historyManager.captureState()).create(),
+    table: () => new u().create(2, 2, void 0, L.tableAttributeConfig),
     text: () => new t().create(),
     container: () => new a().create(),
     twoCol: () => new d().create(),
@@ -2481,7 +2482,7 @@ k &&
     const t = e.target;
     t !== k && S.selectElement(t);
   });
-class M {
+class B {
   constructor(e) {
     this.canvas = e;
   }
@@ -2910,9 +2911,9 @@ class T {
   ) {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
-      (this.canvas = new L()),
-      (this.sidebar = new M(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.canvas = new k()),
+      (this.sidebar = new B(this.canvas)),
+      (this.htmlGenerator = new H(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new $()),
       (this.editable = n),
@@ -2923,9 +2924,9 @@ class T {
     T.headerInitialized = !1;
   }
   initializeEventListeners() {
-    (this.canvas = new L()),
-      (this.sidebar = new M(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+    (this.canvas = new k()),
+      (this.sidebar = new B(this.canvas)),
+      (this.htmlGenerator = new H(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new $()),
       this.setupInitialComponents(),
@@ -3089,8 +3090,8 @@ class T {
     })(this.dynamicComponents, this.editable),
       L.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
       this.sidebar.init(),
-      H.init(),
-      C.init(
+      I.init(),
+      x.init(
         this.dynamicComponents.Custom,
         this.editable,
         this.dynamicComponents.Basic
@@ -3329,7 +3330,7 @@ class T {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new L()),
+        const e = new H(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = (function (e) {
@@ -3361,7 +3362,7 @@ class T {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new L()),
+        const e = new H(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = window.open('', '_blank');
