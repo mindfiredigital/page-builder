@@ -33,6 +33,8 @@ export class Canvas {
   public static jsonStorage: JSONStorage;
   public static lastCanvasWidth: number | null;
   private static tableAttributeConfig: ComponentAttribute[] | undefined;
+  private static textAttributeConfig: ComponentAttribute[] | undefined;
+  private static headerAttributeConfig: ComponentAttribute[] | undefined;
   private static ImageAttributeConfig: Function | undefined;
 
   public static getComponents(): HTMLElement[] {
@@ -46,14 +48,15 @@ export class Canvas {
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
     {
       button: () => new ButtonComponent().create(),
-      header: () => new HeaderComponent().create(),
+      header: () =>
+        new HeaderComponent().create(1, 'Header', this.headerAttributeConfig),
       image: () =>
         new ImageComponent().create(undefined, this.ImageAttributeConfig),
       video: () =>
         new VideoComponent(() => Canvas.historyManager.captureState()).create(),
       table: () =>
         new TableComponent().create(2, 2, undefined, this.tableAttributeConfig),
-      text: () => new TextComponent().create(),
+      text: () => new TextComponent().create(this.textAttributeConfig),
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),
       threeCol: () => new ThreeColumnContainer().create(),
@@ -70,14 +73,25 @@ export class Canvas {
     const tableComponent = basicComponentsConfig.components.find(
       component => component.name === 'table'
     );
-    const tableConfig = tableComponent?.attributes?.filter(
-      attribute => attribute.type == 'Formula' || attribute.type === 'Constant'
+
+    this.tableAttributeConfig = tableComponent?.attributes;
+
+    const textComponent = basicComponentsConfig.components.find(
+      component => component.name === 'text'
     );
-    this.tableAttributeConfig = tableConfig;
+
+    this.textAttributeConfig = textComponent?.attributes;
+
+    const headerComponent = basicComponentsConfig.components.find(
+      component => component.name === 'header'
+    );
+    this.headerAttributeConfig = headerComponent?.attributes;
+
     const ImageComponent = basicComponentsConfig.components.find(
       component => component.name === 'image'
     );
     this.ImageAttributeConfig = ImageComponent?.globalExecuteFunction;
+
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -148,7 +162,6 @@ export class Canvas {
     Canvas.historyManager.captureState();
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
-
     Canvas.dispatchDesignChange();
   }
   static getState(): PageBuilderDesign {
@@ -208,6 +221,8 @@ export class Canvas {
         position: {
           x: component.offsetLeft,
           y: component.offsetTop,
+          '@mindfiredigital/page-builder-react':
+            'file:../../../Desktop/page-builder/page-builder/packages/react/mindfiredigital-page-builder-react-1.2.3.tgz',
         },
         dimensions: {
           width: component.offsetWidth,
@@ -315,6 +330,9 @@ export class Canvas {
         if (componentData.type === 'link') {
           LinkComponent.restore(component);
         }
+        if (componentData.type === 'header') {
+          HeaderComponent.restore(component);
+        }
 
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
@@ -364,7 +382,7 @@ export class Canvas {
 
     const component = Canvas.createComponent(componentType, customSettings);
 
-    if (component) {
+    if (component && this.editable !== false) {
       const uniqueClass = Canvas.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
@@ -464,6 +482,7 @@ export class Canvas {
       } else {
         element.setAttribute('contenteditable', 'true');
         element.addEventListener('input', () => {
+          this.dispatchDesignChange();
           Canvas.historyManager.captureState();
         });
       }

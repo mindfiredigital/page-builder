@@ -69,10 +69,8 @@ declare global {
     key: string;
     value: string | number | boolean;
     execute_order: number;
-    execution_fun?: Function;
     editable?: boolean;
     default_value?: string | boolean | null;
-    trigger?: 'blur' | 'input' | 'input' | 'click' | 'focus';
   }
 
   export interface BasicComponent {

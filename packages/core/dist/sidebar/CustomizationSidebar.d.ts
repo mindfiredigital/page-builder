@@ -23,17 +23,21 @@ export declare class CustomizationSidebar {
   private static selectedComponent;
   private static customComponentsConfig;
   private static basicComponentsConfig;
+  private static showAttributeTab;
   private static editable;
   static init(
     customComponentsConfig: CustomComponentConfig,
     editable: boolean | null,
-    BasicComponent: BasicComponent
+    BasicComponent: BasicComponent,
+    showAttributeTab?: boolean
   ): void;
   private static switchToCustomizeMode;
   private static switchToAttributeMode;
   private static switchToLayersMode;
   static showSidebar(componentId: string): void;
   private static populateCssControls;
+  private static handleInputTrigger;
+  private static createAttributeControls;
   private static populateFunctionalityControls;
   static rgbToHex(rgb: string): string;
   private static createControl;

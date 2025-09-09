@@ -25,7 +25,8 @@ export class PageBuilder {
     },
     initialDesign = null,
     editable = true,
-    brandTitle
+    brandTitle,
+    showAttributeTab
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -36,6 +37,7 @@ export class PageBuilder {
     this.previewPanel = new PreviewPanel();
     this.editable = editable;
     this.brandTitle = brandTitle;
+    this.showAttributeTab = showAttributeTab;
     this.initializeEventListeners();
   }
   // Static method to reset header flag (called during cleanup)
@@ -72,7 +74,8 @@ export class PageBuilder {
     CustomizationSidebar.init(
       this.dynamicComponents.Custom,
       this.editable,
-      this.dynamicComponents.Basic
+      this.dynamicComponents.Basic,
+      this.showAttributeTab
     );
     // Create header logic - improved to handle re-initialization
     this.createHeaderIfNeeded();
@@ -85,7 +88,9 @@ export class PageBuilder {
       if (appElement && appElement.parentNode) {
         const header = document.createElement('header');
         header.id = 'page-builder-header';
-        header.appendChild(createNavbar(this.editable, this.brandTitle));
+        header.appendChild(
+          createNavbar(this.editable, this.brandTitle, this.showAttributeTab)
+        );
         appElement.parentNode.insertBefore(header, appElement);
         PageBuilder.headerInitialized = true;
       } else {

@@ -1,5 +1,9 @@
 import { svgs } from '../icons/svgs.js';
-export function createNavbar(editable, brandTitle = 'Page Builder') {
+export function createNavbar(
+  editable,
+  brandTitle = 'Page Builder',
+  showAttributeTab
+) {
   const navbar = document.createElement('nav');
   navbar.id = 'preview-navbar';
   const icons = {
@@ -67,10 +71,16 @@ export function createNavbar(editable, brandTitle = 'Page Builder') {
           { id: 'export-btn', icon: icons.export, title: 'Export' },
           { id: 'menu-btn', icon: icons.menu, title: 'Customization Menu' },
         ]
-      : [
-          { id: 'view-btn', icon: icons.view, title: 'View' },
-          { id: 'export-btn', icon: icons.export, title: 'Export' },
-        ];
+      : editable === false && showAttributeTab === true
+        ? [
+            { id: 'view-btn', icon: icons.view, title: 'View' },
+            { id: 'export-btn', icon: icons.export, title: 'Export' },
+            { id: 'menu-btn', icon: icons.menu, title: 'Customization Menu' },
+          ]
+        : [
+            { id: 'view-btn', icon: icons.view, title: 'View' },
+            { id: 'export-btn', icon: icons.export, title: 'Export' },
+          ];
   const leftContainer = document.createElement('div');
   leftContainer.classList.add('left-buttons');
   leftButtons.forEach(({ id, icon, title }) => {

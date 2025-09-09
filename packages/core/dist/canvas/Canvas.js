@@ -28,22 +28,28 @@ export class Canvas {
     _a.components = components;
   }
   static init(initialData = null, editable, basicComponentsConfig) {
-    var _b;
     this.editable = editable;
     const tableComponent = basicComponentsConfig.components.find(
       component => component.name === 'table'
     );
-    const tableConfig =
-      (_b =
-        tableComponent === null || tableComponent === void 0
-          ? void 0
-          : tableComponent.attributes) === null || _b === void 0
+    this.tableAttributeConfig =
+      tableComponent === null || tableComponent === void 0
         ? void 0
-        : _b.filter(
-            attribute =>
-              attribute.type == 'Formula' || attribute.type === 'Constant'
-          );
-    this.tableAttributeConfig = tableConfig;
+        : tableComponent.attributes;
+    const textComponent = basicComponentsConfig.components.find(
+      component => component.name === 'text'
+    );
+    this.textAttributeConfig =
+      textComponent === null || textComponent === void 0
+        ? void 0
+        : textComponent.attributes;
+    const headerComponent = basicComponentsConfig.components.find(
+      component => component.name === 'header'
+    );
+    this.headerAttributeConfig =
+      headerComponent === null || headerComponent === void 0
+        ? void 0
+        : headerComponent.attributes;
     const ImageComponent = basicComponentsConfig.components.find(
       component => component.name === 'image'
     );
@@ -167,6 +173,8 @@ export class Canvas {
         position: {
           x: component.offsetLeft,
           y: component.offsetTop,
+          '@mindfiredigital/page-builder-react':
+            'file:../../../Desktop/page-builder/page-builder/packages/react/mindfiredigital-page-builder-react-1.2.3.tgz',
         },
         dimensions: {
           width: component.offsetWidth,
@@ -256,6 +264,9 @@ export class Canvas {
         if (componentData.type === 'link') {
           LinkComponent.restore(component);
         }
+        if (componentData.type === 'header') {
+          HeaderComponent.restore(component);
+        }
         _a.canvasElement.appendChild(component);
         _a.components.push(component);
       }
@@ -297,7 +308,7 @@ export class Canvas {
       _a.canvasElement
     );
     const component = _a.createComponent(componentType, customSettings);
-    if (component) {
+    if (component && this.editable !== false) {
       const uniqueClass = _a.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
@@ -381,6 +392,7 @@ export class Canvas {
       } else {
         element.setAttribute('contenteditable', 'true');
         element.addEventListener('input', () => {
+          this.dispatchDesignChange();
           _a.historyManager.captureState();
         });
       }
@@ -512,13 +524,14 @@ _a = Canvas;
 Canvas.components = [];
 Canvas.componentFactory = {
   button: () => new ButtonComponent().create(),
-  header: () => new HeaderComponent().create(),
+  header: () =>
+    new HeaderComponent().create(1, 'Header', _a.headerAttributeConfig),
   image: () => new ImageComponent().create(undefined, _a.ImageAttributeConfig),
   video: () =>
     new VideoComponent(() => _a.historyManager.captureState()).create(),
   table: () =>
     new TableComponent().create(2, 2, undefined, _a.tableAttributeConfig),
-  text: () => new TextComponent().create(),
+  text: () => new TextComponent().create(_a.textAttributeConfig),
   container: () => new ContainerComponent().create(),
   twoCol: () => new TwoColumnContainer().create(),
   threeCol: () => new ThreeColumnContainer().create(),

@@ -1,8 +1,8 @@
 export declare class ImageComponent {
   private static imageAttributeConfig;
   create(
-    src: string | null | undefined,
-    imageAttributeConfig: Function | undefined | null
+    src?: string | null,
+    imageAttributeConfig?: Function | undefined | null
   ): HTMLElement;
   static handleFileChange(
     event: Event,

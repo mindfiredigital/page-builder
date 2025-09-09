@@ -63,6 +63,7 @@ interface PageBuilderReactProps {
   onChange?: (newDesign: PageBuilderDesign) => void;
   editable?: boolean;
   brandTitle?: string;
+  showAttributeTab?: boolean;
 }
 
 declare const PageBuilderReact: React$1.FC<PageBuilderReactProps>;

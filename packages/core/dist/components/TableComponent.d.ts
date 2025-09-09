@@ -16,7 +16,8 @@ export declare class TableComponent {
   private styleButton;
   handleCellClick(cell: HTMLElement): Promise<void>;
   private findSelectedAttribute;
-  seedFormulaValues(table: HTMLElement, values: Record<string, any>): void;
+  seedFormulaValues(values: Record<string, any>): void;
+  updateInputValues(values: Record<string, any>): void;
   private updateCellContent;
   setModalComponent(modalComponent: ModalComponent): void;
   addRow(tableWrapper: HTMLElement, tableId: string): void;

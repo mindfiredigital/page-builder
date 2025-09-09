@@ -157,6 +157,10 @@ export class HTMLGenerator {
       'border-left',
       'border-right',
       'box-sizing',
+      '-webkit-box-pack',
+      'letter-spacing',
+      '-webkit-tap-highlight-color',
+      'pointer-events',
     ];
 
     const classesToExclude = [
@@ -170,7 +174,7 @@ export class HTMLGenerator {
       'edit-link',
     ];
 
-    elements.forEach(component => {
+    elements.forEach((component, inedx) => {
       // Skip excluded elements
       if (classesToExclude.some(cls => component.classList.contains(cls))) {
         return;

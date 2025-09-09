@@ -36,14 +36,22 @@ import { debounce } from '../utils/utilityFunctions.js';
 import LayersViewController from './LayerViewController.js';
 import { TableComponent } from '../components/TableComponent.js';
 import { svgs } from '../icons/svgs.js';
+import { TextComponent } from '../components/TextComponent.js';
+import { HeaderComponent } from '../components/HeaderComponent.js';
 export class CustomizationSidebar {
-  static init(customComponentsConfig, editable, BasicComponent) {
+  static init(
+    customComponentsConfig,
+    editable,
+    BasicComponent,
+    showAttributeTab
+  ) {
     this.sidebarElement = document.getElementById('customization');
     this.controlsContainer = document.getElementById('controls');
     this.componentNameHeader = document.getElementById('component-name');
     this.customComponentsConfig = customComponentsConfig;
     this.basicComponentsConfig = BasicComponent;
     this.editable = editable;
+    this.showAttributeTab = showAttributeTab;
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
       return;
@@ -76,11 +84,22 @@ export class CustomizationSidebar {
     const customizeTab = this.layersModeToggle.querySelector('#customize-tab');
     const attributeTab = this.layersModeToggle.querySelector('#attribute-tab');
     const layersTab = this.layersModeToggle.querySelector('#layers-tab');
-    customizeTab.addEventListener('click', () => this.switchToCustomizeMode());
-    attributeTab.addEventListener('click', () => {
+    if (this.editable === false && showAttributeTab === true) {
+      customizeTab.style.display = 'none';
+      layersTab.style.display = 'none';
+      attributeTab.classList.add('active');
+      customizeTab.classList.remove('active');
+      layersTab.classList.remove('active');
       this.switchToAttributeMode();
-    });
-    layersTab.addEventListener('click', () => this.switchToLayersMode());
+    } else {
+      customizeTab.addEventListener('click', () =>
+        this.switchToCustomizeMode()
+      );
+      attributeTab.addEventListener('click', () => {
+        this.switchToAttributeMode();
+      });
+      layersTab.addEventListener('click', () => this.switchToLayersMode());
+    }
   }
   // --- Tab Switching Logic ---
   static switchToCustomizeMode() {
@@ -141,7 +160,7 @@ export class CustomizationSidebar {
       console.error(`Component with ID "${componentId}" not found.`);
       return;
     }
-    if (this.editable === false) {
+    if (this.editable === false && this.showAttributeTab !== true) {
       return;
     }
     this.selectedComponent = component;
@@ -153,6 +172,10 @@ export class CustomizationSidebar {
       menuButton.style.borderColor = '#cbd5e1';
     }
     this.componentNameHeader.textContent = `Component: ${componentId}`;
+    if (this.editable === false && this.showAttributeTab === true) {
+      this.switchToAttributeMode();
+      return;
+    }
     this.switchToCustomizeMode();
   }
   // --- Populate CSS Controls ---
@@ -337,86 +360,187 @@ export class CustomizationSidebar {
     }
     this.addListeners(component);
   }
-  static populateFunctionalityControls(component) {
-    var _a;
-    this.functionsPanel.innerHTML = '';
-    if (component.classList.contains('table-component')) {
-      const table = document.getElementById(component.id);
-      if (this.basicComponentsConfig) {
-        const tableComponent = this.basicComponentsConfig.components.find(
-          component => component.name === 'table'
-        );
-        if (
-          tableComponent &&
-          tableComponent.attributes &&
-          tableComponent.attributes.length > 0
-        ) {
-          tableComponent.attributes.map(attribute => {
-            const box = document.createElement('div');
-            if (attribute.type === 'Input') {
-              box.innerHTML = `
-                <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
-                <div class="input-wrapper type-input-div">
-                  <input type="text" class="type-input" id=${attribute.key}  ${!attribute.editable ? 'disabled' : ''}  value=${attribute.default_value ? attribute.default_value : ''} >
-                </div>
-              `;
-              this.functionsPanel.appendChild(box);
-              const inputElement = document.getElementById(attribute.key);
-              if (attribute.trigger) {
-                inputElement === null || inputElement === void 0
-                  ? void 0
-                  : inputElement.addEventListener(attribute.trigger, () =>
-                      __awaiter(this, void 0, void 0, function* () {
-                        if (tableComponent.globalExecuteFunction) {
-                          const inputValues = {};
-                          const allInputs =
-                            this.functionsPanel.querySelectorAll('.type-input');
-                          allInputs.forEach(input => {
-                            const inputEl = input;
-                            inputValues[inputEl.id] = inputEl.value;
-                          });
-                          const result =
-                            yield tableComponent.globalExecuteFunction(
-                              inputValues
-                            );
-                          if (result && typeof result === 'object') {
-                            const tableInstance = new TableComponent();
-                            tableInstance.seedFormulaValues(table, result);
-                            Canvas.historyManager.captureState();
-                          }
-                        }
-                      })
-                    );
-              }
-            }
-          });
-        }
+  static handleInputTrigger(event) {
+    return __awaiter(this, void 0, void 0, function* () {
+      var _a, _b, _c;
+      const component = CustomizationSidebar.selectedComponent;
+      if (!component) return;
+      let componentConfig;
+      if (component.classList.contains('table-component')) {
+        componentConfig =
+          (_a = CustomizationSidebar.basicComponentsConfig) === null ||
+          _a === void 0
+            ? void 0
+            : _a.components.find(comp => comp.name === 'table');
+      } else if (component.classList.contains('text-component')) {
+        componentConfig =
+          (_b = CustomizationSidebar.basicComponentsConfig) === null ||
+          _b === void 0
+            ? void 0
+            : _b.components.find(comp => comp.name === 'text');
+      } else if (component.classList.contains('header-component')) {
+        componentConfig =
+          (_c = CustomizationSidebar.basicComponentsConfig) === null ||
+          _c === void 0
+            ? void 0
+            : _c.components.find(comp => comp.name === 'header');
       }
+      console.log(componentConfig);
+      if (componentConfig && componentConfig.globalExecuteFunction) {
+        const inputValues = {};
+        const allInputs =
+          CustomizationSidebar.functionsPanel.querySelectorAll(
+            '.attribute-input'
+          );
+        allInputs.forEach(input => {
+          const inputEl = input;
+          inputValues[inputEl.id] = inputEl.value;
+        });
+        const result = yield componentConfig.globalExecuteFunction(inputValues);
+        const tableInstance = new TableComponent();
+        const textInstance = new TextComponent();
+        const headerInstance = new HeaderComponent();
+        if (result) {
+          textInstance.seedFormulaValues(result);
+          tableInstance.seedFormulaValues(result);
+          headerInstance.seedFormulaValues(result);
+          Canvas.historyManager.captureState();
+        }
+        textInstance.updateInputValues(inputValues);
+        tableInstance.updateInputValues(inputValues);
+        headerInstance.updateInputValues(inputValues);
+      }
+    });
+  }
+  // Add this new private helper method inside your class
+  // Replace your existing createAttributeControls method with this improved version
+  static createAttributeControls(attribute) {
+    const box = document.createElement('div');
+    box.className = 'attribute-input-container';
+    box.innerHTML = `
+    <div class="attribute-header">
+      <label for="${attribute.key}" class="attribute-label">${attribute.title}</label>
+      ${!attribute.editable ? '<span class="readonly-badge">Read Only</span>' : ''}
+    </div>
+    <div class="attribute-input-wrapper">
+      <input 
+        type="text" 
+        class="attribute-input" 
+        id="${attribute.key}"  
+        ${!attribute.editable ? 'disabled readonly' : ''} 
+        value="${attribute.default_value || ''}" 
+        placeholder="Enter ${attribute.title.toLowerCase()}..."
+      >
+    </div>
+  `;
+    this.functionsPanel.appendChild(box);
+    const inputElement = document.getElementById(attribute.key);
+    if (attribute.editable !== false) {
+      const eventConfigurator = document.createElement('div');
+      eventConfigurator.className = 'event-configurator';
+      eventConfigurator.innerHTML = `
+      <div class="event-trigger-section">
+        <div class="trigger-header">
+          <label class="trigger-label">Trigger Event:</label>
+        </div>
+        <div class="trigger-select-wrapper">
+          <select class="event-selector" id="event-selector-${attribute.key}">
+            <option value="input">On Input (Real-time)</option>
+            <option value="change">On Change</option>
+            <option value="blur">On Focus Lost</option>
+            <option value="keyup">On Key Release</option>
+            <option value="click">On Click</option>
+          </select>
+          <div class="select-arrow">▼</div>
+        </div>
+      </div>
+    `;
+      box.appendChild(eventConfigurator);
+      const eventSelector = document.getElementById(
+        `event-selector-${attribute.key}`
+      );
+      const setupListener = eventToListen => {
+        const eventTypes = ['input', 'change', 'blur', 'keyup', 'click'];
+        eventTypes.forEach(eventType => {
+          inputElement.removeEventListener(eventType, this.handleInputTrigger);
+        });
+        inputElement.addEventListener(eventToListen, this.handleInputTrigger);
+        // Visual feedback for active trigger
+        box.setAttribute('data-trigger', eventToListen);
+      };
+      eventSelector.addEventListener('change', () => {
+        var _a;
+        const selectedEvent = eventSelector.value;
+        setupListener(selectedEvent);
+        // Add visual feedback animation
+        (_a = eventSelector.parentElement) === null || _a === void 0
+          ? void 0
+          : _a.classList.add('trigger-changed');
+        setTimeout(() => {
+          var _a;
+          (_a = eventSelector.parentElement) === null || _a === void 0
+            ? void 0
+            : _a.classList.remove('trigger-changed');
+        }, 300);
+      });
+      const defaultTrigger = 'input';
+      eventSelector.value = defaultTrigger;
+      setupListener(defaultTrigger);
+      // Add focus/blur effects for better UX
+      inputElement.addEventListener('focus', () => {
+        box.classList.add('input-focused');
+      });
+      inputElement.addEventListener('blur', () => {
+        box.classList.remove('input-focused');
+      });
+    }
+  }
+  static populateFunctionalityControls(component) {
+    var _a, _b, _c, _d;
+    this.functionsPanel.innerHTML = '';
+    let componentConfig;
+    let showModalButton = false;
+    if (component.classList.contains('table-component')) {
+      componentConfig =
+        (_a = this.basicComponentsConfig) === null || _a === void 0
+          ? void 0
+          : _a.components.find(comp => comp.name === 'table');
+      showModalButton = false;
+    } else if (component.classList.contains('text-component')) {
+      componentConfig =
+        (_b = this.basicComponentsConfig) === null || _b === void 0
+          ? void 0
+          : _b.components.find(comp => comp.name === 'text');
+      showModalButton = true;
+    } else if (component.classList.contains('header-component')) {
+      componentConfig =
+        (_c = this.basicComponentsConfig) === null || _c === void 0
+          ? void 0
+          : _c.components.find(comp => comp.name === 'header');
+      showModalButton = true;
+    } else if (component.classList.contains('table-cell')) {
+      showModalButton = true;
     } else if (component.classList.contains('custom-component')) {
       const componentType =
-        (_a = Array.from(component.classList).find(cls =>
+        (_d = Array.from(component.classList).find(cls =>
           cls.endsWith('-component')
-        )) === null || _a === void 0
+        )) === null || _d === void 0
           ? void 0
-          : _a.replace('-component', '');
+          : _d.replace('-component', '');
       const customComponentsConfig =
         CustomizationSidebar.customComponentsConfig;
       if (
         componentType &&
         customComponentsConfig &&
         customComponentsConfig[componentType] &&
-        // Check for the string-based tag name property.
         customComponentsConfig[componentType].settingsComponentTagName
       ) {
-        // Get the string tag name from the config.
         const settingsComponentTagName =
           customComponentsConfig[componentType].settingsComponentTagName;
-        // Now, use the string variable to query for the element.
         let settingsElement = this.functionsPanel.querySelector(
           settingsComponentTagName
         );
         if (!settingsElement) {
-          // Use the string variable to create the element.
           settingsElement = document.createElement(settingsComponentTagName);
           this.functionsPanel.appendChild(settingsElement);
         }
@@ -426,16 +550,36 @@ export class CustomizationSidebar {
           JSON.stringify({ targetComponentId: component.id })
         );
       }
-    } else if (component.classList.contains('table-cell')) {
+    }
+    if (
+      componentConfig &&
+      componentConfig.attributes &&
+      componentConfig.attributes.length > 0
+    ) {
+      componentConfig.attributes.forEach(attribute => {
+        if (attribute.type === 'Input') {
+          this.createAttributeControls(attribute);
+        }
+      });
+    }
+    if (showModalButton && this.editable !== false) {
       const modalButton = document.createElement('button');
-      modalButton.textContent = 'Set Cell Attribute';
-      modalButton.className = 'set-cell-attribute-button';
+      modalButton.textContent = `Set ${component.classList[0].replace('-component', '')} Attribute`;
+      modalButton.className = 'set-attribute-button';
       this.functionsPanel.appendChild(modalButton);
       modalButton.addEventListener('click', () => {
-        const tableComponent = new TableComponent();
-        tableComponent.handleCellClick(component);
+        if (component.classList.contains('text-component')) {
+          const textComponentInstance = new TextComponent();
+          textComponentInstance.handleTextClick(component);
+        } else if (component.classList.contains('header-component')) {
+          const headerComponentInstance = new HeaderComponent();
+          headerComponentInstance.handleHeaderClick(component);
+        } else if (component.classList.contains('table-cell')) {
+          const tableComponent = new TableComponent();
+          tableComponent.handleCellClick(component);
+        }
       });
-    } else {
+    } else if (!componentConfig) {
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
     }
@@ -720,3 +864,4 @@ export class CustomizationSidebar {
 CustomizationSidebar.selectedComponent = null;
 CustomizationSidebar.customComponentsConfig = null;
 CustomizationSidebar.basicComponentsConfig = null;
+CustomizationSidebar.showAttributeTab = undefined;

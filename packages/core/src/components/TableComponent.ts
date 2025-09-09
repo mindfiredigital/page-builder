@@ -22,7 +22,7 @@ export class TableComponent {
     const tableId = Canvas.generateUniqueClass('table');
     container.id = tableId;
     container.style.minWidth = '250px';
-    container.style.border = '1px solid #d1d5db';
+    container.style.border = '1px solid #2F3132';
     container.style.borderRadius = '8px';
 
     container.style.display = 'flex';
@@ -89,7 +89,7 @@ export class TableComponent {
 
     cell.id = `table-cell-T-${tableId}-R${rowIndex}-C${cellIndex}`;
     cell.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
-    cell.style.border = '1px solid #d1d5db';
+    cell.style.border = '1px solid #2F3132';
     cell.style.padding = '8px 12px';
     cell.style.minHeight = '45px';
     cell.style.position = 'relative';
@@ -97,7 +97,7 @@ export class TableComponent {
     cell.style.transition = 'background-color 0.2s ease';
     cell.style.display = 'flex';
     cell.style.alignItems = 'center';
-    cell.style.justifyContent = 'center';
+    cell.style.justifyContent = 'flex-start';
 
     // Create control buttons container
     const controlsContainer = document.createElement('div');
@@ -274,19 +274,45 @@ export class TableComponent {
     return null;
   }
 
-  seedFormulaValues(table: HTMLElement, values: Record<string, any>) {
-    const cells = table.querySelectorAll('div[data-attribute-key]');
-    cells.forEach(cell => {
-      const controlsElement = cell.querySelector('.cell-controls');
-      const key = cell.getAttribute('data-attribute-key');
-      if (key && values.hasOwnProperty(key)) {
-        cell.textContent = values[key];
-        (cell as HTMLElement).style.color = '#000000';
-      }
-      if (controlsElement) {
-        cell.appendChild(controlsElement);
-      }
+  seedFormulaValues(values: Record<string, any>) {
+    const allTables = document.querySelectorAll('.table-component');
+
+    allTables.forEach(table => {
+      const cells = table.querySelectorAll('div[data-attribute-key]');
+
+      cells.forEach(cell => {
+        const controlsElement = cell.querySelector('.cell-controls');
+        const key = cell.getAttribute('data-attribute-key');
+
+        if (key && values.hasOwnProperty(key)) {
+          cell.textContent = values[key];
+          (cell as HTMLElement).style.color = '#000000';
+        }
+
+        if (controlsElement) {
+          cell.appendChild(controlsElement);
+        }
+      });
     });
+
+    Canvas.dispatchDesignChange();
+  }
+
+  updateInputValues(values: Record<string, any>) {
+    const allTables = document.querySelectorAll('.table-component');
+
+    allTables.forEach(table => {
+      const cells = table.querySelectorAll('div[data-attribute-key]');
+
+      cells.forEach(cell => {
+        const key = cell.getAttribute('data-attribute-key');
+        const type = cell.getAttribute('data-attribute-type');
+        if (key && values.hasOwnProperty(key) && type === 'Input') {
+          cell.textContent = values[key];
+        }
+      });
+    });
+
     Canvas.dispatchDesignChange();
   }
 
@@ -295,7 +321,7 @@ export class TableComponent {
     attribute: ComponentAttribute
   ): void {
     cell.setAttribute('data-attribute-key', attribute.key);
-
+    cell.setAttribute('data-attribute-type', attribute.type);
     const controlsElement = cell.querySelector('.cell-controls');
     if (attribute.type === 'Formula') {
       cell.textContent = `${attribute.title}`;
@@ -321,6 +347,7 @@ export class TableComponent {
 
     const newRow = this.createTableRow(rowCount, 1, tableId);
     tableWrapper.appendChild(newRow);
+    Canvas.dispatchDesignChange();
   }
 
   static restore(container: HTMLElement, editable: boolean | null): void {
@@ -336,6 +363,36 @@ export class TableComponent {
     const cells = tableWrapper.querySelectorAll('.table-cell');
     cells.forEach(cell => {
       const cellElement = cell as HTMLElement;
+
+      const attributeKey = cellElement.getAttribute('data-attribute-key');
+      const attributeType = cellElement.getAttribute('data-attribute-type');
+
+      if (attributeKey) {
+        const attribute = TableComponent.tableAttributeConfig.find(
+          attr => attr.key === attributeKey
+        );
+        if (attribute) {
+          const controlsElement = cell.querySelector('.cell-controls');
+
+          if (
+            attribute.default_value &&
+            (attributeType === 'Formula' || attributeType === 'Input')
+          ) {
+            cellElement.textContent = `${attribute.default_value}`;
+            cellElement.style.fontSize = '14px';
+            cellElement.style.color = '#000000';
+          } else if (attributeType === 'Formula') {
+            // Restore the title and styling for formula cells
+            cellElement.textContent = `${attribute.title}`;
+            cellElement.style.fontSize = '10px';
+            cellElement.style.color = 'rgb(188 191 198)';
+            cellElement.style.fontWeight = '500';
+          }
+          if (controlsElement) {
+            cell.appendChild(controlsElement);
+          }
+        }
+      }
 
       const controls = cellElement.querySelector('.cell-controls');
       if (editable === false) {

@@ -20,24 +20,7 @@ class e {
     });
   }
 }
-class t {
-  constructor(e = 'Sample Text') {
-    this.text = e;
-  }
-  create() {
-    const e = document.createElement('div');
-    return (
-      (e.innerText = this.text),
-      (e.contentEditable = 'true'),
-      e.classList.add('text-component'),
-      e
-    );
-  }
-  setText(e) {
-    this.text = e;
-  }
-}
-function n(e, t, n, o) {
+function t(e, t, n, o) {
   return new (n || (n = Promise))(function (s, i) {
     function l(e) {
       try {
@@ -68,13 +51,227 @@ function n(e, t, n, o) {
   });
 }
 'function' == typeof SuppressedError && SuppressedError;
+class n {
+  constructor() {
+    var e, t;
+    (this.resolvePromise = null), (this.attributes = []);
+    const n = document.getElementById('modal');
+    n
+      ? (this.modalElement = n)
+      : ((this.modalElement = this.createModalElement()),
+        document.body.appendChild(this.modalElement)),
+      (this.contentContainer =
+        this.modalElement.querySelector('#modal-content')),
+      this.hide(),
+      null === (e = this.modalElement.querySelector('#close-modal-button')) ||
+        void 0 === e ||
+        e.addEventListener('click', () => {
+          var e;
+          this.hide(),
+            null === (e = this.resolvePromise) ||
+              void 0 === e ||
+              e.call(this, null);
+        }),
+      null === (t = this.modalElement.querySelector('#save-button')) ||
+        void 0 === t ||
+        t.addEventListener('click', () => {
+          this.onSave();
+        });
+  }
+  createModalElement() {
+    const e = document.createElement('div');
+    return (
+      (e.className = 'modal-overlay modal-hidden'),
+      (e.id = 'modal'),
+      (e.innerHTML =
+        '\n      <div class="modal-content">\n        <div class="modal-header">\n          <div class="modal-header-content">\n            <h2 class="modal-title">Component Settings</h2>\n            <button id="close-modal-button" class="modal-close-button">\n              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n              </svg>\n            </button>\n          </div>\n        </div>\n        <div class="modal-body">\n          <div id="modal-content" class="modal-form">\n            \x3c!-- Dynamic form elements will be injected here --\x3e\n          </div>\n          <div class="modal-footer">\n            <button id="save-button" class="save-button">\n              Save\n            </button>\n          </div>\n        </div>\n      </div>\n    '),
+      e
+    );
+  }
+  renderForm(e) {
+    (this.contentContainer.innerHTML = ''),
+      (this.attributes = e),
+      e.forEach(e => {
+        const t = document.createElement('div');
+        (t.className = 'form-field'), t.setAttribute('data-attr-key', e.key);
+        const n = document.createElement('div');
+        (n.className = 'form-field-header'),
+          n.setAttribute('data-attr-id', e.id),
+          t.addEventListener('click', () => {
+            this.contentContainer.querySelectorAll('.form-field').forEach(e => {
+              e.classList.remove('selected');
+            }),
+              t.classList.add('selected');
+          });
+        const o = document.createElement('button');
+        (o.className = 'expand-button'),
+          (o.type = 'button'),
+          (o.innerHTML =
+            '\n        <svg class="expand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />\n        </svg>\n      ');
+        const s = document.createElement('div');
+        s.className = 'title-key-container';
+        const i = document.createElement('span');
+        (i.className = 'form-title'), (i.textContent = e.title);
+        const l = document.createElement('span');
+        (l.className = 'form-key'),
+          (l.textContent = `(${e.key})`),
+          s.appendChild(i),
+          s.appendChild(l),
+          n.appendChild(o),
+          n.appendChild(s);
+        const a = document.createElement('div');
+        a.className = 'form-value-container form-value-collapsed';
+        const r = document.createElement('label');
+        let d;
+        (r.className = 'form-label'),
+          (r.textContent = 'Value:'),
+          r.setAttribute('for', e.id);
+        const c = document.createElement('span');
+        (c.id = e.id),
+          (c.textContent = e.value ? e.value.toString() : null),
+          (c.className = 'form-display-value'),
+          (d = c),
+          a.appendChild(r),
+          a.appendChild(d),
+          t.appendChild(n),
+          t.appendChild(a),
+          this.contentContainer.appendChild(t),
+          n.addEventListener('click', () => {
+            this.toggleFieldExpansion(e.id);
+          });
+      });
+  }
+  toggleFieldExpansion(e) {
+    const t = this.modalElement.querySelector(`[data-attr-id="${e}"]`),
+      n = null == t ? void 0 : t.nextElementSibling,
+      o = null == t ? void 0 : t.querySelector('.expand-icon');
+    if (n && o) {
+      !n.classList.contains('form-value-collapsed')
+        ? (n.classList.add('form-value-collapsed'),
+          (o.style.transform = 'rotate(0deg)'))
+        : (n.classList.remove('form-value-collapsed'),
+          (o.style.transform = 'rotate(90deg)'));
+    }
+  }
+  show(e) {
+    return (
+      this.renderForm(e),
+      this.modalElement.classList.remove('modal-hidden'),
+      new Promise(e => {
+        this.resolvePromise = e;
+      })
+    );
+  }
+  hide() {
+    this.modalElement.classList.add('modal-hidden');
+  }
+  onSave() {
+    var e;
+    const t = this.contentContainer.querySelector('.form-field.selected'),
+      n = {};
+    if (t) {
+      const e = t.getAttribute('data-attr-key'),
+        o = this.attributes.find(t => t.key === e);
+      o && (n[o.key] = o.value);
+    }
+    this.hide(),
+      null === (e = this.resolvePromise) || void 0 === e || e.call(this, n),
+      this.resetPromise();
+  }
+  resetPromise() {
+    this.resolvePromise = null;
+  }
+}
 class o {
+  constructor(e = 'Sample Text') {
+    (this.text = e), (this.modalComponent = new n());
+  }
+  create(e) {
+    o.textAttributeConfig = e || [];
+    const t = document.createElement('div');
+    return (
+      (t.innerText = this.text),
+      (t.contentEditable = 'true'),
+      t.classList.add('text-component'),
+      t
+    );
+  }
+  setText(e) {
+    this.text = e;
+  }
+  seedFormulaValues(e) {
+    document.querySelectorAll('.text-component').forEach(t => {
+      const n = t.querySelector('.component-controls'),
+        o = t.getAttribute('data-attribute-key');
+      o &&
+        e.hasOwnProperty(o) &&
+        ((t.textContent = e[o]), (t.style.color = '#000000')),
+        n && t.appendChild(n);
+    }),
+      L.dispatchDesignChange();
+  }
+  updateInputValues(e) {
+    document.querySelectorAll('.text-component').forEach(t => {
+      const n = t.querySelector('.component-controls'),
+        o = t.getAttribute('data-attribute-key'),
+        s = t.getAttribute('data-attribute-type');
+      o && e.hasOwnProperty(o) && 'Input' === s && (t.textContent = e[o]),
+        n && t.appendChild(n);
+    }),
+      L.dispatchDesignChange();
+  }
+  handleTextClick(e) {
+    return t(this, void 0, void 0, function* () {
+      var t;
+      if (
+        this.modalComponent &&
+        0 !==
+          (null === (t = o.textAttributeConfig) || void 0 === t
+            ? void 0
+            : t.length)
+      )
+        try {
+          const t = yield this.modalComponent.show(o.textAttributeConfig);
+          if (t) {
+            const n = this.findSelectedAttribute(t);
+            n && this.updateTextContent(e, n);
+          }
+        } catch (e) {
+          console.error('Error handling text component click:', e);
+        }
+      else
+        console.warn('Modal component or text attribute config not available');
+    });
+  }
+  findSelectedAttribute(e) {
+    for (const t of o.textAttributeConfig)
+      if (e.hasOwnProperty(t.key) && void 0 !== e[t.key] && '' !== e[t.key])
+        return t;
+    return null;
+  }
+  updateTextContent(e, t) {
+    const n = e.querySelector('.component-controls');
+    e.setAttribute('data-attribute-key', t.key),
+      e.setAttribute('data-attribute-type', t.type),
+      'Formula' === t.type
+        ? ((e.textContent = `${t.title}`),
+          (e.style.fontSize = '10px'),
+          (e.style.color = 'rgb(188 191 198)'),
+          (e.style.fontWeight = '500'))
+        : ('Constant' !== t.type && 'Input' !== t.type) ||
+          (e.textContent = `${t.value}`),
+      n && e.appendChild(n),
+      null == L || L.dispatchDesignChange();
+  }
+}
+o.textAttributeConfig = [];
+class s {
   create(e = null, t) {
-    o.imageAttributeConfig = t;
+    s.imageAttributeConfig = t;
     const n = document.createElement('div');
     n.classList.add('image-component');
-    const s = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
-    (n.id = s),
+    const o = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    (n.id = o),
       (n.style.width = '300px'),
       (n.style.height = '300px'),
       (n.style.position = 'relative'),
@@ -91,7 +288,7 @@ class o {
     (l.type = 'file'),
       (l.accept = 'image/*'),
       (l.style.display = 'none'),
-      l.addEventListener('change', e => o.handleFileChange(e, n, i));
+      l.addEventListener('change', e => s.handleFileChange(e, n, i));
     const a = document.createElement('button');
     a.classList.add('upload-btn'),
       (a.innerHTML = '🖊️'),
@@ -108,7 +305,7 @@ class o {
       (a.style.fontSize = '24px'),
       a.addEventListener('click', () => l.click());
     const r = document.createElement('img'),
-      d = `${s}-img`;
+      d = `${o}-img`;
     return (
       (r.id = d),
       (r.style.width = '100%'),
@@ -130,23 +327,23 @@ class o {
       n
     );
   }
-  static handleFileChange(e, t, s) {
+  static handleFileChange(e, n, o) {
     const i = e.target,
       l = i.files ? i.files[0] : null;
     if (l) {
       const e = new FileReader();
       (e.onload = function () {
-        return n(this, void 0, void 0, function* () {
-          const n = e.result,
-            i = t.querySelector('img');
+        return t(this, void 0, void 0, function* () {
+          const t = e.result,
+            i = n.querySelector('img');
           if (i) {
-            if (o.imageAttributeConfig) {
-              const e = yield o.imageAttributeConfig(n);
+            if (s.imageAttributeConfig) {
+              const e = yield s.imageAttributeConfig(t);
               i.src = e.url;
-            } else i.src = n;
+            } else i.src = t;
             (i.style.display = 'block'),
-              (s.style.display = 'none'),
-              (t.style.backgroundColor = 'transparent'),
+              (o.style.display = 'none'),
+              (n.style.backgroundColor = 'transparent'),
               null == L || L.dispatchDesignChange();
           }
         });
@@ -179,7 +376,7 @@ class o {
       : i.remove();
   }
 }
-class s {
+class i {
   constructor(e) {
     this.captureStateHandler = e;
   }
@@ -229,7 +426,7 @@ class s {
     } else alert('Please upload a valid video file.');
   }
 }
-class i {
+class l {
   create(e = 'Click Me') {
     const t = document.createElement('button');
     return (
@@ -243,13 +440,104 @@ class i {
     );
   }
 }
-class l {
-  create(e = 1, t = 'Header') {
-    const n = document.createElement(`h${e}`);
-    return (n.innerText = t), n.classList.add('header-component'), n;
+class a {
+  constructor() {
+    this.modalComponent = new n();
+  }
+  create(e = 1, t = 'Header', n) {
+    a.headerAttributeConfig = n || [];
+    const o = document.createElement(`h${e}`);
+    return (o.innerText = t), o.classList.add('header-component'), o;
+  }
+  seedFormulaValues(e) {
+    document.querySelectorAll('.header-component').forEach(t => {
+      const n = t.querySelector('.component-controls'),
+        o = t.getAttribute('data-attribute-key');
+      o &&
+        e.hasOwnProperty(o) &&
+        ((t.textContent = e[o]), (t.style.color = '#000000')),
+        n && t.appendChild(n);
+    }),
+      L.dispatchDesignChange();
+  }
+  updateInputValues(e) {
+    document.querySelectorAll('.header-component').forEach(t => {
+      const n = t.querySelector('.component-controls'),
+        o = t.getAttribute('data-attribute-key'),
+        s = t.getAttribute('data-attribute-type');
+      o && e.hasOwnProperty(o) && 'Input' === s && (t.textContent = e[o]),
+        n && t.appendChild(n);
+    }),
+      L.dispatchDesignChange();
+  }
+  handleHeaderClick(e) {
+    return t(this, void 0, void 0, function* () {
+      var t;
+      if (
+        this.modalComponent &&
+        0 !==
+          (null === (t = a.headerAttributeConfig) || void 0 === t
+            ? void 0
+            : t.length)
+      )
+        try {
+          const t = yield this.modalComponent.show(a.headerAttributeConfig);
+          if (t) {
+            const n = this.findSelectedAttribute(t);
+            n && this.updateHeaderContent(e, n);
+          }
+        } catch (e) {
+          console.error('Error handling header component click:', e);
+        }
+      else
+        console.warn(
+          'Modal component or header attribute config not available'
+        );
+    });
+  }
+  findSelectedAttribute(e) {
+    for (const t of a.headerAttributeConfig)
+      if (e.hasOwnProperty(t.key) && void 0 !== e[t.key] && '' !== e[t.key])
+        return t;
+    return null;
+  }
+  updateHeaderContent(e, t) {
+    const n = e.querySelector('.component-controls');
+    e.setAttribute('data-attribute-key', t.key),
+      e.setAttribute('data-attribute-type', t.type),
+      'Formula' === t.type
+        ? ((e.textContent = `${t.title}`),
+          (e.style.color = 'rgb(188 191 198)'),
+          (e.style.fontWeight = '500'))
+        : ('Constant' !== t.type && 'Input' !== t.type) ||
+          (e.textContent = `${t.value}`),
+      n && e.appendChild(n),
+      null == L || L.dispatchDesignChange();
+  }
+  static restore(e) {
+    const t = e.closest('.header-component');
+    if (t) {
+      const e = t.getAttribute('data-attribute-key'),
+        n = t.getAttribute('data-attribute-type');
+      if (e) {
+        const o = a.headerAttributeConfig.find(t => t.key === e);
+        if (o) {
+          const e = t.querySelector('.component-controls');
+          !o.default_value || ('Formula' !== n && 'Input' !== n)
+            ? 'Formula' === n &&
+              ((t.textContent = `${o.title}`),
+              (t.style.color = 'rgb(188 191 198)'),
+              (t.style.fontWeight = '500'))
+            : ((t.textContent = `${o.default_value}`),
+              (t.style.color = '#000000')),
+            e && t.appendChild(e);
+        }
+      }
+    }
   }
 }
-class a {
+a.headerAttributeConfig = [];
+class r {
   constructor() {
     (this.MINIMUM_SIZE = 20),
       (this.originalWidth = 0),
@@ -439,12 +727,12 @@ class a {
     t && t.remove();
     const n = document.createElement('div');
     n.classList.add('resizers');
-    const o = new a();
+    const o = new r();
     (o.element = e), (o.resizers = n), o.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e) {
-    a.restoreResizer(e);
-    const t = new a();
+    r.restoreResizer(e);
+    const t = new r();
     t.element = e;
     e.querySelectorAll('.editable-component').forEach(e => {
       var n;
@@ -459,13 +747,13 @@ class a {
           (null === (n = e.querySelector('img')) || void 0 === n
             ? void 0
             : n.getAttribute('src')) || '';
-        o.restoreImageUpload(e, t, null);
+        s.restoreImageUpload(e, t, null);
       }
       e.classList.contains('container-component') && this.restoreContainer(e);
     });
   }
 }
-class r {
+class d {
   constructor(e, t = `${e}Col-component`) {
     (this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -542,164 +830,33 @@ class r {
           (null === (t = e.querySelector('img')) || void 0 === t
             ? void 0
             : t.getAttribute('src')) || '';
-        o.restoreImageUpload(e, n, null);
+        s.restoreImageUpload(e, n, null);
       }
     });
   }
 }
-class d extends r {
+class c extends d {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class c extends r {
+class u extends d {
   constructor() {
     super(3, 'threeCol-component');
   }
 }
 class p {
   constructor() {
-    var e, t;
-    (this.resolvePromise = null), (this.attributes = []);
-    const n = document.getElementById('modal');
-    n
-      ? (this.modalElement = n)
-      : ((this.modalElement = this.createModalElement()),
-        document.body.appendChild(this.modalElement)),
-      (this.contentContainer =
-        this.modalElement.querySelector('#modal-content')),
-      this.hide(),
-      null === (e = this.modalElement.querySelector('#close-modal-button')) ||
-        void 0 === e ||
-        e.addEventListener('click', () => {
-          var e;
-          this.hide(),
-            null === (e = this.resolvePromise) ||
-              void 0 === e ||
-              e.call(this, null);
-        }),
-      null === (t = this.modalElement.querySelector('#save-button')) ||
-        void 0 === t ||
-        t.addEventListener('click', () => {
-          this.onSave();
-        });
-  }
-  createModalElement() {
-    const e = document.createElement('div');
-    return (
-      (e.className = 'modal-overlay modal-hidden'),
-      (e.id = 'modal'),
-      (e.innerHTML =
-        '\n      <div class="modal-content">\n        <div class="modal-header">\n          <div class="modal-header-content">\n            <h2 class="modal-title">Component Settings</h2>\n            <button id="close-modal-button" class="modal-close-button">\n              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n              </svg>\n            </button>\n          </div>\n        </div>\n        <div class="modal-body">\n          <div id="modal-content" class="modal-form">\n            \x3c!-- Dynamic form elements will be injected here --\x3e\n          </div>\n          <div class="modal-footer">\n            <button id="save-button" class="save-button">\n              Save\n            </button>\n          </div>\n        </div>\n      </div>\n    '),
-      e
-    );
-  }
-  renderForm(e) {
-    (this.contentContainer.innerHTML = ''),
-      (this.attributes = e),
-      e.forEach(e => {
-        const t = document.createElement('div');
-        (t.className = 'form-field'), t.setAttribute('data-attr-key', e.key);
-        const n = document.createElement('div');
-        (n.className = 'form-field-header'),
-          n.setAttribute('data-attr-id', e.id),
-          t.addEventListener('click', () => {
-            this.contentContainer.querySelectorAll('.form-field').forEach(e => {
-              e.classList.remove('selected');
-            }),
-              t.classList.add('selected');
-          });
-        const o = document.createElement('button');
-        (o.className = 'expand-button'),
-          (o.type = 'button'),
-          (o.innerHTML =
-            '\n        <svg class="expand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />\n        </svg>\n      ');
-        const s = document.createElement('div');
-        s.className = 'title-key-container';
-        const i = document.createElement('span');
-        (i.className = 'form-title'), (i.textContent = e.title);
-        const l = document.createElement('span');
-        (l.className = 'form-key'),
-          (l.textContent = `(${e.key})`),
-          s.appendChild(i),
-          s.appendChild(l),
-          n.appendChild(o),
-          n.appendChild(s);
-        const a = document.createElement('div');
-        a.className = 'form-value-container form-value-collapsed';
-        const r = document.createElement('label');
-        let d;
-        (r.className = 'form-label'),
-          (r.textContent = 'Value:'),
-          r.setAttribute('for', e.id);
-        const c = document.createElement('span');
-        (c.id = e.id),
-          (c.textContent = e.value.toString()),
-          (c.className = 'form-display-value'),
-          (d = c),
-          a.appendChild(r),
-          a.appendChild(d),
-          t.appendChild(n),
-          t.appendChild(a),
-          this.contentContainer.appendChild(t),
-          n.addEventListener('click', () => {
-            this.toggleFieldExpansion(e.id);
-          });
-      });
-  }
-  toggleFieldExpansion(e) {
-    const t = this.modalElement.querySelector(`[data-attr-id="${e}"]`),
-      n = null == t ? void 0 : t.nextElementSibling,
-      o = null == t ? void 0 : t.querySelector('.expand-icon');
-    if (n && o) {
-      !n.classList.contains('form-value-collapsed')
-        ? (n.classList.add('form-value-collapsed'),
-          (o.style.transform = 'rotate(0deg)'))
-        : (n.classList.remove('form-value-collapsed'),
-          (o.style.transform = 'rotate(90deg)'));
-    }
-  }
-  show(e) {
-    return (
-      this.renderForm(e),
-      this.modalElement.classList.remove('modal-hidden'),
-      new Promise(e => {
-        this.resolvePromise = e;
-      })
-    );
-  }
-  hide() {
-    this.modalElement.classList.add('modal-hidden');
-  }
-  onSave() {
-    var e;
-    const t = this.contentContainer.querySelector('.form-field.selected'),
-      n = {};
-    if (t) {
-      const e = t.getAttribute('data-attr-key'),
-        o = this.attributes.find(t => t.key === e);
-      o && (n[o.key] = o.value);
-    }
-    this.hide(),
-      null === (e = this.resolvePromise) || void 0 === e || e.call(this, n),
-      this.resetPromise();
-  }
-  resetPromise() {
-    this.resolvePromise = null;
-  }
-}
-class u {
-  constructor() {
-    (this.modalComponent = null), (this.modalComponent = new p() || null);
+    (this.modalComponent = null), (this.modalComponent = new n() || null);
   }
   create(e, t, n = !1, o) {
-    u.tableAttributeConfig = o || [];
+    p.tableAttributeConfig = o || [];
     const s = document.createElement('div');
     s.classList.add('table-component');
     const i = L.generateUniqueClass('table');
     (s.id = i),
       (s.style.minWidth = '250px'),
-      (s.style.border = '1px solid #d1d5db'),
+      (s.style.border = '1px solid #2F3132'),
       (s.style.borderRadius = '8px'),
       (s.style.display = 'flex'),
       (s.style.flexDirection = 'column');
@@ -744,7 +901,7 @@ class u {
     (o.className = 'table-cell'),
       (o.id = `table-cell-T-${n}-R${e}-C${t}`),
       (o.textContent = `R${e + 1}C${t + 1}`),
-      (o.style.border = '1px solid #d1d5db'),
+      (o.style.border = '1px solid #2F3132'),
       (o.style.padding = '8px 12px'),
       (o.style.minHeight = '45px'),
       (o.style.position = 'relative'),
@@ -752,7 +909,7 @@ class u {
       (o.style.transition = 'background-color 0.2s ease'),
       (o.style.display = 'flex'),
       (o.style.alignItems = 'center'),
-      (o.style.justifyContent = 'center');
+      (o.style.justifyContent = 'flex-start');
     const s = document.createElement('div');
     (s.className = 'cell-controls'),
       (s.style.position = 'absolute'),
@@ -852,14 +1009,14 @@ class u {
       });
   }
   handleCellClick(e) {
-    return n(this, void 0, void 0, function* () {
+    return t(this, void 0, void 0, function* () {
       if (
         this.modalComponent &&
-        u.tableAttributeConfig &&
-        0 !== u.tableAttributeConfig.length
+        p.tableAttributeConfig &&
+        0 !== p.tableAttributeConfig.length
       )
         try {
-          const t = yield this.modalComponent.show(u.tableAttributeConfig);
+          const t = yield this.modalComponent.show(p.tableAttributeConfig);
           if (t) {
             const n = this.findSelectedAttribute(t);
             n && this.updateCellContent(e, n);
@@ -872,24 +1029,37 @@ class u {
     });
   }
   findSelectedAttribute(e) {
-    for (const t of u.tableAttributeConfig)
+    for (const t of p.tableAttributeConfig)
       if (e.hasOwnProperty(t.key) && void 0 !== e[t.key] && '' !== e[t.key])
         return t;
     return null;
   }
-  seedFormulaValues(e, t) {
-    e.querySelectorAll('div[data-attribute-key]').forEach(e => {
-      const n = e.querySelector('.cell-controls'),
-        o = e.getAttribute('data-attribute-key');
-      o &&
-        t.hasOwnProperty(o) &&
-        ((e.textContent = t[o]), (e.style.color = '#000000')),
-        n && e.appendChild(n);
+  seedFormulaValues(e) {
+    document.querySelectorAll('.table-component').forEach(t => {
+      t.querySelectorAll('div[data-attribute-key]').forEach(t => {
+        const n = t.querySelector('.cell-controls'),
+          o = t.getAttribute('data-attribute-key');
+        o &&
+          e.hasOwnProperty(o) &&
+          ((t.textContent = e[o]), (t.style.color = '#000000')),
+          n && t.appendChild(n);
+      });
+    }),
+      L.dispatchDesignChange();
+  }
+  updateInputValues(e) {
+    document.querySelectorAll('.table-component').forEach(t => {
+      t.querySelectorAll('div[data-attribute-key]').forEach(t => {
+        const n = t.getAttribute('data-attribute-key'),
+          o = t.getAttribute('data-attribute-type');
+        n && e.hasOwnProperty(n) && 'Input' === o && (t.textContent = e[n]);
+      });
     }),
       L.dispatchDesignChange();
   }
   updateCellContent(e, t) {
-    e.setAttribute('data-attribute-key', t.key);
+    e.setAttribute('data-attribute-key', t.key),
+      e.setAttribute('data-attribute-type', t.type);
     const n = e.querySelector('.cell-controls');
     'Formula' === t.type
       ? ((e.textContent = `${t.title}`),
@@ -906,21 +1076,39 @@ class u {
   addRow(e, t) {
     const n = e.children.length,
       o = this.createTableRow(n, 1, t);
-    e.appendChild(o);
+    e.appendChild(o), L.dispatchDesignChange();
   }
   static restore(e, t) {
-    const n = new u(),
+    const n = new p(),
       o = e.querySelector('.table-wrapper'),
       s = null == o ? void 0 : o.closest('.table-component'),
       i = null == s ? void 0 : s.id;
     if (!o) return void console.error('No table wrapper found in container');
     o.querySelectorAll('.table-cell').forEach(e => {
       const o = e,
-        s = o.querySelector('.cell-controls');
+        s = o.getAttribute('data-attribute-key'),
+        l = o.getAttribute('data-attribute-type');
+      if (s) {
+        const t = p.tableAttributeConfig.find(e => e.key === s);
+        if (t) {
+          const n = e.querySelector('.cell-controls');
+          !t.default_value || ('Formula' !== l && 'Input' !== l)
+            ? 'Formula' === l &&
+              ((o.textContent = `${t.title}`),
+              (o.style.fontSize = '10px'),
+              (o.style.color = 'rgb(188 191 198)'),
+              (o.style.fontWeight = '500'))
+            : ((o.textContent = `${t.default_value}`),
+              (o.style.fontSize = '14px'),
+              (o.style.color = '#000000')),
+            n && e.appendChild(n);
+        }
+      }
+      const a = o.querySelector('.cell-controls');
       if (!1 !== t) {
-        if (s) {
-          const e = s.querySelector('.add-cell-button'),
-            t = s.querySelector('.delete-cell-button');
+        if (a) {
+          const e = a.querySelector('.add-cell-button'),
+            t = a.querySelector('.delete-cell-button');
           e &&
             e.addEventListener('click', e => {
               e.stopPropagation(), n.addCellToRow(o, i);
@@ -930,7 +1118,7 @@ class u {
                 e.stopPropagation(), n.deleteCell(o);
               });
         }
-      } else null == s || s.remove();
+      } else null == a || a.remove();
     });
     const l = e.querySelector('.add-row-button');
     l &&
@@ -939,7 +1127,7 @@ class u {
       });
   }
 }
-class m {
+class h {
   constructor() {
     (this.link = null), (this.isEditing = !1);
   }
@@ -1043,7 +1231,7 @@ class m {
       });
   }
 }
-class h {
+class m {
   create() {
     const e = e => {
         let t,
@@ -1118,58 +1306,58 @@ class h {
             };
         }
       },
-      n = new a().create();
-    n.classList.add('container'),
-      Object.assign(n.style, {
+      t = new r().create();
+    t.classList.add('container'),
+      Object.assign(t.style, {
         width: '100%',
         maxWidth: 'none',
         margin: '0 auto',
         padding: '20px',
         fontFamily: "'Roboto', sans-serif",
       }),
-      e(n);
-    const o = new a().create();
-    o.classList.add('container'),
-      Object.assign(o.style, {
+      e(t);
+    const n = new r().create();
+    n.classList.add('container'),
+      Object.assign(n.style, {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '40px',
         width: '100%',
       }),
-      e(o);
-    const s = new t('MyBrand').create();
+      e(n);
+    const s = new o('MyBrand').create();
     Object.assign(s.style, {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333',
     });
-    const l = new a().create();
-    l.classList.add('container'),
-      Object.assign(l.style, { display: 'flex', gap: '20px' }),
-      e(l),
+    const i = new r().create();
+    i.classList.add('container'),
+      Object.assign(i.style, { display: 'flex', gap: '20px' }),
+      e(i),
       ['Home', 'Features', 'Contact'].forEach(e => {
-        const n = new t(e).create();
-        Object.assign(n.style, {
+        const t = new o(e).create();
+        Object.assign(t.style, {
           cursor: 'pointer',
           color: '#555',
           textDecoration: 'none',
         }),
-          l.appendChild(n);
+          i.appendChild(t);
       }),
-      o.appendChild(s),
-      o.appendChild(l);
-    const r = new a().create();
-    r.classList.add('container'),
-      Object.assign(r.style, {
+      n.appendChild(s),
+      n.appendChild(i);
+    const a = new r().create();
+    a.classList.add('container'),
+      Object.assign(a.style, {
         textAlign: 'center',
         padding: '60px 20px',
         backgroundColor: '#f9f9f9',
         borderRadius: '10px',
         marginBottom: '40px',
       }),
-      e(r);
-    const d = new t('Welcome to My Landing Page').create();
+      e(a);
+    const d = new o('Welcome to My Landing Page').create();
     Object.assign(d.style, {
       textAlign: 'center',
       padding: '60px 20px',
@@ -1178,7 +1366,7 @@ class h {
       marginBottom: '40px',
       width: '100%',
     });
-    const c = new t(
+    const c = new o(
       'Discover amazing features and build better products with us.'
     ).create();
     Object.assign(c.style, {
@@ -1186,8 +1374,8 @@ class h {
       color: '#666',
       marginBottom: '30px',
     });
-    const p = new i().create();
-    Object.assign(p.style, {
+    const u = new l().create();
+    Object.assign(u.style, {
       padding: '12px 24px',
       fontSize: '16px',
       color: '#fff',
@@ -1197,32 +1385,32 @@ class h {
       cursor: 'pointer',
       transition: 'background-color 0.3s',
     }),
-      p.addEventListener('mouseenter', () => {
-        p.style.backgroundColor = '#0056b3';
+      u.addEventListener('mouseenter', () => {
+        u.style.backgroundColor = '#0056b3';
       }),
-      p.addEventListener('mouseleave', () => {
-        p.style.backgroundColor = '#007bff';
+      u.addEventListener('mouseleave', () => {
+        u.style.backgroundColor = '#007bff';
       }),
-      r.appendChild(d),
-      r.appendChild(c),
-      r.appendChild(p);
-    const u = new a().create();
-    u.classList.add('container'),
-      Object.assign(u.style, {
+      a.appendChild(d),
+      a.appendChild(c),
+      a.appendChild(u);
+    const p = new r().create();
+    p.classList.add('container'),
+      Object.assign(p.style, {
         textAlign: 'center',
         padding: '20px',
         marginTop: '40px',
         borderTop: '1px solid #ddd',
       }),
-      e(u);
-    const m = new t('© 2025 MyBrand. All rights reserved.').create();
+      e(p);
+    const h = new o('© 2025 MyBrand. All rights reserved.').create();
     return (
-      Object.assign(m.style, { fontSize: '14px', color: '#999' }),
-      u.appendChild(m),
-      n.appendChild(o),
-      n.appendChild(r),
-      n.appendChild(u),
-      n
+      Object.assign(h.style, { fontSize: '14px', color: '#999' }),
+      p.appendChild(h),
+      t.appendChild(n),
+      t.appendChild(a),
+      t.appendChild(p),
+      t
     );
   }
 }
@@ -1468,7 +1656,7 @@ class f {
     });
   }
 }
-const w = {
+const C = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n                </svg>',
   tablet:
@@ -1518,8 +1706,8 @@ const w = {
   customizationMenu:
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush"><path d="m11 10 3 3"/><path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/><path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/></svg>',
 };
-class C {
-  static init(e, t, n) {
+class w {
+  static init(e, t, n, o) {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
       (this.controlsContainer = document.getElementById('controls')),
@@ -1527,6 +1715,7 @@ class C {
       (this.customComponentsConfig = e),
       (this.basicComponentsConfig = n),
       (this.editable = t),
+      (this.showAttributeTab = o),
       !this.sidebarElement || !this.controlsContainer)
     )
       return void console.error(
@@ -1539,7 +1728,7 @@ class C {
       (this.functionsPanel.style.display = 'none'),
       (this.layersModeToggle = document.createElement('div')),
       (this.layersModeToggle.className = 'layers-mode-toggle'),
-      (this.layersModeToggle.innerHTML = `\n        <button id="customize-tab" title="Customize" class="active">${w.settings}</button>\n        <button id="attribute-tab" title="Attribute" >${w.attribute}</button>\n        <button id="layers-tab" title="Layers"> ${w.menu} </button>\n    `),
+      (this.layersModeToggle.innerHTML = `\n        <button id="customize-tab" title="Customize" class="active">${C.settings}</button>\n        <button id="attribute-tab" title="Attribute" >${C.attribute}</button>\n        <button id="layers-tab" title="Layers"> ${C.menu} </button>\n    `),
       this.sidebarElement.insertBefore(
         this.layersModeToggle,
         this.componentNameHeader
@@ -1551,14 +1740,21 @@ class C {
       (this.layersView.id = 'layers-view'),
       (this.layersView.className = 'layers-view hidden'),
       this.sidebarElement.appendChild(this.layersView);
-    const o = this.layersModeToggle.querySelector('#customize-tab'),
-      s = this.layersModeToggle.querySelector('#attribute-tab'),
-      i = this.layersModeToggle.querySelector('#layers-tab');
-    o.addEventListener('click', () => this.switchToCustomizeMode()),
-      s.addEventListener('click', () => {
-        this.switchToAttributeMode();
-      }),
-      i.addEventListener('click', () => this.switchToLayersMode());
+    const s = this.layersModeToggle.querySelector('#customize-tab'),
+      i = this.layersModeToggle.querySelector('#attribute-tab'),
+      l = this.layersModeToggle.querySelector('#layers-tab');
+    !1 === this.editable && !0 === o
+      ? ((s.style.display = 'none'),
+        (l.style.display = 'none'),
+        i.classList.add('active'),
+        s.classList.remove('active'),
+        l.classList.remove('active'),
+        this.switchToAttributeMode())
+      : (s.addEventListener('click', () => this.switchToCustomizeMode()),
+        i.addEventListener('click', () => {
+          this.switchToAttributeMode();
+        }),
+        l.addEventListener('click', () => this.switchToLayersMode()));
   }
   static switchToCustomizeMode() {
     const e = document.getElementById('customize-tab'),
@@ -1610,7 +1806,7 @@ class C {
   static showSidebar(e) {
     const t = document.getElementById(e);
     if (!t) return void console.error(`Component with ID "${e}" not found.`);
-    if (!1 === this.editable) return;
+    if (!1 === this.editable && !0 !== this.showAttributeTab) return;
     (this.selectedComponent = t),
       (this.sidebarElement.style.display = 'block'),
       this.sidebarElement.classList.add('visible');
@@ -1619,7 +1815,9 @@ class C {
       ((n.style.backgroundColor = '#e2e8f0'),
       (n.style.borderColor = '#cbd5e1')),
       (this.componentNameHeader.textContent = `Component: ${e}`),
-      this.switchToCustomizeMode();
+      !1 !== this.editable || !0 !== this.showAttributeTab
+        ? this.switchToCustomizeMode()
+        : this.switchToAttributeMode();
   }
   static populateCssControls(e) {
     this.controlsContainer.innerHTML = '';
@@ -1763,84 +1961,170 @@ class C {
         t.borderColor || '#000000'
       );
     const o = document.getElementById('background-color');
-    o && (o.value = C.rgbToHex(t.backgroundColor));
+    o && (o.value = w.rgbToHex(t.backgroundColor));
     const s = document.getElementById('text-color');
-    s && (s.value = C.rgbToHex(t.color));
+    s && (s.value = w.rgbToHex(t.color));
     const i = document.getElementById('border-color');
-    i && (i.value = C.rgbToHex(t.borderColor)), this.addListeners(e);
+    i && (i.value = w.rgbToHex(t.borderColor)), this.addListeners(e);
+  }
+  static handleInputTrigger(e) {
+    return t(this, void 0, void 0, function* () {
+      var e, t, n;
+      const s = w.selectedComponent;
+      if (!s) return;
+      let i;
+      if (
+        (s.classList.contains('table-component')
+          ? (i =
+              null === (e = w.basicComponentsConfig) || void 0 === e
+                ? void 0
+                : e.components.find(e => 'table' === e.name))
+          : s.classList.contains('text-component')
+            ? (i =
+                null === (t = w.basicComponentsConfig) || void 0 === t
+                  ? void 0
+                  : t.components.find(e => 'text' === e.name))
+            : s.classList.contains('header-component') &&
+              (i =
+                null === (n = w.basicComponentsConfig) || void 0 === n
+                  ? void 0
+                  : n.components.find(e => 'header' === e.name)),
+        console.log(i),
+        i && i.globalExecuteFunction)
+      ) {
+        const e = {};
+        w.functionsPanel.querySelectorAll('.attribute-input').forEach(t => {
+          const n = t;
+          e[n.id] = n.value;
+        });
+        const t = yield i.globalExecuteFunction(e),
+          n = new p(),
+          s = new o(),
+          l = new a();
+        t &&
+          (s.seedFormulaValues(t),
+          n.seedFormulaValues(t),
+          l.seedFormulaValues(t),
+          L.historyManager.captureState()),
+          s.updateInputValues(e),
+          n.updateInputValues(e),
+          l.updateInputValues(e);
+      }
+    });
+  }
+  static createAttributeControls(e) {
+    const t = document.createElement('div');
+    (t.className = 'attribute-input-container'),
+      (t.innerHTML = `\n    <div class="attribute-header">\n      <label for="${e.key}" class="attribute-label">${e.title}</label>\n      ${e.editable ? '' : '<span class="readonly-badge">Read Only</span>'}\n    </div>\n    <div class="attribute-input-wrapper">\n      <input \n        type="text" \n        class="attribute-input" \n        id="${e.key}"  \n        ${e.editable ? '' : 'disabled readonly'} \n        value="${e.default_value || ''}" \n        placeholder="Enter ${e.title.toLowerCase()}..."\n      >\n    </div>\n  `),
+      this.functionsPanel.appendChild(t);
+    const n = document.getElementById(e.key);
+    if (!1 !== e.editable) {
+      const o = document.createElement('div');
+      (o.className = 'event-configurator'),
+        (o.innerHTML = `\n      <div class="event-trigger-section">\n        <div class="trigger-header">\n          <label class="trigger-label">Trigger Event:</label>\n        </div>\n        <div class="trigger-select-wrapper">\n          <select class="event-selector" id="event-selector-${e.key}">\n            <option value="input">On Input (Real-time)</option>\n            <option value="change">On Change</option>\n            <option value="blur">On Focus Lost</option>\n            <option value="keyup">On Key Release</option>\n            <option value="click">On Click</option>\n          </select>\n          <div class="select-arrow">▼</div>\n        </div>\n      </div>\n    `),
+        t.appendChild(o);
+      const s = document.getElementById(`event-selector-${e.key}`),
+        i = e => {
+          ['input', 'change', 'blur', 'keyup', 'click'].forEach(e => {
+            n.removeEventListener(e, this.handleInputTrigger);
+          }),
+            n.addEventListener(e, this.handleInputTrigger),
+            t.setAttribute('data-trigger', e);
+        };
+      s.addEventListener('change', () => {
+        var e;
+        const t = s.value;
+        i(t),
+          null === (e = s.parentElement) ||
+            void 0 === e ||
+            e.classList.add('trigger-changed'),
+          setTimeout(() => {
+            var e;
+            null === (e = s.parentElement) ||
+              void 0 === e ||
+              e.classList.remove('trigger-changed');
+          }, 300);
+      });
+      const l = 'input';
+      (s.value = l),
+        i(l),
+        n.addEventListener('focus', () => {
+          t.classList.add('input-focused');
+        }),
+        n.addEventListener('blur', () => {
+          t.classList.remove('input-focused');
+        });
+    }
   }
   static populateFunctionalityControls(e) {
-    var t;
-    if (
-      ((this.functionsPanel.innerHTML = ''),
-      e.classList.contains('table-component'))
-    ) {
-      const t = document.getElementById(e.id);
-      if (this.basicComponentsConfig) {
-        const e = this.basicComponentsConfig.components.find(
-          e => 'table' === e.name
-        );
-        e &&
-          e.attributes &&
-          e.attributes.length > 0 &&
-          e.attributes.map(o => {
-            const s = document.createElement('div');
-            if ('Input' === o.type) {
-              (s.innerHTML = `\n                <label for=${o.key} class="type-input-label">${o.title}</label>\n                <div class="input-wrapper type-input-div">\n                  <input type="text" class="type-input" id=${o.key}  ${o.editable ? '' : 'disabled'}  value=${o.default_value ? o.default_value : ''} >\n                </div>\n              `),
-                this.functionsPanel.appendChild(s);
-              const i = document.getElementById(o.key);
-              o.trigger &&
-                (null == i ||
-                  i.addEventListener(o.trigger, () =>
-                    n(this, void 0, void 0, function* () {
-                      if (e.globalExecuteFunction) {
-                        const n = {};
-                        this.functionsPanel
-                          .querySelectorAll('.type-input')
-                          .forEach(e => {
-                            const t = e;
-                            n[t.id] = t.value;
-                          });
-                        const o = yield e.globalExecuteFunction(n);
-                        if (o && 'object' == typeof o) {
-                          new u().seedFormulaValues(t, o),
-                            L.historyManager.captureState();
-                        }
-                      }
-                    })
-                  ));
-            }
-          });
-      }
-    } else if (e.classList.contains('custom-component')) {
-      const n =
+    var t, n, s, i;
+    let l;
+    this.functionsPanel.innerHTML = '';
+    let r = !1;
+    if (e.classList.contains('table-component'))
+      (l =
+        null === (t = this.basicComponentsConfig) || void 0 === t
+          ? void 0
+          : t.components.find(e => 'table' === e.name)),
+        (r = !1);
+    else if (e.classList.contains('text-component'))
+      (l =
+        null === (n = this.basicComponentsConfig) || void 0 === n
+          ? void 0
+          : n.components.find(e => 'text' === e.name)),
+        (r = !0);
+    else if (e.classList.contains('header-component'))
+      (l =
+        null === (s = this.basicComponentsConfig) || void 0 === s
+          ? void 0
+          : s.components.find(e => 'header' === e.name)),
+        (r = !0);
+    else if (e.classList.contains('table-cell')) r = !0;
+    else if (e.classList.contains('custom-component')) {
+      const t =
           null ===
-            (t = Array.from(e.classList).find(e => e.endsWith('-component'))) ||
-          void 0 === t
+            (i = Array.from(e.classList).find(e => e.endsWith('-component'))) ||
+          void 0 === i
             ? void 0
-            : t.replace('-component', ''),
-        o = C.customComponentsConfig;
-      if (n && o && o[n] && o[n].settingsComponentTagName) {
-        const t = o[n].settingsComponentTagName;
-        let s = this.functionsPanel.querySelector(t);
+            : i.replace('-component', ''),
+        n = w.customComponentsConfig;
+      if (t && n && n[t] && n[t].settingsComponentTagName) {
+        const o = n[t].settingsComponentTagName;
+        let s = this.functionsPanel.querySelector(o);
         s ||
-          ((s = document.createElement(t)), this.functionsPanel.appendChild(s)),
+          ((s = document.createElement(o)), this.functionsPanel.appendChild(s)),
           s.setAttribute(
             'data-settings',
             JSON.stringify({ targetComponentId: e.id })
           );
       }
-    } else if (e.classList.contains('table-cell')) {
+    }
+    if (
+      (l &&
+        l.attributes &&
+        l.attributes.length > 0 &&
+        l.attributes.forEach(e => {
+          'Input' === e.type && this.createAttributeControls(e);
+        }),
+      r && !1 !== this.editable)
+    ) {
       const t = document.createElement('button');
-      (t.textContent = 'Set Cell Attribute'),
-        (t.className = 'set-cell-attribute-button'),
+      (t.textContent = `Set ${e.classList[0].replace('-component', '')} Attribute`),
+        (t.className = 'set-attribute-button'),
         this.functionsPanel.appendChild(t),
         t.addEventListener('click', () => {
-          new u().handleCellClick(e);
+          if (e.classList.contains('text-component')) {
+            new o().handleTextClick(e);
+          } else if (e.classList.contains('header-component')) {
+            new a().handleHeaderClick(e);
+          } else if (e.classList.contains('table-cell')) {
+            new p().handleCellClick(e);
+          }
         });
     } else
-      this.functionsPanel.innerHTML =
-        '<p>No specific settings for this component.</p>';
+      l ||
+        (this.functionsPanel.innerHTML =
+          '<p>No specific settings for this component.</p>');
   }
   static rgbToHex(e) {
     const t = e.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/);
@@ -1891,8 +2175,8 @@ class C {
       this.controlsContainer.appendChild(s);
   }
   static addListeners(e) {
-    var t, n, o, s, i, l, a, r, d, c, p, u, m, h, g, v, y, b, f, w;
-    const C = {
+    var t, n, o, s, i, l, a, r, d, c, u, p, h, m, g, v, y, b, f, C;
+    const w = {
         width: document.getElementById('width'),
         height: document.getElementById('height'),
         backgroundColor: document.getElementById('background-color'),
@@ -1911,7 +2195,7 @@ class C {
         alignItems: document.getElementById('align-items'),
         justifyContent: document.getElementById('justify-content'),
       },
-      E = (function (e, t) {
+      x = (function (e, t) {
         let n = null;
         return (...o) => {
           n && clearTimeout(n), (n = setTimeout(() => e(...o), t));
@@ -1919,25 +2203,25 @@ class C {
       })(() => {
         L.dispatchDesignChange(), L.historyManager.captureState();
       }, 300);
-    null === (t = C.width) ||
+    null === (t = w.width) ||
       void 0 === t ||
       t.addEventListener('input', () => {
         const t = document.getElementById('width-unit').value;
-        (e.style.width = `${C.width.value}${t}`), E();
+        (e.style.width = `${w.width.value}${t}`), x();
       }),
-      null === (n = C.height) ||
+      null === (n = w.height) ||
         void 0 === n ||
         n.addEventListener('input', () => {
           const t = document.getElementById('height-unit').value;
-          (e.style.height = `${C.height.value}${t}`), E();
+          (e.style.height = `${w.height.value}${t}`), x();
         }),
-      null === (o = C.backgroundColor) ||
+      null === (o = w.backgroundColor) ||
         void 0 === o ||
         o.addEventListener('input', () => {
-          (e.style.backgroundColor = C.backgroundColor.value),
+          (e.style.backgroundColor = w.backgroundColor.value),
             (document.getElementById('background-color-value').value =
-              C.backgroundColor.value),
-            E();
+              w.backgroundColor.value),
+            x();
         }),
       null === (s = document.getElementById('background-color-value')) ||
         void 0 === s ||
@@ -1945,70 +2229,70 @@ class C {
           const n = t.target;
           (e.style.backgroundColor = n.value),
             (document.getElementById('background-color').value = n.value),
-            E();
+            x();
         }),
-      null === (i = C.margin) ||
+      null === (i = w.margin) ||
         void 0 === i ||
         i.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
-          (e.style.margin = `${C.margin.value}${t}`), E();
+          (e.style.margin = `${w.margin.value}${t}`), x();
         }),
-      null === (l = C.padding) ||
+      null === (l = w.padding) ||
         void 0 === l ||
         l.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
-          (e.style.padding = `${C.padding.value}${t}`), E();
+          (e.style.padding = `${w.padding.value}${t}`), x();
         }),
-      null === (a = C.alignment) ||
+      null === (a = w.alignment) ||
         void 0 === a ||
         a.addEventListener('change', () => {
-          (e.style.textAlign = C.alignment.value), E();
+          (e.style.textAlign = w.alignment.value), x();
         }),
-      null === (r = C.fontSize) ||
+      null === (r = w.fontSize) ||
         void 0 === r ||
         r.addEventListener('input', () => {
           const t = document.getElementById('font-size-unit').value;
-          (e.style.fontSize = `${C.fontSize.value}${t}`), E();
+          (e.style.fontSize = `${w.fontSize.value}${t}`), x();
         }),
-      null === (d = C.fontWeight) ||
+      null === (d = w.fontWeight) ||
         void 0 === d ||
         d.addEventListener('change', () => {
-          (e.style.fontWeight = C.fontWeight.value), E();
+          (e.style.fontWeight = w.fontWeight.value), x();
         }),
-      null === (c = C.textColor) ||
+      null === (c = w.textColor) ||
         void 0 === c ||
         c.addEventListener('input', () => {
-          (e.style.color = C.textColor.value),
+          (e.style.color = w.textColor.value),
             (document.getElementById('text-color-value').value =
-              C.textColor.value),
-            E();
+              w.textColor.value),
+            x();
         }),
-      null === (p = document.getElementById('text-color-value')) ||
-        void 0 === p ||
-        p.addEventListener('input', t => {
+      null === (u = document.getElementById('text-color-value')) ||
+        void 0 === u ||
+        u.addEventListener('input', t => {
           const n = t.target;
           (e.style.color = n.value),
             (document.getElementById('text-color').value = n.value),
-            E();
+            x();
         }),
-      null === (u = C.borderWidth) ||
-        void 0 === u ||
-        u.addEventListener('input', () => {
+      null === (p = w.borderWidth) ||
+        void 0 === p ||
+        p.addEventListener('input', () => {
           const t = document.getElementById('border-width-unit').value;
-          (e.style.borderWidth = `${C.borderWidth.value}${t}`), E();
+          (e.style.borderWidth = `${w.borderWidth.value}${t}`), x();
         }),
-      null === (m = C.borderStyle) ||
-        void 0 === m ||
-        m.addEventListener('change', () => {
-          (e.style.borderStyle = C.borderStyle.value), E();
-        }),
-      null === (h = C.borderColor) ||
+      null === (h = w.borderStyle) ||
         void 0 === h ||
-        h.addEventListener('input', () => {
-          (e.style.borderColor = C.borderColor.value),
+        h.addEventListener('change', () => {
+          (e.style.borderStyle = w.borderStyle.value), x();
+        }),
+      null === (m = w.borderColor) ||
+        void 0 === m ||
+        m.addEventListener('input', () => {
+          (e.style.borderColor = w.borderColor.value),
             (document.getElementById('border-color-value').value =
-              C.borderColor.value),
-            E();
+              w.borderColor.value),
+            x();
         }),
       null === (g = document.getElementById('border-color-value')) ||
         void 0 === g ||
@@ -2016,42 +2300,43 @@ class C {
           const n = t.target;
           (e.style.borderColor = n.value),
             (document.getElementById('border-color').value = n.value),
-            E();
+            x();
         }),
-      null === (v = C.display) ||
+      null === (v = w.display) ||
         void 0 === v ||
         v.addEventListener('change', () => {
-          (e.style.display = C.display.value), E(), this.populateCssControls(e);
+          (e.style.display = w.display.value), x(), this.populateCssControls(e);
         }),
-      null === (y = C.flexDirection) ||
+      null === (y = w.flexDirection) ||
         void 0 === y ||
         y.addEventListener('change', () => {
-          (e.style.flexDirection = C.flexDirection.value), E();
+          (e.style.flexDirection = w.flexDirection.value), x();
         }),
-      null === (b = C.alignItems) ||
+      null === (b = w.alignItems) ||
         void 0 === b ||
         b.addEventListener('change', () => {
-          (e.style.alignItems = C.alignItems.value), E();
+          (e.style.alignItems = w.alignItems.value), x();
         }),
-      null === (f = C.fontFamily) ||
+      null === (f = w.fontFamily) ||
         void 0 === f ||
         f.addEventListener('change', () => {
-          (e.style.fontFamily = C.fontFamily.value), E();
+          (e.style.fontFamily = w.fontFamily.value), x();
         }),
-      null === (w = C.justifyContent) ||
-        void 0 === w ||
-        w.addEventListener('change', () => {
-          (e.style.justifyContent = C.justifyContent.value), E();
+      null === (C = w.justifyContent) ||
+        void 0 === C ||
+        C.addEventListener('change', () => {
+          (e.style.justifyContent = w.justifyContent.value), x();
         });
   }
   static getLayersViewController() {
     return this.layersViewController;
   }
 }
-(C.selectedComponent = null),
-  (C.customComponentsConfig = null),
-  (C.basicComponentsConfig = null);
-class E {
+(w.selectedComponent = null),
+  (w.customComponentsConfig = null),
+  (w.basicComponentsConfig = null),
+  (w.showAttributeTab = void 0);
+class x {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -2090,73 +2375,72 @@ class E {
     return this.cellSize;
   }
 }
-var x;
+var E;
 class L {
   static getComponents() {
-    return x.components;
+    return E.components;
   }
   static setComponents(e) {
-    x.components = e;
+    E.components = e;
   }
   static init(t = null, n, o) {
-    var s;
     this.editable = n;
-    const i = o.components.find(e => 'table' === e.name),
-      l =
-        null === (s = null == i ? void 0 : i.attributes) || void 0 === s
-          ? void 0
-          : s.filter(e => 'Formula' == e.type || 'Constant' === e.type);
-    this.tableAttributeConfig = l;
+    const s = o.components.find(e => 'table' === e.name);
+    this.tableAttributeConfig = null == s ? void 0 : s.attributes;
+    const i = o.components.find(e => 'text' === e.name);
+    this.textAttributeConfig = null == i ? void 0 : i.attributes;
+    const l = o.components.find(e => 'header' === e.name);
+    this.headerAttributeConfig = null == l ? void 0 : l.attributes;
     const a = o.components.find(e => 'image' === e.name);
     (this.ImageAttributeConfig = null == a ? void 0 : a.globalExecuteFunction),
-      i && i.attributes && i.attributes.length,
-      (x.canvasElement = document.getElementById('canvas')),
-      (x.sidebarElement = document.getElementById('sidebar')),
+      s && s.attributes && s.attributes.length,
+      (E.canvasElement = document.getElementById('canvas')),
+      (E.sidebarElement = document.getElementById('sidebar')),
       window.addEventListener('table-design-change', () => {
-        x.dispatchDesignChange();
+        E.dispatchDesignChange();
       }),
-      x.canvasElement.addEventListener('drop', x.onDrop.bind(x)),
-      x.canvasElement.addEventListener('dragover', e => e.preventDefault()),
-      x.canvasElement.classList.add('preview-desktop'),
-      x.canvasElement.addEventListener('click', e => {
+      E.canvasElement.addEventListener('drop', E.onDrop.bind(E)),
+      E.canvasElement.addEventListener('dragover', e => e.preventDefault()),
+      E.canvasElement.classList.add('preview-desktop'),
+      E.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && C.showSidebar(t.id);
+        t && w.showSidebar(t.id);
       }),
-      (x.canvasElement.style.position = 'relative'),
-      (this.lastCanvasWidth = x.canvasElement.offsetWidth),
-      (x.historyManager = new g(x.canvasElement)),
-      (x.jsonStorage = new v()),
-      (x.controlsManager = new y(x)),
-      (x.gridManager = new E()),
-      x.gridManager.initializeDropPreview(x.canvasElement);
-    if ((new e(x.canvasElement, x.sidebarElement).enable(), t))
-      x.restoreState(t);
+      (E.canvasElement.style.position = 'relative'),
+      (this.lastCanvasWidth = E.canvasElement.offsetWidth),
+      (E.historyManager = new g(E.canvasElement)),
+      (E.jsonStorage = new v()),
+      (E.controlsManager = new y(E)),
+      (E.gridManager = new x()),
+      E.gridManager.initializeDropPreview(E.canvasElement);
+    if ((new e(E.canvasElement, E.sidebarElement).enable(), t))
+      E.restoreState(t);
     else {
-      const e = x.jsonStorage.load();
-      e && x.restoreState(e);
+      const e = E.jsonStorage.load();
+      e && E.restoreState(e);
     }
   }
   static dispatchDesignChange() {
-    if (x.canvasElement && this.editable) {
-      const e = x.getState(),
+    if (E.canvasElement && this.editable) {
+      const e = E.getState(),
         t = new CustomEvent('design-change', {
           detail: e,
           bubbles: !0,
           composed: !0,
         });
-      x.canvasElement.dispatchEvent(t), x.jsonStorage.save(e);
+      E.canvasElement.dispatchEvent(t), E.jsonStorage.save(e);
     }
   }
   static clearCanvas() {
-    (x.canvasElement.innerHTML = ''),
-      (x.components = []),
-      x.historyManager.captureState(),
-      x.gridManager.initializeDropPreview(x.canvasElement),
-      x.gridManager.initializeDropPreview(x.canvasElement),
-      x.dispatchDesignChange();
+    (E.canvasElement.innerHTML = ''),
+      (E.components = []),
+      E.historyManager.captureState(),
+      E.gridManager.initializeDropPreview(E.canvasElement),
+      E.gridManager.initializeDropPreview(E.canvasElement),
+      E.dispatchDesignChange();
   }
   static getState() {
-    return x.components.map(e => {
+    return E.components.map(e => {
       const t = e.classList[0].split(/\d/)[0].replace('-component', ''),
         n = e.querySelector('img'),
         o = n ? n.src : null,
@@ -2194,7 +2478,12 @@ class L {
         id: e.id,
         type: t,
         content: e.innerHTML,
-        position: { x: e.offsetLeft, y: e.offsetTop },
+        position: {
+          x: e.offsetLeft,
+          y: e.offsetTop,
+          '@mindfiredigital/page-builder-react':
+            'file:../../../Desktop/page-builder/page-builder/packages/react/mindfiredigital-page-builder-react-1.2.3.tgz',
+        },
         dimensions: { width: e.offsetWidth, height: e.offsetHeight },
         style: a,
         inlineStyle: e.getAttribute('style') || '',
@@ -2207,11 +2496,11 @@ class L {
     });
   }
   static restoreState(e) {
-    (x.canvasElement.innerHTML = ''),
-      (x.components = []),
+    (E.canvasElement.innerHTML = ''),
+      (E.components = []),
       e.forEach(e => {
         const t = e.dataAttributes['data-custom-settings'] || null,
-          n = x.createComponent(e.type, t, e.content);
+          n = E.createComponent(e.type, t, e.content);
         if (n) {
           if (
             (e.classes.includes('custom-component') ||
@@ -2237,22 +2526,23 @@ class L {
               Object.entries(e.dataAttributes).forEach(([e, t]) => {
                 n.setAttribute(e, t);
               }),
-            x.controlsManager.addControlButtons(n),
-            x.addDraggableListeners(n),
+            E.controlsManager.addControlButtons(n),
+            E.addDraggableListeners(n),
             n.classList.contains('container-component') &&
-              a.restoreContainer(n),
+              r.restoreContainer(n),
             (n.classList.contains('twoCol-component') ||
               n.classList.contains('threeCol-component')) &&
-              r.restoreColumn(n),
+              d.restoreColumn(n),
             'image' === e.type &&
-              o.restoreImageUpload(n, e.imageSrc, this.editable),
-            'table' === e.type && u.restore(n, this.editable),
-            'link' === e.type && m.restore(n),
-            x.canvasElement.appendChild(n),
-            x.components.push(n);
+              s.restoreImageUpload(n, e.imageSrc, this.editable),
+            'table' === e.type && p.restore(n, this.editable),
+            'link' === e.type && h.restore(n),
+            'header' === e.type && a.restore(n),
+            E.canvasElement.appendChild(n),
+            E.components.push(n);
         }
       }),
-      x.gridManager.initializeDropPreview(x.canvasElement);
+      E.gridManager.initializeDropPreview(E.canvasElement);
   }
   static onDrop(e) {
     var t, n;
@@ -2281,11 +2571,11 @@ class L {
     }
     const { gridX: i, gridY: l } = this.gridManager.mousePositionAtGridCorner(
         e,
-        x.canvasElement
+        E.canvasElement
       ),
-      a = x.createComponent(o, s);
-    if (a) {
-      const t = x.generateUniqueClass(o);
+      a = E.createComponent(o, s);
+    if (a && !1 !== this.editable) {
+      const t = E.generateUniqueClass(o);
       (a.id = t),
         a.classList.add(t),
         (a.style.position = 'absolute'),
@@ -2294,12 +2584,12 @@ class L {
           : ((a.style.position = 'absolute'),
             (a.style.left = `${i}px`),
             (a.style.top = `${l}px`)),
-        x.components.push(a),
-        x.canvasElement.appendChild(a),
-        x.addDraggableListeners(a),
-        x.historyManager.captureState();
+        E.components.push(a),
+        E.canvasElement.appendChild(a),
+        E.addDraggableListeners(a),
+        E.historyManager.captureState();
     }
-    x.dispatchDesignChange();
+    E.dispatchDesignChange();
   }
   static reorderComponent(e, t) {
     if (
@@ -2318,11 +2608,11 @@ class L {
         o.appendChild(e);
       })),
       this.historyManager.captureState(),
-      x.dispatchDesignChange();
+      E.dispatchDesignChange();
   }
   static createComponent(e, t = null, n) {
     let o = null;
-    const s = x.componentFactory[e];
+    const s = E.componentFactory[e];
     if (s) o = s();
     else {
       const t = document.querySelector(`[data-component='${e}']`),
@@ -2335,29 +2625,29 @@ class L {
     }
     if (o) {
       new ResizeObserver(e => {
-        x.dispatchDesignChange();
+        E.dispatchDesignChange();
       }).observe(o),
         o.classList.add('editable-component'),
         'container' != e && o.classList.add('component-resizer');
-      const t = x.generateUniqueClass(e);
+      const t = E.generateUniqueClass(e);
       o.setAttribute('id', t),
         'image' === e
           ? o.setAttribute('contenteditable', 'false')
           : (o.setAttribute('contenteditable', 'true'),
             o.addEventListener('input', () => {
-              x.historyManager.captureState();
+              this.dispatchDesignChange(), E.historyManager.captureState();
             }));
       const n = document.createElement('span');
       (n.className = 'component-label'),
         (n.textContent = t),
         o.appendChild(n),
-        x.controlsManager.addControlButtons(o);
+        E.controlsManager.addControlButtons(o);
     }
     return o;
   }
   static generateUniqueClass(e, t = !1, n = null) {
     if (t && n) {
-      let t = x.components.find(e => e.classList.contains(n));
+      let t = E.components.find(e => e.classList.contains(n));
       if (!t && ((t = document.querySelector(`.${n}`)), !t))
         return `${n}-${e}1`;
       const o = Array.from(t.children),
@@ -2380,7 +2670,7 @@ class L {
       const t = new RegExp(`${e}(\\d+)`);
       let n = 0;
       return (
-        x.components.forEach(e => {
+        E.components.forEach(e => {
           e.classList.forEach(e => {
             const o = e.match(t);
             if (o) {
@@ -2405,8 +2695,8 @@ class L {
       a.dataTransfer &&
         ((t = a.clientX),
         (n = a.clientY),
-        (i = x.canvasElement.scrollLeft),
-        (l = x.canvasElement.scrollTop),
+        (i = E.canvasElement.scrollLeft),
+        (l = E.canvasElement.scrollTop),
         (o = parseFloat(e.style.left) || 0),
         (s = parseFloat(e.style.top) || 0),
         (a.dataTransfer.effectAllowed = 'move'),
@@ -2414,48 +2704,48 @@ class L {
     }),
       e.addEventListener('dragend', a => {
         a.preventDefault();
-        const r = x.canvasElement.scrollLeft,
-          d = x.canvasElement.scrollTop,
+        const r = E.canvasElement.scrollLeft,
+          d = E.canvasElement.scrollTop,
           c = r - i,
-          p = d - l,
-          u = a.clientX - t,
-          m = a.clientY - n;
-        let h = o + u + c,
-          g = s + m + p;
-        const v = x.canvasElement.getBoundingClientRect(),
-          y = a.clientX - v.left + x.canvasElement.scrollLeft,
-          b = a.clientY - v.top + x.canvasElement.scrollTop,
-          f = x.canvasElement.getBoundingClientRect(),
-          w = t - f.left + i,
-          C = n - f.top + l;
-        (h = y + (o - w)), (g = b + (s - C));
-        const E = e.getBoundingClientRect(),
-          L = x.canvasElement.scrollWidth - E.width,
-          k = x.canvasElement.scrollHeight - E.height;
-        (h = Math.max(0, Math.min(h, L))),
+          u = d - l,
+          p = a.clientX - t,
+          h = a.clientY - n;
+        let m = o + p + c,
+          g = s + h + u;
+        const v = E.canvasElement.getBoundingClientRect(),
+          y = a.clientX - v.left + E.canvasElement.scrollLeft,
+          b = a.clientY - v.top + E.canvasElement.scrollTop,
+          f = E.canvasElement.getBoundingClientRect(),
+          C = t - f.left + i,
+          w = n - f.top + l;
+        (m = y + (o - C)), (g = b + (s - w));
+        const x = e.getBoundingClientRect(),
+          L = E.canvasElement.scrollWidth - x.width,
+          k = E.canvasElement.scrollHeight - x.height;
+        (m = Math.max(0, Math.min(m, L))),
           (g = Math.max(0, Math.min(g, k))),
-          (e.style.left = `${h}px`),
+          (e.style.left = `${m}px`),
           (e.style.top = `${g}px`),
           (e.style.cursor = 'grab'),
-          x.historyManager.captureState(),
-          x.dispatchDesignChange();
+          E.historyManager.captureState(),
+          E.dispatchDesignChange();
       });
   }
 }
-(x = L),
+(E = L),
   (L.components = []),
   (L.componentFactory = {
-    button: () => new i().create(),
-    header: () => new l().create(),
-    image: () => new o().create(void 0, x.ImageAttributeConfig),
-    video: () => new s(() => x.historyManager.captureState()).create(),
-    table: () => new u().create(2, 2, void 0, x.tableAttributeConfig),
-    text: () => new t().create(),
-    container: () => new a().create(),
-    twoCol: () => new d().create(),
-    threeCol: () => new c().create(),
-    landingpage: () => new h().create(),
-    link: () => new m().create(),
+    button: () => new l().create(),
+    header: () => new a().create(1, 'Header', E.headerAttributeConfig),
+    image: () => new s().create(void 0, E.ImageAttributeConfig),
+    video: () => new i(() => E.historyManager.captureState()).create(),
+    table: () => new p().create(2, 2, void 0, E.tableAttributeConfig),
+    text: () => new o().create(E.textAttributeConfig),
+    container: () => new r().create(),
+    twoCol: () => new c().create(),
+    threeCol: () => new u().create(),
+    landingpage: () => new m().create(),
+    link: () => new h().create(),
   });
 const k = document.getElementById('canvas'),
   S = new (class {
@@ -2506,7 +2796,7 @@ class M {
       }
   }
 }
-class B {
+class I {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -2607,6 +2897,10 @@ class B {
         'border-left',
         'border-right',
         'box-sizing',
+        '-webkit-box-pack',
+        'letter-spacing',
+        '-webkit-tap-highlight-color',
+        'pointer-events',
       ],
       l = [
         'component-controls',
@@ -2619,33 +2913,33 @@ class B {
         'edit-link',
       ];
     return (
-      s.forEach(e => {
+      s.forEach((e, t) => {
         if (l.some(t => e.classList.contains(t))) return;
-        const t = window.getComputedStyle(e),
-          s = [],
-          a = e instanceof SVGElement || e.closest('svg');
+        const s = window.getComputedStyle(e),
+          a = [],
+          r = e instanceof SVGElement || e.closest('svg');
         i.forEach(e => {
-          const n = t.getPropertyValue(e);
+          const t = s.getPropertyValue(e);
           if (
-            n &&
-            'none' !== n &&
-            '' !== n &&
-            'initial' !== n &&
-            'auto' !== n
+            t &&
+            'none' !== t &&
+            '' !== t &&
+            'initial' !== t &&
+            'auto' !== t
           ) {
-            if ('background-color' === e && 'rgba(0, 0, 0, 0)' === n) return;
-            if ('border-width' === e && '0px' === n) return;
-            if ('color' === e && 'rgb(0, 0, 0)' === n && !a) return;
-            if ('font-weight' === e && '400' === n) return;
-            s.push(`${e}: ${n};`);
+            if ('background-color' === e && 'rgba(0, 0, 0, 0)' === t) return;
+            if ('border-width' === e && '0px' === t) return;
+            if ('color' === e && 'rgb(0, 0, 0)' === t && !r) return;
+            if ('font-weight' === e && '400' === t) return;
+            a.push(`${e}: ${t};`);
           }
         });
-        const r = this.generateUniqueSelector(e);
-        !o.has(r) &&
-          s.length > 0 &&
-          (o.add(r),
+        const d = this.generateUniqueSelector(e);
+        !o.has(d) &&
+          a.length > 0 &&
+          (o.add(d),
           n.push(
-            `\n          ${r} {\n            ${s.join('\n  ')}\n          }\n        `
+            `\n          ${d} {\n            ${a.join('\n  ')}\n          }\n        `
           ));
       }),
       n.join('\n')
@@ -2761,7 +3055,7 @@ class B {
     this.styleElement.textContent = e;
   }
 }
-function I(e) {
+function A(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let o = 0;
@@ -2877,7 +3171,7 @@ function I(e) {
   const a = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
   return new Blob([a], { type: 'application/zip' });
 }
-class H {
+class B {
   static init() {
     document.addEventListener('keydown', this.handleKeydown);
   }
@@ -2901,31 +3195,33 @@ class $ {
       t.classList.add(`preview-${e}`);
   }
 }
-class T {
+class H {
   constructor(
     e = { Basic: { components: [] }, Extra: [], Custom: {} },
     t = null,
     n = !0,
-    o
+    o,
+    s
   ) {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
       (this.canvas = new L()),
       (this.sidebar = new M(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.htmlGenerator = new I(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new $()),
       (this.editable = n),
       (this.brandTitle = o),
+      (this.showAttributeTab = s),
       this.initializeEventListeners();
   }
   static resetHeaderFlag() {
-    T.headerInitialized = !1;
+    H.headerInitialized = !1;
   }
   initializeEventListeners() {
     (this.canvas = new L()),
       (this.sidebar = new M(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.htmlGenerator = new I(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new $()),
       this.setupInitialComponents(),
@@ -2967,17 +3263,17 @@ class T {
         return void console.error('Sidebar element not found');
       !1 === t && (n.style.display = 'none');
       const o = {
-          button: w.button,
-          header: w.header,
-          image: w.image,
-          video: w.video,
-          text: w.text,
-          container: w.container,
-          twoCol: w.twocol,
-          threeCol: w.threecol,
-          table: w.table,
-          landingpage: w.landing,
-          link: w.hyperlink,
+          button: C.button,
+          header: C.header,
+          image: C.image,
+          video: C.video,
+          text: C.text,
+          container: C.container,
+          twoCol: C.twocol,
+          threeCol: C.threecol,
+          table: C.table,
+          landingpage: C.landing,
+          link: C.hyperlink,
         },
         s = {
           button: 'Button',
@@ -3000,190 +3296,202 @@ class T {
           const l = document.createElement('h4');
           l.classList.add('categoryHeading'),
             (l.innerHTML = e),
-            n.prepend(l),
-            Array.isArray(t)
-              ? t.forEach(e => {
-                  const t = document.createElement('div');
-                  t.classList.add('draggable'),
-                    (t.id = e),
-                    t.setAttribute('draggable', 'true'),
-                    t.setAttribute('data-component', e);
-                  const i = s[e] || `Drag to add ${e}`;
-                  if ((t.setAttribute('title', i), o[e])) {
-                    t.innerHTML = ` ${o[e]}\n          <div class="drag-text">${e}</div>`;
-                    const n = t.querySelector('svg');
-                    n && n.classList.add('component-icon');
-                  } else console.warn(`Icon not found for component: ${i}`);
-                  n.appendChild(t);
-                })
-              : 'Basic' === e && 'object' == typeof t
-                ? t.components.forEach(e => {
-                    let t;
-                    'object' == typeof e &&
-                      null !== e &&
-                      'name' in e &&
-                      (t = e.name);
-                    const i = document.createElement('div');
-                    i.classList.add('draggable'),
-                      (i.id = t),
-                      i.setAttribute('draggable', 'true'),
-                      i.setAttribute('data-component', t);
-                    const l = s[t] || `Drag to add ${t}`;
-                    if ((i.setAttribute('title', l), o[t])) {
-                      i.innerHTML = ` ${o[t]}\n          <div class="drag-text">${t}</div>`;
-                      const e = i.querySelector('svg');
-                      e && e.classList.add('component-icon');
-                    } else console.warn(`Icon not found for component: ${l}`);
-                    n.appendChild(i);
+            (Array.isArray(t) && t.length <= 0) ||
+              (n.prepend(l),
+              Array.isArray(t)
+                ? t.forEach(e => {
+                    const t = document.createElement('div');
+                    t.classList.add('draggable'),
+                      (t.id = e),
+                      t.setAttribute('draggable', 'true'),
+                      t.setAttribute('data-component', e);
+                    const i = s[e] || `Drag to add ${e}`;
+                    if ((t.setAttribute('title', i), o[e])) {
+                      t.innerHTML = ` ${o[e]}\n          <div class="drag-text">${e}</div>`;
+                      const n = t.querySelector('svg');
+                      n && n.classList.add('component-icon');
+                    } else console.warn(`Icon not found for component: ${i}`);
+                    n.appendChild(t);
                   })
-                : 'Custom' === e &&
-                  'object' == typeof t &&
-                  Object.entries(t).forEach(([e, t]) => {
-                    const o = document.createElement('div');
-                    if (
-                      (o.classList.add('draggable', 'custom-component'),
-                      (o.id = e),
-                      o.setAttribute('draggable', 'true'),
-                      o.setAttribute('data-component', e),
-                      'string' == typeof t)
-                    ) {
-                      o.setAttribute('data-tag-name', t),
-                        o.setAttribute('title', `Drag to add ${e}`);
-                      const n = document.createElement('span');
-                      n.classList.add('custom-component-letter'),
-                        (n.textContent = e.charAt(0).toUpperCase()),
-                        o.appendChild(n);
-                    } else {
-                      const {
-                        component: n,
-                        svg: s,
-                        title: i,
-                        settingsComponent: l,
-                      } = t;
-                      if (
-                        (o.setAttribute('data-tag-name', n),
-                        o.setAttribute('title', i || `Drag to add ${e}`),
-                        l &&
-                          o.setAttribute(
-                            'data-custom-settings',
-                            JSON.stringify(l)
-                          ),
-                        s)
-                      ) {
-                        o.innerHTML =
-                          o.innerHTML = ` ${s}\n          <div class="drag-text">${i}</div>`;
-                        const e = o.querySelector('svg');
+                : 'Basic' === e && 'object' == typeof t
+                  ? t.components.forEach(e => {
+                      let t;
+                      'object' == typeof e &&
+                        null !== e &&
+                        'name' in e &&
+                        (t = e.name);
+                      const i = document.createElement('div');
+                      i.classList.add('draggable'),
+                        (i.id = t),
+                        i.setAttribute('draggable', 'true'),
+                        i.setAttribute('data-component', t);
+                      const l = s[t] || `Drag to add ${t}`;
+                      if ((i.setAttribute('title', l), o[t])) {
+                        i.innerHTML = ` ${o[t]}\n          <div class="drag-text">${t}</div>`;
+                        const e = i.querySelector('svg');
                         e && e.classList.add('component-icon');
+                      } else console.warn(`Icon not found for component: ${l}`);
+                      n.appendChild(i);
+                    })
+                  : 'Custom' === e &&
+                    'object' == typeof t &&
+                    Object.entries(t).forEach(([e, t]) => {
+                      const o = document.createElement('div');
+                      if (
+                        (o.classList.add('draggable', 'custom-component'),
+                        (o.id = e),
+                        o.setAttribute('draggable', 'true'),
+                        o.setAttribute('data-component', e),
+                        'string' == typeof t)
+                      ) {
+                        o.setAttribute('data-tag-name', t),
+                          o.setAttribute('title', `Drag to add ${e}`);
+                        const n = document.createElement('span');
+                        n.classList.add('custom-component-letter'),
+                          (n.textContent = e.charAt(0).toUpperCase()),
+                          o.appendChild(n);
                       } else {
-                        const t = document.createElement('span');
-                        t.classList.add('custom-component-letter'),
-                          (t.textContent = e.charAt(0).toUpperCase()),
-                          o.appendChild(t);
+                        const {
+                          component: n,
+                          svg: s,
+                          title: i,
+                          settingsComponent: l,
+                        } = t;
+                        if (
+                          (o.setAttribute('data-tag-name', n),
+                          o.setAttribute('title', i || `Drag to add ${e}`),
+                          l &&
+                            o.setAttribute(
+                              'data-custom-settings',
+                              JSON.stringify(l)
+                            ),
+                          s)
+                        ) {
+                          o.innerHTML =
+                            o.innerHTML = ` ${s}\n          <div class="drag-text">${i}</div>`;
+                          const e = o.querySelector('svg');
+                          e && e.classList.add('component-icon');
+                        } else {
+                          const t = document.createElement('span');
+                          t.classList.add('custom-component-letter'),
+                            (t.textContent = e.charAt(0).toUpperCase()),
+                            o.appendChild(t);
+                        }
                       }
-                    }
-                    n.appendChild(o);
-                  }),
-            i.appendChild(n);
+                      n.appendChild(o);
+                    }),
+              i.appendChild(n));
         }),
         n.appendChild(i);
     })(this.dynamicComponents, this.editable),
       L.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
       this.sidebar.init(),
-      H.init(),
-      C.init(
+      B.init(),
+      w.init(
         this.dynamicComponents.Custom,
         this.editable,
-        this.dynamicComponents.Basic
+        this.dynamicComponents.Basic,
+        this.showAttributeTab
       ),
       this.createHeaderIfNeeded();
   }
   createHeaderIfNeeded() {
     if (document.getElementById('page-builder-header'))
-      T.headerInitialized = !0;
+      H.headerInitialized = !0;
     else {
       const e = document.getElementById('app');
       if (e && e.parentNode) {
         const t = document.createElement('header');
         (t.id = 'page-builder-header'),
           t.appendChild(
-            (function (e, t = 'Page Builder') {
-              const n = document.createElement('nav');
-              n.id = 'preview-navbar';
-              const o = {
-                  desktop: w.desktop,
-                  tablet: w.tablet,
-                  mobile: w.mobile,
-                  save: w.save,
-                  export: w.code,
-                  view: w.view,
-                  undo: w.undo,
-                  redo: w.redo,
-                  reset: w.reset,
-                  menu: w.customizationMenu,
-                  sidebarMenu: w.sidebarMenu,
+            (function (e, t = 'Page Builder', n) {
+              const o = document.createElement('nav');
+              o.id = 'preview-navbar';
+              const s = {
+                  desktop: C.desktop,
+                  tablet: C.tablet,
+                  mobile: C.mobile,
+                  save: C.save,
+                  export: C.code,
+                  view: C.view,
+                  undo: C.undo,
+                  redo: C.redo,
+                  reset: C.reset,
+                  menu: C.customizationMenu,
+                  sidebarMenu: C.sidebarMenu,
                 },
-                s = e
+                i = e
                   ? [
                       {
                         id: 'preview-desktop',
-                        icon: o.desktop,
+                        icon: s.desktop,
                         title: 'Preview in Desktop',
                       },
                       {
                         id: 'preview-tablet',
-                        icon: o.tablet,
+                        icon: s.tablet,
                         title: 'Preview in Tablet',
                       },
                       {
                         id: 'preview-mobile',
-                        icon: o.mobile,
+                        icon: s.mobile,
                         title: 'Preview in Mobile',
                       },
-                      { id: 'undo-btn', icon: o.undo, title: 'Undo button' },
-                      { id: 'redo-btn', icon: o.redo, title: 'Redo button' },
+                      { id: 'undo-btn', icon: s.undo, title: 'Undo button' },
+                      { id: 'redo-btn', icon: s.redo, title: 'Redo button' },
                       {
                         id: 'sidebar-menu',
-                        icon: o.sidebarMenu,
+                        icon: s.sidebarMenu,
                         title: 'Sidebar Menu',
                       },
                     ]
                   : [
                       {
                         id: 'preview-desktop',
-                        icon: o.desktop,
+                        icon: s.desktop,
                         title: 'Preview in Desktop',
                       },
                       {
                         id: 'preview-tablet',
-                        icon: o.tablet,
+                        icon: s.tablet,
                         title: 'Preview in Tablet',
                       },
                       {
                         id: 'preview-mobile',
-                        icon: o.mobile,
+                        icon: s.mobile,
                         title: 'Preview in Mobile',
                       },
                     ],
-                i =
+                l =
                   !0 === e || null === e
                     ? [
-                        { id: 'view-btn', icon: o.view, title: 'View' },
-                        { id: 'save-btn', icon: o.save, title: 'Save Layout' },
-                        { id: 'reset-btn', icon: o.reset, title: 'Reset' },
-                        { id: 'export-btn', icon: o.export, title: 'Export' },
+                        { id: 'view-btn', icon: s.view, title: 'View' },
+                        { id: 'save-btn', icon: s.save, title: 'Save Layout' },
+                        { id: 'reset-btn', icon: s.reset, title: 'Reset' },
+                        { id: 'export-btn', icon: s.export, title: 'Export' },
                         {
                           id: 'menu-btn',
-                          icon: o.menu,
+                          icon: s.menu,
                           title: 'Customization Menu',
                         },
                       ]
-                    : [
-                        { id: 'view-btn', icon: o.view, title: 'View' },
-                        { id: 'export-btn', icon: o.export, title: 'Export' },
-                      ],
-                l = document.createElement('div');
-              l.classList.add('left-buttons'),
-                s.forEach(({ id: e, icon: t, title: n }) => {
+                    : !1 === e && !0 === n
+                      ? [
+                          { id: 'view-btn', icon: s.view, title: 'View' },
+                          { id: 'export-btn', icon: s.export, title: 'Export' },
+                          {
+                            id: 'menu-btn',
+                            icon: s.menu,
+                            title: 'Customization Menu',
+                          },
+                        ]
+                      : [
+                          { id: 'view-btn', icon: s.view, title: 'View' },
+                          { id: 'export-btn', icon: s.export, title: 'Export' },
+                        ],
+                a = document.createElement('div');
+              a.classList.add('left-buttons'),
+                i.forEach(({ id: e, icon: t, title: n }) => {
                   const o = document.createElement('button');
                   (o.id = e),
                     o.classList.add('preview-btn'),
@@ -3213,14 +3521,14 @@ class T {
                               (o.style.backgroundColor = '#e2e8f0'),
                               (o.style.borderColor = '#cbd5e1')));
                       })),
-                    l.appendChild(o);
+                    a.appendChild(o);
                 });
-              const a = document.createElement('div');
-              a.classList.add('center-text'), (a.textContent = t);
               const r = document.createElement('div');
+              r.classList.add('center-text'), (r.textContent = t);
+              const d = document.createElement('div');
               return (
-                r.classList.add('right-buttons'),
-                i.forEach(({ id: e, icon: t, title: n }) => {
+                d.classList.add('right-buttons'),
+                l.forEach(({ id: e, icon: t, title: n }) => {
                   const o = document.createElement('button');
                   (o.id = e),
                     o.classList.add('preview-btn'),
@@ -3229,7 +3537,7 @@ class T {
                     (o.innerHTML = t);
                   const s = o.querySelector('svg');
                   s && s.classList.add('nav-icon'),
-                    r.appendChild(o),
+                    d.appendChild(o),
                     'menu-btn' === e &&
                       o &&
                       (o.onclick = () => {
@@ -3249,15 +3557,15 @@ class T {
                               (o.style.borderColor = '#cbd5e1')));
                       });
                 }),
-                n.appendChild(l),
-                n.appendChild(a),
-                n.appendChild(r),
-                n
+                o.appendChild(a),
+                o.appendChild(r),
+                o.appendChild(d),
+                o
               );
-            })(this.editable, this.brandTitle)
+            })(this.editable, this.brandTitle, this.showAttributeTab)
           ),
           e.parentNode.insertBefore(t, e),
-          (T.headerInitialized = !0);
+          (H.headerInitialized = !0);
       } else console.error('Error: #app not found in the DOM');
     }
   }
@@ -3329,7 +3637,7 @@ class T {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new L()),
+        const e = new I(new L()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = (function (e) {
@@ -3361,7 +3669,7 @@ class T {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new L()),
+        const e = new I(new L()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = window.open('', '_blank');
@@ -3425,7 +3733,7 @@ class T {
       (n.textContent = 'Export to ZIP'),
       n.classList.add('export-btn'),
       n.addEventListener('click', () => {
-        const n = I([
+        const n = A([
             { name: 'index.html', content: e },
             { name: 'styles.css', content: t },
           ]),
@@ -3498,9 +3806,9 @@ class T {
       '\n      display: flex;\n      gap: 10px;\n      margin-bottom: 10px;\n    ';
     return (
       [
-        { icon: w.mobile, title: 'Desktop', width: '375px', height: '100%' },
-        { icon: w.tablet, title: 'Tablet', width: '768px', height: '100%' },
-        { icon: w.desktop, title: 'Mobile', width: '97%', height: '100%' },
+        { icon: C.mobile, title: 'Desktop', width: '375px', height: '100%' },
+        { icon: C.tablet, title: 'Tablet', width: '768px', height: '100%' },
+        { icon: C.desktop, title: 'Mobile', width: '97%', height: '100%' },
       ].forEach(n => {
         const o = document.createElement('button');
         (o.style.cssText =
@@ -3554,6 +3862,6 @@ class T {
         });
   }
 }
-T.headerInitialized = !1;
-const z = new T();
-(exports.PageBuilder = T), (exports.PageBuilderCore = z);
+H.headerInitialized = !1;
+const T = new H();
+(exports.PageBuilder = H), (exports.PageBuilderCore = T);

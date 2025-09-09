@@ -4,7 +4,7 @@ export class ImageComponent {
   private static imageAttributeConfig: Function | undefined | null;
   create(
     src: string | null = null,
-    imageAttributeConfig: Function | undefined | null
+    imageAttributeConfig?: Function | undefined | null
   ): HTMLElement {
     ImageComponent.imageAttributeConfig = imageAttributeConfig;
     // Create a container for the image and label

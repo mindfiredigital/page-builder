@@ -3,6 +3,8 @@ import { debounce } from '../utils/utilityFunctions';
 import LayersViewController from './LayerViewController';
 import { TableComponent } from '../components/TableComponent';
 import { svgs } from '../icons/svgs';
+import { TextComponent } from '../components/TextComponent';
+import { HeaderComponent } from '../components/HeaderComponent';
 
 type ReactComponentType<P = {}> = React.ComponentType<P>;
 
@@ -28,13 +30,14 @@ export class CustomizationSidebar {
   private static selectedComponent: HTMLElement | null = null;
   private static customComponentsConfig: CustomComponentConfig | null = null;
   private static basicComponentsConfig: BasicComponent | null = null;
-
+  private static showAttributeTab: boolean | undefined = undefined;
   private static editable: boolean | null;
 
   static init(
     customComponentsConfig: CustomComponentConfig,
     editable: boolean | null,
-    BasicComponent: BasicComponent
+    BasicComponent: BasicComponent,
+    showAttributeTab?: boolean
   ) {
     this.sidebarElement = document.getElementById('customization')!;
     this.controlsContainer = document.getElementById('controls')!;
@@ -42,6 +45,7 @@ export class CustomizationSidebar {
     this.customComponentsConfig = customComponentsConfig;
     this.basicComponentsConfig = BasicComponent;
     this.editable = editable;
+    this.showAttributeTab = showAttributeTab;
 
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
@@ -80,12 +84,24 @@ export class CustomizationSidebar {
     const customizeTab = this.layersModeToggle.querySelector('#customize-tab')!;
     const attributeTab = this.layersModeToggle.querySelector('#attribute-tab')!;
     const layersTab = this.layersModeToggle.querySelector('#layers-tab')!;
+    if (this.editable === false && showAttributeTab === true) {
+      (customizeTab as HTMLElement).style.display = 'none';
+      (layersTab as HTMLElement).style.display = 'none';
 
-    customizeTab.addEventListener('click', () => this.switchToCustomizeMode());
-    attributeTab.addEventListener('click', () => {
+      attributeTab.classList.add('active');
+      customizeTab.classList.remove('active');
+      layersTab.classList.remove('active');
+
       this.switchToAttributeMode();
-    });
-    layersTab.addEventListener('click', () => this.switchToLayersMode());
+    } else {
+      customizeTab.addEventListener('click', () =>
+        this.switchToCustomizeMode()
+      );
+      attributeTab.addEventListener('click', () => {
+        this.switchToAttributeMode();
+      });
+      layersTab.addEventListener('click', () => this.switchToLayersMode());
+    }
   }
 
   // --- Tab Switching Logic ---
@@ -160,7 +176,7 @@ export class CustomizationSidebar {
       console.error(`Component with ID "${componentId}" not found.`);
       return;
     }
-    if (this.editable === false) {
+    if (this.editable === false && this.showAttributeTab !== true) {
       return;
     }
     this.selectedComponent = component;
@@ -173,7 +189,10 @@ export class CustomizationSidebar {
       menuButton.style.borderColor = '#cbd5e1';
     }
     this.componentNameHeader.textContent = `Component: ${componentId}`;
-
+    if (this.editable === false && this.showAttributeTab === true) {
+      this.switchToAttributeMode();
+      return;
+    }
     this.switchToCustomizeMode();
   }
 
@@ -376,62 +395,167 @@ export class CustomizationSidebar {
     this.addListeners(component);
   }
 
+  private static async handleInputTrigger(event: Event) {
+    const component = CustomizationSidebar.selectedComponent;
+    if (!component) return;
+
+    let componentConfig;
+    if (component.classList.contains('table-component')) {
+      componentConfig =
+        CustomizationSidebar.basicComponentsConfig?.components.find(
+          comp => comp.name === 'table'
+        );
+    } else if (component.classList.contains('text-component')) {
+      componentConfig =
+        CustomizationSidebar.basicComponentsConfig?.components.find(
+          comp => comp.name === 'text'
+        );
+    } else if (component.classList.contains('header-component')) {
+      componentConfig =
+        CustomizationSidebar.basicComponentsConfig?.components.find(
+          comp => comp.name === 'header'
+        );
+    }
+    console.log(componentConfig);
+    if (componentConfig && componentConfig.globalExecuteFunction) {
+      const inputValues: { [key: string]: string } = {};
+      const allInputs =
+        CustomizationSidebar.functionsPanel.querySelectorAll(
+          '.attribute-input'
+        );
+      allInputs.forEach(input => {
+        const inputEl = input as HTMLInputElement;
+        inputValues[inputEl.id] = inputEl.value;
+      });
+
+      const result = await componentConfig.globalExecuteFunction(inputValues);
+      const tableInstance = new TableComponent();
+      const textInstance = new TextComponent();
+      const headerInstance = new HeaderComponent();
+
+      if (result) {
+        textInstance.seedFormulaValues(result);
+        tableInstance.seedFormulaValues(result);
+        headerInstance.seedFormulaValues(result);
+        Canvas.historyManager.captureState();
+      }
+      textInstance.updateInputValues(inputValues);
+      tableInstance.updateInputValues(inputValues);
+      headerInstance.updateInputValues(inputValues);
+    }
+  }
+
+  // Add this new private helper method inside your class
+  // Replace your existing createAttributeControls method with this improved version
+  private static createAttributeControls(attribute: ComponentAttribute) {
+    const box = document.createElement('div');
+    box.className = 'attribute-input-container';
+    box.innerHTML = `
+    <div class="attribute-header">
+      <label for="${attribute.key}" class="attribute-label">${attribute.title}</label>
+      ${!attribute.editable ? '<span class="readonly-badge">Read Only</span>' : ''}
+    </div>
+    <div class="attribute-input-wrapper">
+      <input 
+        type="text" 
+        class="attribute-input" 
+        id="${attribute.key}"  
+        ${!attribute.editable ? 'disabled readonly' : ''} 
+        value="${attribute.default_value || ''}" 
+        placeholder="Enter ${attribute.title.toLowerCase()}..."
+      >
+    </div>
+  `;
+    this.functionsPanel.appendChild(box);
+
+    const inputElement = document.getElementById(
+      attribute.key
+    ) as HTMLInputElement;
+
+    if (attribute.editable !== false) {
+      const eventConfigurator = document.createElement('div');
+      eventConfigurator.className = 'event-configurator';
+      eventConfigurator.innerHTML = `
+      <div class="event-trigger-section">
+        <div class="trigger-header">
+          <label class="trigger-label">Trigger Event:</label>
+        </div>
+        <div class="trigger-select-wrapper">
+          <select class="event-selector" id="event-selector-${attribute.key}">
+            <option value="input">On Input (Real-time)</option>
+            <option value="change">On Change</option>
+            <option value="blur">On Focus Lost</option>
+            <option value="keyup">On Key Release</option>
+            <option value="click">On Click</option>
+          </select>
+          <div class="select-arrow">▼</div>
+        </div>
+      </div>
+    `;
+      box.appendChild(eventConfigurator);
+
+      const eventSelector = document.getElementById(
+        `event-selector-${attribute.key}`
+      ) as HTMLSelectElement;
+
+      const setupListener = (eventToListen: string) => {
+        const eventTypes = ['input', 'change', 'blur', 'keyup', 'click'];
+        eventTypes.forEach(eventType => {
+          inputElement.removeEventListener(eventType, this.handleInputTrigger);
+        });
+        inputElement.addEventListener(eventToListen, this.handleInputTrigger);
+
+        // Visual feedback for active trigger
+        box.setAttribute('data-trigger', eventToListen);
+      };
+
+      eventSelector.addEventListener('change', () => {
+        const selectedEvent = eventSelector.value;
+        setupListener(selectedEvent);
+
+        // Add visual feedback animation
+        eventSelector.parentElement?.classList.add('trigger-changed');
+        setTimeout(() => {
+          eventSelector.parentElement?.classList.remove('trigger-changed');
+        }, 300);
+      });
+
+      const defaultTrigger = 'input';
+      eventSelector.value = defaultTrigger;
+      setupListener(defaultTrigger);
+
+      // Add focus/blur effects for better UX
+      inputElement.addEventListener('focus', () => {
+        box.classList.add('input-focused');
+      });
+
+      inputElement.addEventListener('blur', () => {
+        box.classList.remove('input-focused');
+      });
+    }
+  }
+
   private static populateFunctionalityControls(component: HTMLElement) {
     this.functionsPanel.innerHTML = '';
+    let componentConfig;
+    let showModalButton = false;
     if (component.classList.contains('table-component')) {
-      const table = document.getElementById(component.id);
-      if (this.basicComponentsConfig) {
-        const tableComponent = this.basicComponentsConfig.components.find(
-          component => component.name === 'table'
-        );
-        if (
-          tableComponent &&
-          tableComponent.attributes &&
-          tableComponent.attributes.length > 0
-        ) {
-          tableComponent.attributes.map(attribute => {
-            const box = document.createElement('div');
-            if (attribute.type === 'Input') {
-              box.innerHTML = `
-                <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
-                <div class="input-wrapper type-input-div">
-                  <input type="text" class="type-input" id=${attribute.key}  ${
-                    !attribute.editable ? 'disabled' : ''
-                  }  value=${attribute.default_value ? attribute.default_value : ''} >
-                </div>
-              `;
-
-              this.functionsPanel.appendChild(box);
-
-              const inputElement = document.getElementById(attribute.key);
-
-              if (attribute.trigger) {
-                inputElement?.addEventListener(attribute.trigger, async () => {
-                  if (tableComponent.globalExecuteFunction) {
-                    const inputValues: { [key: string]: string } = {};
-                    const allInputs =
-                      this.functionsPanel.querySelectorAll('.type-input');
-                    allInputs.forEach(input => {
-                      const inputEl = input as HTMLInputElement;
-                      inputValues[inputEl.id] = inputEl.value;
-                    });
-                    const result =
-                      await tableComponent.globalExecuteFunction(inputValues);
-                    if (result && typeof result === 'object') {
-                      const tableInstance = new TableComponent();
-                      tableInstance.seedFormulaValues(
-                        table as HTMLElement,
-                        result
-                      );
-                      Canvas.historyManager.captureState();
-                    }
-                  }
-                });
-              }
-            }
-          });
-        }
-      }
+      componentConfig = this.basicComponentsConfig?.components.find(
+        comp => comp.name === 'table'
+      );
+      showModalButton = false;
+    } else if (component.classList.contains('text-component')) {
+      componentConfig = this.basicComponentsConfig?.components.find(
+        comp => comp.name === 'text'
+      );
+      showModalButton = true;
+    } else if (component.classList.contains('header-component')) {
+      componentConfig = this.basicComponentsConfig?.components.find(
+        comp => comp.name === 'header'
+      );
+      showModalButton = true;
+    } else if (component.classList.contains('table-cell')) {
+      showModalButton = true;
     } else if (component.classList.contains('custom-component')) {
       const componentType = Array.from(component.classList)
         .find(cls => cls.endsWith('-component'))
@@ -443,20 +567,16 @@ export class CustomizationSidebar {
         componentType &&
         customComponentsConfig &&
         customComponentsConfig[componentType] &&
-        // Check for the string-based tag name property.
         customComponentsConfig[componentType].settingsComponentTagName
       ) {
-        // Get the string tag name from the config.
         const settingsComponentTagName =
           customComponentsConfig[componentType].settingsComponentTagName;
 
-        // Now, use the string variable to query for the element.
         let settingsElement = this.functionsPanel.querySelector(
           settingsComponentTagName
         );
 
         if (!settingsElement) {
-          // Use the string variable to create the element.
           settingsElement = document.createElement(settingsComponentTagName);
           this.functionsPanel.appendChild(settingsElement);
         }
@@ -467,17 +587,37 @@ export class CustomizationSidebar {
           JSON.stringify({ targetComponentId: component.id })
         );
       }
-    } else if (component.classList.contains('table-cell')) {
+    }
+    if (
+      componentConfig &&
+      componentConfig.attributes &&
+      componentConfig.attributes.length > 0
+    ) {
+      componentConfig.attributes.forEach(attribute => {
+        if (attribute.type === 'Input') {
+          this.createAttributeControls(attribute);
+        }
+      });
+    }
+    if (showModalButton && this.editable !== false) {
       const modalButton = document.createElement('button');
-      modalButton.textContent = 'Set Cell Attribute';
-      modalButton.className = 'set-cell-attribute-button';
+      modalButton.textContent = `Set ${component.classList[0].replace('-component', '')} Attribute`;
+      modalButton.className = 'set-attribute-button';
       this.functionsPanel.appendChild(modalButton);
 
       modalButton.addEventListener('click', () => {
-        const tableComponent = new TableComponent();
-        tableComponent.handleCellClick(component);
+        if (component.classList.contains('text-component')) {
+          const textComponentInstance = new TextComponent();
+          textComponentInstance.handleTextClick(component);
+        } else if (component.classList.contains('header-component')) {
+          const headerComponentInstance = new HeaderComponent();
+          headerComponentInstance.handleHeaderClick(component);
+        } else if (component.classList.contains('table-cell')) {
+          const tableComponent = new TableComponent();
+          tableComponent.handleCellClick(component);
+        }
       });
-    } else {
+    } else if (!componentConfig) {
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
     }
