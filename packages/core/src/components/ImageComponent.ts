@@ -1,5 +1,12 @@
+import { Canvas } from '../canvas/Canvas';
+
 export class ImageComponent {
-  create(src: string | null = null): HTMLElement {
+  private static imageAttributeConfig: Function | undefined | null;
+  create(
+    src: string | null = null,
+    imageAttributeConfig: Function | undefined | null
+  ): HTMLElement {
+    ImageComponent.imageAttributeConfig = imageAttributeConfig;
     // Create a container for the image and label
     const container = document.createElement('div');
     container.classList.add('image-component');
@@ -92,16 +99,23 @@ export class ImageComponent {
     if (file) {
       const reader = new FileReader();
 
-      reader.onload = function () {
+      reader.onload = async function () {
         const base64String = reader.result as string;
+
         const imageElement = container.querySelector('img');
 
         if (imageElement) {
-          imageElement.src = base64String;
+          if (ImageComponent.imageAttributeConfig) {
+            const result =
+              await ImageComponent.imageAttributeConfig(base64String);
+            imageElement.src = result.url;
+          } else {
+            imageElement.src = base64String;
+          }
           imageElement.style.display = 'block';
           uploadText.style.display = 'none';
-          // Make background transparent after image is loaded
           container.style.backgroundColor = 'transparent';
+          Canvas?.dispatchDesignChange();
         }
       };
 
@@ -109,7 +123,11 @@ export class ImageComponent {
     }
   }
 
-  static restoreImageUpload(component: HTMLElement, src: string): void {
+  static restoreImageUpload(
+    component: HTMLElement,
+    src: string,
+    editable: boolean | null
+  ): void {
     const uploadText = component.querySelector(
       'div:not(.upload-btn)'
     ) as HTMLElement;
@@ -118,7 +136,10 @@ export class ImageComponent {
     ) as HTMLInputElement;
     const pencilButton = component.querySelector('.upload-btn') as HTMLElement;
     const imageElement = component.querySelector('img') as HTMLImageElement;
-
+    if (editable === false) {
+      pencilButton.remove();
+      return;
+    }
     // Restore event listeners
     fileInput.addEventListener('change', event =>
       this.handleFileChange(event, component, uploadText)

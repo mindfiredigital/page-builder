@@ -37,108 +37,149 @@ class t {
     this.text = e;
   }
 }
-class n {
-  create(e = null) {
-    const t = document.createElement('div');
-    t.classList.add('image-component');
-    const o = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
-    (t.id = o),
-      (t.style.width = '300px'),
-      (t.style.height = '300px'),
-      (t.style.position = 'relative'),
-      (t.style.backgroundColor = e ? 'transparent' : '#f0f0f0'),
-      (t.style.display = 'flex'),
-      (t.style.border = 'none'),
-      (t.style.alignItems = 'center'),
-      (t.style.justifyContent = 'center');
-    const s = document.createElement('div');
-    (s.style.color = '#666666'),
-      (s.style.border = 'none'),
-      (s.style.display = e ? 'none' : 'block');
-    const i = document.createElement('input');
-    (i.type = 'file'),
-      (i.accept = 'image/*'),
-      (i.style.display = 'none'),
-      i.addEventListener('change', e => n.handleFileChange(e, t, s));
-    const l = document.createElement('button');
-    l.classList.add('upload-btn'),
-      (l.innerHTML = '🖊️'),
-      (l.style.position = 'absolute'),
-      (l.style.padding = '8px'),
-      (l.style.background = 'transparent'),
-      (l.style.border = 'none'),
-      (l.style.cursor = 'pointer'),
-      (l.style.opacity = '0'),
-      (l.style.transition = 'opacity 0.2s'),
-      (l.style.left = '50%'),
-      (l.style.top = '50%'),
-      (l.style.transform = 'translate(-50%, -50%)'),
-      (l.style.fontSize = '24px'),
-      l.addEventListener('click', () => i.click());
-    const a = document.createElement('img'),
-      r = `${o}-img`;
-    return (
-      (a.id = r),
-      (a.style.width = '100%'),
-      (a.style.height = '100%'),
-      (a.style.objectFit = 'contain'),
+function n(e, t, n, o) {
+  return new (n || (n = Promise))(function (s, i) {
+    function l(e) {
+      try {
+        r(o.next(e));
+      } catch (e) {
+        i(e);
+      }
+    }
+    function a(e) {
+      try {
+        r(o.throw(e));
+      } catch (e) {
+        i(e);
+      }
+    }
+    function r(e) {
+      var t;
+      e.done
+        ? s(e.value)
+        : ((t = e.value),
+          t instanceof n
+            ? t
+            : new n(function (e) {
+                e(t);
+              })).then(l, a);
+    }
+    r((o = o.apply(e, t || [])).next());
+  });
+}
+'function' == typeof SuppressedError && SuppressedError;
+class o {
+  create(e = null, t) {
+    o.imageAttributeConfig = t;
+    const n = document.createElement('div');
+    n.classList.add('image-component');
+    const s = `image-container-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+    (n.id = s),
+      (n.style.width = '300px'),
+      (n.style.height = '300px'),
+      (n.style.position = 'relative'),
+      (n.style.backgroundColor = e ? 'transparent' : '#f0f0f0'),
+      (n.style.display = 'flex'),
+      (n.style.border = 'none'),
+      (n.style.alignItems = 'center'),
+      (n.style.justifyContent = 'center');
+    const i = document.createElement('div');
+    (i.style.color = '#666666'),
+      (i.style.border = 'none'),
+      (i.style.display = e ? 'none' : 'block');
+    const l = document.createElement('input');
+    (l.type = 'file'),
+      (l.accept = 'image/*'),
+      (l.style.display = 'none'),
+      l.addEventListener('change', e => o.handleFileChange(e, n, i));
+    const a = document.createElement('button');
+    a.classList.add('upload-btn'),
+      (a.innerHTML = '🖊️'),
+      (a.style.position = 'absolute'),
+      (a.style.padding = '8px'),
+      (a.style.background = 'transparent'),
       (a.style.border = 'none'),
-      (a.style.display = 'none'),
-      e && ((a.src = e), (a.style.display = 'block')),
-      t.addEventListener('mouseenter', () => {
-        l.style.opacity = '1';
+      (a.style.cursor = 'pointer'),
+      (a.style.opacity = '0'),
+      (a.style.transition = 'opacity 0.2s'),
+      (a.style.left = '50%'),
+      (a.style.top = '50%'),
+      (a.style.transform = 'translate(-50%, -50%)'),
+      (a.style.fontSize = '24px'),
+      a.addEventListener('click', () => l.click());
+    const r = document.createElement('img'),
+      d = `${s}-img`;
+    return (
+      (r.id = d),
+      (r.style.width = '100%'),
+      (r.style.height = '100%'),
+      (r.style.objectFit = 'contain'),
+      (r.style.border = 'none'),
+      (r.style.display = 'none'),
+      e && ((r.src = e), (r.style.display = 'block')),
+      n.addEventListener('mouseenter', () => {
+        a.style.opacity = '1';
       }),
-      t.addEventListener('mouseleave', () => {
-        l.style.opacity = '0';
+      n.addEventListener('mouseleave', () => {
+        a.style.opacity = '0';
       }),
-      t.appendChild(s),
-      t.appendChild(i),
-      t.appendChild(l),
-      t.appendChild(a),
-      t
+      n.appendChild(i),
+      n.appendChild(l),
+      n.appendChild(a),
+      n.appendChild(r),
+      n
     );
   }
-  static handleFileChange(e, t, n) {
-    const o = e.target,
-      s = o.files ? o.files[0] : null;
-    if (s) {
+  static handleFileChange(e, t, s) {
+    const i = e.target,
+      l = i.files ? i.files[0] : null;
+    if (l) {
       const e = new FileReader();
       (e.onload = function () {
-        const o = e.result,
-          s = t.querySelector('img');
-        s &&
-          ((s.src = o),
-          (s.style.display = 'block'),
-          (n.style.display = 'none'),
-          (t.style.backgroundColor = 'transparent'));
+        return n(this, void 0, void 0, function* () {
+          const n = e.result,
+            i = t.querySelector('img');
+          if (i) {
+            if (o.imageAttributeConfig) {
+              const e = yield o.imageAttributeConfig(n);
+              i.src = e.url;
+            } else i.src = n;
+            (i.style.display = 'block'),
+              (s.style.display = 'none'),
+              (t.style.backgroundColor = 'transparent'),
+              null == L || L.dispatchDesignChange();
+          }
+        });
       }),
-        e.readAsDataURL(s);
+        e.readAsDataURL(l);
     }
   }
-  static restoreImageUpload(e, t) {
-    const n = e.querySelector('div:not(.upload-btn)'),
-      o = e.querySelector('input[type="file"]'),
-      s = e.querySelector('.upload-btn'),
-      i = e.querySelector('img');
-    o.addEventListener('change', t => this.handleFileChange(t, e, n)),
-      s.addEventListener('click', () => o.click()),
-      t
-        ? ((i.src = t),
-          (i.style.display = 'block'),
-          (n.style.display = 'none'),
-          (e.style.backgroundColor = 'transparent'))
-        : ((i.style.display = 'none'),
-          (n.style.display = 'block'),
-          (e.style.backgroundColor = '#f0f0f0')),
-      e.addEventListener('mouseenter', () => {
-        s.style.opacity = '1';
-      }),
-      e.addEventListener('mouseleave', () => {
-        s.style.opacity = '0';
-      });
+  static restoreImageUpload(e, t, n) {
+    const o = e.querySelector('div:not(.upload-btn)'),
+      s = e.querySelector('input[type="file"]'),
+      i = e.querySelector('.upload-btn'),
+      l = e.querySelector('img');
+    !1 !== n
+      ? (s.addEventListener('change', t => this.handleFileChange(t, e, o)),
+        i.addEventListener('click', () => s.click()),
+        t
+          ? ((l.src = t),
+            (l.style.display = 'block'),
+            (o.style.display = 'none'),
+            (e.style.backgroundColor = 'transparent'))
+          : ((l.style.display = 'none'),
+            (o.style.display = 'block'),
+            (e.style.backgroundColor = '#f0f0f0')),
+        e.addEventListener('mouseenter', () => {
+          i.style.opacity = '1';
+        }),
+        e.addEventListener('mouseleave', () => {
+          i.style.opacity = '0';
+        }))
+      : i.remove();
   }
 }
-class o {
+class s {
   constructor(e) {
     this.captureStateHandler = e;
   }
@@ -188,7 +229,7 @@ class o {
     } else alert('Please upload a valid video file.');
   }
 }
-class s {
+class i {
   create(e = 'Click Me') {
     const t = document.createElement('button');
     return (
@@ -202,13 +243,13 @@ class s {
     );
   }
 }
-class i {
+class l {
   create(e = 1, t = 'Header') {
     const n = document.createElement(`h${e}`);
     return (n.innerText = t), n.classList.add('header-component'), n;
   }
 }
-class l {
+class a {
   constructor() {
     (this.MINIMUM_SIZE = 20),
       (this.originalWidth = 0),
@@ -256,7 +297,7 @@ class l {
         window.removeEventListener('mousemove', this.resize),
           window.removeEventListener('mouseup', this.stopResize),
           (this.currentResizer = null),
-          k.historyManager.captureState();
+          L.historyManager.captureState();
       }),
       (this.element = document.createElement('div')),
       this.element.classList.add('container-component'),
@@ -345,10 +386,10 @@ class l {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const o = k.createComponent(n);
+    const o = L.createComponent(n);
     if (!o) return;
     const s = this.element.classList[2],
-      i = k.generateUniqueClass(n, !0, s);
+      i = L.generateUniqueClass(n, !0, s);
     o.classList.add(i);
     const l = document.createElement('span');
     (l.className = 'component-label'),
@@ -360,7 +401,7 @@ class l {
       o.addEventListener('mouseleave', e => this.hideLabel(e, o)),
       this.element.appendChild(o),
       this.makeDraggable(o),
-      k.historyManager.captureState();
+      L.historyManager.captureState();
   }
   showLabel(e, t) {
     e.stopPropagation();
@@ -398,33 +439,33 @@ class l {
     t && t.remove();
     const n = document.createElement('div');
     n.classList.add('resizers');
-    const o = new l();
+    const o = new a();
     (o.element = e), (o.resizers = n), o.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e) {
-    l.restoreResizer(e);
-    const t = new l();
+    a.restoreResizer(e);
+    const t = new a();
     t.element = e;
     e.querySelectorAll('.editable-component').forEach(e => {
-      var o;
+      var n;
       if (
-        (k.controlsManager.addControlButtons(e),
-        k.addDraggableListeners(e),
+        (L.controlsManager.addControlButtons(e),
+        L.addDraggableListeners(e),
         e.addEventListener('mouseenter', n => t.showLabel(n, e)),
         e.addEventListener('mouseleave', n => t.hideLabel(n, e)),
         e.classList.contains('image-component'))
       ) {
         const t =
-          (null === (o = e.querySelector('img')) || void 0 === o
+          (null === (n = e.querySelector('img')) || void 0 === n
             ? void 0
-            : o.getAttribute('src')) || '';
-        n.restoreImageUpload(e, t);
+            : n.getAttribute('src')) || '';
+        o.restoreImageUpload(e, t, null);
       }
       e.classList.contains('container-component') && this.restoreContainer(e);
     });
   }
 }
-class a {
+class r {
   constructor(e, t = `${e}Col-component`) {
     (this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -457,7 +498,7 @@ class a {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const o = k.createComponent(n);
+    const o = L.createComponent(n);
     if (!o) return;
     const s = e.target;
     if (s && s.classList.contains('column')) {
@@ -470,7 +511,7 @@ class a {
         (t.className = 'column-label'),
         s.appendChild(t)),
         (t.textContent = e);
-      const i = k.generateUniqueClass(n, !0, e);
+      const i = L.generateUniqueClass(n, !0, e);
       o.classList.add(i), (o.id = i);
       let l = o.querySelector('.component-label');
       l ||
@@ -478,7 +519,7 @@ class a {
         (l.className = 'component-label'),
         o.appendChild(l)),
         (l.textContent = i),
-        k.historyManager.captureState();
+        L.historyManager.captureState();
     }
   }
   addStyles(e) {
@@ -493,63 +534,33 @@ class a {
     e.querySelectorAll('.editable-component').forEach(e => {
       var t;
       if (
-        (k.controlsManager.addControlButtons(e),
-        k.addDraggableListeners(e),
+        (L.controlsManager.addControlButtons(e),
+        L.addDraggableListeners(e),
         e.classList.contains('image-component'))
       ) {
-        const o =
+        const n =
           (null === (t = e.querySelector('img')) || void 0 === t
             ? void 0
             : t.getAttribute('src')) || '';
-        n.restoreImageUpload(e, o);
+        o.restoreImageUpload(e, n, null);
       }
     });
   }
 }
-class r extends a {
+class d extends r {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class d extends a {
+class c extends r {
   constructor() {
     super(3, 'threeCol-component');
   }
 }
-function c(e, t, n, o) {
-  return new (n || (n = Promise))(function (s, i) {
-    function l(e) {
-      try {
-        r(o.next(e));
-      } catch (e) {
-        i(e);
-      }
-    }
-    function a(e) {
-      try {
-        r(o.throw(e));
-      } catch (e) {
-        i(e);
-      }
-    }
-    function r(e) {
-      var t;
-      e.done
-        ? s(e.value)
-        : ((t = e.value),
-          t instanceof n
-            ? t
-            : new n(function (e) {
-                e(t);
-              })).then(l, a);
-    }
-    r((o = o.apply(e, t || [])).next());
-  });
-}
-'function' == typeof SuppressedError && SuppressedError;
 class p {
   constructor() {
     var e, t;
+    (this.resolvePromise = null), (this.attributes = []);
     (this.resolvePromise = null), (this.attributes = []);
     const n = document.getElementById('modal');
     n
@@ -590,58 +601,65 @@ class p {
       e.forEach(e => {
         const t = document.createElement('div');
         t.className = 'form-field';
-        const n = document.createElement('div');
-        (n.className = 'form-field-header'),
-          n.setAttribute('data-attr-id', e.id);
-        const o = document.createElement('button');
-        (o.className = 'expand-button'),
-          (o.type = 'button'),
-          (o.innerHTML =
-            '\n        <svg class="expand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />\n        </svg>\n      ');
-        const s = document.createElement('div');
-        s.className = 'title-key-container';
-        const i = document.createElement('span');
-        (i.className = 'form-title'), (i.textContent = e.title);
-        const l = document.createElement('span');
-        (l.className = 'form-key'),
-          (l.textContent = `(${e.key})`),
-          s.appendChild(i),
-          s.appendChild(l),
-          n.appendChild(o),
-          n.appendChild(s);
-        const a = document.createElement('div');
-        a.className = 'form-value-container form-value-collapsed';
-        const r = document.createElement('label');
-        let d;
-        (r.className = 'form-label'),
-          (r.textContent = 'Value:'),
-          r.setAttribute('for', e.id);
-        const c = document.createElement('span');
-        (c.id = e.id),
-          (c.textContent = e.value.toString()),
-          (c.className = 'form-display-value'),
-          (d = c),
-          a.appendChild(r),
-          a.appendChild(d),
+        const n = document.createElement('label');
+        let o;
+        switch (
+          ((n.className = 'form-label'),
+          (n.textContent = e.title),
+          n.setAttribute('for', e.id),
           t.appendChild(n),
-          t.appendChild(a),
-          this.contentContainer.appendChild(t),
-          n.addEventListener('click', () => {
-            this.toggleFieldExpansion(e.id);
-          });
+          e.type)
+        ) {
+          case 'Input':
+            const t = document.createElement('input');
+            (t.id = e.id),
+              (t.type = 'number' == typeof e.value ? 'number' : 'text'),
+              (t.value = e.value || e.default_value || ''),
+              (t.disabled = !1 === e.editable),
+              (t.className = 'form-input'),
+              (o = t);
+            break;
+          case 'Constant':
+          case 'Formula':
+            const n = document.createElement('span');
+            (n.id = e.id),
+              (n.textContent = e.value.toString()),
+              (n.className = 'form-display-value'),
+              (o = n);
+            break;
+          case 'Image':
+            const s = document.createElement('div');
+            s.className = 'image-wrapper';
+            const i = document.createElement('img');
+            (i.id = `${e.id}-preview`),
+              (i.src =
+                e.value.toString() ||
+                'https://placehold.co/200x100?text=No+Image'),
+              (i.alt = `Preview for ${e.title}`),
+              (i.className = 'image-preview'),
+              (i.onerror = () =>
+                (i.src = 'https://placehold.co/200x100?text=Image+Load+Error'));
+            const l = document.createElement('input');
+            (l.id = e.id),
+              (l.type = 'text'),
+              (l.placeholder = 'Enter image URL'),
+              (l.value = e.value.toString() || ''),
+              (l.className = 'form-input image-input'),
+              l.addEventListener('input', () => {
+                i.src = l.value || 'https://placehold.co/200x100?text=No+Image';
+              }),
+              s.appendChild(i),
+              s.appendChild(l),
+              (o = s);
+            break;
+          default:
+            const a = document.createElement('p');
+            (a.textContent = `Unsupported type: ${e.type}`),
+              (a.className = 'error-text'),
+              (o = a);
+        }
+        t.appendChild(o), this.contentContainer.appendChild(t);
       });
-  }
-  toggleFieldExpansion(e) {
-    const t = this.modalElement.querySelector(`[data-attr-id="${e}"]`),
-      n = null == t ? void 0 : t.nextElementSibling,
-      o = null == t ? void 0 : t.querySelector('.expand-icon');
-    if (n && o) {
-      !n.classList.contains('form-value-collapsed')
-        ? (n.classList.add('form-value-collapsed'),
-          (o.style.transform = 'rotate(0deg)'))
-        : (n.classList.remove('form-value-collapsed'),
-          (o.style.transform = 'rotate(90deg)'));
-    }
   }
   show(e) {
     return (
@@ -657,18 +675,15 @@ class p {
   }
   onSave() {
     var e;
-    const t = {};
-    this.attributes.forEach(e => {
-      if ('Input' === e.type) {
-        const n = this.modalElement.querySelector(`#${e.id}`);
-        n && (t[e.key] = n.value);
-      } else if ('Image' === e.type) {
-        const n = this.modalElement.querySelector(`#${e.id}`);
-        n && (t[e.key] = n.value);
-      } else t[e.key] = e.value;
-    }),
-      this.hide(),
-      null === (e = this.resolvePromise) || void 0 === e || e.call(this, t),
+    const t = this.contentContainer.querySelector('.form-field.selected'),
+      n = {};
+    if (t) {
+      const e = t.getAttribute('data-attr-key'),
+        o = this.attributes.find(t => t.key === e);
+      o && (n[o.key] = o.value);
+    }
+    this.hide(),
+      null === (e = this.resolvePromise) || void 0 === e || e.call(this, n),
       this.resetPromise();
   }
   resetPromise() {
@@ -683,52 +698,163 @@ class u {
     u.tableAttributeConfig = o || [];
     const s = document.createElement('div');
     s.classList.add('table-component');
-    const i = document.createElement('table');
-    (i.style.width = '100%'),
-      (i.style.overflow = 'auto'),
-      (i.style.borderCollapse = 'collapse');
+    const i = L.generateUniqueClass('table');
+    (s.id = i),
+      (s.style.minWidth = '250px'),
+      (s.style.border = '1px solid #d1d5db'),
+      (s.style.borderRadius = '8px'),
+      (s.style.display = 'flex'),
+      (s.style.flexDirection = 'column');
+    const l = document.createElement('div');
+    (l.style.display = 'flex'),
+      (l.style.flexDirection = 'column'),
+      l.classList.add('table-wrapper');
     for (let n = 0; n < e; n++) {
-      const e = document.createElement('tr');
-      for (let o = 0; o < t; o++) {
-        const t = document.createElement('td');
-        (t.textContent = `R${n + 1}C${o + 1}`),
-          (t.style.border = '1px solid #000'),
-          (t.style.padding = '8px'),
-          (t.style.cursor = 'pointer'),
-          (t.style.transition = 'background-color 0.2s ease'),
-          t.addEventListener('mouseenter', () => {
-            t.style.backgroundColor = '#f0f8ff';
-          }),
-          t.addEventListener('mouseleave', () => {
-            t.style.backgroundColor = '';
-          }),
-          t.addEventListener('click', () => {
-            this.handleCellClick(t);
-          }),
-          e.appendChild(t);
-      }
-      i.appendChild(e);
+      const e = this.createTableRow(n, t, i);
+      l.appendChild(e);
     }
-    if ((s.appendChild(i), !n)) {
-      const e = document.createElement('div');
-      e.classList.add('button-container'),
-        (e.style.marginTop = '10px'),
-        (e.style.display = 'flex'),
-        (e.style.gap = '10px');
-      const t = document.createElement('button');
-      (t.textContent = 'Add Row'),
-        t.addEventListener('click', () => this.addRow(i)),
-        e.appendChild(t);
-      const n = document.createElement('button');
-      (n.textContent = 'Add Column'),
-        n.addEventListener('click', () => this.addColumn(i)),
-        e.appendChild(n),
-        s.appendChild(e);
+    if ((s.appendChild(l), !n)) {
+      const e = document.createElement('button');
+      (e.textContent = 'Add Row'),
+        (e.className = 'add-row-button'),
+        this.styleButton(e, '#2563eb', '#1d4ed8'),
+        e.addEventListener('click', () => {
+          this.addRow(l, i);
+        });
+      const t = document.createElement('div');
+      (t.style.textAlign = 'center'),
+        (t.style.marginTop = '10px'),
+        (t.style.marginBottom = '10px'),
+        t.appendChild(e),
+        s.appendChild(t);
     }
     return s;
   }
+  createTableRow(e, t, n) {
+    const o = document.createElement('div');
+    (o.style.display = 'grid'),
+      (o.style.gridTemplateColumns = `repeat(${t}, 1fr)`),
+      (o.className = 'table-row');
+    for (let s = 0; s < t; s++) {
+      const t = this.createTableCell(e, s, n);
+      o.appendChild(t);
+    }
+    return o;
+  }
+  createTableCell(e, t, n) {
+    const o = document.createElement('div');
+    (o.className = 'table-cell'),
+      (o.id = `table-cell-T-${n}-R${e}-C${t}`),
+      (o.textContent = `R${e + 1}C${t + 1}`),
+      (o.style.border = '1px solid #d1d5db'),
+      (o.style.padding = '8px 12px'),
+      (o.style.minHeight = '45px'),
+      (o.style.position = 'relative'),
+      (o.style.cursor = 'pointer'),
+      (o.style.transition = 'background-color 0.2s ease'),
+      (o.style.display = 'flex'),
+      (o.style.alignItems = 'center'),
+      (o.style.justifyContent = 'center');
+    const s = document.createElement('div');
+    (s.className = 'cell-controls'),
+      (s.style.position = 'absolute'),
+      (s.style.bottom = '5px'),
+      (s.style.right = '5px'),
+      (s.style.display = 'flex'),
+      (s.style.gap = '4px'),
+      (s.style.alignItems = 'center'),
+      (s.style.justifyContent = 'center');
+    const i = document.createElement('button');
+    (i.textContent = '+'),
+      (i.className = 'add-cell-button'),
+      (i.style.width = '15px'),
+      (i.style.height = '15px'),
+      (i.style.border = 'none'),
+      (i.style.borderRadius = '3px'),
+      (i.style.backgroundColor = '#10b981'),
+      (i.style.color = 'white'),
+      (i.style.fontSize = '12px'),
+      (i.style.cursor = 'pointer'),
+      (i.style.display = 'flex'),
+      (i.style.alignItems = 'center'),
+      (i.style.justifyContent = 'center'),
+      (i.style.fontWeight = 'bold'),
+      i.addEventListener('mouseenter', () => {
+        i.style.backgroundColor = '#059669';
+      }),
+      i.addEventListener('mouseleave', () => {
+        i.style.backgroundColor = '#10b981';
+      }),
+      i.addEventListener('click', e => {
+        e.stopPropagation(), this.addCellToRow(o, n);
+      });
+    const l = document.createElement('button');
+    return (
+      (l.innerHTML = '×'),
+      (l.className = 'delete-cell-button'),
+      (l.style.width = '15px'),
+      (l.style.height = '15px'),
+      (l.style.border = 'none'),
+      (l.style.borderRadius = '3px'),
+      (l.style.backgroundColor = '#ef4444'),
+      (l.style.color = 'white'),
+      (l.style.fontSize = '14px'),
+      (l.style.cursor = 'pointer'),
+      (l.style.display = 'flex'),
+      (l.style.alignItems = 'center'),
+      (l.style.justifyContent = 'center'),
+      (l.style.fontWeight = 'bold'),
+      l.addEventListener('mouseenter', () => {
+        l.style.backgroundColor = '#dc2626';
+      }),
+      l.addEventListener('mouseleave', () => {
+        l.style.backgroundColor = '#ef4444';
+      }),
+      l.addEventListener('click', e => {
+        e.stopPropagation(), this.deleteCell(o);
+      }),
+      s.appendChild(i),
+      s.appendChild(l),
+      o.appendChild(s),
+      o
+    );
+  }
+  addCellToRow(e, t) {
+    const n = e.parentElement;
+    if (!n) return;
+    const o = Array.from(n.parentElement.children).indexOf(n),
+      s = n.children.length,
+      i = this.createTableCell(o, s, t);
+    n.appendChild(i), (n.style.gridTemplateColumns = `repeat(${s + 1}, 1fr)`);
+  }
+  deleteCell(e) {
+    const t = e.parentElement;
+    if (!t) return;
+    const n = t.children.length;
+    if ((t.removeChild(e), 1 === n)) {
+      const e = t.parentElement;
+      e && e.children.length > 1 && e.removeChild(t);
+    } else t.style.gridTemplateColumns = `repeat(${n - 1}, 1fr)`;
+  }
+  styleButton(e, t, n) {
+    (e.style.padding = '8px 16px'),
+      (e.style.backgroundColor = t),
+      (e.style.color = 'white'),
+      (e.style.border = 'none'),
+      (e.style.borderRadius = '6px'),
+      (e.style.fontSize = '14px'),
+      (e.style.fontWeight = '500'),
+      (e.style.cursor = 'pointer'),
+      (e.style.transition = 'background-color 0.2s ease'),
+      e.addEventListener('mouseenter', () => {
+        e.style.backgroundColor = n;
+      }),
+      e.addEventListener('mouseleave', () => {
+        e.style.backgroundColor = t;
+      });
+  }
   handleCellClick(e) {
-    return c(this, void 0, void 0, function* () {
+    return n(this, void 0, void 0, function* () {
       if (
         this.modalComponent &&
         u.tableAttributeConfig &&
@@ -738,7 +864,7 @@ class u {
           const t = yield this.modalComponent.show(u.tableAttributeConfig);
           if (t) {
             const n = this.findSelectedAttribute(t);
-            n && this.updateCellContent(e, n, t);
+            n && this.updateCellContent(e, n);
           }
         } catch (e) {
           console.error('Error handling cell click:', e);
@@ -753,177 +879,66 @@ class u {
         return t;
     return null;
   }
-  updateCellContent(e, t, n) {
-    e.setAttribute('data-attribute-key', t.key),
-      e.setAttribute('data-attribute-type', t.type),
-      (e.textContent = `${t.key}: ${t.value}`),
-      (e.style.backgroundColor = '#e6f3ff'),
-      (e.style.fontWeight = 'bold');
+  seedFormulaValues(e, t) {
+    e.querySelectorAll('div[data-attribute-key]').forEach(e => {
+      const n = e.querySelector('.cell-controls'),
+        o = e.getAttribute('data-attribute-key');
+      o &&
+        t.hasOwnProperty(o) &&
+        ((e.textContent = t[o]), (e.style.color = '#000000')),
+        n && e.appendChild(n);
+    }),
+      L.dispatchDesignChange();
+  }
+  updateCellContent(e, t) {
+    e.setAttribute('data-attribute-key', t.key);
+    const n = e.querySelector('.cell-controls');
+    'Formula' === t.type
+      ? ((e.textContent = `${t.title}`),
+        (e.style.fontSize = '10px'),
+        (e.style.color = 'rgb(188 191 198)'),
+        (e.style.fontWeight = '500'))
+      : 'Constant' === t.type && (e.textContent = `${t.value}`),
+      n && e.appendChild(n),
+      null == L || L.dispatchDesignChange();
   }
   setModalComponent(e) {
     this.modalComponent = e;
   }
-  addRow(e) {
-    var t;
-    const n = e.rows.length,
-      o =
-        (null === (t = e.rows[0]) || void 0 === t ? void 0 : t.cells.length) ||
-        0,
-      s = document.createElement('tr');
-    for (let e = 0; e < o; e++) {
-      const t = document.createElement('td');
-      (t.textContent = `R${n + 1}C${e + 1}`),
-        (t.style.border = '1px solid #000'),
-        (t.style.padding = '8px'),
-        (t.style.cursor = 'pointer'),
-        (t.style.transition = 'background-color 0.2s ease'),
-        t.addEventListener('mouseenter', () => {
-          t.style.backgroundColor = '#f0f8ff';
-        }),
-        t.addEventListener('mouseleave', () => {
-          t.style.backgroundColor = '';
-        }),
-        t.addEventListener('click', () => {
-          this.handleCellClick(t);
-        }),
-        s.appendChild(t);
-    }
-    e.appendChild(s);
+  addRow(e, t) {
+    const n = e.children.length,
+      o = this.createTableRow(n, 1, t);
+    e.appendChild(o);
   }
-  addColumn(e) {
-    const t = e.rows.length;
-    for (let n = 0; n < t; n++) {
-      const t = document.createElement('td');
-      (t.textContent = `R${n + 1}C${e.rows[n].cells.length + 1}`),
-        (t.style.border = '1px solid #000'),
-        (t.style.padding = '8px'),
-        (t.style.cursor = 'pointer'),
-        (t.style.transition = 'background-color 0.2s ease'),
-        t.addEventListener('mouseenter', () => {
-          t.style.backgroundColor = '#f0f8ff';
-        }),
-        t.addEventListener('mouseleave', () => {
-          t.style.backgroundColor = '';
-        }),
-        t.addEventListener('click', () => {
-          this.handleCellClick(t);
-        }),
-        e.rows[n].appendChild(t);
-    }
-  }
-  setRowCount(e, t) {
-    var n;
-    if (!e) return;
-    const o = e.rows.length,
-      s =
-        (null === (n = e.rows[0]) || void 0 === n ? void 0 : n.cells.length) ||
-        0;
-    if ((t < 0 && (t = 0), t > o))
-      for (let n = o; n < t; n++) {
-        const t = document.createElement('tr');
-        for (let e = 0; e < s; e++) {
-          const o = document.createElement('td');
-          (o.textContent = `R${n + 1}C${e + 1}`),
-            (o.style.border = '1px solid #000'),
-            (o.style.padding = '8px'),
-            (o.style.cursor = 'pointer'),
-            (o.style.transition = 'background-color 0.2s ease'),
-            o.addEventListener('mouseenter', () => {
-              o.style.backgroundColor = '#f0f8ff';
+  static restore(e, t) {
+    const n = new u(),
+      o = e.querySelector('.table-wrapper'),
+      s = null == o ? void 0 : o.closest('.table-component'),
+      i = null == s ? void 0 : s.id;
+    if (!o) return void console.error('No table wrapper found in container');
+    o.querySelectorAll('.table-cell').forEach(e => {
+      const o = e,
+        s = o.querySelector('.cell-controls');
+      if (!1 !== t) {
+        if (s) {
+          const e = s.querySelector('.add-cell-button'),
+            t = s.querySelector('.delete-cell-button');
+          e &&
+            e.addEventListener('click', e => {
+              e.stopPropagation(), n.addCellToRow(o, i);
             }),
-            o.addEventListener('mouseleave', () => {
-              o.style.backgroundColor = '';
-            }),
-            o.addEventListener('click', () => {
-              this.handleCellClick(o);
-            }),
-            t.appendChild(o);
+            t &&
+              t.addEventListener('click', e => {
+                e.stopPropagation(), n.deleteCell(o);
+              });
         }
-        e.appendChild(t);
-      }
-    else if (t < o) for (let n = o - 1; n >= t; n--) e.deleteRow(n);
-  }
-  setColumnCount(e, t) {
-    if (!e || 0 === e.rows.length) return;
-    const n = e.rows.length,
-      o = e.rows[0].cells.length;
-    t < 0 && (t = 0);
-    for (let s = 0; s < n; s++) {
-      const n = e.rows[s];
-      if (t > o)
-        for (let e = o; e < t; e++) {
-          const t = document.createElement('td');
-          (t.textContent = `R${s + 1}C${e + 1}`),
-            (t.style.border = '1px solid #000'),
-            (t.style.padding = '8px'),
-            (t.style.cursor = 'pointer'),
-            (t.style.transition = 'background-color 0.2s ease'),
-            t.addEventListener('mouseenter', () => {
-              t.style.backgroundColor = '#f0f8ff';
-            }),
-            t.addEventListener('mouseleave', () => {
-              t.style.backgroundColor = '';
-            }),
-            t.addEventListener('click', () => {
-              this.handleCellClick(t);
-            }),
-            n.appendChild(t);
-        }
-      else if (t < o) for (let e = o - 1; e >= t; e--) n.deleteCell(e);
-    }
-  }
-  createHeder(e) {
-    var t;
-    if (!e || 0 === e.rows.length) return;
-    const n = e.rows[0];
-    for (let e = 0; e < n.cells.length; e++) {
-      const o = n.cells[e],
-        s = document.createElement('th');
-      s.innerHTML = o.innerHTML;
-      for (const e of Array.from(o.attributes)) s.setAttribute(e.name, e.value);
-      (s.style.cursor = 'pointer'),
-        (s.style.transition = 'background-color 0.2s ease'),
-        s.addEventListener('mouseenter', () => {
-          s.style.backgroundColor = '#f0f8ff';
-        }),
-        s.addEventListener('mouseleave', () => {
-          s.style.backgroundColor = '';
-        }),
-        s.addEventListener('click', () => {
-          this.handleCellClick(s);
-        }),
-        null === (t = o.parentNode) || void 0 === t || t.replaceChild(s, o);
-    }
-  }
-  static restore(e) {
-    const t = new u(),
-      n = e.querySelector('table');
-    if (!n) return void console.error('No table found in container');
-    n.querySelectorAll('td, th').forEach(e => {
-      const n = e;
-      (n.style.cursor = 'pointer'),
-        (n.style.transition = 'background-color 0.2s ease'),
-        n.addEventListener('mouseenter', () => {
-          n.style.backgroundColor = '#f0f8ff';
-        }),
-        n.addEventListener('mouseleave', () => {
-          n.style.backgroundColor = '';
-        }),
-        n.addEventListener('click', () => {
-          t.handleCellClick(n);
-        });
+      } else null == s || s.remove();
     });
-    const o = e.querySelector('.button-container');
-    if (!o) return void console.error('No button container found');
-    o.querySelectorAll('button').forEach(e => {
-      var o;
-      const s = e.cloneNode(!0);
-      null === (o = e.parentNode) || void 0 === o || o.replaceChild(s, e),
-        'Add Row' === s.textContent
-          ? s.addEventListener('click', () => t.addRow(n))
-          : 'Add Column' === s.textContent &&
-            s.addEventListener('click', () => t.addColumn(n));
-    });
+    const l = e.querySelector('.add-row-button');
+    l &&
+      l.addEventListener('click', () => {
+        n.addRow(o, i);
+      });
   }
 }
 class m {
@@ -1105,7 +1120,7 @@ class h {
             };
         }
       },
-      n = new l().create();
+      n = new a().create();
     n.classList.add('container'),
       Object.assign(n.style, {
         width: '100%',
@@ -1115,7 +1130,7 @@ class h {
         fontFamily: "'Roboto', sans-serif",
       }),
       e(n);
-    const o = new l().create();
+    const o = new a().create();
     o.classList.add('container'),
       Object.assign(o.style, {
         display: 'flex',
@@ -1125,16 +1140,16 @@ class h {
         width: '100%',
       }),
       e(o);
-    const i = new t('MyBrand').create();
-    Object.assign(i.style, {
+    const s = new t('MyBrand').create();
+    Object.assign(s.style, {
       fontSize: '24px',
       fontWeight: 'bold',
       color: '#333',
     });
-    const a = new l().create();
-    a.classList.add('container'),
-      Object.assign(a.style, { display: 'flex', gap: '20px' }),
-      e(a),
+    const l = new a().create();
+    l.classList.add('container'),
+      Object.assign(l.style, { display: 'flex', gap: '20px' }),
+      e(l),
       ['Home', 'Features', 'Contact'].forEach(e => {
         const n = new t(e).create();
         Object.assign(n.style, {
@@ -1142,11 +1157,11 @@ class h {
           color: '#555',
           textDecoration: 'none',
         }),
-          a.appendChild(n);
+          l.appendChild(n);
       }),
-      o.appendChild(i),
-      o.appendChild(a);
-    const r = new l().create();
+      o.appendChild(s),
+      o.appendChild(l);
+    const r = new a().create();
     r.classList.add('container'),
       Object.assign(r.style, {
         textAlign: 'center',
@@ -1173,7 +1188,7 @@ class h {
       color: '#666',
       marginBottom: '30px',
     });
-    const p = new s().create();
+    const p = new i().create();
     Object.assign(p.style, {
       padding: '12px 24px',
       fontSize: '16px',
@@ -1193,7 +1208,7 @@ class h {
       r.appendChild(d),
       r.appendChild(c),
       r.appendChild(p);
-    const u = new l().create();
+    const u = new a().create();
     u.classList.add('container'),
       Object.assign(u.style, {
         textAlign: 'center',
@@ -1218,7 +1233,7 @@ class g {
     (this.undoStack = []), (this.redoStack = []), (this.canvas = e);
   }
   captureState() {
-    const e = k.getState();
+    const e = L.getState();
     if (e.length > 0) {
       const t = this.undoStack[this.undoStack.length - 1];
       JSON.stringify(e) !== JSON.stringify(t) &&
@@ -1232,18 +1247,18 @@ class g {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
       const t = this.undoStack[this.undoStack.length - 1];
-      k.restoreState(t);
+      L.restoreState(t);
     } else if (1 === this.undoStack.length) {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
-      const t = k.jsonStorage.load();
-      t ? k.restoreState(t) : k.restoreState([]);
+      const t = L.jsonStorage.load();
+      t ? L.restoreState(t) : L.restoreState([]);
     } else console.warn('No more actions to undo.');
   }
   redo() {
     if (this.redoStack.length > 0) {
       const e = this.redoStack.pop();
-      this.undoStack.push(e), k.restoreState(e);
+      this.undoStack.push(e), L.restoreState(e);
     } else console.warn('No more actions to redo.');
   }
 }
@@ -1310,13 +1325,7 @@ function b(e) {
       t.classList.remove('visible'), t.classList.add('hidden');
     }, 2e3));
 }
-function f(e, t) {
-  let n = null;
-  return (...o) => {
-    n && clearTimeout(n), (n = setTimeout(() => e(...o), t));
-  };
-}
-class w {
+class f {
   static updateLayersView() {
     const e = document.getElementById('layers-view');
     if (!e) return;
@@ -1461,7 +1470,7 @@ class w {
     });
   }
 }
-const C = {
+const w = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n                </svg>',
   tablet:
@@ -1511,7 +1520,7 @@ const C = {
   customizationMenu:
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush"><path d="m11 10 3 3"/><path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/><path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/></svg>',
 };
-class E {
+class x {
   static init(e, t, n) {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1525,14 +1534,14 @@ class E {
       return void console.error(
         'CustomizationSidebar: Required elements not found.'
       );
-    (this.layersViewController = new w()),
+    (this.layersViewController = new f()),
       (this.functionsPanel = document.createElement('div')),
       (this.functionsPanel.id = 'functions-panel'),
       (this.functionsPanel.className = 'dropdown-panel'),
       (this.functionsPanel.style.display = 'none'),
       (this.layersModeToggle = document.createElement('div')),
       (this.layersModeToggle.className = 'layers-mode-toggle'),
-      (this.layersModeToggle.innerHTML = `\n        <button id="customize-tab" title="Customize" class="active">${C.settings}</button>\n        <button id="attribute-tab" title="Attribute" >${C.attribute}</button>\n        <button id="layers-tab" title="Layers"> ${C.menu} </button>\n    `),
+      (this.layersModeToggle.innerHTML = `\n        <button id="customize-tab" title="Customize" class="active">${w.settings}</button>\n        <button id="attribute-tab" title="Attribute" >${w.attribute}</button>\n        <button id="layers-tab" title="Layers"> ${w.menu} </button>\n    `),
       this.sidebarElement.insertBefore(
         this.layersModeToggle,
         this.componentNameHeader
@@ -1598,7 +1607,7 @@ class E {
       (this.functionsPanel.style.display = 'none'),
       (o.style.display = 'block'),
       (s.style.display = 'none'),
-      w.updateLayersView();
+      f.updateLayersView();
   }
   static showSidebar(e) {
     const t = document.getElementById(e);
@@ -1626,6 +1635,32 @@ class E {
       'grid',
       'none',
     ]),
+      ('flex' !== t.display && 'flex' !== e.style.display) ||
+        (this.createSelectControl(
+          'Flex Direction',
+          'flex-direction',
+          t.flexDirection || 'row',
+          ['row', 'row-reverse', 'column', 'column-reverse']
+        ),
+        this.createSelectControl(
+          'Align Items',
+          'align-items',
+          t.alignItems || 'stretch',
+          ['stretch', 'flex-start', 'flex-end', 'center', 'baseline']
+        ),
+        this.createSelectControl(
+          'Justify Content',
+          'justify-content',
+          t.justifyContent || 'flex-start',
+          [
+            'flex-start',
+            'flex-end',
+            'center',
+            'space-between',
+            'space-around',
+            'space-evenly',
+          ]
+        )),
       n ||
         (this.createControl('Width', 'width', 'number', e.offsetWidth, {
           min: 0,
@@ -1679,6 +1714,21 @@ class E {
         parseInt(t.fontSize) || 16,
         { min: 0, max: 100, unit: 'px' }
       ),
+      this.createSelectControl('Font Weight', 'font-weight', t.fontWeight, [
+        'normal',
+        'bold',
+        'bolder',
+        'lighter',
+        '100',
+        '200',
+        '300',
+        '400',
+        '500',
+        '600',
+        '700',
+        '800',
+        '900',
+      ]),
       this.createControl(
         'Text Color',
         'text-color',
@@ -1715,19 +1765,19 @@ class E {
         t.borderColor || '#000000'
       );
     const o = document.getElementById('background-color');
-    o && (o.value = E.rgbToHex(t.backgroundColor));
+    o && (o.value = x.rgbToHex(t.backgroundColor));
     const s = document.getElementById('text-color');
-    s && (s.value = E.rgbToHex(t.color));
+    s && (s.value = x.rgbToHex(t.color));
     const i = document.getElementById('border-color');
-    i && (i.value = E.rgbToHex(t.borderColor)), this.addListeners(e);
+    i && (i.value = x.rgbToHex(t.borderColor)), this.addListeners(e);
   }
   static populateFunctionalityControls(e) {
-    var t, n;
+    var t;
     if (
       ((this.functionsPanel.innerHTML = ''),
       e.classList.contains('table-component'))
     ) {
-      const n = e.querySelector('table');
+      const t = document.getElementById(e.id);
       if (this.basicComponentsConfig) {
         const e = this.basicComponentsConfig.components.find(
           e => 'table' === e.name
@@ -1735,94 +1785,61 @@ class E {
         e &&
           e.attributes &&
           e.attributes.length > 0 &&
-          e.attributes.map(e => {
-            const t = document.createElement('div');
-            if (
-              'Input' === e.type &&
-              ((t.innerHTML = `\n            <label for=${e.key} class="type-input-label">${e.title}</label>\n                <div class="input-wrapper type-input-div">\n                  <input type="text" class="type-input" id=${e.key}  ${e.editable ? '' : 'disabled'}  value=${e.default_value ? e.default_value : ''} >\n                </div>\n            `),
-              this.functionsPanel.appendChild(t),
-              e.trigger)
-            ) {
-              const t = document.getElementById(e.key);
-              null == t ||
-                t.addEventListener(e.trigger, () => {
-                  var e, t;
-                  (null === (e = this.basicComponentsConfig) || void 0 === e
-                    ? void 0
-                    : e.globalExecuteFunction) &&
-                    (null === (t = this.basicComponentsConfig) ||
-                      void 0 === t ||
-                      t.globalExecuteFunction());
-                });
+          e.attributes.map(o => {
+            const s = document.createElement('div');
+            if ('Input' === o.type) {
+              (s.innerHTML = `\n                <label for=${o.key} class="type-input-label">${o.title}</label>\n                <div class="input-wrapper type-input-div">\n                  <input type="text" class="type-input" id=${o.key}  ${o.editable ? '' : 'disabled'}  value=${o.default_value ? o.default_value : ''} >\n                </div>\n              `),
+                this.functionsPanel.appendChild(s);
+              const i = document.getElementById(o.key);
+              o.trigger &&
+                (null == i ||
+                  i.addEventListener(o.trigger, () =>
+                    n(this, void 0, void 0, function* () {
+                      if (e.globalExecuteFunction) {
+                        const n = {};
+                        this.functionsPanel
+                          .querySelectorAll('.type-input')
+                          .forEach(e => {
+                            const t = e;
+                            n[t.id] = t.value;
+                          });
+                        const o = yield e.globalExecuteFunction(n);
+                        if (o && 'object' == typeof o) {
+                          new u().seedFormulaValues(t, o),
+                            L.historyManager.captureState();
+                        }
+                      }
+                    })
+                  ));
             }
           });
-      } else if (n) {
-        const e = n.rows.length,
-          o =
-            (null === (t = n.rows[0]) || void 0 === t
-              ? void 0
-              : t.cells.length) || 0,
-          s = document.createElement('div');
-        s.classList.add('control-wrapper'),
-          (s.innerHTML = `\n                  <label for="table-rows">Number of Rows:</label>\n                  <div class="input-wrapper">\n                    <input type="number" id="table-rows" value="${e}" min="0">\n                  </div>\n              `),
-          this.functionsPanel.appendChild(s);
-        const i = s.querySelector('#table-rows');
-        i.addEventListener(
-          'input',
-          f(() => {
-            const e = parseInt(i.value);
-            if (!isNaN(e)) {
-              new u().setRowCount(n, e), k.historyManager.captureState();
-            }
-          }, 300)
-        );
-        const l = document.createElement('div');
-        l.classList.add('control-wrapper'),
-          (l.innerHTML = `\n                  <label for="table-cols">Number of Columns:</label>\n                  <div class="input-wrapper">\n                    <input type="number" id="table-cols" value="${o}" min="0">\n                  </div>\n              `),
-          this.functionsPanel.appendChild(l);
-        const a = l.querySelector('#table-cols');
-        a.addEventListener(
-          'input',
-          f(() => {
-            const e = parseInt(a.value);
-            if (!isNaN(e)) {
-              new u().setColumnCount(n, e), k.historyManager.captureState();
-            }
-          }, 300)
-        );
-        const r = document.createElement('div');
-        r.classList.add('control-wrapper'),
-          (r.innerHTML =
-            '\n          <label for="table-header">Create Header:</label>\n          <div class="input-wrapper">\n            <input type="checkbox" id="table-header"  min="0">\n          </div\n        '),
-          this.functionsPanel.appendChild(r);
-        const d = r.querySelector('#table-header');
-        d.addEventListener(
-          'input',
-          f(() => {
-            if (d.checked) {
-              new u().createHeder(n), k.historyManager.captureState();
-            }
-          }, 300)
-        );
       }
     } else if (e.classList.contains('custom-component')) {
-      const t =
+      const n =
           null ===
-            (n = Array.from(e.classList).find(e => e.endsWith('-component'))) ||
-          void 0 === n
+            (t = Array.from(e.classList).find(e => e.endsWith('-component'))) ||
+          void 0 === t
             ? void 0
             : n.replace('-component', ''),
-        o = E.customComponentsConfig;
+        o = x.customComponentsConfig;
       if (t && o && o[t] && o[t].settingsComponentTagName) {
         const n = o[t].settingsComponentTagName;
         let s = this.functionsPanel.querySelector(n);
         s ||
-          ((s = document.createElement(n)), this.functionsPanel.appendChild(s)),
+          ((s = document.createElement(t)), this.functionsPanel.appendChild(s)),
           s.setAttribute(
             'data-settings',
             JSON.stringify({ targetComponentId: e.id })
           );
       }
+    } else if (e.classList.contains('table-cell')) {
+      const t = document.createElement('button');
+      (t.textContent = 'Set Cell Attribute'),
+        (t.className = 'set-cell-attribute-button'),
+        this.functionsPanel.appendChild(t),
+        t.addEventListener('click', () => {
+          new u().handleCellClick(e);
+        });
     } else
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
@@ -1876,8 +1893,8 @@ class E {
       this.controlsContainer.appendChild(s);
   }
   static addListeners(e) {
-    var t, n, o, s, i, l, a, r, d, c, p, u, m, h, g, v;
-    const y = {
+    var t, n, o, s, i, l, a, r, d, c, p, u, m, h, g, v, y, b, f, w;
+    const C = {
         width: document.getElementById('width'),
         height: document.getElementById('height'),
         backgroundColor: document.getElementById('background-color'),
@@ -1885,35 +1902,44 @@ class E {
         padding: document.getElementById('padding'),
         alignment: document.getElementById('alignment'),
         fontSize: document.getElementById('font-size'),
+        fontWeight: document.getElementById('font-weight'),
         textColor: document.getElementById('text-color'),
         borderWidth: document.getElementById('border-width'),
         borderStyle: document.getElementById('border-style'),
         borderColor: document.getElementById('border-color'),
         display: document.getElementById('display'),
         fontFamily: document.getElementById('font-family'),
+        flexDirection: document.getElementById('flex-direction'),
+        alignItems: document.getElementById('align-items'),
+        justifyContent: document.getElementById('justify-content'),
       },
-      b = f(() => {
-        k.dispatchDesignChange(), k.historyManager.captureState();
+      E = (function (e, t) {
+        let n = null;
+        return (...o) => {
+          n && clearTimeout(n), (n = setTimeout(() => e(...o), t));
+        };
+      })(() => {
+        L.dispatchDesignChange(), L.historyManager.captureState();
       }, 300);
-    null === (t = y.width) ||
+    null === (t = C.width) ||
       void 0 === t ||
       t.addEventListener('input', () => {
         const t = document.getElementById('width-unit').value;
-        (e.style.width = `${y.width.value}${t}`), b();
+        (e.style.width = `${C.width.value}${t}`), E();
       }),
-      null === (n = y.height) ||
+      null === (n = C.height) ||
         void 0 === n ||
         n.addEventListener('input', () => {
           const t = document.getElementById('height-unit').value;
-          (e.style.height = `${y.height.value}${t}`), b();
+          (e.style.height = `${C.height.value}${t}`), E();
         }),
-      null === (o = y.backgroundColor) ||
+      null === (o = C.backgroundColor) ||
         void 0 === o ||
         o.addEventListener('input', () => {
-          (e.style.backgroundColor = y.backgroundColor.value),
+          (e.style.backgroundColor = C.backgroundColor.value),
             (document.getElementById('background-color-value').value =
-              y.backgroundColor.value),
-            b();
+              C.backgroundColor.value),
+            E();
         }),
       null === (s = document.getElementById('background-color-value')) ||
         void 0 === s ||
@@ -1921,93 +1947,113 @@ class E {
           const n = t.target;
           (e.style.backgroundColor = n.value),
             (document.getElementById('background-color').value = n.value),
-            b();
+            E();
         }),
-      null === (i = y.margin) ||
+      null === (i = C.margin) ||
         void 0 === i ||
         i.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
-          (e.style.margin = `${y.margin.value}${t}`), b();
+          (e.style.margin = `${C.margin.value}${t}`), E();
         }),
-      null === (l = y.padding) ||
+      null === (l = C.padding) ||
         void 0 === l ||
         l.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
-          (e.style.padding = `${y.padding.value}${t}`), b();
+          (e.style.padding = `${C.padding.value}${t}`), E();
         }),
-      null === (a = y.alignment) ||
+      null === (a = C.alignment) ||
         void 0 === a ||
         a.addEventListener('change', () => {
-          (e.style.textAlign = y.alignment.value), b();
+          (e.style.textAlign = C.alignment.value), E();
         }),
-      null === (r = y.fontSize) ||
+      null === (r = C.fontSize) ||
         void 0 === r ||
         r.addEventListener('input', () => {
           const t = document.getElementById('font-size-unit').value;
-          (e.style.fontSize = `${y.fontSize.value}${t}`), b();
+          (e.style.fontSize = `${C.fontSize.value}${t}`), E();
         }),
-      null === (d = y.textColor) ||
+      null === (d = C.fontWeight) ||
         void 0 === d ||
-        d.addEventListener('input', () => {
-          (e.style.color = y.textColor.value),
-            (document.getElementById('text-color-value').value =
-              y.textColor.value),
-            b();
+        d.addEventListener('change', () => {
+          (e.style.fontWeight = C.fontWeight.value), E();
         }),
-      null === (c = document.getElementById('text-color-value')) ||
+      null === (c = C.textColor) ||
         void 0 === c ||
-        c.addEventListener('input', t => {
+        c.addEventListener('input', () => {
+          (e.style.color = C.textColor.value),
+            (document.getElementById('text-color-value').value =
+              C.textColor.value),
+            E();
+        }),
+      null === (p = document.getElementById('text-color-value')) ||
+        void 0 === p ||
+        p.addEventListener('input', t => {
           const n = t.target;
           (e.style.color = n.value),
             (document.getElementById('text-color').value = n.value),
-            b();
+            E();
         }),
-      null === (p = y.borderWidth) ||
-        void 0 === p ||
-        p.addEventListener('input', () => {
-          const t = document.getElementById('border-width-unit').value;
-          (e.style.borderWidth = `${y.borderWidth.value}${t}`), b();
-        }),
-      null === (u = y.borderStyle) ||
+      null === (u = C.borderWidth) ||
         void 0 === u ||
-        u.addEventListener('change', () => {
-          (e.style.borderStyle = y.borderStyle.value), b();
+        u.addEventListener('input', () => {
+          const t = document.getElementById('border-width-unit').value;
+          (e.style.borderWidth = `${C.borderWidth.value}${t}`), E();
         }),
-      null === (m = y.borderColor) ||
+      null === (m = C.borderStyle) ||
         void 0 === m ||
-        m.addEventListener('input', () => {
-          (e.style.borderColor = y.borderColor.value),
-            (document.getElementById('border-color-value').value =
-              y.borderColor.value),
-            b();
+        m.addEventListener('change', () => {
+          (e.style.borderStyle = C.borderStyle.value), E();
         }),
-      null === (h = document.getElementById('border-color-value')) ||
+      null === (h = C.borderColor) ||
         void 0 === h ||
-        h.addEventListener('input', t => {
+        h.addEventListener('input', () => {
+          (e.style.borderColor = C.borderColor.value),
+            (document.getElementById('border-color-value').value =
+              C.borderColor.value),
+            E();
+        }),
+      null === (g = document.getElementById('border-color-value')) ||
+        void 0 === g ||
+        g.addEventListener('input', t => {
           const n = t.target;
           (e.style.borderColor = n.value),
             (document.getElementById('border-color').value = n.value),
-            b();
+            E();
         }),
-      null === (g = y.display) ||
-        void 0 === g ||
-        g.addEventListener('change', () => {
-          (e.style.display = y.display.value), b();
-        }),
-      null === (v = y.fontFamily) ||
+      null === (v = C.display) ||
         void 0 === v ||
         v.addEventListener('change', () => {
-          (e.style.fontFamily = y.fontFamily.value), b();
+          (e.style.display = C.display.value), E(), this.populateCssControls(e);
+        }),
+      null === (y = C.flexDirection) ||
+        void 0 === y ||
+        y.addEventListener('change', () => {
+          (e.style.flexDirection = C.flexDirection.value), E();
+        }),
+      null === (b = C.alignItems) ||
+        void 0 === b ||
+        b.addEventListener('change', () => {
+          (e.style.alignItems = C.alignItems.value), E();
+        }),
+      null === (f = C.fontFamily) ||
+        void 0 === f ||
+        f.addEventListener('change', () => {
+          (e.style.fontFamily = C.fontFamily.value), E();
+        }),
+      null === (w = C.justifyContent) ||
+        void 0 === w ||
+        w.addEventListener('change', () => {
+          (e.style.justifyContent = C.justifyContent.value), E();
         });
   }
   static getLayersViewController() {
     return this.layersViewController;
   }
 }
-(E.selectedComponent = null),
-  (E.customComponentsConfig = null),
-  (E.basicComponentsConfig = null);
-class L {
+(x.selectedComponent = null),
+  (x.customComponentsConfig = null),
+  (x.basicComponentsConfig = null);
+class E {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -2046,7 +2092,7 @@ class L {
     return this.cellSize;
   }
 }
-var x;
+var L;
 class k {
   static getComponents() {
     return x.components;
@@ -2061,8 +2107,10 @@ class k {
       l =
         null === (s = null == i ? void 0 : i.attributes) || void 0 === s
           ? void 0
-          : s.filter(e => 'Formula' == e.type);
-    (this.tableAttributeConfig = l),
+          : s.filter(e => 'Formula' == e.type || 'Constant' === e.type);
+    this.tableAttributeConfig = l;
+    const a = o.components.find(e => 'image' === e.name);
+    (this.ImageAttributeConfig = null == a ? void 0 : a.globalExecuteFunction),
       i && i.attributes && i.attributes.length,
       (x.canvasElement = document.getElementById('canvas')),
       (x.sidebarElement = document.getElementById('sidebar')),
@@ -2074,17 +2122,17 @@ class k {
       x.canvasElement.classList.add('preview-desktop'),
       x.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && E.showSidebar(t.id);
+        t && x.showSidebar(t.id);
       }),
-      (x.canvasElement.style.position = 'relative'),
-      (this.lastCanvasWidth = x.canvasElement.offsetWidth),
-      (x.historyManager = new g(x.canvasElement)),
-      (x.jsonStorage = new v()),
-      (x.controlsManager = new y(x)),
-      (x.gridManager = new L()),
-      x.gridManager.initializeDropPreview(x.canvasElement);
-    if ((new e(x.canvasElement, x.sidebarElement).enable(), t))
-      x.restoreState(t);
+      (L.canvasElement.style.position = 'relative'),
+      (this.lastCanvasWidth = L.canvasElement.offsetWidth),
+      (L.historyManager = new g(L.canvasElement)),
+      (L.jsonStorage = new v()),
+      (L.controlsManager = new y(L)),
+      (L.gridManager = new E()),
+      L.gridManager.initializeDropPreview(L.canvasElement);
+    if ((new e(L.canvasElement, L.sidebarElement).enable(), t))
+      L.restoreState(t);
     else {
       const e = x.jsonStorage.load();
       e && x.restoreState(e);
@@ -2098,7 +2146,7 @@ class k {
           bubbles: !0,
           composed: !0,
         });
-      x.canvasElement.dispatchEvent(t);
+      L.canvasElement.dispatchEvent(t);
     }
   }
   static clearCanvas() {
@@ -2165,34 +2213,34 @@ class k {
       (x.components = []),
       e.forEach(e => {
         const t = e.dataAttributes['data-custom-settings'] || null,
-          o = x.createComponent(e.type, t, e.content);
+          o = L.createComponent(e.type, t, e.content);
         if (o) {
           if (
             (e.classes.includes('custom-component') ||
-              (o.innerHTML = e.content),
-            (o.className = ''),
+              (n.innerHTML = e.content),
+            (n.className = ''),
             e.classes.forEach(e => {
-              o.classList.add(e);
+              n.classList.add(e);
             }),
             'video' === e.type && e.videoSrc)
           ) {
-            const t = o.querySelector('video'),
-              n = o.querySelector('.upload-text');
+            const t = n.querySelector('video'),
+              o = n.querySelector('.upload-text');
             (t.src = e.videoSrc),
               (t.style.display = 'block'),
-              (n.style.display = 'none');
+              (o.style.display = 'none');
           }
-          e.inlineStyle && o.setAttribute('style', e.inlineStyle),
+          e.inlineStyle && n.setAttribute('style', e.inlineStyle),
             e.computedStyle &&
               Object.keys(e.computedStyle).forEach(t => {
-                o.style.setProperty(t, e.computedStyle[t]);
+                n.style.setProperty(t, e.computedStyle[t]);
               }),
             e.dataAttributes &&
               Object.entries(e.dataAttributes).forEach(([e, t]) => {
-                o.setAttribute(e, t);
+                n.setAttribute(e, t);
               }),
-            x.controlsManager.addControlButtons(o),
-            x.addDraggableListeners(o),
+            L.controlsManager.addControlButtons(o),
+            L.addDraggableListeners(o),
             o.classList.contains('container-component') &&
               l.restoreContainer(o),
             (o.classList.contains('twoCol-component') ||
@@ -2201,8 +2249,8 @@ class k {
             'image' === e.type && n.restoreImageUpload(o, e.imageSrc),
             'table' === e.type && u.restore(o),
             'link' === e.type && m.restore(o),
-            x.canvasElement.appendChild(o),
-            x.components.push(o);
+            L.canvasElement.appendChild(o),
+            L.components.push(o);
         }
       }),
       x.gridManager.initializeDropPreview(x.canvasElement);
@@ -2395,23 +2443,23 @@ class k {
       });
   }
 }
-(x = k),
+(L = k),
   (k.components = []),
   (k.componentFactory = {
     button: () => new s().create(),
     header: () => new i().create(),
     image: () => new n().create(),
-    video: () => new o(() => x.historyManager.captureState()).create(),
-    table: () => new u().create(2, 2, void 0, x.tableAttributeConfig),
+    video: () => new o(() => L.historyManager.captureState()).create(),
+    table: () => new u().create(2, 2, void 0, L.tableAttributeConfig),
     text: () => new t().create(),
-    container: () => new l().create(),
-    twoCol: () => new r().create(),
-    threeCol: () => new d().create(),
+    container: () => new a().create(),
+    twoCol: () => new d().create(),
+    threeCol: () => new c().create(),
     landingpage: () => new h().create(),
     link: () => new m().create(),
   });
-const S = document.getElementById('canvas'),
-  M = new (class {
+const k = document.getElementById('canvas'),
+  S = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -2429,12 +2477,12 @@ const S = document.getElementById('canvas'),
         this.selectedElement.classList.add('selected');
     }
   })();
-S &&
-  S.addEventListener('click', e => {
+k &&
+  k.addEventListener('click', e => {
     const t = e.target;
-    t !== S && M.selectElement(t);
+    t !== k && S.selectElement(t);
   });
-class H {
+class B {
   constructor(e) {
     this.canvas = e;
   }
@@ -2500,7 +2548,7 @@ class B {
         });
       o
         .querySelectorAll(
-          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input'
+          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input, .cell-controls,.add-row-button'
         )
         .forEach(e => e.remove()),
         o.children.length > 0 && this.cleanupElements(o);
@@ -2515,10 +2563,53 @@ class B {
       n = [],
       o = new Set();
     n.push(
-      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      min-height: 100vh;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n          .editable-component{\n          border:none !important;\n          box-shadow:none !important;\n          }\n\n      `
+      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      min-height: 100vh;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n         \n      `
     );
     const s = e.querySelectorAll('*'),
       i = [
+        'position',
+        'top',
+        'left',
+        'right',
+        'bottom',
+        'width',
+        'height',
+        'min-width',
+        'min-height',
+        'max-width',
+        'max-height',
+        'margin',
+        'padding',
+        'background-color',
+        'background-image',
+        'border',
+        'border-radius',
+        'transform',
+        'opacity',
+        'z-index',
+        'display',
+        'flex-direction',
+        'justify-content',
+        'align-items',
+        'flex-wrap',
+        'font-size',
+        'font-weight',
+        'color',
+        'text-align',
+        'line-height',
+        'font-family',
+        'box-shadow',
+        'overflow',
+        'fill',
+        'cursor',
+        'transition',
+        'border-bottom',
+        'border-top',
+        'border-left',
+        'border-right',
+        'box-sizing',
+      ],
+      l = [
         'component-controls',
         'delete-icon',
         'component-label',
@@ -2529,34 +2620,34 @@ class B {
         'edit-link',
       ];
     return (
-      s.forEach((e, t) => {
-        if (i.some(t => e.classList.contains(t))) return;
-        const s = window.getComputedStyle(e),
-          l = [];
-        if (
-          e instanceof SVGElement ||
-          (e.closest('svg') &&
-            ['path', 'circle', 'rect', 'polygon'].includes(
-              e.tagName.toLowerCase()
-            ))
-        )
-          return void this.handleSVGElement(e, l, s, t, n, o);
-        for (let e = 0; e < s.length; e++) {
-          const t = s[e],
-            n = s.getPropertyValue(t);
-          'resize' !== t &&
+      s.forEach(e => {
+        if (l.some(t => e.classList.contains(t))) return;
+        const t = window.getComputedStyle(e),
+          s = [],
+          a = e instanceof SVGElement || e.closest('svg');
+        i.forEach(e => {
+          const n = t.getPropertyValue(e);
+          if (
             n &&
-            'initial' !== n &&
-            'auto' !== n &&
             'none' !== n &&
             '' !== n &&
-            l.push(`${t}: ${n};`);
-        }
-        const a = this.generateUniqueSelector(e);
-        !o.has(a) &&
-          l.length > 0 &&
-          (o.add(a),
-          n.push(`\n        ${a} {\n          ${l.join('\n  ')}\n        }`));
+            'initial' !== n &&
+            'auto' !== n
+          ) {
+            if ('background-color' === e && 'rgba(0, 0, 0, 0)' === n) return;
+            if ('border-width' === e && '0px' === n) return;
+            if ('color' === e && 'rgb(0, 0, 0)' === n && !a) return;
+            if ('font-weight' === e && '400' === n) return;
+            s.push(`${e}: ${n};`);
+          }
+        });
+        const r = this.generateUniqueSelector(e);
+        !o.has(r) &&
+          s.length > 0 &&
+          (o.add(r),
+          n.push(
+            `\n          ${r} {\n            ${s.join('\n  ')}\n          }\n        `
+          ));
       }),
       n.join('\n')
     );
@@ -2639,39 +2730,39 @@ class B {
   }
   generateUniqueSelector(e) {
     if (e.id) return `#${e.id}`;
-    if (e instanceof SVGElement) {
-      const t = e.getAttribute('class');
-      if (t) return `.${t.toString().split(' ').join('.')}`;
-    }
-    if (e.className) return `.${e.className.toString().split(' ').join('.')}`;
     const t = [];
     let n = e;
-    for (; n && 'body' !== n.tagName.toLowerCase() && !n.id; ) {
-      const e = n.parentElement;
-      if (!e) break;
-      const o = Array.from(e.children).filter(e => e.tagName === n.tagName);
-      let s = n.tagName.toLowerCase();
-      if (o.length > 1) {
-        s += `:nth-of-type(${o.indexOf(n) + 1})`;
+    for (; n && 'body' !== n.tagName.toLowerCase(); ) {
+      let e = n.tagName.toLowerCase(),
+        o = n.parentElement;
+      if (n.id) {
+        t.unshift(`#${n.id}`);
+        break;
       }
-      const i = Array.from(n.classList).filter(
+      const s = Array.from(n.classList).filter(
         e =>
-          !e.includes('component-') &&
-          !e.includes('delete-') &&
-          !e.includes('resizer')
+          !(
+            e.includes('component-') ||
+            e.includes('delete-') ||
+            e.includes('resizer') ||
+            e.includes('selected')
+          )
       );
-      i.length > 0 && (s += `.${i.join('.')}`), t.unshift(s), (n = e);
+      if ((s.length > 0 && (e += `.${s.join('.')}`), o)) {
+        const t = Array.from(o.children).filter(e => e.tagName === n.tagName);
+        if (t.length > 1) {
+          e += `:nth-of-type(${t.indexOf(n) + 1})`;
+        }
+      }
+      t.unshift(e), (n = o);
     }
-    return (
-      n && (n.id ? t.unshift(`#${n.id}`) : t.unshift(n.tagName.toLowerCase())),
-      t.join(' > ')
-    );
+    return t.join(' > ');
   }
   applyCSS(e) {
     this.styleElement.textContent = e;
   }
 }
-function $(e) {
+function I(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let o = 0;
@@ -2787,7 +2878,7 @@ function $(e) {
   const a = new Uint8Array(n.reduce((e, t) => e.concat(Array.from(t)), []));
   return new Blob([a], { type: 'application/zip' });
 }
-class I {
+class H {
   static init() {
     document.addEventListener('keydown', this.handleKeydown);
   }
@@ -2795,14 +2886,14 @@ class I {
     if (e.ctrlKey || e.metaKey)
       switch (e.key.toLowerCase()) {
         case 'z':
-          e.preventDefault(), k.historyManager.undo();
+          e.preventDefault(), L.historyManager.undo();
           break;
         case 'y':
-          e.preventDefault(), k.historyManager.redo();
+          e.preventDefault(), L.historyManager.redo();
       }
   }
 }
-class z {
+class $ {
   setPreviewMode(e) {
     const t = document.getElementById('canvas');
     t.classList.forEach(e => {
@@ -2821,10 +2912,10 @@ class T {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
       (this.canvas = new k()),
-      (this.sidebar = new H(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.sidebar = new B(this.canvas)),
+      (this.htmlGenerator = new H(this.canvas)),
       (this.jsonStorage = new v()),
-      (this.previewPanel = new z()),
+      (this.previewPanel = new $()),
       (this.editable = n),
       (this.brandTitle = o),
       this.initializeEventListeners();
@@ -2834,10 +2925,10 @@ class T {
   }
   initializeEventListeners() {
     (this.canvas = new k()),
-      (this.sidebar = new H(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.sidebar = new B(this.canvas)),
+      (this.htmlGenerator = new H(this.canvas)),
       (this.jsonStorage = new v()),
-      (this.previewPanel = new z()),
+      (this.previewPanel = new $()),
       this.setupInitialComponents(),
       this.setupSaveButton(),
       this.setupResetButton(),
@@ -2877,17 +2968,17 @@ class T {
         return void console.error('Sidebar element not found');
       !1 === t && (n.style.display = 'none');
       const o = {
-          button: C.button,
-          header: C.header,
-          image: C.image,
-          video: C.video,
-          text: C.text,
-          container: C.container,
-          twoCol: C.twocol,
-          threeCol: C.threecol,
-          table: C.table,
-          landingpage: C.landing,
-          link: C.hyperlink,
+          button: w.button,
+          header: w.header,
+          image: w.image,
+          video: w.video,
+          text: w.text,
+          container: w.container,
+          twoCol: w.twocol,
+          threeCol: w.threecol,
+          table: w.table,
+          landingpage: w.landing,
+          link: w.hyperlink,
         },
         s = {
           button: 'Button',
@@ -2997,10 +3088,10 @@ class T {
         }),
         n.appendChild(i);
     })(this.dynamicComponents, this.editable),
-      k.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
+      L.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
       this.sidebar.init(),
       I.init(),
-      E.init(
+      x.init(
         this.dynamicComponents.Custom,
         this.editable,
         this.dynamicComponents.Basic
@@ -3020,17 +3111,17 @@ class T {
               const n = document.createElement('nav');
               n.id = 'preview-navbar';
               const o = {
-                  desktop: C.desktop,
-                  tablet: C.tablet,
-                  mobile: C.mobile,
-                  save: C.save,
-                  export: C.code,
-                  view: C.view,
-                  undo: C.undo,
-                  redo: C.redo,
-                  reset: C.reset,
-                  menu: C.customizationMenu,
-                  sidebarMenu: C.sidebarMenu,
+                  desktop: w.desktop,
+                  tablet: w.tablet,
+                  mobile: w.mobile,
+                  save: w.save,
+                  export: w.code,
+                  view: w.view,
+                  undo: w.undo,
+                  redo: w.redo,
+                  reset: w.reset,
+                  menu: w.customizationMenu,
+                  sidebarMenu: w.sidebarMenu,
                 },
                 s = e
                   ? [
@@ -3175,7 +3266,7 @@ class T {
     const e = document.getElementById('save-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = k.getState();
+        const e = L.getState();
         this.jsonStorage.save(e), b('Saving progress...');
       });
   }
@@ -3202,7 +3293,7 @@ class T {
           'Are you sure you want to reset the layout?',
           () => {
             this.jsonStorage.remove(),
-              k.clearCanvas(),
+              L.clearCanvas(),
               b('The saved layout has been successfully reset.');
           },
           () => {
@@ -3239,7 +3330,7 @@ class T {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new k()),
+        const e = new H(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = (function (e) {
@@ -3271,7 +3362,7 @@ class T {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new k()),
+        const e = new H(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = window.open('', '_blank');
@@ -3335,7 +3426,7 @@ class T {
       (n.textContent = 'Export to ZIP'),
       n.classList.add('export-btn'),
       n.addEventListener('click', () => {
-        const n = $([
+        const n = I([
             { name: 'index.html', content: e },
             { name: 'styles.css', content: t },
           ]),
@@ -3408,9 +3499,9 @@ class T {
       '\n      display: flex;\n      gap: 10px;\n      margin-bottom: 10px;\n    ';
     return (
       [
-        { icon: C.mobile, title: 'Desktop', width: '375px', height: '100%' },
-        { icon: C.tablet, title: 'Tablet', width: '768px', height: '100%' },
-        { icon: C.desktop, title: 'Mobile', width: '97%', height: '100%' },
+        { icon: w.mobile, title: 'Desktop', width: '375px', height: '100%' },
+        { icon: w.tablet, title: 'Tablet', width: '768px', height: '100%' },
+        { icon: w.desktop, title: 'Mobile', width: '97%', height: '100%' },
       ].forEach(n => {
         const o = document.createElement('button');
         (o.style.cssText =
@@ -3456,14 +3547,14 @@ class T {
       t = document.getElementById('redo-btn');
     e &&
       e.addEventListener('click', () => {
-        k.historyManager.undo();
+        L.historyManager.undo();
       }),
       t &&
         t.addEventListener('click', () => {
-          k.historyManager.redo();
+          L.historyManager.redo();
         });
   }
 }
 T.headerInitialized = !1;
-const V = new T();
-(exports.PageBuilder = T), (exports.PageBuilderCore = V);
+const z = new T();
+(exports.PageBuilder = T), (exports.PageBuilderCore = z);

@@ -16,7 +16,6 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   brandTitle,
 }) => {
   const builderRef = useRef<PageBuilderElement>(null);
-  const eventCountRef = useRef(0);
   const [processedConfig, setProcessedConfig] =
     useState<DynamicComponents>(config);
 
@@ -27,10 +26,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   }, []);
 
   useEffect(() => {
-    const modifiedConfig: DynamicComponents | any = JSON.parse(
-      JSON.stringify(config)
-    );
-
+    const modifiedConfig: DynamicComponents | any = config;
     if (customComponents) {
       modifiedConfig.Custom = modifiedConfig.Custom || {};
 
@@ -136,6 +132,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
           const configString = JSON.stringify(processedConfig);
           builderRef.current?.setAttribute('config-data', configString);
           if (builderRef.current) {
+            builderRef.current.configData = processedConfig;
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
@@ -146,17 +143,12 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
       }, 100);
     }
   }, [processedConfig, initialDesign]);
-
   useEffect(() => {
     const webComponent = builderRef.current;
 
     const handleDesignChange = (event: Event) => {
       const customEvent = event as CustomEvent<PageBuilderDesign>;
       if (onChange) {
-        eventCountRef.current += 1;
-        if (eventCountRef.current <= 2) {
-          return;
-        }
         onChange(customEvent.detail);
       }
     };

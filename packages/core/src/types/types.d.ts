@@ -76,8 +76,11 @@ declare global {
   }
 
   export interface BasicComponent {
-    components: { name: string; attributes?: ComponentAttribute[] }[];
-    globalExecuteFunction?: Function;
+    components: {
+      name: string;
+      attributes?: ComponentAttribute[];
+      globalExecuteFunction?: Function;
+    }[];
   }
   // Define interface for Dynamic components
   interface DynamicComponents {

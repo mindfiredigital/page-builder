@@ -84,10 +84,20 @@ export class ModalComponent {
     attributes.forEach(attr => {
       const fieldContainer = document.createElement('div');
       fieldContainer.className = 'form-field';
+      fieldContainer.setAttribute('data-attr-key', attr.key);
       // Create expandable header
       const headerContainer = document.createElement('div');
       headerContainer.className = 'form-field-header';
       headerContainer.setAttribute('data-attr-id', attr.id);
+      // Add click event listener to the fieldContainer
+      fieldContainer.addEventListener('click', () => {
+        // Deselect all fields first
+        this.contentContainer.querySelectorAll('.form-field').forEach(field => {
+          field.classList.remove('selected');
+        });
+        // Select the clicked field
+        fieldContainer.classList.add('selected');
+      });
       // Expand/Collapse button
       const expandButton = document.createElement('button');
       expandButton.className = 'expand-button';
@@ -169,8 +179,6 @@ export class ModalComponent {
    * Shows the modal and populates it with the given configuration.
    * Returns a Promise that resolves with the new values when the form is saved,
    * or null if the modal is closed.
-   * @param attributes An array of ComponentAttribute to define the form.
-   * @returns A Promise resolving to the new form values or null.
    */
   show(attributes) {
     this.renderForm(attributes);
@@ -190,24 +198,22 @@ export class ModalComponent {
    */
   onSave() {
     var _a;
+    const selectedField = this.contentContainer.querySelector(
+      '.form-field.selected'
+    );
     const newValues = {};
-    this.attributes.forEach(attr => {
-      if (attr.type === 'Input') {
-        const input = this.modalElement.querySelector(`#${attr.id}`);
-        if (input) {
-          newValues[attr.key] = input.value;
-        }
-      } else if (attr.type === 'Image') {
-        const input = this.modalElement.querySelector(`#${attr.id}`);
-        if (input) {
-          newValues[attr.key] = input.value;
-        }
-      } else {
-        // For Constant and Formula types, the value is not editable
-        // so we simply pass the original value from the attribute.
-        newValues[attr.key] = attr.value;
+    if (selectedField) {
+      // Get the attribute key from the data attribute
+      const selectedKey = selectedField.getAttribute('data-attr-key');
+      // Find the full attribute object from the stored array
+      const selectedAttribute = this.attributes.find(
+        attr => attr.key === selectedKey
+      );
+      if (selectedAttribute) {
+        // Return only the value of the selected attribute
+        newValues[selectedAttribute.key] = selectedAttribute.value;
       }
-    });
+    }
     this.hide();
     (_a = this.resolvePromise) === null || _a === void 0
       ? void 0

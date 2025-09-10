@@ -33,6 +33,8 @@ export class Canvas {
   public static jsonStorage: JSONStorage;
   public static lastCanvasWidth: number | null;
   private static tableAttributeConfig: ComponentAttribute[] | undefined;
+  private static ImageAttributeConfig: Function | undefined;
+
   public static getComponents(): HTMLElement[] {
     return Canvas.components;
   }
@@ -45,7 +47,8 @@ export class Canvas {
     {
       button: () => new ButtonComponent().create(),
       header: () => new HeaderComponent().create(),
-      image: () => new ImageComponent().create(),
+      image: () =>
+        new ImageComponent().create(undefined, this.ImageAttributeConfig),
       video: () =>
         new VideoComponent(() => Canvas.historyManager.captureState()).create(),
       table: () =>
@@ -68,9 +71,13 @@ export class Canvas {
       component => component.name === 'table'
     );
     const tableConfig = tableComponent?.attributes?.filter(
-      attribute => attribute.type == 'Formula'
+      attribute => attribute.type == 'Formula' || attribute.type === 'Constant'
     );
     this.tableAttributeConfig = tableConfig;
+    const ImageComponent = basicComponentsConfig.components.find(
+      component => component.name === 'image'
+    );
+    this.ImageAttributeConfig = ImageComponent?.globalExecuteFunction;
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -131,7 +138,7 @@ export class Canvas {
         composed: true,
       });
       Canvas.canvasElement.dispatchEvent(event);
-      // console.log('Canvas: Dispatched design-change event');
+      Canvas.jsonStorage.save(currentDesign);
     }
   }
 
@@ -294,11 +301,15 @@ export class Canvas {
         }
 
         if (componentData.type === 'image') {
-          ImageComponent.restoreImageUpload(component, componentData.imageSrc);
+          ImageComponent.restoreImageUpload(
+            component,
+            componentData.imageSrc,
+            this.editable
+          );
         }
 
         if (componentData.type === 'table') {
-          TableComponent.restore(component);
+          TableComponent.restore(component, this.editable);
         }
 
         if (componentData.type === 'link') {
@@ -461,7 +472,6 @@ export class Canvas {
       label.className = 'component-label';
       label.textContent = uniqueClass;
       element.appendChild(label);
-
       Canvas.controlsManager.addControlButtons(element);
     }
 

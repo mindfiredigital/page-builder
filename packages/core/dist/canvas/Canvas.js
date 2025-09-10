@@ -39,8 +39,18 @@ export class Canvas {
           ? void 0
           : tableComponent.attributes) === null || _b === void 0
         ? void 0
-        : _b.filter(attribute => attribute.type == 'Formula');
+        : _b.filter(
+            attribute =>
+              attribute.type == 'Formula' || attribute.type === 'Constant'
+          );
     this.tableAttributeConfig = tableConfig;
+    const ImageComponent = basicComponentsConfig.components.find(
+      component => component.name === 'image'
+    );
+    this.ImageAttributeConfig =
+      ImageComponent === null || ImageComponent === void 0
+        ? void 0
+        : ImageComponent.globalExecuteFunction;
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -97,7 +107,7 @@ export class Canvas {
         composed: true,
       });
       _a.canvasElement.dispatchEvent(event);
-      // console.log('Canvas: Dispatched design-change event');
+      _a.jsonStorage.save(currentDesign);
     }
   }
   static clearCanvas() {
@@ -234,10 +244,14 @@ export class Canvas {
           MultiColumnContainer.restoreColumn(component);
         }
         if (componentData.type === 'image') {
-          ImageComponent.restoreImageUpload(component, componentData.imageSrc);
+          ImageComponent.restoreImageUpload(
+            component,
+            componentData.imageSrc,
+            this.editable
+          );
         }
         if (componentData.type === 'table') {
-          TableComponent.restore(component);
+          TableComponent.restore(component, this.editable);
         }
         if (componentData.type === 'link') {
           LinkComponent.restore(component);
@@ -499,7 +513,7 @@ Canvas.components = [];
 Canvas.componentFactory = {
   button: () => new ButtonComponent().create(),
   header: () => new HeaderComponent().create(),
-  image: () => new ImageComponent().create(),
+  image: () => new ImageComponent().create(undefined, _a.ImageAttributeConfig),
   video: () =>
     new VideoComponent(() => _a.historyManager.captureState()).create(),
   table: () =>

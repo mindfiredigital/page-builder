@@ -30,8 +30,6 @@ export declare class ModalComponent {
    * Shows the modal and populates it with the given configuration.
    * Returns a Promise that resolves with the new values when the form is saved,
    * or null if the modal is closed.
-   * @param attributes An array of ComponentAttribute to define the form.
-   * @returns A Promise resolving to the new form values or null.
    */
   show(attributes: ComponentAttribute[]): Promise<Record<string, any> | null>;
   /**

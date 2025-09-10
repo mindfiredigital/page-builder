@@ -1,3 +1,36 @@
+var __awaiter =
+  (this && this.__awaiter) ||
+  function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P
+        ? value
+        : new P(function (resolve) {
+            resolve(value);
+          });
+    }
+    return new (P || (P = Promise))(function (resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator['throw'](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done
+          ? resolve(result.value)
+          : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  };
 import { Canvas } from '../canvas/Canvas.js';
 import { debounce } from '../utils/utilityFunctions.js';
 import LayersViewController from './LayerViewController.js';
@@ -56,7 +89,6 @@ export class CustomizationSidebar {
     const layersTab = document.getElementById('layers-tab');
     const layersView = document.getElementById('layers-view');
     const componentName = document.getElementById('component-name');
-    // const expandConfig = document.getElementById('expand-config')!;
     customizeTab.classList.add('active');
     attributeTab.classList.remove('active');
     layersTab.classList.remove('active');
@@ -92,11 +124,9 @@ export class CustomizationSidebar {
     const layersTab = document.getElementById('layers-tab');
     const layersView = document.getElementById('layers-view');
     const componentName = document.getElementById('component-name');
-    // const expandConfig = document.getElementById('expand-config')!;
     layersTab.classList.add('active');
     attributeTab.classList.remove('active');
     customizeTab.classList.remove('active');
-    // expandConfig.style.display = 'none'; // Hide expand-config in layers mode
     // Hide both dropdown panels
     this.controlsContainer.style.display = 'none';
     this.functionsPanel.style.display = 'none';
@@ -139,6 +169,33 @@ export class CustomizationSidebar {
       'grid',
       'none',
     ]);
+    if (styles.display === 'flex' || component.style.display === 'flex') {
+      this.createSelectControl(
+        'Flex Direction',
+        'flex-direction',
+        styles.flexDirection || 'row',
+        ['row', 'row-reverse', 'column', 'column-reverse']
+      );
+      this.createSelectControl(
+        'Align Items',
+        'align-items',
+        styles.alignItems || 'stretch',
+        ['stretch', 'flex-start', 'flex-end', 'center', 'baseline']
+      );
+      this.createSelectControl(
+        'Justify Content',
+        'justify-content',
+        styles.justifyContent || 'flex-start',
+        [
+          'flex-start',
+          'flex-end',
+          'center',
+          'space-between',
+          'space-around',
+          'space-evenly',
+        ]
+      );
+    }
     if (!isCanvas) {
       this.createControl('Width', 'width', 'number', component.offsetWidth, {
         min: 0,
@@ -205,6 +262,21 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
+    this.createSelectControl('Font Weight', 'font-weight', styles.fontWeight, [
+      'normal',
+      'bold',
+      'bolder',
+      'lighter',
+      '100',
+      '200',
+      '300',
+      '400',
+      '500',
+      '600',
+      '700',
+      '800',
+      '900',
+    ]);
     this.createControl(
       'Text Color',
       'text-color',
@@ -266,10 +338,10 @@ export class CustomizationSidebar {
     this.addListeners(component);
   }
   static populateFunctionalityControls(component) {
-    var _a, _b;
+    var _a;
     this.functionsPanel.innerHTML = '';
     if (component.classList.contains('table-component')) {
-      const table = component.querySelector('table');
+      const table = document.getElementById(component.id);
       if (this.basicComponentsConfig) {
         const tableComponent = this.basicComponentsConfig.components.find(
           component => component.name === 'table'
@@ -283,114 +355,50 @@ export class CustomizationSidebar {
             const box = document.createElement('div');
             if (attribute.type === 'Input') {
               box.innerHTML = `
-            <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
+                <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
                 <div class="input-wrapper type-input-div">
                   <input type="text" class="type-input" id=${attribute.key}  ${!attribute.editable ? 'disabled' : ''}  value=${attribute.default_value ? attribute.default_value : ''} >
                 </div>
-            `;
+              `;
               this.functionsPanel.appendChild(box);
+              const inputElement = document.getElementById(attribute.key);
               if (attribute.trigger) {
-                const trigger_element = document.getElementById(attribute.key);
-                trigger_element === null || trigger_element === void 0
+                inputElement === null || inputElement === void 0
                   ? void 0
-                  : trigger_element.addEventListener(attribute.trigger, () => {
-                      var _a, _b;
-                      if (
-                        (_a = this.basicComponentsConfig) === null ||
-                        _a === void 0
-                          ? void 0
-                          : _a.globalExecuteFunction
-                      ) {
-                        (_b = this.basicComponentsConfig) === null ||
-                        _b === void 0
-                          ? void 0
-                          : _b.globalExecuteFunction();
-                      }
-                    });
+                  : inputElement.addEventListener(attribute.trigger, () =>
+                      __awaiter(this, void 0, void 0, function* () {
+                        if (tableComponent.globalExecuteFunction) {
+                          const inputValues = {};
+                          const allInputs =
+                            this.functionsPanel.querySelectorAll('.type-input');
+                          allInputs.forEach(input => {
+                            const inputEl = input;
+                            inputValues[inputEl.id] = inputEl.value;
+                          });
+                          const result =
+                            yield tableComponent.globalExecuteFunction(
+                              inputValues
+                            );
+                          if (result && typeof result === 'object') {
+                            const tableInstance = new TableComponent();
+                            tableInstance.seedFormulaValues(table, result);
+                            Canvas.historyManager.captureState();
+                          }
+                        }
+                      })
+                    );
               }
             }
           });
         }
-      } else {
-        if (table) {
-          const currentRows = table.rows.length;
-          const currentCols =
-            ((_a = table.rows[0]) === null || _a === void 0
-              ? void 0
-              : _a.cells.length) || 0;
-          const rowsWrapper = document.createElement('div');
-          rowsWrapper.classList.add('control-wrapper');
-          rowsWrapper.innerHTML = `
-                  <label for="table-rows">Number of Rows:</label>
-                  <div class="input-wrapper">
-                    <input type="number" id="table-rows" value="${currentRows}" min="0">
-                  </div>
-              `;
-          this.functionsPanel.appendChild(rowsWrapper);
-          const rowsInput = rowsWrapper.querySelector('#table-rows');
-          rowsInput.addEventListener(
-            'input',
-            debounce(() => {
-              const newRowCount = parseInt(rowsInput.value);
-              if (!isNaN(newRowCount)) {
-                const tableInstance = new TableComponent();
-                tableInstance.setRowCount(table, newRowCount);
-                Canvas.historyManager.captureState();
-              }
-            }, 300)
-          );
-          const colsWrapper = document.createElement('div');
-          colsWrapper.classList.add('control-wrapper');
-          colsWrapper.innerHTML = `
-                  <label for="table-cols">Number of Columns:</label>
-                  <div class="input-wrapper">
-                    <input type="number" id="table-cols" value="${currentCols}" min="0">
-                  </div>
-              `;
-          this.functionsPanel.appendChild(colsWrapper);
-          const colsInput = colsWrapper.querySelector('#table-cols');
-          colsInput.addEventListener(
-            'input',
-            debounce(() => {
-              const newColCount = parseInt(colsInput.value);
-              if (!isNaN(newColCount)) {
-                const tableInstance = new TableComponent();
-                tableInstance.setColumnCount(table, newColCount);
-                Canvas.historyManager.captureState();
-              }
-            }, 300)
-          );
-          //header row
-          const headerWrapper = document.createElement('div');
-          headerWrapper.classList.add('control-wrapper');
-          headerWrapper.innerHTML = `
-          <label for="table-header">Create Header:</label>
-          <div class="input-wrapper">
-            <input type="checkbox" id="table-header"  min="0">
-          </div
-        `;
-          this.functionsPanel.appendChild(headerWrapper);
-          const headerInput = headerWrapper.querySelector('#table-header');
-          headerInput.addEventListener(
-            'input',
-            debounce(() => {
-              const isHeader = headerInput.checked;
-              if (isHeader) {
-                const tableInstance = new TableComponent();
-                tableInstance.createHeder(table);
-                Canvas.historyManager.captureState();
-              }
-            }, 300)
-          );
-        }
       }
     } else if (component.classList.contains('custom-component')) {
       const componentType =
-        (_b = Array.from(component.classList).find(cls =>
+        (_a = Array.from(component.classList).find(cls =>
           cls.endsWith('-component')
-        )) === null || _b === void 0
+        )) === null || _a === void 0
           ? void 0
-          : _b.replace('-component', '');
+          : _a.replace('-component', '');
       const customComponentsConfig =
         CustomizationSidebar.customComponentsConfig;
       if (
@@ -418,6 +426,15 @@ export class CustomizationSidebar {
           JSON.stringify({ targetComponentId: component.id })
         );
       }
+    } else if (component.classList.contains('table-cell')) {
+      const modalButton = document.createElement('button');
+      modalButton.textContent = 'Set Cell Attribute';
+      modalButton.className = 'set-cell-attribute-button';
+      this.functionsPanel.appendChild(modalButton);
+      modalButton.addEventListener('click', () => {
+        const tableComponent = new TableComponent();
+        tableComponent.handleCellClick(component);
+      });
     } else {
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
@@ -510,7 +527,26 @@ export class CustomizationSidebar {
     this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+    var _a,
+      _b,
+      _c,
+      _d,
+      _e,
+      _f,
+      _g,
+      _h,
+      _j,
+      _k,
+      _l,
+      _m,
+      _o,
+      _p,
+      _q,
+      _r,
+      _s,
+      _t,
+      _u,
+      _v;
     const controls = {
       width: document.getElementById('width'),
       height: document.getElementById('height'),
@@ -519,12 +555,16 @@ export class CustomizationSidebar {
       padding: document.getElementById('padding'),
       alignment: document.getElementById('alignment'),
       fontSize: document.getElementById('font-size'),
+      fontWeight: document.getElementById('font-weight'),
       textColor: document.getElementById('text-color'),
       borderWidth: document.getElementById('border-width'),
       borderStyle: document.getElementById('border-style'),
       borderColor: document.getElementById('border-color'),
       display: document.getElementById('display'),
       fontFamily: document.getElementById('font-family'),
+      flexDirection: document.getElementById('flex-direction'),
+      alignItems: document.getElementById('align-items'),
+      justifyContent: document.getElementById('justify-content'),
     };
     const captureStateDebounced = debounce(() => {
       Canvas.dispatchDesignChange();
@@ -589,62 +629,87 @@ export class CustomizationSidebar {
           component.style.fontSize = `${controls.fontSize.value}${unit}`;
           captureStateDebounced();
         });
-    (_j = controls.textColor) === null || _j === void 0
+    (_j = controls.fontWeight) === null || _j === void 0
       ? void 0
-      : _j.addEventListener('input', () => {
+      : _j.addEventListener('change', () => {
+          component.style.fontWeight = controls.fontWeight.value;
+          captureStateDebounced();
+        });
+    (_k = controls.textColor) === null || _k === void 0
+      ? void 0
+      : _k.addEventListener('input', () => {
           component.style.color = controls.textColor.value;
           document.getElementById('text-color-value').value =
             controls.textColor.value;
           captureStateDebounced();
         });
-    (_k = document.getElementById('text-color-value')) === null || _k === void 0
+    (_l = document.getElementById('text-color-value')) === null || _l === void 0
       ? void 0
-      : _k.addEventListener('input', e => {
+      : _l.addEventListener('input', e => {
           const target = e.target;
           component.style.color = target.value;
           document.getElementById('text-color').value = target.value;
           captureStateDebounced();
         });
-    (_l = controls.borderWidth) === null || _l === void 0
+    (_m = controls.borderWidth) === null || _m === void 0
       ? void 0
-      : _l.addEventListener('input', () => {
+      : _m.addEventListener('input', () => {
           const unit = document.getElementById('border-width-unit').value;
           component.style.borderWidth = `${controls.borderWidth.value}${unit}`;
           captureStateDebounced();
         });
-    (_m = controls.borderStyle) === null || _m === void 0
+    (_o = controls.borderStyle) === null || _o === void 0
       ? void 0
-      : _m.addEventListener('change', () => {
+      : _o.addEventListener('change', () => {
           component.style.borderStyle = controls.borderStyle.value;
           captureStateDebounced();
         });
-    (_o = controls.borderColor) === null || _o === void 0
+    (_p = controls.borderColor) === null || _p === void 0
       ? void 0
-      : _o.addEventListener('input', () => {
+      : _p.addEventListener('input', () => {
           component.style.borderColor = controls.borderColor.value;
           document.getElementById('border-color-value').value =
             controls.borderColor.value;
           captureStateDebounced();
         });
-    (_p = document.getElementById('border-color-value')) === null ||
-    _p === void 0
+    (_q = document.getElementById('border-color-value')) === null ||
+    _q === void 0
       ? void 0
-      : _p.addEventListener('input', e => {
+      : _q.addEventListener('input', e => {
           const target = e.target;
           component.style.borderColor = target.value;
           document.getElementById('border-color').value = target.value;
           captureStateDebounced();
         });
-    (_q = controls.display) === null || _q === void 0
-      ? void 0
-      : _q.addEventListener('change', () => {
-          component.style.display = controls.display.value;
-          captureStateDebounced();
-        });
-    (_r = controls.fontFamily) === null || _r === void 0
+    (_r = controls.display) === null || _r === void 0
       ? void 0
       : _r.addEventListener('change', () => {
+          component.style.display = controls.display.value;
+          captureStateDebounced();
+          this.populateCssControls(component);
+        });
+    (_s = controls.flexDirection) === null || _s === void 0
+      ? void 0
+      : _s.addEventListener('change', () => {
+          component.style.flexDirection = controls.flexDirection.value;
+          captureStateDebounced();
+        });
+    (_t = controls.alignItems) === null || _t === void 0
+      ? void 0
+      : _t.addEventListener('change', () => {
+          component.style.alignItems = controls.alignItems.value;
+          captureStateDebounced();
+        });
+    (_u = controls.fontFamily) === null || _u === void 0
+      ? void 0
+      : _u.addEventListener('change', () => {
           component.style.fontFamily = controls.fontFamily.value;
+          captureStateDebounced();
+        });
+    (_v = controls.justifyContent) === null || _v === void 0
+      ? void 0
+      : _v.addEventListener('change', () => {
+          component.style.justifyContent = controls.justifyContent.value;
           captureStateDebounced();
         });
   }

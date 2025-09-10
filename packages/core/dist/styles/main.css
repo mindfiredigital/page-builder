@@ -1009,40 +1009,9 @@ html {
   border-radius: 4px;
   overflow: auto;
 }
-table{
-  overflow: auto;
+.table-cell {
+box-sizing: border-box;
 }
-
-.table-component .button-container {
-  opacity: 0;
-  transition: all 0.2s ease;
-  pointer-events: none;
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.table-component:hover .button-container {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.table-component button {
-  padding: 6px 12px;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.table-component button:hover {
-  background-color: #2563eb;
-}
-
 /* Link component styling */
 .link-component {
   border: none;
@@ -1414,272 +1383,8 @@ table{
 }
 }
 
-
-#layers-view {
-  background-color: #ffffff;
-  color: #334155;
-  padding: 0; 
-  font-size: 13px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.layers-container {
-  padding: 8px 0;
-}
-
-.layer-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  list-style: none;
-  padding: 8px 12px;
-  margin: 0;
-  border: none;
-  border-bottom: 1px solid #f1f5f9;
-  transition: all 0.15s ease;
-  background-color: #ffffff;
-  font-size: 13px;
-  color: #374151;
-  min-height: 32px;
-  cursor: pointer;
-  position: relative;
-}
-
-.layer-item:hover {
-  background-color: #f8fafc;
-  color: #1e293b;
-}
-
-.layer-item.selected {
-  background-color: #eff6ff;
-  color: #1d4ed8;
-  border-left: 3px solid #3b82f6;
-}
-
-.layer-content {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  gap: 8px;
-}
-.layer-expand-toggle {
-  cursor: pointer;
-  margin-right: 8px;
-  padding: 2px;
-  border-radius: 2px;
-  transition: all 0.15s ease;
-  color: #64748b;
-  font-size: 12px;
-  background-color: transparent;
-  border: none;
-  min-width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: monospace;
-}
-
-.layer-expand-toggle:hover {
-  background-color: #f1f5f9;
-  color: #374151;
-}
-
-.layer-expand-toggle.expanded {
-  transform: rotate(90deg);
-}
-
-.layer-icon {
-  width: 16px;
-  height: 16px;
-  opacity: 0.7;
-  flex-shrink: 0;
-}
-
-.layer-name {
-  font-size: 13px;
-  font-weight: 400;
-  color: inherit;
-  flex: 1;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.layer-children {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  transition: all 0.2s ease;
-  overflow: hidden;
-  background-color: #ffffff;
-}
-
-.layer-children.expanded {
-  max-height: none;
-  opacity: 1;
-}
-
-.layer-children.collapsed {
-  max-height: 0;
-  opacity: 0;
-}
-.layer-children .layer-item {
-  padding-left: 32px; 
-}
-
-.layer-children .layer-children .layer-item {
-  padding-left: 48px;
-}
-
-.layer-children .layer-children .layer-children .layer-item {
-  padding-left: 64px;
-}
-.layer-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.layer-item:hover .layer-actions {
-  opacity: 1;
-}
-
-.layer-action-btn {
-  width: 20px;
-  height: 20px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-  color: #64748b;
-}
-
-.layer-action-btn:hover {
-  background-color: #f1f5f9;
-  color: #374151;
-}
-
-/* Visibility toggle */
-.layer-visibility-btn.hidden {
-  opacity: 0.3;
-}
-
-/* Layer type indicators */
-.layer-item[data-type="container"] .layer-name::before {
-  content: "📦 ";
-  font-size: 12px;
-  margin-right: 4px;
-}
-
-.layer-item[data-type="text"] .layer-name::before {
-  content: "📝 ";
-  font-size: 12px;
-  margin-right: 4px;
-}
-
-.layer-item[data-type="image"] .layer-name::before {
-  content: "🖼️ ";
-  font-size: 12px;
-  margin-right: 4px;
-}
-
-.layer-item[data-type="button"] .layer-name::before {
-  content: "🔘 ";
-  font-size: 12px;
-  margin-right: 4px;
-}
-
-/* Empty state */
-.layers-empty {
-  padding: 24px 12px;
-  text-align: center;
-  color: #64748b;
-  font-size: 13px;
-}
-
-/* Drag and drop styling */
-.layer-item.drag-over {
-  background-color: #dbeafe;
-  border-left: 3px solid #3b82f6;
-}
-
-.layer-item.dragging {
-  opacity: 0.5;
-  transform: scale(0.98);
-}
-
-/* Search/filter input in layers */
-.layers-search {
-  padding: 8px 12px;
-  border-bottom: 1px solid #e2e8f0;
-  background-color: #ffffff;
-}
-
-.layers-search input {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: #ffffff;
-  color: #374151;
-}
-
-.layers-search input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-}
-
-/* Scrollbar for layers view */
-#layers-view::-webkit-scrollbar {
-  width: 4px;
-}
-
-#layers-view::-webkit-scrollbar-track {
-  background: #f8fafc;
-}
-
-#layers-view::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 2px;
-}
-
-#layers-view::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Responsive adjustments for layers */
-@media (max-width: 1200px) {
-  .layer-item {
-    padding: 6px 8px;
-    min-height: 28px;
-  }
-
-  .layer-name {
-    font-size: 12px;
-  }
-
-  .layer-children .layer-item {
-    padding-left: 24px;
-  }
-
-  .layer-children .layer-children .layer-item {
-    padding-left: 40px;
-  }
-}
-
-
-/*-------------------------------MODAL---------------------------------*/
-    .modal-overlay {
+/*-----------------------MODAL---------------------------*/
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -1857,11 +1562,11 @@ table{
   font-size: 13px;
   font-weight: 600;
   color: #374151;
-  margin-right: 6px;
   margin-bottom: 8px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  margin-right: 6px;
 }
 
 .form-input {
@@ -1889,9 +1594,12 @@ table{
 
 .form-display-value {
   color: #374151;
+  /* background-color: #f8fafc;
+  padding: 12px 14px; */
   border-radius: 8px;
   user-select: text;
   font-size: 14px;
+  /* border: 1px solid #e2e8f0; */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -1965,4 +1673,11 @@ table{
 /* Hide modal by default */
 .modal-hidden {
   display: none !important;
+}
+/* In your CSS file */
+.form-field.selected {
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px);
+  transition: all 0.2s ease-in-out;
 }

@@ -95,7 +95,6 @@ export class CustomizationSidebar {
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
     const componentName = document.getElementById('component-name')!;
-    // const expandConfig = document.getElementById('expand-config')!;
 
     customizeTab.classList.add('active');
     attributeTab.classList.remove('active');
@@ -139,13 +138,10 @@ export class CustomizationSidebar {
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
     const componentName = document.getElementById('component-name')!;
-    // const expandConfig = document.getElementById('expand-config')!;
 
     layersTab.classList.add('active');
     attributeTab.classList.remove('active');
     customizeTab.classList.remove('active');
-
-    // expandConfig.style.display = 'none'; // Hide expand-config in layers mode
 
     // Hide both dropdown panels
     this.controlsContainer.style.display = 'none';
@@ -196,6 +192,35 @@ export class CustomizationSidebar {
       'grid',
       'none',
     ]);
+    if (styles.display === 'flex' || component.style.display === 'flex') {
+      this.createSelectControl(
+        'Flex Direction',
+        'flex-direction',
+        styles.flexDirection || 'row',
+        ['row', 'row-reverse', 'column', 'column-reverse']
+      );
+
+      this.createSelectControl(
+        'Align Items',
+        'align-items',
+        styles.alignItems || 'stretch',
+        ['stretch', 'flex-start', 'flex-end', 'center', 'baseline']
+      );
+
+      this.createSelectControl(
+        'Justify Content',
+        'justify-content',
+        styles.justifyContent || 'flex-start',
+        [
+          'flex-start',
+          'flex-end',
+          'center',
+          'space-between',
+          'space-around',
+          'space-evenly',
+        ]
+      );
+    }
     if (!isCanvas) {
       this.createControl('Width', 'width', 'number', component.offsetWidth, {
         min: 0,
@@ -253,6 +278,7 @@ export class CustomizationSidebar {
       'sans-serif',
       'serif',
     ]);
+
     this.createControl(
       'Font Size',
       'font-size',
@@ -264,7 +290,21 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
-
+    this.createSelectControl('Font Weight', 'font-weight', styles.fontWeight, [
+      'normal',
+      'bold',
+      'bolder',
+      'lighter',
+      '100',
+      '200',
+      '300',
+      '400',
+      '500',
+      '600',
+      '700',
+      '800',
+      '900',
+    ]);
     this.createControl(
       'Text Color',
       'text-color',
@@ -339,7 +379,7 @@ export class CustomizationSidebar {
   private static populateFunctionalityControls(component: HTMLElement) {
     this.functionsPanel.innerHTML = '';
     if (component.classList.contains('table-component')) {
-      const table = component.querySelector('table');
+      const table = document.getElementById(component.id);
       if (this.basicComponentsConfig) {
         const tableComponent = this.basicComponentsConfig.components.find(
           component => component.name === 'table'
@@ -353,102 +393,43 @@ export class CustomizationSidebar {
             const box = document.createElement('div');
             if (attribute.type === 'Input') {
               box.innerHTML = `
-            <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
+                <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
                 <div class="input-wrapper type-input-div">
                   <input type="text" class="type-input" id=${attribute.key}  ${
                     !attribute.editable ? 'disabled' : ''
                   }  value=${attribute.default_value ? attribute.default_value : ''} >
                 </div>
-            `;
+              `;
+
               this.functionsPanel.appendChild(box);
+
+              const inputElement = document.getElementById(attribute.key);
+
               if (attribute.trigger) {
-                const trigger_element = document.getElementById(attribute.key);
-                trigger_element?.addEventListener(attribute.trigger, () => {
-                  if (this.basicComponentsConfig?.globalExecuteFunction) {
-                    this.basicComponentsConfig?.globalExecuteFunction();
+                inputElement?.addEventListener(attribute.trigger, async () => {
+                  if (tableComponent.globalExecuteFunction) {
+                    const inputValues: { [key: string]: string } = {};
+                    const allInputs =
+                      this.functionsPanel.querySelectorAll('.type-input');
+                    allInputs.forEach(input => {
+                      const inputEl = input as HTMLInputElement;
+                      inputValues[inputEl.id] = inputEl.value;
+                    });
+                    const result =
+                      await tableComponent.globalExecuteFunction(inputValues);
+                    if (result && typeof result === 'object') {
+                      const tableInstance = new TableComponent();
+                      tableInstance.seedFormulaValues(
+                        table as HTMLElement,
+                        result
+                      );
+                      Canvas.historyManager.captureState();
+                    }
                   }
                 });
               }
             }
           });
-        }
-      } else {
-        if (table) {
-          const currentRows = table.rows.length;
-          const currentCols = table.rows[0]?.cells.length || 0;
-          const rowsWrapper = document.createElement('div');
-          rowsWrapper.classList.add('control-wrapper');
-          rowsWrapper.innerHTML = `
-                  <label for="table-rows">Number of Rows:</label>
-                  <div class="input-wrapper">
-                    <input type="number" id="table-rows" value="${currentRows}" min="0">
-                  </div>
-              `;
-          this.functionsPanel.appendChild(rowsWrapper);
-
-          const rowsInput = rowsWrapper.querySelector(
-            '#table-rows'
-          ) as HTMLInputElement;
-          rowsInput.addEventListener(
-            'input',
-            debounce(() => {
-              const newRowCount = parseInt(rowsInput.value);
-              if (!isNaN(newRowCount)) {
-                const tableInstance = new TableComponent();
-                tableInstance.setRowCount(table, newRowCount);
-                Canvas.historyManager.captureState();
-              }
-            }, 300)
-          );
-          const colsWrapper = document.createElement('div');
-          colsWrapper.classList.add('control-wrapper');
-          colsWrapper.innerHTML = `
-                  <label for="table-cols">Number of Columns:</label>
-                  <div class="input-wrapper">
-                    <input type="number" id="table-cols" value="${currentCols}" min="0">
-                  </div>
-              `;
-          this.functionsPanel.appendChild(colsWrapper);
-
-          const colsInput = colsWrapper.querySelector(
-            '#table-cols'
-          ) as HTMLInputElement;
-          colsInput.addEventListener(
-            'input',
-            debounce(() => {
-              const newColCount = parseInt(colsInput.value);
-              if (!isNaN(newColCount)) {
-                const tableInstance = new TableComponent();
-                tableInstance.setColumnCount(table, newColCount);
-                Canvas.historyManager.captureState();
-              }
-            }, 300)
-          );
-
-          //header row
-          const headerWrapper = document.createElement('div');
-          headerWrapper.classList.add('control-wrapper');
-          headerWrapper.innerHTML = `
-          <label for="table-header">Create Header:</label>
-          <div class="input-wrapper">
-            <input type="checkbox" id="table-header"  min="0">
-          </div
-        `;
-          this.functionsPanel.appendChild(headerWrapper);
-          const headerInput = headerWrapper.querySelector(
-            '#table-header'
-          ) as HTMLInputElement;
-          headerInput.addEventListener(
-            'input',
-            debounce(() => {
-              const isHeader = headerInput.checked;
-              if (isHeader) {
-                const tableInstance = new TableComponent();
-                tableInstance.createHeder(table);
-                Canvas.historyManager.captureState();
-              }
-            }, 300)
-          );
         }
       }
     } else if (component.classList.contains('custom-component')) {
@@ -486,6 +467,16 @@ export class CustomizationSidebar {
           JSON.stringify({ targetComponentId: component.id })
         );
       }
+    } else if (component.classList.contains('table-cell')) {
+      const modalButton = document.createElement('button');
+      modalButton.textContent = 'Set Cell Attribute';
+      modalButton.className = 'set-cell-attribute-button';
+      this.functionsPanel.appendChild(modalButton);
+
+      modalButton.addEventListener('click', () => {
+        const tableComponent = new TableComponent();
+        tableComponent.handleCellClick(component);
+      });
     } else {
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
@@ -619,12 +610,20 @@ export class CustomizationSidebar {
       padding: document.getElementById('padding') as HTMLInputElement,
       alignment: document.getElementById('alignment') as HTMLSelectElement,
       fontSize: document.getElementById('font-size') as HTMLInputElement,
+      fontWeight: document.getElementById('font-weight') as HTMLSelectElement,
       textColor: document.getElementById('text-color') as HTMLInputElement,
       borderWidth: document.getElementById('border-width') as HTMLInputElement,
       borderStyle: document.getElementById('border-style') as HTMLSelectElement,
       borderColor: document.getElementById('border-color') as HTMLInputElement,
       display: document.getElementById('display') as HTMLSelectElement,
       fontFamily: document.getElementById('font-family') as HTMLSelectElement,
+      flexDirection: document.getElementById(
+        'flex-direction'
+      ) as HTMLSelectElement,
+      alignItems: document.getElementById('align-items') as HTMLSelectElement,
+      justifyContent: document.getElementById(
+        'justify-content'
+      ) as HTMLSelectElement,
     };
 
     const captureStateDebounced = debounce(() => {
@@ -692,6 +691,11 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
+    controls.fontWeight?.addEventListener('change', () => {
+      component.style.fontWeight = controls.fontWeight.value;
+      captureStateDebounced();
+    });
+
     controls.textColor?.addEventListener('input', () => {
       component.style.color = controls.textColor.value;
       (document.getElementById('text-color-value') as HTMLInputElement).value =
@@ -741,10 +745,25 @@ export class CustomizationSidebar {
     controls.display?.addEventListener('change', () => {
       component.style.display = controls.display.value;
       captureStateDebounced();
+      this.populateCssControls(component);
+    });
+    controls.flexDirection?.addEventListener('change', () => {
+      component.style.flexDirection = controls.flexDirection.value;
+      captureStateDebounced();
+    });
+
+    controls.alignItems?.addEventListener('change', () => {
+      component.style.alignItems = controls.alignItems.value;
+      captureStateDebounced();
     });
 
     controls.fontFamily?.addEventListener('change', () => {
       component.style.fontFamily = controls.fontFamily.value;
+      captureStateDebounced();
+    });
+
+    controls.justifyContent?.addEventListener('change', () => {
+      component.style.justifyContent = controls.justifyContent.value;
       captureStateDebounced();
     });
   }

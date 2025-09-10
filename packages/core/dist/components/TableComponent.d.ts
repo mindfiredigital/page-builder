@@ -9,33 +9,16 @@ export declare class TableComponent {
     isPreview: boolean | undefined,
     tableAttributeConfig: ComponentAttribute[] | undefined | [] | null
   ): HTMLElement;
-  /**
-   * Handles cell click events to open the modal with table configuration
-   * @param cell The clicked table cell element
-   */
-  private handleCellClick;
-  /**
-   * Finds the selected attribute based on modal result
-   * @param result The result from the modal
-   * @returns The selected ComponentAttribute or null
-   */
+  private createTableRow;
+  private createTableCell;
+  private addCellToRow;
+  private deleteCell;
+  private styleButton;
+  handleCellClick(cell: HTMLElement): Promise<void>;
   private findSelectedAttribute;
-  /**
-   * Updates the cell content based on the selected attribute
-   * @param cell The table cell to update
-   * @param attribute The selected attribute
-   * @param result The modal result
-   */
+  seedFormulaValues(table: HTMLElement, values: Record<string, any>): void;
   private updateCellContent;
-  /**
-   * Sets the modal component for this table instance
-   * @param modalComponent The modal component instance
-   */
   setModalComponent(modalComponent: ModalComponent): void;
-  addRow(table: HTMLTableElement): void;
-  addColumn(table: HTMLTableElement): void;
-  setRowCount(table: HTMLTableElement, targetRowCount: number): void;
-  setColumnCount(table: HTMLTableElement, targetColumnCount: number): void;
-  createHeder(table: HTMLTableElement): void;
-  static restore(container: HTMLElement): void;
+  addRow(tableWrapper: HTMLElement, tableId: string): void;
+  static restore(container: HTMLElement, editable: boolean | null): void;
 }
