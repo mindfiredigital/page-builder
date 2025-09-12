@@ -2,7 +2,7 @@ import { Canvas } from '../canvas/Canvas';
 import { ModalComponent } from './ModalManager';
 
 export class TableComponent {
-  private static tableAttributeConfig: ComponentAttribute[];
+  static tableAttributeConfig: ComponentAttribute[];
   private modalComponent: ModalComponent | null = null;
 
   constructor() {
@@ -22,7 +22,7 @@ export class TableComponent {
     const tableId = Canvas.generateUniqueClass('table');
     container.id = tableId;
     container.style.minWidth = '250px';
-    container.style.border = '1px solid #d1d5db';
+    container.style.border = '1px solid #2F3132';
     container.style.borderRadius = '8px';
 
     container.style.display = 'flex';
@@ -61,6 +61,90 @@ export class TableComponent {
     return container;
   }
 
+  evaluateRowVisibility(inputValues: Record<string, any>, table?: HTMLElement) {
+    let allRows;
+    if (table) {
+      allRows = table.querySelectorAll('.table-row');
+    } else {
+      allRows = document.querySelectorAll('.table-row');
+    }
+
+    allRows.forEach(row => {
+      const rulesAttribute = row.getAttribute('data-visibility-rules');
+
+      if (!rulesAttribute) {
+        (row as HTMLElement).style.display = 'grid';
+        return;
+      }
+
+      try {
+        const rules = JSON.parse(rulesAttribute);
+
+        if (rules.length === 0) {
+          (row as HTMLElement).style.display = 'grid';
+          return;
+        }
+
+        let isVisible = true;
+        rules.forEach((rule: any) => {
+          const inputValue = inputValues[rule.inputKey];
+          const isConditionMet = this.evaluateRule(
+            inputValue,
+            rule.operator,
+            rule.value
+          );
+
+          if (isConditionMet) {
+            if (rule.action === 'hide') {
+              isVisible = false;
+            } else if (rule.action === 'show') {
+              isVisible = true;
+            }
+          }
+        });
+
+        if (isVisible) {
+          (row as HTMLElement).style.display = 'grid';
+        } else {
+          (row as HTMLElement).style.display = 'none';
+        }
+      } catch (e) {
+        console.error('Failed to parse or evaluate visibility rules:', e);
+      }
+    });
+  }
+
+  private evaluateRule(
+    inputValue: string,
+    operator: string,
+    ruleValue: string
+  ): boolean | string {
+    const numInputValue = parseFloat(inputValue);
+    const numRuleValue = parseFloat(ruleValue);
+    switch (operator) {
+      case 'equals':
+        return inputValue === ruleValue;
+      case 'not_equals':
+        return inputValue !== ruleValue;
+      case 'greater_than':
+        return (
+          !isNaN(numInputValue) &&
+          !isNaN(numRuleValue) &&
+          numInputValue > numRuleValue
+        );
+      case 'less_than':
+        return (
+          !isNaN(numInputValue) &&
+          !isNaN(numRuleValue) &&
+          numInputValue < numRuleValue
+        );
+      case 'contains':
+        return inputValue && ruleValue && inputValue.includes(ruleValue);
+      default:
+        return false;
+    }
+  }
+
   private createTableRow(
     rowIndex: number,
     cellCount: number,
@@ -70,12 +154,13 @@ export class TableComponent {
     rowDiv.style.display = 'grid';
     rowDiv.style.gridTemplateColumns = `repeat(${cellCount}, 1fr)`;
     rowDiv.className = 'table-row';
-
+    rowDiv.id = `table-row-T-${tableId}-R${rowIndex}`;
+    rowDiv.style.position = 'relative';
+    rowDiv.style.cursor = 'pointer';
     for (let j = 0; j < cellCount; j++) {
       const cell = this.createTableCell(rowIndex, j, tableId);
       rowDiv.appendChild(cell);
     }
-
     return rowDiv;
   }
 
@@ -89,7 +174,7 @@ export class TableComponent {
 
     cell.id = `table-cell-T-${tableId}-R${rowIndex}-C${cellIndex}`;
     cell.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
-    cell.style.border = '1px solid #d1d5db';
+    cell.style.border = '1px solid #2F3132';
     cell.style.padding = '8px 12px';
     cell.style.minHeight = '45px';
     cell.style.position = 'relative';
@@ -97,7 +182,7 @@ export class TableComponent {
     cell.style.transition = 'background-color 0.2s ease';
     cell.style.display = 'flex';
     cell.style.alignItems = 'center';
-    cell.style.justifyContent = 'center';
+    cell.style.justifyContent = 'flex-start';
 
     // Create control buttons container
     const controlsContainer = document.createElement('div');
@@ -232,70 +317,51 @@ export class TableComponent {
     });
   }
 
-  async handleCellClick(cell: HTMLElement): Promise<void> {
-    if (
-      !this.modalComponent ||
-      !TableComponent.tableAttributeConfig ||
-      TableComponent.tableAttributeConfig.length === 0
-    ) {
-      console.warn('Modal component or table attribute config not available');
-      return;
-    }
+  seedFormulaValues(values: Record<string, any>) {
+    const allTables = document.querySelectorAll('.table-component');
 
-    try {
-      const result = await this.modalComponent.show(
-        TableComponent.tableAttributeConfig
-      );
+    allTables.forEach(table => {
+      const cells = table.querySelectorAll('div[data-attribute-key]');
 
-      if (result) {
-        const selectedAttribute = this.findSelectedAttribute(result);
+      cells.forEach(cell => {
+        const controlsElement = cell.querySelector('.cell-controls');
+        const key = cell.getAttribute('data-attribute-key');
 
-        if (selectedAttribute) {
-          this.updateCellContent(cell, selectedAttribute);
+        if (key && values.hasOwnProperty(key)) {
+          cell.textContent = values[key];
+          (cell as HTMLElement).style.color = '#000000';
         }
-      }
-    } catch (error) {
-      console.error('Error handling cell click:', error);
-    }
-  }
 
-  private findSelectedAttribute(
-    result: Record<string, any>
-  ): ComponentAttribute | null {
-    for (const attr of TableComponent.tableAttributeConfig) {
-      if (
-        result.hasOwnProperty(attr.key) &&
-        result[attr.key] !== undefined &&
-        result[attr.key] !== ''
-      ) {
-        return attr;
-      }
-    }
-    return null;
-  }
-
-  seedFormulaValues(table: HTMLElement, values: Record<string, any>) {
-    const cells = table.querySelectorAll('div[data-attribute-key]');
-    cells.forEach(cell => {
-      const controlsElement = cell.querySelector('.cell-controls');
-      const key = cell.getAttribute('data-attribute-key');
-      if (key && values.hasOwnProperty(key)) {
-        cell.textContent = values[key];
-        (cell as HTMLElement).style.color = '#000000';
-      }
-      if (controlsElement) {
-        cell.appendChild(controlsElement);
-      }
+        if (controlsElement) {
+          cell.appendChild(controlsElement);
+        }
+      });
     });
+
     Canvas.dispatchDesignChange();
   }
 
-  private updateCellContent(
-    cell: HTMLElement,
-    attribute: ComponentAttribute
-  ): void {
-    cell.setAttribute('data-attribute-key', attribute.key);
+  updateInputValues(values: Record<string, any>) {
+    const allTables = document.querySelectorAll('.table-component');
 
+    allTables.forEach(table => {
+      const cells = table.querySelectorAll('div[data-attribute-key]');
+
+      cells.forEach(cell => {
+        const key = cell.getAttribute('data-attribute-key');
+        const type = cell.getAttribute('data-attribute-type');
+        if (key && values.hasOwnProperty(key) && type === 'Input') {
+          cell.textContent = values[key];
+        }
+      });
+    });
+
+    Canvas.dispatchDesignChange();
+  }
+
+  updateCellContent(cell: HTMLElement, attribute: ComponentAttribute): void {
+    cell.setAttribute('data-attribute-key', attribute.key);
+    cell.setAttribute('data-attribute-type', attribute.type);
     const controlsElement = cell.querySelector('.cell-controls');
     if (attribute.type === 'Formula') {
       cell.textContent = `${attribute.title}`;
@@ -321,6 +387,21 @@ export class TableComponent {
 
     const newRow = this.createTableRow(rowCount, 1, tableId);
     tableWrapper.appendChild(newRow);
+    Canvas.dispatchDesignChange();
+  }
+
+  private static getDefaultValuesOfInput(): Record<string, any> {
+    const defaults: Record<string, any> = {};
+    TableComponent.tableAttributeConfig.forEach(attr => {
+      if (
+        attr.type === 'Input' &&
+        attr.default_value !== undefined &&
+        attr.default_value !== null
+      ) {
+        defaults[attr.key] = attr.default_value;
+      }
+    });
+    return defaults;
   }
 
   static restore(container: HTMLElement, editable: boolean | null): void {
@@ -336,6 +417,36 @@ export class TableComponent {
     const cells = tableWrapper.querySelectorAll('.table-cell');
     cells.forEach(cell => {
       const cellElement = cell as HTMLElement;
+
+      const attributeKey = cellElement.getAttribute('data-attribute-key');
+      const attributeType = cellElement.getAttribute('data-attribute-type');
+
+      if (attributeKey) {
+        const attribute = TableComponent.tableAttributeConfig.find(
+          attr => attr.key === attributeKey
+        );
+        if (attribute) {
+          const controlsElement = cell.querySelector('.cell-controls');
+
+          if (
+            attribute.default_value &&
+            (attributeType === 'Formula' || attributeType === 'Input')
+          ) {
+            cellElement.textContent = `${attribute.default_value}`;
+            cellElement.style.fontSize = '14px';
+            cellElement.style.color = '#000000';
+          } else if (attributeType === 'Formula') {
+            // Restore the title and styling for formula cells
+            cellElement.textContent = `${attribute.title}`;
+            cellElement.style.fontSize = '10px';
+            cellElement.style.color = 'rgb(188 191 198)';
+            cellElement.style.fontWeight = '500';
+          }
+          if (controlsElement) {
+            cell.appendChild(controlsElement);
+          }
+        }
+      }
 
       const controls = cellElement.querySelector('.cell-controls');
       if (editable === false) {
@@ -365,10 +476,14 @@ export class TableComponent {
     const addRowButton = container.querySelector(
       '.add-row-button'
     ) as HTMLButtonElement;
-    if (addRowButton) {
+    if (addRowButton && editable !== false) {
       addRowButton.addEventListener('click', () => {
         instance.addRow(tableWrapper as HTMLElement, tableId!);
       });
+    } else if (editable === false) {
+      addRowButton.remove();
     }
+    const defaultValues = TableComponent.getDefaultValuesOfInput();
+    instance.evaluateRowVisibility(defaultValues, container);
   }
 }

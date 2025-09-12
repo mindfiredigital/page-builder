@@ -17,6 +17,7 @@ export class PageBuilderComponent extends HTMLElement {
   private _initialDesign: PageBuilderDesign | null = null;
   private _editable: boolean | null = null;
   private _brandTitle?: string;
+  private _showAttributeTab?: boolean;
   private config = { Basic: [], Extra: [], Custom: [] };
   private template = `<div id="app">
       <div id="sidebar"></div>
@@ -68,6 +69,20 @@ export class PageBuilderComponent extends HTMLElement {
 
   get brandTitle(): string | undefined {
     return this._brandTitle;
+  }
+
+  set showAttributeTab(value: boolean | undefined) {
+    if (this._showAttributeTab !== value) {
+      this._showAttributeTab = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+
+  get showAttributeTab(): boolean | undefined {
+    return this._showAttributeTab;
   }
 
   set initialDesign(value: PageBuilderDesign | null) {
@@ -142,7 +157,8 @@ export class PageBuilderComponent extends HTMLElement {
         this.config,
         this._initialDesign,
         this._editable,
-        this._brandTitle
+        this._brandTitle,
+        this.showAttributeTab
       );
 
       this.initialized = true;

@@ -7,14 +7,12 @@ export interface DynamicComponents {
 export interface ComponentAttribute {
   id: string;
   type: 'Constant' | 'Formula' | 'Input' | 'Image';
+  input_type: 'text' | 'number' | 'checkbox';
   title: string;
   value: string | number | boolean;
   key: string;
   execute_order: number;
-  execution_fun?: Function;
   editable?: boolean;
-  default_value?: string | boolean | null;
-  trigger?: 'blur' | 'input' | 'input' | 'click' | 'focus';
 }
 
 export interface BasicComponent {
@@ -43,6 +41,7 @@ export interface PageBuilderElement extends HTMLElement {
   initialDesign?: PageBuilderDesign | null;
   getDebugInfo?: any;
   brandTitle?: string;
+  showAttributeTab?: boolean;
 }
 export interface CustomComponentConfig {
   component: React.ComponentType<any> | string;
@@ -69,4 +68,5 @@ export interface PageBuilderReactProps {
   onChange?: (newDesign: PageBuilderDesign) => void;
   editable?: boolean;
   brandTitle?: string;
+  showAttributeTab?: boolean;
 }

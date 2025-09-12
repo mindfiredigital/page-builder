@@ -130,7 +130,7 @@ export class ModalComponent {
       let contentElement;
       const displayValue = document.createElement('span');
       displayValue.id = attr.id;
-      displayValue.textContent = attr.value.toString();
+      displayValue.textContent = attr.value ? attr.value.toString() : null;
       displayValue.className = 'form-display-value';
       contentElement = displayValue;
       valueContainer.appendChild(valueLabel);

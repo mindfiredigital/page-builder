@@ -10,7 +10,7 @@ export class DeleteElementHandler {
   private deleteSelectedElement(): void {
     if (this.selectedElement) {
       this.selectedElement.remove();
-      this.selectedElement = null; // Clear selection
+      this.selectedElement = null;
     }
   }
 

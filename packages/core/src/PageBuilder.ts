@@ -28,6 +28,7 @@ export class PageBuilder {
   private initialDesign: PageBuilderDesign | null;
   private editable: boolean | null;
   private brandTitle: string | undefined;
+  private showAttributeTab: boolean | undefined;
 
   constructor(
     dynamicComponents: DynamicComponents = {
@@ -37,7 +38,8 @@ export class PageBuilder {
     },
     initialDesign: PageBuilderDesign | null = null,
     editable: boolean | null = true,
-    brandTitle?: string
+    brandTitle?: string,
+    showAttributeTab?: boolean
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -48,6 +50,7 @@ export class PageBuilder {
     this.previewPanel = new PreviewPanel();
     this.editable = editable;
     this.brandTitle = brandTitle;
+    this.showAttributeTab = showAttributeTab;
     this.initializeEventListeners();
   }
 
@@ -90,7 +93,8 @@ export class PageBuilder {
     CustomizationSidebar.init(
       this.dynamicComponents.Custom,
       this.editable,
-      this.dynamicComponents.Basic
+      this.dynamicComponents.Basic,
+      this.showAttributeTab
     );
 
     // Create header logic - improved to handle re-initialization
@@ -106,7 +110,9 @@ export class PageBuilder {
       if (appElement && appElement.parentNode) {
         const header = document.createElement('header');
         header.id = 'page-builder-header';
-        header.appendChild(createNavbar(this.editable, this.brandTitle));
+        header.appendChild(
+          createNavbar(this.editable, this.brandTitle, this.showAttributeTab)
+        );
         appElement.parentNode.insertBefore(header, appElement);
         PageBuilder.headerInitialized = true;
       } else {
@@ -288,7 +294,7 @@ export class PageBuilder {
     modal.classList.add('modal');
 
     const modalContent = document.createElement('div');
-    modalContent.classList.add('modal-content');
+    modalContent.classList.add('export-modal-content');
 
     const closeButton = this.createCloseButton(modal);
     modalContent.appendChild(closeButton);

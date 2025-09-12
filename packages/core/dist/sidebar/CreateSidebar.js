@@ -74,6 +74,11 @@ export function createSidebar(dynamicComponents, editable) {
     const categoryHeading = document.createElement('h4');
     categoryHeading.classList.add('categoryHeading');
     categoryHeading.innerHTML = category;
+    if (Array.isArray(components)) {
+      if (components.length <= 0) {
+        return;
+      }
+    }
     categoryMenu.prepend(categoryHeading);
     // Handling standard dynamic components (Basic and Extra)
     if (Array.isArray(components)) {
