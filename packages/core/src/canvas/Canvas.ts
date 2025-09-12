@@ -1,6 +1,5 @@
 import { DragDropManager } from './DragDropManager';
 import { DeleteElementHandler } from './DeleteElement';
-// import { UserPortfolioTemplate } from './../templates/UserPortfolioTemplate';
 import { LandingPageTemplate } from './../templates/LandingPageTemplate';
 
 import {
@@ -28,12 +27,14 @@ export class Canvas {
   private static sidebarElement: HTMLElement;
   public static controlsManager: ComponentControlsManager;
   private static gridManager: GridManager;
-  // Initialize CustomizationSidebar
+  private static editable: boolean | null;
 
-  public static historyManager: HistoryManager; //accessible outside the Canvas class.
+  public static historyManager: HistoryManager;
   public static jsonStorage: JSONStorage;
+  public static lastCanvasWidth: number | null;
+  private static tableAttributeConfig: ComponentAttribute[] | undefined;
+  private static ImageAttributeConfig: Function | undefined;
 
-  // Add getters and setters for components to make it accessible outside the canvas class
   public static getComponents(): HTMLElement[] {
     return Canvas.components;
   }
@@ -46,43 +47,66 @@ export class Canvas {
     {
       button: () => new ButtonComponent().create(),
       header: () => new HeaderComponent().create(),
-      image: () => new ImageComponent().create(),
+      image: () =>
+        new ImageComponent().create(undefined, this.ImageAttributeConfig),
       video: () =>
         new VideoComponent(() => Canvas.historyManager.captureState()).create(),
-      table: () => new TableComponent().create(2, 2),
+      table: () =>
+        new TableComponent().create(2, 2, undefined, this.tableAttributeConfig),
       text: () => new TextComponent().create(),
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),
       threeCol: () => new ThreeColumnContainer().create(),
-      // portfolio: () => new UserPortfolioTemplate().create(),
       landingpage: () => new LandingPageTemplate().create(),
       link: () => new LinkComponent().create(),
     };
 
-  static init() {
+  static init(
+    initialData: PageBuilderDesign | null = null,
+    editable: boolean | null,
+    basicComponentsConfig: BasicComponent
+  ) {
+    this.editable = editable;
+    const tableComponent = basicComponentsConfig.components.find(
+      component => component.name === 'table'
+    );
+    const tableConfig = tableComponent?.attributes?.filter(
+      attribute => attribute.type == 'Formula' || attribute.type === 'Constant'
+    );
+    this.tableAttributeConfig = tableConfig;
+    const ImageComponent = basicComponentsConfig.components.find(
+      component => component.name === 'image'
+    );
+    this.ImageAttributeConfig = ImageComponent?.globalExecuteFunction;
+    if (
+      tableComponent &&
+      tableComponent.attributes &&
+      tableComponent.attributes.length > 0
+    ) {
+    }
     Canvas.canvasElement = document.getElementById('canvas')!;
     Canvas.sidebarElement = document.getElementById('sidebar')!;
+    window.addEventListener('table-design-change', () => {
+      Canvas.dispatchDesignChange();
+    });
+
     Canvas.canvasElement.addEventListener('drop', Canvas.onDrop.bind(Canvas));
     Canvas.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
+    Canvas.canvasElement.classList.add('preview-desktop');
     Canvas.canvasElement.addEventListener('click', (event: MouseEvent) => {
       const component = event.target as HTMLElement;
-      // console.log('this is my component,', component);
-      // console.log('this is component id ', component.id);
       if (component) {
         CustomizationSidebar.showSidebar(component.id);
       }
     });
-    // Set canvas to relative positioning
     Canvas.canvasElement.style.position = 'relative';
-
-    // Initialize the HistoryManager with this canvas, jsonStorage and ComponentControlsManager
-    Canvas.historyManager = new HistoryManager(Canvas.canvasElement); // Pass the canvas element here
+    this.lastCanvasWidth = Canvas.canvasElement.offsetWidth;
+    Canvas.historyManager = new HistoryManager(Canvas.canvasElement);
     Canvas.jsonStorage = new JSONStorage();
     Canvas.controlsManager = new ComponentControlsManager(Canvas);
 
-    //Initialize grid manager and initialize drop-view
     Canvas.gridManager = new GridManager();
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
 
@@ -91,89 +115,92 @@ export class Canvas {
       Canvas.sidebarElement
     );
     dragDropManager.enable();
-
-    // Load existing layout from local storage and render, if any
-    const savedState = Canvas.jsonStorage.load();
-    if (savedState) {
-      Canvas.restoreState(savedState);
+    if (initialData) {
+      Canvas.restoreState(initialData);
+    } else {
+      const savedState = Canvas.jsonStorage.load();
+      if (savedState) {
+        Canvas.restoreState(savedState);
+      }
     }
   }
 
-  // Method to clear the canvas and remove all components
+  /**
+   * Dispatches a custom event indicating that the canvas design has changed.
+   * The event detail contains the current design state.
+   */
+  static dispatchDesignChange() {
+    if (Canvas.canvasElement && this.editable) {
+      const currentDesign = Canvas.getState();
+      const event = new CustomEvent('design-change', {
+        detail: currentDesign,
+        bubbles: true,
+        composed: true,
+      });
+      Canvas.canvasElement.dispatchEvent(event);
+      Canvas.jsonStorage.save(currentDesign);
+    }
+  }
+
   static clearCanvas() {
     Canvas.canvasElement.innerHTML = '';
     Canvas.components = [];
-    Canvas.historyManager.captureState(); // Capture cleared state for undo functionality if needed
-
-    // Reinitialize the drop-preview after clearing the canvas
+    Canvas.historyManager.captureState();
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
-  }
+    Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
 
-  /**
-   * Generates the current state of the canvas for undo/redo purposes.
-   * Maps each component into a structured object containing:
-   * Type, content, position, dimensions, style, and classes.
-   * @returns The array of component objects.
-   */
-  static getState() {
-    return Canvas.components.map(component => {
+    Canvas.dispatchDesignChange();
+  }
+  static getState(): PageBuilderDesign {
+    return Canvas.components.map((component: HTMLElement) => {
       const baseType = component.classList[0]
         .split(/\d/)[0]
         .replace('-component', '');
 
-      // Capture the image src for image components
-      const imageSrc = component.querySelector('img')
-        ? (component.querySelector('img') as HTMLImageElement).src
-        : null;
-      // Capture all inline styles
-      // Enhanced style capturing
+      const imageElement = component.querySelector('img') as HTMLImageElement;
+      const imageSrc = imageElement ? imageElement.src : null;
+
+      const videoElement = component.querySelector('video') as HTMLVideoElement;
+      const videoSrc = videoElement ? videoElement.src : null;
+
       const computedStyles = window.getComputedStyle(component);
       const styles: { [key: string]: string } = {};
 
-      // Capture all potentially relevant CSS properties
-      const stylesToCapture = [
-        'position',
-        'top',
-        'left',
-        'right',
-        'bottom',
-        'width',
-        'height',
-        'min-width',
-        'min-height',
-        'max-width',
-        'max-height',
-        'margin',
-        'padding',
-        'background-color',
-        'background-image',
-        'border',
-        'border-radius',
-        'transform',
-        'opacity',
-        'z-index',
-        'display',
-        'flex-direction',
-        'justify-content',
-        'align-items',
-        'flex-wrap',
-        'font-size',
-        'font-weight',
-        'color',
-        'text-align',
-        'line-height',
-      ];
+      for (let i = 0; i < computedStyles.length; i++) {
+        const prop = computedStyles[i];
+        const value = computedStyles.getPropertyValue(prop);
 
-      stylesToCapture.forEach(prop => {
-        styles[prop] = computedStyles.getPropertyValue(prop);
-      });
-      // Capture data attributes
+        // Exclude values that are not useful for static HTML
+        if (
+          value &&
+          value !== 'initial' &&
+          value !== 'auto' &&
+          value !== 'none' &&
+          value !== ''
+        ) {
+          styles[prop] = value;
+        }
+      }
+
       const dataAttributes: { [key: string]: string } = {};
       Array.from(component.attributes)
         .filter(attr => attr.name.startsWith('data-'))
         .forEach(attr => {
           dataAttributes[attr.name] = attr.value;
         });
+
+      let componentProps: Record<string, any> = {};
+      if (component.classList.contains('custom-component')) {
+        const propsJson = component.getAttribute('data-component-props');
+        if (propsJson) {
+          try {
+            componentProps = JSON.parse(propsJson);
+          } catch (e) {
+            console.error('Error parsing data-component-props:', e);
+          }
+        }
+      }
+
       return {
         id: component.id,
         type: baseType,
@@ -186,12 +213,14 @@ export class Canvas {
           width: component.offsetWidth,
           height: component.offsetHeight,
         },
-        style: styles, // Store all styles dynamically
+        style: styles,
         inlineStyle: component.getAttribute('style') || '',
         classes: Array.from(component.classList),
         dataAttributes: dataAttributes,
-        imageSrc: imageSrc, // Store the image source if it's an image component
-      };
+        imageSrc: imageSrc,
+        videoSrc: videoSrc,
+        props: componentProps,
+      } as PageComponent;
     });
   }
 
@@ -200,16 +229,19 @@ export class Canvas {
     Canvas.components = [];
 
     state.forEach((componentData: any) => {
-      const component = Canvas.createComponent(componentData.type);
+      const customSettings =
+        componentData.dataAttributes['data-custom-settings'] || null;
+      const component = Canvas.createComponent(
+        componentData.type,
+        customSettings,
+        componentData.content
+      );
       if (component) {
-        // For custom components, only restore style and attributes, not innerHTML
-        // This prevents content duplication
         if (!componentData.classes.includes('custom-component')) {
           component.innerHTML = componentData.content;
         }
 
-        // Restore classes
-        component.className = ''; // Clear existing classes
+        component.className = '';
         componentData.classes.forEach((cls: string) => {
           component.classList.add(cls);
         });
@@ -269,23 +301,25 @@ export class Canvas {
         }
 
         if (componentData.type === 'image') {
-          ImageComponent.restoreImageUpload(component, componentData.imageSrc);
+          ImageComponent.restoreImageUpload(
+            component,
+            componentData.imageSrc,
+            this.editable
+          );
         }
 
         if (componentData.type === 'table') {
-          TableComponent.restore(component);
+          TableComponent.restore(component, this.editable);
         }
 
         if (componentData.type === 'link') {
           LinkComponent.restore(component);
         }
 
-        // Append to the canvas and add to the components array
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
       }
     });
-    // Reinitialize the drop-preview after restoring the state
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
   }
 
@@ -298,20 +332,39 @@ export class Canvas {
     }
 
     const componentType = event.dataTransfer?.getData('component-type');
-    // console.log(`Dropped component type: ${componentType}`);
+    let customSettings = event.dataTransfer?.getData('custom-settings');
 
     if (!componentType) {
       return;
     }
+
+    if (!customSettings || customSettings.trim() === '') {
+      const draggableElement = document.querySelector(
+        `[data-component="${componentType}"]`
+      );
+      if (draggableElement) {
+        if (
+          (window as any).customComponents &&
+          (window as any).customComponents[componentType]
+        ) {
+          const componentConfig = (window as any).customComponents[
+            componentType
+          ];
+          if (componentConfig.settings) {
+            customSettings = JSON.stringify(componentConfig.settings);
+          }
+        }
+      }
+    }
+
     const { gridX, gridY } = this.gridManager.mousePositionAtGridCorner(
       event,
       Canvas.canvasElement
     );
 
-    const component = Canvas.createComponent(componentType);
+    const component = Canvas.createComponent(componentType, customSettings);
 
     if (component) {
-      // Add unique class name
       const uniqueClass = Canvas.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
@@ -323,29 +376,23 @@ export class Canvas {
         componentType === 'twoCol' ||
         componentType === 'threeCol'
       ) {
-        // Specific logic for containers
         component.style.top = `${event.offsetY}px`;
       } else {
-        // Position the component at the snapped grid corner
         component.style.position = 'absolute';
         component.style.left = `${gridX}px`;
         component.style.top = `${gridY}px`;
       }
-      // // Create label for showing class name on hover
-      // const label = document.createElement('span');
-      // label.className = 'component-label';
-      // label.textContent = uniqueClass;
-      // component.appendChild(label);
 
       Canvas.components.push(component);
       Canvas.canvasElement.appendChild(component);
-      Canvas.addDraggableListeners(component); // Add drag functionality
-      CustomizationSidebar.updateLayersView();
-      //On adding new component to the canvas it captures the current state.
+      Canvas.addDraggableListeners(component);
       Canvas.historyManager.captureState();
     }
+
+    Canvas.dispatchDesignChange();
+    // Canvas.updateCanvasHeight();
   }
-  // Reorder components in the Canvas model (in the components array)
+
   public static reorderComponent(fromIndex: number, toIndex: number): void {
     if (
       fromIndex < 0 ||
@@ -368,54 +415,64 @@ export class Canvas {
       });
     }
     this.historyManager.captureState();
+    Canvas.dispatchDesignChange();
   }
 
-  static createComponent(type: string): HTMLElement | null {
+  static createComponent(
+    type: string,
+    customSettings: string | null = null,
+    props?: string
+  ): HTMLElement | null {
     let element: HTMLElement | null = null;
-    // First try to create using component factory
+
     const componentFactoryFunction = Canvas.componentFactory[type];
     if (componentFactoryFunction) {
       element = componentFactoryFunction();
-    }
-    // If not in factory, check if it's a custom component with a tag name
-    else {
+    } else {
       const tagNameElement = document.querySelector(
         `[data-component='${type}']`
       );
+
       const tagName = tagNameElement?.getAttribute('data-tag-name');
+
       if (tagName) {
         element = document.createElement(tagName);
-        //Adding these classnames, since these will have prime role in history management.
+
         element.classList.add(`${type}-component`, 'custom-component');
+        element.classList.add(`${type}-component`, 'custom-component');
+
+        element.setAttribute('data-component-type', type);
       } else {
-        console.warn(`Unknown component type: ${type}`);
         return null;
       }
     }
 
     if (element) {
+      const resizeObserver = new ResizeObserver(entries => {
+        Canvas.dispatchDesignChange();
+      });
+      resizeObserver.observe(element);
       element.classList.add('editable-component');
       if (type != 'container') {
         element.classList.add('component-resizer');
       }
       const uniqueClass = Canvas.generateUniqueClass(type);
       element.setAttribute('id', uniqueClass);
-      // Conditionally set contenteditable attribute
+
       if (type === 'image') {
-        element.setAttribute('contenteditable', 'false'); // Image should not be editable
+        element.setAttribute('contenteditable', 'false');
       } else {
-        element.setAttribute('contenteditable', 'true'); // Other components are editable
+        element.setAttribute('contenteditable', 'true');
+        element.addEventListener('input', () => {
+          Canvas.historyManager.captureState();
+        });
       }
 
-      // Create label for showing class name on hover
       const label = document.createElement('span');
       label.className = 'component-label';
       label.textContent = uniqueClass;
       element.appendChild(label);
-
-      //Add control for each component
       Canvas.controlsManager.addControlButtons(element);
-      CustomizationSidebar.updateLayersView();
     }
 
     return element;
@@ -427,17 +484,14 @@ export class Canvas {
     containerClass: string | null = null
   ): string {
     if (isContainerComponent && containerClass) {
-      // Handle container components
       let containerElement: any = Canvas.components.find(component =>
         component.classList.contains(containerClass)
       );
 
       if (!containerElement) {
-        // If container is not found in Canvas.components, try searching in the whole document
         containerElement = document.querySelector(`.${containerClass}`);
         if (!containerElement) {
-          console.warn(`Container with class ${containerClass} not found.`);
-          return `${containerClass}-${type}1`; // Default fallback name if no container found
+          return `${containerClass}-${type}1`;
         }
       }
 
@@ -446,7 +500,6 @@ export class Canvas {
       ) as HTMLElement[];
       const typePattern = new RegExp(`${containerClass}-${type}(\\d+)`);
 
-      // Find the highest existing number for this type in the container
       let maxNumber = 0;
       containerComponents.forEach(component => {
         component.classList.forEach(className => {
@@ -460,11 +513,9 @@ export class Canvas {
 
       return `${containerClass}-${type}${maxNumber + 1}`;
     } else {
-      // Handle regular components
       const typePattern = new RegExp(`${type}(\\d+)`);
       let maxNumber = 0;
 
-      // Find the highest existing number for this type across all components
       Canvas.components.forEach(component => {
         component.classList.forEach(className => {
           const match = className.match(typePattern);
@@ -487,20 +538,22 @@ export class Canvas {
     let dragStartY = 0;
     let elementStartX = 0;
     let elementStartY = 0;
+    let canvasScrollStartX = 0;
+    let canvasScrollStartY = 0;
 
     element.addEventListener('dragstart', (event: DragEvent) => {
       if (event.dataTransfer) {
-        // Capture starting positions
-        const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-        const rect = element.getBoundingClientRect();
-
-        // Capture starting coordinates
+        // Store exact mouse position at drag start
         dragStartX = event.clientX;
         dragStartY = event.clientY;
 
-        // Current element position relative to canvas
-        elementStartX = rect.left - canvasRect.left;
-        elementStartY = rect.top - canvasRect.top;
+        // Store canvas scroll position at drag start
+        canvasScrollStartX = Canvas.canvasElement.scrollLeft;
+        canvasScrollStartY = Canvas.canvasElement.scrollTop;
+
+        // Get current element position relative to canvas
+        elementStartX = parseFloat(element.style.left) || 0;
+        elementStartY = parseFloat(element.style.top) || 0;
 
         event.dataTransfer.effectAllowed = 'move';
         element.style.cursor = 'grabbing';
@@ -509,19 +562,49 @@ export class Canvas {
 
     element.addEventListener('dragend', (event: DragEvent) => {
       event.preventDefault();
-      // const canvasRect = Canvas.canvasElement.getBoundingClientRect();
 
-      // Calculate movement delta
-      const deltaX = event.clientX - dragStartX;
-      const deltaY = event.clientY - dragStartY;
+      // Get current canvas scroll position
+      const canvasScrollCurrentX = Canvas.canvasElement.scrollLeft;
+      const canvasScrollCurrentY = Canvas.canvasElement.scrollTop;
 
-      // Calculate new position
-      let newX = elementStartX + deltaX;
-      let newY = elementStartY + deltaY;
+      // Calculate scroll delta (how much the canvas scrolled during drag)
+      const scrollDeltaX = canvasScrollCurrentX - canvasScrollStartX;
+      const scrollDeltaY = canvasScrollCurrentY - canvasScrollStartY;
 
-      // Constrain within canvas boundaries
-      const maxX = Canvas.canvasElement.offsetWidth - element.offsetWidth;
-      const maxY = Canvas.canvasElement.offsetHeight - element.offsetHeight;
+      // Calculate mouse movement delta
+      const mouseDeltaX = event.clientX - dragStartX;
+      const mouseDeltaY = event.clientY - dragStartY;
+
+      // Calculate new position accounting for both mouse movement and scroll changes
+      let newX = elementStartX + mouseDeltaX + scrollDeltaX;
+      let newY = elementStartY + mouseDeltaY + scrollDeltaY;
+
+      // Alternative approach: Use the actual mouse position relative to canvas
+      // This is more accurate when dealing with scrolling
+      const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+      const actualMouseX =
+        event.clientX - canvasRect.left + Canvas.canvasElement.scrollLeft;
+      const actualMouseY =
+        event.clientY - canvasRect.top + Canvas.canvasElement.scrollTop;
+
+      // Calculate the offset between drag start mouse position and element position
+      const canvasRectStart = Canvas.canvasElement.getBoundingClientRect();
+      const dragStartMouseX =
+        dragStartX - canvasRectStart.left + canvasScrollStartX;
+      const dragStartMouseY =
+        dragStartY - canvasRectStart.top + canvasScrollStartY;
+
+      const offsetX = elementStartX - dragStartMouseX;
+      const offsetY = elementStartY - dragStartMouseY;
+
+      // Use actual mouse position for more precise positioning
+      newX = actualMouseX + offsetX;
+      newY = actualMouseY + offsetY;
+
+      // Constrain within canvas boundaries (accounting for scroll area)
+      const elementRect = element.getBoundingClientRect();
+      const maxX = Canvas.canvasElement.scrollWidth - elementRect.width;
+      const maxY = Canvas.canvasElement.scrollHeight - elementRect.height;
 
       newX = Math.max(0, Math.min(newX, maxX));
       newY = Math.max(0, Math.min(newY, maxY));
@@ -535,27 +618,16 @@ export class Canvas {
 
       // Capture the state after dragging
       Canvas.historyManager.captureState();
-    });
-  }
-
-  // Unused for now, remove it later
-  static exportLayout() {
-    return Canvas.components.map(component => {
-      return {
-        type: component.className,
-        content: component.innerHTML,
-      };
+      Canvas.dispatchDesignChange();
     });
   }
 }
 
 const canvas = document.getElementById('canvas');
 
-// Instantiate the DeleteElementHandler
 const deleteElementHandler = new DeleteElementHandler();
 
 if (canvas) {
-  // Attach click event listener to canvas elements
   canvas.addEventListener('click', (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (target !== canvas) {

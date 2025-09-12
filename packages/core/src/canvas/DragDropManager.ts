@@ -13,8 +13,12 @@ export class DragDropManager {
     draggableItems.forEach(item => {
       item.addEventListener('dragstart', event => {
         const dragEvent = event as DragEvent;
-        console.log(`Dragging component: ${item.id}`); // Debug log
+
         dragEvent.dataTransfer?.setData('component-type', item.id);
+        const settingsData = item.getAttribute('data-component-settings');
+        if (settingsData) {
+          dragEvent.dataTransfer?.setData('custom-settings', settingsData);
+        }
       });
     });
   }

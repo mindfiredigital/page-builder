@@ -17,17 +17,33 @@ import { PreviewPanel } from './canvas/PreviewPanel.js';
 import './styles/main.css';
 import { svgs } from './icons/svgs.js';
 export class PageBuilder {
-  constructor(dynamicComponents = { Basic: [], Extra: [], Custom: {} }) {
+  constructor(
+    dynamicComponents = {
+      Basic: { components: [] },
+      Extra: [],
+      Custom: {},
+    },
+    initialDesign = null,
+    editable = true,
+    brandTitle
+  ) {
     this.dynamicComponents = dynamicComponents;
+    this.initialDesign = initialDesign;
     this.canvas = new Canvas();
     this.sidebar = new Sidebar(this.canvas);
     this.htmlGenerator = new HTMLGenerator(this.canvas);
     this.jsonStorage = new JSONStorage();
     this.previewPanel = new PreviewPanel();
+    this.editable = editable;
+    this.brandTitle = brandTitle;
     this.initializeEventListeners();
   }
+  // Static method to reset header flag (called during cleanup)
+  static resetHeaderFlag() {
+    PageBuilder.headerInitialized = false;
+  }
   initializeEventListeners() {
-    // document.addEventListener('DOMContentLoaded', () => {
+    // Re-initialize core components
     this.canvas = new Canvas();
     this.sidebar = new Sidebar(this.canvas);
     this.htmlGenerator = new HTMLGenerator(this.canvas);
@@ -36,37 +52,51 @@ export class PageBuilder {
     this.setupInitialComponents();
     this.setupSaveButton();
     this.setupResetButton();
+    this.handleExport();
     this.setupExportHTMLButton();
+    this.setupExportPDFButton();
     this.setupViewButton();
     this.setupPreviewModeButtons();
     this.setupUndoRedoButtons();
-    // });
   }
   setupInitialComponents() {
-    createSidebar(this.dynamicComponents);
-    Canvas.init();
+    createSidebar(this.dynamicComponents, this.editable);
+    // Pass initial design to Canvas.init
+    Canvas.init(
+      this.initialDesign,
+      this.editable,
+      this.dynamicComponents.Basic
+    );
     this.sidebar.init();
     ShortcutManager.init();
-    CustomizationSidebar.init();
+    CustomizationSidebar.init(
+      this.dynamicComponents.Custom,
+      this.editable,
+      this.dynamicComponents.Basic
+    );
+    // Create header logic - improved to handle re-initialization
+    this.createHeaderIfNeeded();
+  }
+  createHeaderIfNeeded() {
+    const existingHeader = document.getElementById('page-builder-header');
     // Only create header if it doesn't exist
-    if (!PageBuilder.headerInitialized) {
-      const existingHeader = document.getElementById('page-builder-header');
-      if (!existingHeader) {
-        const appElement = document.getElementById('app');
-        if (appElement && appElement.parentNode) {
-          const header = document.createElement('header');
-          header.id = 'page-builder-header';
-          header.appendChild(createNavbar());
-          appElement.parentNode.insertBefore(header, appElement);
-          PageBuilder.headerInitialized = true;
-        } else {
-          console.error('Error: #app not found in the DOM');
-        }
-      } else {
+    if (!existingHeader) {
+      const appElement = document.getElementById('app');
+      if (appElement && appElement.parentNode) {
+        const header = document.createElement('header');
+        header.id = 'page-builder-header';
+        header.appendChild(createNavbar(this.editable, this.brandTitle));
+        appElement.parentNode.insertBefore(header, appElement);
         PageBuilder.headerInitialized = true;
+      } else {
+        console.error('Error: #app not found in the DOM');
       }
+    } else {
+      // Header exists, mark as initialized
+      PageBuilder.headerInitialized = true;
     }
   }
+  // Rest of your methods remain the same...
   setupSaveButton() {
     const saveButton = document.getElementById('save-btn');
     if (saveButton) {
@@ -95,6 +125,43 @@ export class PageBuilder {
       });
     }
   }
+  /**
+   * This function handles the event on clicking the export button
+   * It opens up a drop down with 2 options for exporting
+   * One is for html export and another is for json object export
+   */
+  handleExport() {
+    const exportBtn = document.getElementById('export-btn');
+    if (exportBtn) {
+      const dropdown = document.createElement('div');
+      dropdown.classList.add('export-dropdown');
+      const option1 = document.createElement('div');
+      option1.textContent = 'HTML';
+      option1.classList.add('export-option');
+      option1.id = 'export-html-btn';
+      const option2 = document.createElement('div');
+      option2.textContent = 'PDF';
+      option2.classList.add('export-option');
+      option2.id = 'export-pdf-btn';
+      dropdown.appendChild(option1);
+      dropdown.appendChild(option2);
+      exportBtn.appendChild(dropdown);
+      exportBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        dropdown.classList.toggle('visible');
+      });
+      // Hide dropdown when clicking outside
+      document.addEventListener('click', event => {
+        if (!exportBtn.contains(event.target)) {
+          dropdown.classList.remove('visible');
+        }
+      });
+    }
+  }
+  /**
+   * This function handles opening up the modal on clicking export to html option from drop down options
+   * This generates expected html and css present on the canvas layout.
+   */
   setupExportHTMLButton() {
     const exportButton = document.getElementById('export-html-btn');
     if (exportButton) {
@@ -112,6 +179,62 @@ export class PageBuilder {
         );
         document.body.appendChild(modal);
         modal.classList.add('show');
+      });
+    }
+  }
+  /**
+   * This function handles the exporting feature in PDF format
+   */
+  setupExportPDFButton() {
+    const exportButton = document.getElementById('export-pdf-btn');
+    if (exportButton) {
+      exportButton.addEventListener('click', () => {
+        const htmlGenerator = new HTMLGenerator(new Canvas());
+        const html = htmlGenerator.generateHTML();
+        const css = htmlGenerator.generateCSS();
+        // Create a new window
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+          const fullHTML = `
+            <html>
+              <head>
+                <title>Export PDF</title>
+                <style>
+                  ${css} 
+                  body {
+                    margin: 0;
+                    padding: 20px;
+                    font-family: Arial, sans-serif;
+                  }
+                  @media print {
+                    /* Ensure print styles are applied */
+                    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+                    
+                    /* Remove browser headers and footers */
+                    @page {
+                      size: auto;
+                      margin: 0mm;  /* Remove default margins */
+                    }
+                    
+                    /* For Chrome/Safari */
+                    @page { margin: 0; }
+                    html { margin: 0; }
+                  }
+                </style>
+              </head>
+              <body>
+                ${html} <!-- Generated HTML -->
+              </body>
+            </html>
+          `;
+          printWindow.document.write(fullHTML);
+          printWindow.document.close();
+          // Delay printing slightly to allow CSS processing
+          setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+          }, 500);
+        }
       });
     }
   }
@@ -210,7 +333,7 @@ export class PageBuilder {
       width: 100vw;
       height: 100vh;
       background: #f5f5f5;
-      z-index: 1000;
+      z-index: 10000;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -272,19 +395,19 @@ export class PageBuilder {
         icon: svgs.mobile,
         title: 'Desktop',
         width: '375px',
-        height: '90%',
+        height: '100%',
       },
       {
         icon: svgs.tablet,
         title: 'Tablet',
         width: '768px',
-        height: '90%',
+        height: '100%',
       },
       {
         icon: svgs.desktop,
         title: 'Mobile',
         width: '97%',
-        height: '90%',
+        height: '100%',
       },
     ];
     sizes.forEach(size => {
@@ -311,6 +434,7 @@ export class PageBuilder {
       button.addEventListener('click', () => {
         iframe.style.width = size.width;
         iframe.style.height = size.height;
+        iframe.style.transition = 'all 0.5s ease';
       });
       responsivenessContainer.appendChild(button);
     });

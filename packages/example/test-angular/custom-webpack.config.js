@@ -1,3 +1,4 @@
+const path = require('path');
 module.exports = {
   module: {
     rules: [
@@ -7,5 +8,13 @@ module.exports = {
         include: /node_modules/, // Ensure it applies to node_modules
       },
     ],
+  },
+  resolve: {
+    alias: {
+      '@mindfiredigital/page-builder-angular': path.resolve(
+        __dirname,
+        '../../angular/dist'
+      ),
+    },
   },
 };

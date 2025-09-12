@@ -1,8 +1,22 @@
 import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
 
+export interface PageBuilderDesign {
+  pages?: Array<{
+    id: string;
+    components: Array<{
+      type: string;
+      id: string;
+      props: Record<string, any>;
+    }>;
+  }>;
+  [key: string]: any;
+}
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
   private initialized = false;
+  private _initialDesign: PageBuilderDesign | null = null;
+  private _editable: boolean | null = null;
+  private _brandTitle?: string;
   private config = { Basic: [], Extra: [], Custom: [] };
   private template = `<div id="app">
       <div id="sidebar"></div>
@@ -25,26 +39,52 @@ export class PageBuilderComponent extends HTMLElement {
   constructor() {
     super();
     // Set inner HTML only if no child elements exist
-    if (!this.firstElementChild) {
-      this.innerHTML = this.template;
-    }
   }
 
-  // Observe 'config-data' attribute to detect changes
-  static get observedAttributes() {
-    return ['config-data'];
-  }
-
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === 'config-data' && newValue !== oldValue) {
-      try {
-        const parsedConfig = JSON.parse(newValue);
-        this.config = parsedConfig;
-        this.initializePageBuilder(); // Reinitialize Core when config changes
-      } catch (e) {
-        console.error('Failed to parse config:', e);
+  set editable(value: boolean | null) {
+    if (this._editable !== value) {
+      this._editable = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
       }
     }
+  }
+
+  // Corrected getter for 'editable'
+  get editable(): boolean | null {
+    return this._editable;
+  }
+
+  set brandTitle(value: string | undefined) {
+    if (this._brandTitle !== value) {
+      this._brandTitle = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+
+  get brandTitle(): string | undefined {
+    return this._brandTitle;
+  }
+
+  set initialDesign(value: PageBuilderDesign | null) {
+    if (this._initialDesign !== value) {
+      this._initialDesign = value;
+      if (this.initialized) {
+        this.initialized = false;
+        if (value !== null || this.initialized) {
+          this.initialized = false;
+          this.initializePageBuilder();
+        }
+      }
+    }
+  }
+
+  get initialDesign(): PageBuilderDesign | null {
+    return this._initialDesign;
   }
 
   // Lifecycle method: Called when the element is added to the DOM
@@ -52,9 +92,36 @@ export class PageBuilderComponent extends HTMLElement {
     if (this.initialized) {
       return;
     }
+
+    setTimeout(() => {
+      if (!this.firstElementChild) {
+        this.innerHTML = this.template;
+      }
+
+      if (this.hasValidConfig()) {
+        this.initializePageBuilder();
+      }
+    }, 0);
+  }
+
+  private hasValidConfig(): boolean {
+    return (
+      this.config &&
+      (this.config.Basic?.length > 0 ||
+        this.config.Extra?.length > 0 ||
+        (this.config.Custom && Object.keys(this.config.Custom).length > 0))
+    );
+  }
+
+  set configData(value: any) {
+    this.config = value;
+    this.initialized = false;
     this.initializePageBuilder();
   }
 
+  get configData() {
+    return this.config;
+  }
   // Initializes the PageBuilder instance
   private initializePageBuilder() {
     if (this.initialized) {
@@ -62,8 +129,23 @@ export class PageBuilderComponent extends HTMLElement {
     }
 
     try {
+      const app = this.querySelector('#app');
+      if (app === null) {
+        console.error('Error: #app element not found.');
+        return; // Exit if #app is not found
+      }
+      if (app && this.pageBuilder) {
+        app.innerHTML = '';
+        this.innerHTML = this.template;
+      }
+      this.pageBuilder = new PageBuilder(
+        this.config,
+        this._initialDesign,
+        this._editable,
+        this._brandTitle
+      );
+
       this.initialized = true;
-      this.pageBuilder = new PageBuilder(this.config);
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);
       this.initialized = false;

@@ -1,9 +1,17 @@
 export declare class ImageComponent {
-  create(src?: string | null): HTMLElement;
+  private static imageAttributeConfig;
+  create(
+    src: string | null | undefined,
+    imageAttributeConfig: Function | undefined | null
+  ): HTMLElement;
   static handleFileChange(
     event: Event,
     container: HTMLElement,
     uploadText: HTMLElement
   ): void;
-  static restoreImageUpload(component: HTMLElement, src: string): void;
+  static restoreImageUpload(
+    component: HTMLElement,
+    src: string,
+    editable: boolean | null
+  ): void;
 }

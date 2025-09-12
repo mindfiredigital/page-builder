@@ -33,7 +33,13 @@ export declare class GridManager {
    * Supports grid-based snapping behavior during drag-and-drop.
    * Returns an object containing the grid-aligned X and Y coordinates.
    */
-  mousePositionAtGridCorner(event: DragEvent, canvasElement: HTMLElement): any;
+  mousePositionAtGridCorner(
+    event: DragEvent,
+    canvas: HTMLElement
+  ): {
+    gridX: number;
+    gridY: number;
+  };
   /**
    * Retrieves the size of each grid cell.
    * Provides a way to access the configured grid size for alignment.

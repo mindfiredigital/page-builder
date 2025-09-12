@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import{ useEffect } from 'react';
 
 const PageBuilderComponent = () => {
   useEffect(() => {
@@ -6,7 +6,6 @@ const PageBuilderComponent = () => {
     const loadPageBuilder = async () => {
       try {
         await import('@mindfiredigital/page-builder-web-component');
-        console.log('Page Builder Web Component loaded successfully');
       } catch (error) {
         console.error('Error loading Page Builder Web Component:', error);
       }

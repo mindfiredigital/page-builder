@@ -1,20 +1,47 @@
 import { Canvas } from '../canvas/Canvas';
 import { debounce } from '../utils/utilityFunctions';
 import LayersViewController from './LayerViewController';
+import { TableComponent } from '../components/TableComponent';
+import { svgs } from '../icons/svgs';
+
+type ReactComponentType<P = {}> = React.ComponentType<P>;
+
+interface CustomComponentConfig {
+  [key: string]: {
+    component: string;
+    svg?: string;
+    title?: string;
+    settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
+    settingsComponentTagName?: string;
+    props?: Record<string, any>;
+  };
+}
+
 export class CustomizationSidebar {
   private static sidebarElement: HTMLElement;
   private static controlsContainer: HTMLElement;
   private static componentNameHeader: HTMLElement;
-  private static closeButton: HTMLElement;
   private static layersModeToggle: HTMLDivElement;
   private static layersView: HTMLDivElement;
   private static layersViewController: LayersViewController;
+  private static functionsPanel: HTMLDivElement;
+  private static selectedComponent: HTMLElement | null = null;
+  private static customComponentsConfig: CustomComponentConfig | null = null;
+  private static basicComponentsConfig: BasicComponent | null = null;
 
-  static init() {
+  private static editable: boolean | null;
+
+  static init(
+    customComponentsConfig: CustomComponentConfig,
+    editable: boolean | null,
+    BasicComponent: BasicComponent
+  ) {
     this.sidebarElement = document.getElementById('customization')!;
     this.controlsContainer = document.getElementById('controls')!;
     this.componentNameHeader = document.getElementById('component-name')!;
-    this.closeButton = document.createElement('button');
+    this.customComponentsConfig = customComponentsConfig;
+    this.basicComponentsConfig = BasicComponent;
+    this.editable = editable;
 
     if (!this.sidebarElement || !this.controlsContainer) {
       console.error('CustomizationSidebar: Required elements not found.');
@@ -23,114 +50,140 @@ export class CustomizationSidebar {
     // Initialize LayersViewController
     this.layersViewController = new LayersViewController();
 
-    // Create layers mode toggle
+    // Create functionality panel
+    this.functionsPanel = document.createElement('div');
+    this.functionsPanel.id = 'functions-panel';
+    this.functionsPanel.className = 'dropdown-panel';
+    this.functionsPanel.style.display = 'none';
+
     this.layersModeToggle = document.createElement('div');
     this.layersModeToggle.className = 'layers-mode-toggle';
     this.layersModeToggle.innerHTML = `
-      <button id="customize-tab" title="Customize" class="active">⚙️</button>
-      <button id="layers-tab" title="Layers"> ☰ </button>
+        <button id="customize-tab" title="Customize" class="active">${svgs.settings}</button>
+        <button id="attribute-tab" title="Attribute" >${svgs.attribute}</button>
+        <button id="layers-tab" title="Layers"> ${svgs.menu} </button>
     `;
+
     this.sidebarElement.insertBefore(
       this.layersModeToggle,
       this.componentNameHeader
     );
+    this.sidebarElement.appendChild(this.controlsContainer);
+    this.sidebarElement.appendChild(this.functionsPanel);
 
-    // Create layers view
+    this.controlsContainer.style.display = 'block';
+
     this.layersView = document.createElement('div');
     this.layersView.id = 'layers-view';
     this.layersView.className = 'layers-view hidden';
-    this.controlsContainer.appendChild(this.layersView);
-
-    // Add event listeners for tab switching
+    this.sidebarElement.appendChild(this.layersView);
     const customizeTab = this.layersModeToggle.querySelector('#customize-tab')!;
+    const attributeTab = this.layersModeToggle.querySelector('#attribute-tab')!;
     const layersTab = this.layersModeToggle.querySelector('#layers-tab')!;
 
     customizeTab.addEventListener('click', () => this.switchToCustomizeMode());
-    layersTab.addEventListener('click', () => this.switchToLayersMode());
-
-    // Add the close button to the sidebar
-    this.sidebarElement.appendChild(this.closeButton);
-    this.closeButton.textContent = '×'; // Close button symbol
-    this.closeButton.classList.add('close-button');
-
-    // Add the event listener to hide the sidebar when the close button is clicked
-    this.closeButton.addEventListener('click', () => {
-      this.hideSidebar();
+    attributeTab.addEventListener('click', () => {
+      this.switchToAttributeMode();
     });
+    layersTab.addEventListener('click', () => this.switchToLayersMode());
   }
 
+  // --- Tab Switching Logic ---
   private static switchToCustomizeMode() {
     const customizeTab = document.getElementById('customize-tab')!;
+    const attributeTab = document.getElementById('attribute-tab')!;
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
-    const controlsContainer = document.getElementById('controls')!;
     const componentName = document.getElementById('component-name')!;
 
     customizeTab.classList.add('active');
+    attributeTab.classList.remove('active');
     layersTab.classList.remove('active');
-    layersView.classList.add('hidden');
-    controlsContainer.classList.remove('hidden');
-    // Ensure only the control view is visible
-    controlsContainer.style.display = 'block'; // show the controls
     layersView.style.display = 'none';
+
+    this.controlsContainer.style.display = 'block';
+    this.functionsPanel.style.display = 'none';
+
     componentName.style.display = 'block';
+    if (this.selectedComponent) {
+      this.populateCssControls(this.selectedComponent);
+    }
+  }
+
+  private static switchToAttributeMode() {
+    const customizeTab = document.getElementById('customize-tab')!;
+    const attributeTab = document.getElementById('attribute-tab')!;
+    const layersTab = document.getElementById('layers-tab')!;
+    const layersView = document.getElementById('layers-view')!;
+    const componentName = document.getElementById('component-name')!;
+
+    attributeTab.classList.add('active');
+    customizeTab.classList.remove('active');
+    layersTab.classList.remove('active');
+    layersView.style.display = 'none'; // Hide layers view
+
+    this.functionsPanel.style.display = 'block';
+    this.controlsContainer.style.display = 'none';
+    componentName.style.display = 'block';
+
+    // Populate functionality controls if component is selected
+    if (this.selectedComponent) {
+      this.populateFunctionalityControls(this.selectedComponent);
+    }
   }
 
   private static switchToLayersMode() {
     const customizeTab = document.getElementById('customize-tab')!;
+    const attributeTab = document.getElementById('attribute-tab')!;
     const layersTab = document.getElementById('layers-tab')!;
     const layersView = document.getElementById('layers-view')!;
-    const controlsContainer = document.getElementById('controls')!;
     const componentName = document.getElementById('component-name')!;
 
     layersTab.classList.add('active');
+    attributeTab.classList.remove('active');
     customizeTab.classList.remove('active');
 
-    // Ensure only the layers view is visible
-    controlsContainer.style.display = 'none'; // Hides the controls
-    layersView.style.display = 'block';
-    componentName.style.display = 'none';
-    // Update the layers view using the new LayersViewController
+    // Hide both dropdown panels
+    this.controlsContainer.style.display = 'none';
+    this.functionsPanel.style.display = 'none';
+
+    layersView.style.display = 'block'; // Show layers view
+    componentName.style.display = 'none'; // Hide component name header
+
     LayersViewController.updateLayersView();
   }
 
-  public static updateLayersView() {
-    LayersViewController.updateLayersView();
-  }
-
+  // --- Sidebar Display Management ---
   static showSidebar(componentId: string) {
-    const customizeTab = document.getElementById('customize-tab')!;
-    const layersTab = document.getElementById('layers-tab')!;
-    const layersView = document.getElementById('layers-view')!;
-    const controlsContainer = document.getElementById('controls')!;
-
-    // Ensure we're in customize mode when showing sidebar
-    customizeTab.classList.add('active');
-    layersTab.classList.remove('active');
-    layersView.classList.add('hidden');
-    controlsContainer.classList.remove('hidden');
-
-    // Existing showSidebar logic follows...
     const component = document.getElementById(componentId);
-    console.log(`Showing sidebar for: ${componentId}`);
     if (!component) {
       console.error(`Component with ID "${componentId}" not found.`);
       return;
     }
-
-    // Check if the component is a canvas itself
-    const isCanvas = componentId.toLowerCase() === 'canvas';
+    if (this.editable === false) {
+      return;
+    }
+    this.selectedComponent = component;
 
     this.sidebarElement.style.display = 'block';
-    this.controlsContainer.innerHTML = '';
-
-    // Set the component name in the header
+    this.sidebarElement.classList.add('visible');
+    const menuButton = document.getElementById('menu-btn');
+    if (menuButton) {
+      menuButton.style.backgroundColor = '#e2e8f0';
+      menuButton.style.borderColor = '#cbd5e1';
+    }
     this.componentNameHeader.textContent = `Component: ${componentId}`;
 
-    // Dynamically create controls
-    const styles = getComputedStyle(component);
+    this.switchToCustomizeMode();
+  }
 
-    // Controls Display Control
+  // --- Populate CSS Controls ---
+  private static populateCssControls(component: HTMLElement) {
+    this.controlsContainer.innerHTML = '';
+    const styles = getComputedStyle(component);
+    const isCanvas = component.id.toLowerCase() === 'canvas';
+
+    // Re-create all CSS controls
     this.createSelectControl('Display', 'display', styles.display || 'block', [
       'block',
       'inline',
@@ -139,8 +192,35 @@ export class CustomizationSidebar {
       'grid',
       'none',
     ]);
+    if (styles.display === 'flex' || component.style.display === 'flex') {
+      this.createSelectControl(
+        'Flex Direction',
+        'flex-direction',
+        styles.flexDirection || 'row',
+        ['row', 'row-reverse', 'column', 'column-reverse']
+      );
 
-    // Exclude some controls for canvas
+      this.createSelectControl(
+        'Align Items',
+        'align-items',
+        styles.alignItems || 'stretch',
+        ['stretch', 'flex-start', 'flex-end', 'center', 'baseline']
+      );
+
+      this.createSelectControl(
+        'Justify Content',
+        'justify-content',
+        styles.justifyContent || 'flex-start',
+        [
+          'flex-start',
+          'flex-end',
+          'center',
+          'space-between',
+          'space-around',
+          'space-evenly',
+        ]
+      );
+    }
     if (!isCanvas) {
       this.createControl('Width', 'width', 'number', component.offsetWidth, {
         min: 0,
@@ -176,14 +256,18 @@ export class CustomizationSidebar {
       );
     }
 
-    this.createControl('Color', 'color', 'color', styles.backgroundColor);
+    this.createControl(
+      'Background Color',
+      'background-color', // Changed ID to be more specific
+      'color',
+      styles.backgroundColor
+    );
     this.createSelectControl('Text Alignment', 'alignment', styles.textAlign, [
       'left',
       'center',
       'right',
     ]);
 
-    // Controls for fonts
     this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
       'Arial',
       'Verdana',
@@ -194,6 +278,7 @@ export class CustomizationSidebar {
       'sans-serif',
       'serif',
     ]);
+
     this.createControl(
       'Font Size',
       'font-size',
@@ -205,8 +290,21 @@ export class CustomizationSidebar {
         unit: 'px',
       }
     );
-
-    // Controls for text color editing
+    this.createSelectControl('Font Weight', 'font-weight', styles.fontWeight, [
+      'normal',
+      'bold',
+      'bolder',
+      'lighter',
+      '100',
+      '200',
+      '300',
+      '400',
+      '500',
+      '600',
+      '700',
+      '800',
+      '900',
+    ]);
     this.createControl(
       'Text Color',
       'text-color',
@@ -214,7 +312,6 @@ export class CustomizationSidebar {
       styles.color || '#000000'
     );
 
-    // Controls for border width
     this.createControl(
       'Border Width',
       'border-width',
@@ -227,7 +324,6 @@ export class CustomizationSidebar {
       }
     );
 
-    // Controls for Border Style
     this.createSelectControl(
       'Border Style',
       'border-style',
@@ -244,7 +340,6 @@ export class CustomizationSidebar {
         'outset',
       ]
     );
-    // Controls for Border Color
     this.createControl(
       'Border Color',
       'border-color',
@@ -252,21 +347,139 @@ export class CustomizationSidebar {
       styles.borderColor || '#000000'
     );
 
-    // Convert the background color to hex format
-    const colorHex = CustomizationSidebar.rgbToHex(styles.backgroundColor);
-
-    // Set the color input to the component's background color in hex format
-    const colorInput = document.getElementById('color') as HTMLInputElement;
-    if (colorInput) {
-      colorInput.value = colorHex; // Set to valid hex color value
+    // Update color input value to hex for background color
+    const bgColorInput = document.getElementById(
+      'background-color'
+    ) as HTMLInputElement;
+    if (bgColorInput) {
+      bgColorInput.value = CustomizationSidebar.rgbToHex(
+        styles.backgroundColor
+      );
     }
-    // Add event listeners for live updates
+    // Update color input value to hex for text color
+    const textColorInput = document.getElementById(
+      'text-color'
+    ) as HTMLInputElement;
+    if (textColorInput) {
+      textColorInput.value = CustomizationSidebar.rgbToHex(styles.color);
+    }
+    // Update color input value to hex for border color
+    const borderColorInput = document.getElementById(
+      'border-color'
+    ) as HTMLInputElement;
+    if (borderColorInput) {
+      borderColorInput.value = CustomizationSidebar.rgbToHex(
+        styles.borderColor
+      );
+    }
+
     this.addListeners(component);
   }
 
-  static hideSidebar() {
-    if (this.sidebarElement) {
-      this.sidebarElement.style.display = 'none';
+  private static populateFunctionalityControls(component: HTMLElement) {
+    this.functionsPanel.innerHTML = '';
+    if (component.classList.contains('table-component')) {
+      const table = document.getElementById(component.id);
+      if (this.basicComponentsConfig) {
+        const tableComponent = this.basicComponentsConfig.components.find(
+          component => component.name === 'table'
+        );
+        if (
+          tableComponent &&
+          tableComponent.attributes &&
+          tableComponent.attributes.length > 0
+        ) {
+          tableComponent.attributes.map(attribute => {
+            const box = document.createElement('div');
+            if (attribute.type === 'Input') {
+              box.innerHTML = `
+                <label for=${attribute.key} class="type-input-label">${attribute.title}</label>
+                <div class="input-wrapper type-input-div">
+                  <input type="text" class="type-input" id=${attribute.key}  ${
+                    !attribute.editable ? 'disabled' : ''
+                  }  value=${attribute.default_value ? attribute.default_value : ''} >
+                </div>
+              `;
+
+              this.functionsPanel.appendChild(box);
+
+              const inputElement = document.getElementById(attribute.key);
+
+              if (attribute.trigger) {
+                inputElement?.addEventListener(attribute.trigger, async () => {
+                  if (tableComponent.globalExecuteFunction) {
+                    const inputValues: { [key: string]: string } = {};
+                    const allInputs =
+                      this.functionsPanel.querySelectorAll('.type-input');
+                    allInputs.forEach(input => {
+                      const inputEl = input as HTMLInputElement;
+                      inputValues[inputEl.id] = inputEl.value;
+                    });
+                    const result =
+                      await tableComponent.globalExecuteFunction(inputValues);
+                    if (result && typeof result === 'object') {
+                      const tableInstance = new TableComponent();
+                      tableInstance.seedFormulaValues(
+                        table as HTMLElement,
+                        result
+                      );
+                      Canvas.historyManager.captureState();
+                    }
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    } else if (component.classList.contains('custom-component')) {
+      const componentType = Array.from(component.classList)
+        .find(cls => cls.endsWith('-component'))
+        ?.replace('-component', '');
+
+      const customComponentsConfig =
+        CustomizationSidebar.customComponentsConfig;
+      if (
+        componentType &&
+        customComponentsConfig &&
+        customComponentsConfig[componentType] &&
+        // Check for the string-based tag name property.
+        customComponentsConfig[componentType].settingsComponentTagName
+      ) {
+        // Get the string tag name from the config.
+        const settingsComponentTagName =
+          customComponentsConfig[componentType].settingsComponentTagName;
+
+        // Now, use the string variable to query for the element.
+        let settingsElement = this.functionsPanel.querySelector(
+          settingsComponentTagName
+        );
+
+        if (!settingsElement) {
+          // Use the string variable to create the element.
+          settingsElement = document.createElement(settingsComponentTagName);
+          this.functionsPanel.appendChild(settingsElement);
+        }
+
+        // Set the attribute as before.
+        settingsElement.setAttribute(
+          'data-settings',
+          JSON.stringify({ targetComponentId: component.id })
+        );
+      }
+    } else if (component.classList.contains('table-cell')) {
+      const modalButton = document.createElement('button');
+      modalButton.textContent = 'Set Cell Attribute';
+      modalButton.className = 'set-cell-attribute-button';
+      this.functionsPanel.appendChild(modalButton);
+
+      modalButton.addEventListener('click', () => {
+        const tableComponent = new TableComponent();
+        tableComponent.handleCellClick(component);
+      });
+    } else {
+      this.functionsPanel.innerHTML =
+        '<p>No specific settings for this component.</p>';
     }
   }
 
@@ -274,13 +487,11 @@ export class CustomizationSidebar {
     const result = rgb.match(
       /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/
     );
-    if (!result) return rgb; // If the format is not matched, return the original string
-
+    if (!result) return rgb;
     const r = parseInt(result[1], 10);
     const g = parseInt(result[2], 10);
     const b = parseInt(result[3], 10);
 
-    // Ensure it's in the correct hex format
     return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
   }
 
@@ -294,14 +505,13 @@ export class CustomizationSidebar {
     const wrapper = document.createElement('div');
     wrapper.classList.add('control-wrapper');
 
-    // Check if the control is a color input or a number input
     const isNumber = type === 'number';
 
-    // Format value for number inputs and add a unit dropdown
     if (isNumber && attributes.unit) {
       const unit = attributes.unit;
       wrapper.innerHTML = `
-                  <label for="${id}">${label}:</label>
+                <label for="${id}">${label}:</label>
+                <div class="input-wrapper">
                   <input type="${type}" id="${id}" value="${value}">
                   <select id="${id}-unit">
                       <option value="px" ${unit === 'px' ? 'selected' : ''}>px</option>
@@ -309,13 +519,16 @@ export class CustomizationSidebar {
                       <option value="vh" ${unit === 'vh' ? 'selected' : ''}>vh</option>
                       <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
                   </select>
-              `;
+                </div
+            `;
     } else {
       wrapper.innerHTML = `
-          <label for="${id}">${label}:</label>
+        <label for="${id}">${label}:</label>
+        <div class="input-wrapper">
           <input type="color" id="${id}" value="${value}">
-          <input type="text" id="color-value" style="font-size: 0.8rem; width: 80px; margin-left: 8px;" value="${value}">
-        `;
+          <input type="text" id="${id}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${value}">
+        </div>
+      `;
     }
 
     const input = wrapper.querySelector('input') as HTMLInputElement;
@@ -329,31 +542,29 @@ export class CustomizationSidebar {
       });
     }
 
-    // If it's a color input, update the hex code display
-    const colorinput = wrapper.querySelector(
-      'input[type="color"]'
+    const colorInput = wrapper.querySelector(
+      `input[type="color"]#${id}`
     ) as HTMLInputElement;
-    const hexInput = wrapper.querySelector('#color-value') as HTMLInputElement;
+    const hexInput = wrapper.querySelector(`#${id}-value`) as HTMLInputElement;
 
-    if (colorinput) {
-      colorinput.addEventListener('input', () => {
+    if (colorInput) {
+      colorInput.addEventListener('input', () => {
         if (hexInput) {
-          hexInput.value = colorinput.value; // Update hex code display
+          hexInput.value = colorInput.value; // Update hex code display
         }
       });
     }
 
     if (hexInput) {
       hexInput.addEventListener('input', () => {
-        if (colorinput) {
-          colorinput.value = hexInput.value; // Update color input with the new hex code
+        if (colorInput) {
+          colorInput.value = hexInput.value;
         }
       });
     }
 
     this.controlsContainer.appendChild(wrapper);
 
-    // Update value dynamically when unit changes
     if (unitSelect) {
       unitSelect.addEventListener('change', () => {
         const unit = unitSelect.value;
@@ -374,39 +585,53 @@ export class CustomizationSidebar {
     const selectOptions = options
       .map(
         option =>
-          `<option value="${option}" ${option === currentValue ? 'selected' : ''}>${option}</option>`
+          `<option value="${option}" ${
+            option === currentValue ? 'selected' : ''
+          }>${option}</option>`
       )
       .join('');
     wrapper.innerHTML = `
-              <label for="${id}">${label}:</label>
-              <select id="${id}">${selectOptions}</select>
-          `;
+                <label for="${id}">${label}:</label>
+                <div class="input-wrapper">
+                  <select id="${id}">${selectOptions}</select>
+                </div>
+            `;
     this.controlsContainer.appendChild(wrapper);
   }
 
   private static addListeners(component: HTMLElement) {
-    const controls = {
+    const controls: { [key: string]: HTMLInputElement | HTMLSelectElement } = {
       width: document.getElementById('width') as HTMLInputElement,
       height: document.getElementById('height') as HTMLInputElement,
-      color: document.getElementById('color') as HTMLInputElement,
+      backgroundColor: document.getElementById(
+        'background-color'
+      ) as HTMLInputElement,
       margin: document.getElementById('margin') as HTMLInputElement,
       padding: document.getElementById('padding') as HTMLInputElement,
       alignment: document.getElementById('alignment') as HTMLSelectElement,
       fontSize: document.getElementById('font-size') as HTMLInputElement,
+      fontWeight: document.getElementById('font-weight') as HTMLSelectElement,
       textColor: document.getElementById('text-color') as HTMLInputElement,
       borderWidth: document.getElementById('border-width') as HTMLInputElement,
       borderStyle: document.getElementById('border-style') as HTMLSelectElement,
       borderColor: document.getElementById('border-color') as HTMLInputElement,
       display: document.getElementById('display') as HTMLSelectElement,
       fontFamily: document.getElementById('font-family') as HTMLSelectElement,
+      flexDirection: document.getElementById(
+        'flex-direction'
+      ) as HTMLSelectElement,
+      alignItems: document.getElementById('align-items') as HTMLSelectElement,
+      justifyContent: document.getElementById(
+        'justify-content'
+      ) as HTMLSelectElement,
     };
 
-    if (!controls) return;
-
     const captureStateDebounced = debounce(() => {
+      Canvas.dispatchDesignChange();
       Canvas.historyManager.captureState();
     }, 300);
 
+    // Attach listeners only if the element exists
     controls.width?.addEventListener('input', () => {
       const unit = (document.getElementById('width-unit') as HTMLSelectElement)
         .value;
@@ -421,12 +646,20 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
-    controls.color?.addEventListener('input', () => {
-      component.style.backgroundColor = controls.color.value;
-      const colorValueSpan = document.querySelector('#color-value');
-      if (colorValueSpan) {
-        colorValueSpan.textContent = controls.color.value; // Update color hex code display
-      }
+    controls.backgroundColor?.addEventListener('input', () => {
+      component.style.backgroundColor = controls.backgroundColor.value;
+      (
+        document.getElementById('background-color-value') as HTMLInputElement
+      ).value = controls.backgroundColor.value;
+      captureStateDebounced();
+    });
+    (
+      document.getElementById('background-color-value') as HTMLInputElement
+    )?.addEventListener('input', e => {
+      const target = e.target as HTMLInputElement;
+      component.style.backgroundColor = target.value;
+      (document.getElementById('background-color') as HTMLInputElement).value =
+        target.value;
       captureStateDebounced();
     });
 
@@ -458,13 +691,27 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
-    //Controls for editing text color
-    controls.textColor?.addEventListener('input', () => {
-      component.style.color = controls.textColor.value;
+    controls.fontWeight?.addEventListener('change', () => {
+      component.style.fontWeight = controls.fontWeight.value;
       captureStateDebounced();
     });
 
-    //Controls for editing border width
+    controls.textColor?.addEventListener('input', () => {
+      component.style.color = controls.textColor.value;
+      (document.getElementById('text-color-value') as HTMLInputElement).value =
+        controls.textColor.value;
+      captureStateDebounced();
+    });
+    (
+      document.getElementById('text-color-value') as HTMLInputElement
+    )?.addEventListener('input', e => {
+      const target = e.target as HTMLInputElement;
+      component.style.color = target.value;
+      (document.getElementById('text-color') as HTMLInputElement).value =
+        target.value;
+      captureStateDebounced();
+    });
+
     controls.borderWidth?.addEventListener('input', () => {
       const unit = (
         document.getElementById('border-width-unit') as HTMLSelectElement
@@ -473,27 +720,50 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
 
-    //Controls for border style
     controls.borderStyle?.addEventListener('change', () => {
       component.style.borderStyle = controls.borderStyle.value;
       captureStateDebounced();
     });
 
-    //Controls for border color
     controls.borderColor?.addEventListener('input', () => {
       component.style.borderColor = controls.borderColor.value;
+      (
+        document.getElementById('border-color-value') as HTMLInputElement
+      ).value = controls.borderColor.value;
+      captureStateDebounced();
+    });
+    (
+      document.getElementById('border-color-value') as HTMLInputElement
+    )?.addEventListener('input', e => {
+      const target = e.target as HTMLInputElement;
+      component.style.borderColor = target.value;
+      (document.getElementById('border-color') as HTMLInputElement).value =
+        target.value;
       captureStateDebounced();
     });
 
-    //Controls for display edit
     controls.display?.addEventListener('change', () => {
       component.style.display = controls.display.value;
       captureStateDebounced();
+      this.populateCssControls(component);
+    });
+    controls.flexDirection?.addEventListener('change', () => {
+      component.style.flexDirection = controls.flexDirection.value;
+      captureStateDebounced();
     });
 
-    //Controls for fonts
+    controls.alignItems?.addEventListener('change', () => {
+      component.style.alignItems = controls.alignItems.value;
+      captureStateDebounced();
+    });
+
     controls.fontFamily?.addEventListener('change', () => {
       component.style.fontFamily = controls.fontFamily.value;
+      captureStateDebounced();
+    });
+
+    controls.justifyContent?.addEventListener('change', () => {
+      component.style.justifyContent = controls.justifyContent.value;
       captureStateDebounced();
     });
   }

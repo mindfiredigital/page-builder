@@ -46,7 +46,14 @@ module.exports = __toCommonJS(src_exports);
 // src/components/PageBuilder.tsx
 var import_react = __toESM(require('react'));
 var import_client = __toESM(require('react-dom/client'));
-var PageBuilderReact = ({ config, customComponents }) => {
+var PageBuilderReact = ({
+  config,
+  customComponents,
+  initialDesign,
+  onChange,
+  editable = true,
+  brandTitle,
+}) => {
   const builderRef = (0, import_react.useRef)(null);
   const [processedConfig, setProcessedConfig] = (0, import_react.useState)(
     config
@@ -57,7 +64,7 @@ var PageBuilderReact = ({ config, customComponents }) => {
     });
   }, []);
   (0, import_react.useEffect)(() => {
-    const modifiedConfig = JSON.parse(JSON.stringify(config));
+    const modifiedConfig = config;
     if (customComponents) {
       modifiedConfig.Custom = modifiedConfig.Custom || {};
       Object.entries(customComponents).forEach(([key, componentConfig]) => {
@@ -71,14 +78,16 @@ var PageBuilderReact = ({ config, customComponents }) => {
             connectedCallback() {
               const mountPoint = document.createElement('div');
               this.appendChild(mountPoint);
+              const componentId = this.id;
               try {
-                import_client.default
-                  .createRoot(mountPoint)
-                  .render(
-                    import_react.default.createElement(
-                      componentConfig.component
-                    )
-                  );
+                import_client.default.createRoot(mountPoint).render(
+                  import_react.default.createElement(
+                    componentConfig.component,
+                    {
+                      componentId,
+                    }
+                  )
+                );
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
               }
@@ -86,10 +95,64 @@ var PageBuilderReact = ({ config, customComponents }) => {
           }
           customElements.define(tagName, ReactComponentElement);
         }
+        const settingsTagName = `react-settings-component-${key.toLowerCase()}`;
+        if (
+          componentConfig.settingsComponent &&
+          !customElements.get(settingsTagName)
+        ) {
+          class ReactSettingsElement extends HTMLElement {
+            connectedCallback() {
+              this.innerHTML = '';
+              const mountPoint = document.createElement('div');
+              this.appendChild(mountPoint);
+              const settingsData = this.getAttribute('data-settings');
+              const parsedSettings = settingsData
+                ? JSON.parse(settingsData)
+                : {};
+              try {
+                import_client.default
+                  .createRoot(mountPoint)
+                  .render(
+                    import_react.default.createElement(
+                      componentConfig.settingsComponent,
+                      parsedSettings
+                    )
+                  );
+              } catch (error) {
+                console.error(`Error rendering settings component:`, error);
+              }
+            }
+            static get observedAttributes() {
+              return ['data-settings'];
+            }
+            attributeChangedCallback(name, oldValue, newValue) {
+              if (name === 'data-settings' && newValue !== oldValue) {
+                this.innerHTML = '';
+                const mountPoint = document.createElement('div');
+                this.appendChild(mountPoint);
+                const settingsData = this.getAttribute('data-settings');
+                const parsedSettings = settingsData
+                  ? JSON.parse(settingsData)
+                  : {};
+                import_client.default
+                  .createRoot(mountPoint)
+                  .render(
+                    import_react.default.createElement(
+                      componentConfig.settingsComponent,
+                      parsedSettings
+                    )
+                  );
+              }
+            }
+          }
+          customElements.define(settingsTagName, ReactSettingsElement);
+        }
         modifiedConfig.Custom[key] = {
           component: tagName,
           svg: componentConfig.svg,
           title: componentConfig.title,
+          settingsComponent: settingsTagName,
+          settingsComponentTagName: settingsTagName,
         };
       });
     }
@@ -97,14 +160,42 @@ var PageBuilderReact = ({ config, customComponents }) => {
   }, [config, customComponents]);
   (0, import_react.useEffect)(() => {
     if (builderRef.current) {
-      try {
-        const configString = JSON.stringify(processedConfig);
-        builderRef.current.setAttribute('config-data', configString);
-      } catch (error) {
-        console.error('Error setting config-data:', error);
-      }
+      setTimeout(() => {
+        var _a;
+        try {
+          const configString = JSON.stringify(processedConfig);
+          (_a = builderRef.current) == null
+            ? void 0
+            : _a.setAttribute('config-data', configString);
+          if (builderRef.current) {
+            builderRef.current.configData = processedConfig;
+            builderRef.current.initialDesign = initialDesign;
+            builderRef.current.editable = editable;
+            builderRef.current.brandTitle = brandTitle;
+          }
+        } catch (error) {
+          console.error('Error setting config-data and initialDesign:', error);
+        }
+      }, 100);
     }
-  }, [processedConfig]);
+  }, [processedConfig, initialDesign]);
+  (0, import_react.useEffect)(() => {
+    const webComponent = builderRef.current;
+    const handleDesignChange = event => {
+      const customEvent = event;
+      if (onChange) {
+        onChange(customEvent.detail);
+      }
+    };
+    if (webComponent) {
+      webComponent.addEventListener('design-change', handleDesignChange);
+    }
+    return () => {
+      if (webComponent) {
+        webComponent.removeEventListener('design-change', handleDesignChange);
+      }
+    };
+  }, [onChange]);
   return /* @__PURE__ */ import_react.default.createElement('page-builder', {
     ref: builderRef,
   });

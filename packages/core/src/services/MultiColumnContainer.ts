@@ -169,7 +169,7 @@ export class MultiColumnContainer {
 
       if (child.classList.contains('image-component')) {
         const imageSrc = child.querySelector('img')?.getAttribute('src') || '';
-        ImageComponent.restoreImageUpload(child, imageSrc);
+        ImageComponent.restoreImageUpload(child, imageSrc, null);
       }
     });
   }
