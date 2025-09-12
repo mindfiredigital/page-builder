@@ -248,7 +248,7 @@ export class PageBuilder {
     modal.id = 'export-dialog';
     modal.classList.add('modal');
     const modalContent = document.createElement('div');
-    modalContent.classList.add('modal-content');
+    modalContent.classList.add('export-modal-content');
     const closeButton = this.createCloseButton(modal);
     modalContent.appendChild(closeButton);
     const htmlSection = this.createCodeSection('HTML', highlightedHTML);

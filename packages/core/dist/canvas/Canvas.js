@@ -105,7 +105,7 @@ export class Canvas {
    * The event detail contains the current design state.
    */
   static dispatchDesignChange() {
-    if (_a.canvasElement && this.editable) {
+    if (_a.canvasElement && this.editable !== false) {
       const currentDesign = _a.getState();
       const event = new CustomEvent('design-change', {
         detail: currentDesign,
@@ -173,8 +173,6 @@ export class Canvas {
         position: {
           x: component.offsetLeft,
           y: component.offsetTop,
-          '@mindfiredigital/page-builder-react':
-            'file:../../../Desktop/page-builder/page-builder/packages/react/mindfiredigital-page-builder-react-1.2.3.tgz',
         },
         dimensions: {
           width: component.offsetWidth,
@@ -205,10 +203,19 @@ export class Canvas {
         if (!componentData.classes.includes('custom-component')) {
           component.innerHTML = componentData.content;
         }
+        const deleteButton = component.querySelector('.component-controls');
+        if (deleteButton && this.editable === false) {
+          deleteButton.remove();
+        }
         component.className = '';
         componentData.classes.forEach(cls => {
           component.classList.add(cls);
         });
+        if (this.editable === false) {
+          if (component.classList.contains('component-resizer')) {
+            component.classList.remove('component-resizer');
+          }
+        }
         if (componentData.type === 'video' && componentData.videoSrc) {
           const videoElement = component.querySelector('video');
           const uploadText = component.querySelector('.upload-text');
@@ -237,9 +244,11 @@ export class Canvas {
             }
           );
         }
-        // Add control buttons and listeners
-        _a.controlsManager.addControlButtons(component);
-        _a.addDraggableListeners(component);
+        if (this.editable !== false) {
+          // Add control buttons and listeners
+          _a.controlsManager.addControlButtons(component);
+          _a.addDraggableListeners(component);
+        }
         // Component-specific restoration
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreContainer(component);
@@ -330,7 +339,6 @@ export class Canvas {
       _a.historyManager.captureState();
     }
     _a.dispatchDesignChange();
-    // Canvas.updateCanvasHeight();
   }
   static reorderComponent(fromIndex, toIndex) {
     if (
@@ -376,7 +384,7 @@ export class Canvas {
         return null;
       }
     }
-    if (element) {
+    if (element && this.editable !== false) {
       const resizeObserver = new ResizeObserver(entries => {
         _a.dispatchDesignChange();
       });
@@ -392,8 +400,8 @@ export class Canvas {
       } else {
         element.setAttribute('contenteditable', 'true');
         element.addEventListener('input', () => {
-          this.dispatchDesignChange();
           _a.historyManager.captureState();
+          this.dispatchDesignChange();
         });
       }
       const label = document.createElement('span');

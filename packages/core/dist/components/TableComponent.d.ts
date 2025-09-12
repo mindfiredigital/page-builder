@@ -9,6 +9,11 @@ export declare class TableComponent {
     isPreview: boolean | undefined,
     tableAttributeConfig: ComponentAttribute[] | undefined | [] | null
   ): HTMLElement;
+  evaluateRowVisibility(
+    inputValues: Record<string, any>,
+    table?: HTMLElement
+  ): void;
+  private evaluateRule;
   private createTableRow;
   private createTableCell;
   private addCellToRow;
@@ -21,5 +26,6 @@ export declare class TableComponent {
   private updateCellContent;
   setModalComponent(modalComponent: ModalComponent): void;
   addRow(tableWrapper: HTMLElement, tableId: string): void;
+  private static getDefaultValuesOfInput;
   static restore(container: HTMLElement, editable: boolean | null): void;
 }

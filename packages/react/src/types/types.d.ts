@@ -7,13 +7,12 @@ export interface DynamicComponents {
 export interface ComponentAttribute {
   id: string;
   type: 'Constant' | 'Formula' | 'Input' | 'Image';
+  input_type: 'text' | 'number' | 'checkbox';
   title: string;
   value: string | number | boolean;
   key: string;
   execute_order: number;
   editable?: boolean;
-  default_value?: string | boolean | null;
-  trigger?: 'blur' | 'input' | 'input' | 'click' | 'focus';
 }
 
 export interface BasicComponent {

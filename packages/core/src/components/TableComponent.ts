@@ -61,6 +61,90 @@ export class TableComponent {
     return container;
   }
 
+  evaluateRowVisibility(inputValues: Record<string, any>, table?: HTMLElement) {
+    let allRows;
+    if (table) {
+      allRows = table.querySelectorAll('.table-row');
+    } else {
+      allRows = document.querySelectorAll('.table-row');
+    }
+
+    allRows.forEach(row => {
+      const rulesAttribute = row.getAttribute('data-visibility-rules');
+
+      if (!rulesAttribute) {
+        (row as HTMLElement).style.display = 'grid';
+        return;
+      }
+
+      try {
+        const rules = JSON.parse(rulesAttribute);
+
+        if (rules.length === 0) {
+          (row as HTMLElement).style.display = 'grid';
+          return;
+        }
+
+        let isVisible = true;
+        rules.forEach((rule: any) => {
+          const inputValue = inputValues[rule.inputKey];
+          const isConditionMet = this.evaluateRule(
+            inputValue,
+            rule.operator,
+            rule.value
+          );
+
+          if (isConditionMet) {
+            if (rule.action === 'hide') {
+              isVisible = false;
+            } else if (rule.action === 'show') {
+              isVisible = true;
+            }
+          }
+        });
+
+        if (isVisible) {
+          (row as HTMLElement).style.display = 'grid';
+        } else {
+          (row as HTMLElement).style.display = 'none';
+        }
+      } catch (e) {
+        console.error('Failed to parse or evaluate visibility rules:', e);
+      }
+    });
+  }
+
+  private evaluateRule(
+    inputValue: string,
+    operator: string,
+    ruleValue: string
+  ): boolean | string {
+    const numInputValue = parseFloat(inputValue);
+    const numRuleValue = parseFloat(ruleValue);
+    switch (operator) {
+      case 'equals':
+        return inputValue === ruleValue;
+      case 'not_equals':
+        return inputValue !== ruleValue;
+      case 'greater_than':
+        return (
+          !isNaN(numInputValue) &&
+          !isNaN(numRuleValue) &&
+          numInputValue > numRuleValue
+        );
+      case 'less_than':
+        return (
+          !isNaN(numInputValue) &&
+          !isNaN(numRuleValue) &&
+          numInputValue < numRuleValue
+        );
+      case 'contains':
+        return inputValue && ruleValue && inputValue.includes(ruleValue);
+      default:
+        return false;
+    }
+  }
+
   private createTableRow(
     rowIndex: number,
     cellCount: number,
@@ -70,12 +154,13 @@ export class TableComponent {
     rowDiv.style.display = 'grid';
     rowDiv.style.gridTemplateColumns = `repeat(${cellCount}, 1fr)`;
     rowDiv.className = 'table-row';
-
+    rowDiv.id = `table-row-T-${tableId}-R${rowIndex}`;
+    rowDiv.style.position = 'relative';
+    rowDiv.style.cursor = 'pointer';
     for (let j = 0; j < cellCount; j++) {
       const cell = this.createTableCell(rowIndex, j, tableId);
       rowDiv.appendChild(cell);
     }
-
     return rowDiv;
   }
 
@@ -350,6 +435,20 @@ export class TableComponent {
     Canvas.dispatchDesignChange();
   }
 
+  private static getDefaultValuesOfInput(): Record<string, any> {
+    const defaults: Record<string, any> = {};
+    TableComponent.tableAttributeConfig.forEach(attr => {
+      if (
+        attr.type === 'Input' &&
+        attr.default_value !== undefined &&
+        attr.default_value !== null
+      ) {
+        defaults[attr.key] = attr.default_value;
+      }
+    });
+    return defaults;
+  }
+
   static restore(container: HTMLElement, editable: boolean | null): void {
     const instance = new TableComponent();
     const tableWrapper = container.querySelector('.table-wrapper');
@@ -422,10 +521,14 @@ export class TableComponent {
     const addRowButton = container.querySelector(
       '.add-row-button'
     ) as HTMLButtonElement;
-    if (addRowButton) {
+    if (addRowButton && editable !== false) {
       addRowButton.addEventListener('click', () => {
         instance.addRow(tableWrapper as HTMLElement, tableId!);
       });
+    } else if (editable === false) {
+      addRowButton.remove();
     }
+    const defaultValues = TableComponent.getDefaultValuesOfInput();
+    instance.evaluateRowVisibility(defaultValues, container);
   }
 }

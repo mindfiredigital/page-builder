@@ -1,3 +1,4 @@
+// import { Canvas } from '../canvas/Canvas.js';
 export class HTMLGenerator {
   constructor(canvas) {
     this.canvas = canvas;
@@ -56,7 +57,7 @@ export class HTMLGenerator {
         childElement.classList.remove(classToRemove);
       });
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input, .cell-controls,.add-row-button'
+        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button'
       );
       elementsToRemove.forEach(el => el.remove());
       if (childElement.children.length > 0) {
@@ -96,56 +97,13 @@ export class HTMLGenerator {
           border-collapse: collapse ;
 
       }
-         
+          .editable-component{
+          border:none !important;
+          box-shadow:none !important;
+          }
+
       `);
     const elements = canvasElement.querySelectorAll('*');
-    const stylesToCapture = [
-      'position',
-      'top',
-      'left',
-      'right',
-      'bottom',
-      'width',
-      'height',
-      'min-width',
-      'min-height',
-      'max-width',
-      'max-height',
-      'margin',
-      'padding',
-      'background-color',
-      'background-image',
-      'border',
-      'border-radius',
-      'transform',
-      'opacity',
-      'z-index',
-      'display',
-      'flex-direction',
-      'justify-content',
-      'align-items',
-      'flex-wrap',
-      'font-size',
-      'font-weight',
-      'color',
-      'text-align',
-      'line-height',
-      'font-family',
-      'box-shadow',
-      'overflow',
-      'fill',
-      'cursor',
-      'transition',
-      'border-bottom',
-      'border-top',
-      'border-left',
-      'border-right',
-      'box-sizing',
-      '-webkit-box-pack',
-      'letter-spacing',
-      '-webkit-tap-highlight-color',
-      'pointer-events',
-    ];
     const classesToExclude = [
       'component-controls',
       'delete-icon',
@@ -156,47 +114,53 @@ export class HTMLGenerator {
       'edit-link-form',
       'edit-link',
     ];
-    elements.forEach((component, inedx) => {
+    elements.forEach((component, index) => {
       // Skip excluded elements
       if (classesToExclude.some(cls => component.classList.contains(cls))) {
         return;
       }
       const computedStyles = window.getComputedStyle(component);
       const componentStyles = [];
-      const isSVG = component instanceof SVGElement || component.closest('svg');
-      // Loop through the predefined styles to capture
-      stylesToCapture.forEach(prop => {
+      if (
+        component instanceof SVGElement ||
+        (component.closest('svg') &&
+          ['path', 'circle', 'rect', 'polygon'].includes(
+            component.tagName.toLowerCase()
+          ))
+      ) {
+        this.handleSVGElement(
+          component,
+          componentStyles,
+          computedStyles,
+          index,
+          styles,
+          processedSelectors
+        );
+        return;
+      }
+      for (let i = 0; i < computedStyles.length; i++) {
+        const prop = computedStyles[i];
         const value = computedStyles.getPropertyValue(prop);
-        const hasValue =
+        if (prop === 'resize') {
+          continue;
+        }
+        if (
           value &&
-          value !== 'none' &&
-          value !== '' &&
           value !== 'initial' &&
-          value !== 'auto';
-        if (hasValue) {
-          if (prop === 'background-color' && value === 'rgba(0, 0, 0, 0)') {
-            return;
-          }
-          if (prop === 'border-width' && value === '0px') {
-            return;
-          }
-          if (prop === 'color' && value === 'rgb(0, 0, 0)' && !isSVG) {
-            return;
-          }
-          if (prop === 'font-weight' && value === '400') {
-            return;
-          }
+          value !== 'auto' &&
+          value !== 'none' &&
+          value !== ''
+        ) {
           componentStyles.push(`${prop}: ${value};`);
         }
-      });
+      }
       const selector = this.generateUniqueSelector(component);
       if (!processedSelectors.has(selector) && componentStyles.length > 0) {
         processedSelectors.add(selector);
         styles.push(`
-          ${selector} {
-            ${componentStyles.join('\n  ')}
-          }
-        `);
+        ${selector} {
+          ${componentStyles.join('\n  ')}
+        }`);
       }
     });
     return styles.join('\n');
@@ -310,40 +274,58 @@ export class HTMLGenerator {
     return selector || `${element.tagName.toLowerCase()}-${index}`;
   }
   generateUniqueSelector(element) {
+    // If the element has an ID, that is the most unique selector
     if (element.id) {
       return `#${element.id}`;
     }
+    if (element instanceof SVGElement) {
+      const classAttributeValue = element.getAttribute('class');
+      if (classAttributeValue) {
+        return `.${classAttributeValue.toString().split(' ').join('.')}`;
+      }
+    }
+    if (element.className) {
+      return `.${element.className.toString().split(' ').join('.')}`;
+    }
     const selectorPath = [];
     let currentElement = element;
-    while (currentElement && currentElement.tagName.toLowerCase() !== 'body') {
+    while (
+      currentElement &&
+      currentElement.tagName.toLowerCase() !== 'body' &&
+      !currentElement.id
+    ) {
+      const parent = currentElement.parentElement;
+      if (!parent) break;
+      const siblings = Array.from(parent.children);
+      const siblingsOfSameType = siblings.filter(
+        child => child.tagName === currentElement.tagName
+      );
       let selector = currentElement.tagName.toLowerCase();
-      let parent = currentElement.parentElement;
-      if (currentElement.id) {
-        selectorPath.unshift(`#${currentElement.id}`);
-        break;
+      if (siblingsOfSameType.length > 1) {
+        const index = siblingsOfSameType.indexOf(currentElement) + 1;
+        selector += `:nth-of-type(${index})`;
       }
+      // Add classes to the selector if they exist
       const cleanClasses = Array.from(currentElement.classList).filter(
         cls =>
           !cls.includes('component-') &&
           !cls.includes('delete-') &&
-          !cls.includes('resizer') &&
-          !cls.includes('selected')
+          !cls.includes('resizer')
       );
       if (cleanClasses.length > 0) {
         selector += `.${cleanClasses.join('.')}`;
       }
-      if (parent) {
-        const siblingsOfSameType = Array.from(parent.children).filter(
-          child => child.tagName === currentElement.tagName
-        );
-        if (siblingsOfSameType.length > 1) {
-          const index = siblingsOfSameType.indexOf(currentElement) + 1;
-          selector += `:nth-of-type(${index})`;
-        }
-      }
       selectorPath.unshift(selector);
       currentElement = parent;
     }
+    if (currentElement) {
+      if (currentElement.id) {
+        selectorPath.unshift(`#${currentElement.id}`);
+      } else {
+        selectorPath.unshift(currentElement.tagName.toLowerCase());
+      }
+    }
+    // The final selector is the joined path
     return selectorPath.join(' > ');
   }
   applyCSS(css) {

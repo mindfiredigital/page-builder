@@ -1,3 +1,4 @@
+import { Canvas } from '../canvas/Canvas.js';
 export default class LayersViewController {
   static updateLayersView() {
     const layersView = document.getElementById('layers-view');
@@ -142,12 +143,16 @@ export default class LayersViewController {
     }
   }
   static deleteComponent(element, layerItem) {
-    if (confirm('Are you sure you want to delete this component?')) {
-      element.remove();
-      layerItem.remove();
-      // Update layers view
-      this.updateLayersView();
-    }
+    element.remove();
+    layerItem.remove();
+    const updatedComponents = Canvas.getComponents().filter(
+      comp => comp !== element
+    );
+    Canvas.setComponents(updatedComponents);
+    Canvas.historyManager.captureState();
+    Canvas.dispatchDesignChange();
+    // Update layers view
+    this.updateLayersView();
   }
   static getComponentType(element) {
     if (element.classList.contains('text-component')) return 'text';

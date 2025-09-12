@@ -1,17 +1,4 @@
 import LayersViewController from './LayerViewController';
-type ReactComponentType<P = {}> = React.ComponentType<P>;
-interface CustomComponentConfig {
-  [key: string]: {
-    component: string;
-    svg?: string;
-    title?: string;
-    settingsComponent?: ReactComponentType<{
-      targetComponentId: string;
-    }>;
-    settingsComponentTagName?: string;
-    props?: Record<string, any>;
-  };
-}
 export declare class CustomizationSidebar {
   private static sidebarElement;
   private static controlsContainer;
@@ -37,12 +24,8 @@ export declare class CustomizationSidebar {
   static showSidebar(componentId: string): void;
   private static populateCssControls;
   private static handleInputTrigger;
-  private static createAttributeControls;
+  private static ShoModal;
   private static populateFunctionalityControls;
-  static rgbToHex(rgb: string): string;
-  private static createControl;
-  private static createSelectControl;
   private static addListeners;
   static getLayersViewController(): LayersViewController;
 }
-export {};

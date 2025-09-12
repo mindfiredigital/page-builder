@@ -208,7 +208,7 @@ class o {
         ((t.textContent = e[o]), (t.style.color = '#000000')),
         n && t.appendChild(n);
     }),
-      L.dispatchDesignChange();
+      k.dispatchDesignChange();
   }
   updateInputValues(e) {
     document.querySelectorAll('.text-component').forEach(t => {
@@ -218,7 +218,7 @@ class o {
       o && e.hasOwnProperty(o) && 'Input' === s && (t.textContent = e[o]),
         n && t.appendChild(n);
     }),
-      L.dispatchDesignChange();
+      k.dispatchDesignChange();
   }
   handleTextClick(e) {
     return t(this, void 0, void 0, function* () {
@@ -261,7 +261,7 @@ class o {
         : ('Constant' !== t.type && 'Input' !== t.type) ||
           (e.textContent = `${t.value}`),
       n && e.appendChild(n),
-      null == L || L.dispatchDesignChange();
+      null == k || k.dispatchDesignChange();
   }
 }
 o.textAttributeConfig = [];
@@ -344,7 +344,7 @@ class s {
             (i.style.display = 'block'),
               (o.style.display = 'none'),
               (n.style.backgroundColor = 'transparent'),
-              null == L || L.dispatchDesignChange();
+              null == k || k.dispatchDesignChange();
           }
         });
       }),
@@ -458,7 +458,7 @@ class a {
         ((t.textContent = e[o]), (t.style.color = '#000000')),
         n && t.appendChild(n);
     }),
-      L.dispatchDesignChange();
+      k.dispatchDesignChange();
   }
   updateInputValues(e) {
     document.querySelectorAll('.header-component').forEach(t => {
@@ -468,7 +468,7 @@ class a {
       o && e.hasOwnProperty(o) && 'Input' === s && (t.textContent = e[o]),
         n && t.appendChild(n);
     }),
-      L.dispatchDesignChange();
+      k.dispatchDesignChange();
   }
   handleHeaderClick(e) {
     return t(this, void 0, void 0, function* () {
@@ -512,7 +512,7 @@ class a {
         : ('Constant' !== t.type && 'Input' !== t.type) ||
           (e.textContent = `${t.value}`),
       n && e.appendChild(n),
-      null == L || L.dispatchDesignChange();
+      null == k || k.dispatchDesignChange();
   }
   static restore(e) {
     const t = e.closest('.header-component');
@@ -585,7 +585,7 @@ class r {
         window.removeEventListener('mousemove', this.resize),
           window.removeEventListener('mouseup', this.stopResize),
           (this.currentResizer = null),
-          L.historyManager.captureState();
+          k.historyManager.captureState();
       }),
       (this.element = document.createElement('div')),
       this.element.classList.add('container-component'),
@@ -674,10 +674,10 @@ class r {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const o = L.createComponent(n);
+    const o = k.createComponent(n);
     if (!o) return;
     const s = this.element.classList[2],
-      i = L.generateUniqueClass(n, !0, s);
+      i = k.generateUniqueClass(n, !0, s);
     o.classList.add(i);
     const l = document.createElement('span');
     (l.className = 'component-label'),
@@ -689,7 +689,7 @@ class r {
       o.addEventListener('mouseleave', e => this.hideLabel(e, o)),
       this.element.appendChild(o),
       this.makeDraggable(o),
-      L.historyManager.captureState();
+      k.historyManager.captureState();
   }
   showLabel(e, t) {
     e.stopPropagation();
@@ -737,8 +737,8 @@ class r {
     e.querySelectorAll('.editable-component').forEach(e => {
       var n;
       if (
-        (L.controlsManager.addControlButtons(e),
-        L.addDraggableListeners(e),
+        (k.controlsManager.addControlButtons(e),
+        k.addDraggableListeners(e),
         e.addEventListener('mouseenter', n => t.showLabel(n, e)),
         e.addEventListener('mouseleave', n => t.hideLabel(n, e)),
         e.classList.contains('image-component'))
@@ -786,7 +786,7 @@ class d {
         ? void 0
         : t.getData('component-type');
     if (!n) return;
-    const o = L.createComponent(n);
+    const o = k.createComponent(n);
     if (!o) return;
     const s = e.target;
     if (s && s.classList.contains('column')) {
@@ -799,7 +799,7 @@ class d {
         (t.className = 'column-label'),
         s.appendChild(t)),
         (t.textContent = e);
-      const i = L.generateUniqueClass(n, !0, e);
+      const i = k.generateUniqueClass(n, !0, e);
       o.classList.add(i), (o.id = i);
       let l = o.querySelector('.component-label');
       l ||
@@ -807,7 +807,7 @@ class d {
         (l.className = 'component-label'),
         o.appendChild(l)),
         (l.textContent = i),
-        L.historyManager.captureState();
+        k.historyManager.captureState();
     }
   }
   addStyles(e) {
@@ -822,8 +822,8 @@ class d {
     e.querySelectorAll('.editable-component').forEach(e => {
       var t;
       if (
-        (L.controlsManager.addControlButtons(e),
-        L.addDraggableListeners(e),
+        (k.controlsManager.addControlButtons(e),
+        k.addDraggableListeners(e),
         e.classList.contains('image-component'))
       ) {
         const n =
@@ -853,7 +853,7 @@ class p {
     p.tableAttributeConfig = o || [];
     const s = document.createElement('div');
     s.classList.add('table-component');
-    const i = L.generateUniqueClass('table');
+    const i = k.generateUniqueClass('table');
     (s.id = i),
       (s.style.minWidth = '250px'),
       (s.style.border = '1px solid #2F3132'),
@@ -885,11 +885,58 @@ class p {
     }
     return s;
   }
+  evaluateRowVisibility(e, t) {
+    let n;
+    (n = t
+      ? t.querySelectorAll('.table-row')
+      : document.querySelectorAll('.table-row')),
+      n.forEach(t => {
+        const n = t.getAttribute('data-visibility-rules');
+        if (n)
+          try {
+            const o = JSON.parse(n);
+            if (0 === o.length) return void (t.style.display = 'grid');
+            let s = !0;
+            o.forEach(t => {
+              const n = e[t.inputKey];
+              this.evaluateRule(n, t.operator, t.value) &&
+                ('hide' === t.action
+                  ? (s = !1)
+                  : 'show' === t.action && (s = !0));
+            }),
+              (t.style.display = s ? 'grid' : 'none');
+          } catch (e) {
+            console.error('Failed to parse or evaluate visibility rules:', e);
+          }
+        else t.style.display = 'grid';
+      });
+  }
+  evaluateRule(e, t, n) {
+    const o = parseFloat(e),
+      s = parseFloat(n);
+    switch (t) {
+      case 'equals':
+        return e === n;
+      case 'not_equals':
+        return e !== n;
+      case 'greater_than':
+        return !isNaN(o) && !isNaN(s) && o > s;
+      case 'less_than':
+        return !isNaN(o) && !isNaN(s) && o < s;
+      case 'contains':
+        return e && n && e.includes(n);
+      default:
+        return !1;
+    }
+  }
   createTableRow(e, t, n) {
     const o = document.createElement('div');
     (o.style.display = 'grid'),
       (o.style.gridTemplateColumns = `repeat(${t}, 1fr)`),
-      (o.className = 'table-row');
+      (o.className = 'table-row'),
+      (o.id = `table-row-T-${n}-R${e}`),
+      (o.style.position = 'relative'),
+      (o.style.cursor = 'pointer');
     for (let s = 0; s < t; s++) {
       const t = this.createTableCell(e, s, n);
       o.appendChild(t);
@@ -1045,7 +1092,7 @@ class p {
           n && t.appendChild(n);
       });
     }),
-      L.dispatchDesignChange();
+      k.dispatchDesignChange();
   }
   updateInputValues(e) {
     document.querySelectorAll('.table-component').forEach(t => {
@@ -1055,7 +1102,7 @@ class p {
         n && e.hasOwnProperty(n) && 'Input' === o && (t.textContent = e[n]);
       });
     }),
-      L.dispatchDesignChange();
+      k.dispatchDesignChange();
   }
   updateCellContent(e, t) {
     e.setAttribute('data-attribute-key', t.key),
@@ -1068,7 +1115,7 @@ class p {
         (e.style.fontWeight = '500'))
       : 'Constant' === t.type && (e.textContent = `${t.value}`),
       n && e.appendChild(n),
-      null == L || L.dispatchDesignChange();
+      null == k || k.dispatchDesignChange();
   }
   setModalComponent(e) {
     this.modalComponent = e;
@@ -1076,7 +1123,19 @@ class p {
   addRow(e, t) {
     const n = e.children.length,
       o = this.createTableRow(n, 1, t);
-    e.appendChild(o), L.dispatchDesignChange();
+    e.appendChild(o), k.dispatchDesignChange();
+  }
+  static getDefaultValuesOfInput() {
+    const e = {};
+    return (
+      p.tableAttributeConfig.forEach(t => {
+        'Input' === t.type &&
+          void 0 !== t.default_value &&
+          null !== t.default_value &&
+          (e[t.key] = t.default_value);
+      }),
+      e
+    );
   }
   static restore(e, t) {
     const n = new p(),
@@ -1121,10 +1180,13 @@ class p {
       } else null == a || a.remove();
     });
     const l = e.querySelector('.add-row-button');
-    l &&
-      l.addEventListener('click', () => {
-        n.addRow(o, i);
-      });
+    l && !1 !== t
+      ? l.addEventListener('click', () => {
+          n.addRow(o, i);
+        })
+      : !1 === t && l.remove();
+    const a = p.getDefaultValuesOfInput();
+    n.evaluateRowVisibility(a, e);
   }
 }
 class h {
@@ -1419,7 +1481,7 @@ class g {
     (this.undoStack = []), (this.redoStack = []), (this.canvas = e);
   }
   captureState() {
-    const e = L.getState();
+    const e = k.getState();
     if (e.length > 0) {
       const t = this.undoStack[this.undoStack.length - 1];
       JSON.stringify(e) !== JSON.stringify(t) &&
@@ -1433,18 +1495,18 @@ class g {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
       const t = this.undoStack[this.undoStack.length - 1];
-      L.restoreState(t);
+      k.restoreState(t);
     } else if (1 === this.undoStack.length) {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
-      const t = L.jsonStorage.load();
-      t ? L.restoreState(t) : L.restoreState([]);
+      const t = k.jsonStorage.load();
+      t ? k.restoreState(t) : k.restoreState([]);
     } else console.warn('No more actions to undo.');
   }
   redo() {
     if (this.redoStack.length > 0) {
       const e = this.redoStack.pop();
-      this.undoStack.push(e), L.restoreState(e);
+      this.undoStack.push(e), k.restoreState(e);
     } else console.warn('No more actions to redo.');
   }
 }
@@ -1612,8 +1674,12 @@ class f {
       : ((e.style.display = 'none'), t.classList.add('hidden'));
   }
   static deleteComponent(e, t) {
-    confirm('Are you sure you want to delete this component?') &&
-      (e.remove(), t.remove(), this.updateLayersView());
+    e.remove(), t.remove();
+    const n = k.getComponents().filter(t => t !== e);
+    k.setComponents(n),
+      k.historyManager.captureState(),
+      k.dispatchDesignChange(),
+      this.updateLayersView();
   }
   static getComponentType(e) {
     return e.classList.contains('text-component')
@@ -1707,6 +1773,190 @@ const C = {
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush"><path d="m11 10 3 3"/><path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/><path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/></svg>',
 };
 class w {
+  static createAttributeControls(e, t, n) {
+    const o = document.createElement('div');
+    o.className = 'attribute-input-container';
+    let s = '';
+    switch (e.input_type) {
+      case 'checkbox':
+        const t = 'true' === e.default_value;
+        s = `\n          <div class="attribute-input-wrapper checkbox-wrapper">\n            <input \n              type="checkbox" \n              class="attribute-input" \n              id="${e.key}"  \n              ${e.editable ? '' : 'disabled'} \n              ${t ? 'checked' : ''} \n            >\n          </div>\n        `;
+        break;
+      case 'number':
+        s = `\n          <div class="attribute-input-wrapper">\n            <input \n              type="number" \n              class="attribute-input" \n              id="${e.key}"  \n              ${e.editable ? '' : 'disabled readonly'} \n              value="${e.default_value || ''}" \n              placeholder="Enter ${e.title.toLowerCase()}..."\n            >\n          </div>\n        `;
+        break;
+      default:
+        s = `\n          <div class="attribute-input-wrapper">\n            <input \n              type="text" \n              class="attribute-input" \n              id="${e.key}"  \n              ${e.editable ? '' : 'disabled readonly'} \n              value="${e.default_value || ''}" \n              placeholder="Enter ${e.title.toLowerCase()}..."\n            >\n          </div>\n        `;
+    }
+    (o.innerHTML = `\n      <div class="attribute-header">\n        <label for="${e.key}" class="attribute-label">${e.title}</label>\n        ${e.editable ? '' : '<span class="readonly-badge">Read Only</span>'}\n      </div>\n      ${s}\n    `),
+      t.appendChild(o);
+    const i = document.getElementById(e.key);
+    if (!1 !== e.editable) {
+      const t = document.createElement('div');
+      (t.className = 'event-configurator'),
+        (t.innerHTML = `\n        <div class="event-trigger-section">\n          <div class="trigger-header">\n            <label class="trigger-label">Trigger Event:</label>\n          </div>\n          <div class="trigger-select-wrapper">\n            <select class="event-selector" id="event-selector-${e.key}">\n              <option value="input">On Input (Real-time)</option>\n              <option value="change">On Change</option>\n              <option value="blur">On Focus Lost</option>\n              <option value="keyup">On Key Release</option>\n              <option value="click">On Click</option>\n            </select>\n            <div class="select-arrow">▼</div>\n          </div>\n        </div>\n      `),
+        o.appendChild(t);
+      const s = document.getElementById(`event-selector-${e.key}`),
+        l = e => {
+          ['input', 'change', 'blur', 'keyup', 'click'].forEach(e => {
+            i.removeEventListener(e, n);
+          }),
+            i.addEventListener(e, n),
+            o.setAttribute('data-trigger', e);
+        };
+      s.addEventListener('change', () => {
+        var e;
+        const t = s.value;
+        l(t),
+          null === (e = s.parentElement) ||
+            void 0 === e ||
+            e.classList.add('trigger-changed'),
+          setTimeout(() => {
+            var e;
+            null === (e = s.parentElement) ||
+              void 0 === e ||
+              e.classList.remove('trigger-changed');
+          }, 300);
+      });
+      const a = 'input';
+      (s.value = a),
+        l(a),
+        i.addEventListener('focus', () => {
+          o.classList.add('input-focused');
+        }),
+        i.addEventListener('blur', () => {
+          o.classList.remove('input-focused');
+        });
+    }
+  }
+  static populateModalButton(e, t, n) {
+    if (!1 === n) return;
+    const s = document.createElement('button');
+    (s.textContent = `Set ${e.classList[0].replace('-component', '')} Attribute`),
+      (s.className = 'set-attribute-button'),
+      t.appendChild(s),
+      s.addEventListener('click', () => {
+        if (e.classList.contains('text-component')) {
+          new o().handleTextClick(e);
+        } else if (e.classList.contains('header-component')) {
+          new a().handleHeaderClick(e);
+        } else if (e.classList.contains('table-cell')) {
+          new p().handleCellClick(e);
+        }
+      });
+  }
+  static rgbToHex(e) {
+    const t = e.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/);
+    if (!t) return e;
+    return `#${((1 << 24) | (parseInt(t[1], 10) << 16) | (parseInt(t[2], 10) << 8) | parseInt(t[3], 10)).toString(16).slice(1).toUpperCase()}`;
+  }
+  static createControl(e, t, n, o, s, i = {}) {
+    const l = document.createElement('div');
+    l.classList.add('control-wrapper');
+    if ('number' === n && i.unit) {
+      const s = i.unit;
+      l.innerHTML = `\n                <label for="${t}">${e}:</label>\n                <div class="input-wrapper">\n                  <input type="${n}" id="${t}" value="${o}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === s ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === s ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === s ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === s ? 'selected' : ''}>%</option>\n                  </select>\n                </div>\n            `;
+    } else
+      l.innerHTML = `\n        <label for="${t}">${e}:</label>\n        <div class="input-wrapper">\n          <input type="color" id="${t}" value="${o}">\n          <input type="text" id="${t}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${o}">\n        </div>\n      `;
+    const a = l.querySelector('input'),
+      r = l.querySelector(`#${t}-unit`);
+    a &&
+      Object.keys(i).forEach(e => {
+        a.setAttribute(e, i[e].toString());
+      });
+    const d = l.querySelector(`input[type="color"]#${t}`),
+      c = l.querySelector(`#${t}-value`);
+    d &&
+      d.addEventListener('input', () => {
+        c && (c.value = d.value);
+      }),
+      c &&
+        c.addEventListener('input', () => {
+          d && (d.value = c.value);
+        }),
+      s.appendChild(l),
+      r &&
+        r.addEventListener('change', () => {
+          const e = r.value,
+            t = parseInt(a.value);
+          a.value = `${t}${e}`;
+        });
+  }
+  static createSelectControl(e, t, n, o, s) {
+    const i = document.createElement('div');
+    i.classList.add('control-wrapper');
+    const l = o
+      .map(
+        e => `<option value="${e}" ${e === n ? 'selected' : ''}>${e}</option>`
+      )
+      .join('');
+    (i.innerHTML = `\n                <label for="${t}">${e}:</label>\n                <div class="input-wrapper">\n                  <select id="${t}">${l}</select>\n                </div>\n            `),
+      s.appendChild(i);
+  }
+  static populateRowVisibilityControls(e, t) {
+    const n = document.getElementById('functions-panel');
+    n.innerHTML =
+      '\n      <div id="visibility-rules-panel" class="rules-panel">\n          <h4 class="panel-title">Row Visibility Rules</h4>\n          \n          <div id="rules-list" class="rules-list"></div>\n          \n          <div class="rule-builder-form">\n              <h5 class="rule-builder-form-title">Add New Rule</h5>\n              <select id="rule-input-key-select" class="form-row select"></select>\n              \n              <div class="form-row">\n                  <select id="rule-operator-select">\n                      <option value="equals">Equals</option>\n                      <option value="not_equals">Not Equals</option>\n                      <option value="greater_than">Greater Than</option>\n                      <option value="less_than">Less Than</option>\n                      <option value="contains">Contains</option>\n                  </select>\n                  <input type="text" id="rule-value-input" placeholder="Enter value">\n              </div>\n              \n              <div class="form-row">\n                  <select id="rule-action-select">\n                      <option value="show">Show Row</option>\n                      <option value="hide">Hide Row</option>\n                  </select>\n                  <button id="add-rule-btn" class="add-rule-btn">\n                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M5 12h14M12 5v14"/></svg>\n                      <span>Add Rule</span>\n                  </button>\n              </div>\n          </div>\n      </div>\n    ';
+    const o = document.getElementById('rule-input-key-select');
+    o &&
+      t &&
+      t.forEach(e => {
+        if ('Input' === e.type) {
+          const t = document.createElement('option');
+          (t.value = e.key), (t.textContent = e.title), o.appendChild(t);
+        }
+      });
+    const s = document.getElementById('rules-list'),
+      i = document.getElementById('add-rule-btn'),
+      l = document.getElementById('rule-value-input'),
+      a = document.getElementById('rule-operator-select'),
+      r = document.getElementById('rule-action-select'),
+      d = () => {
+        s.innerHTML = '';
+        JSON.parse(e.getAttribute('data-visibility-rules') || '[]').forEach(
+          (t, n) => {
+            const o = document.createElement('div');
+            (o.className = 'rule-item'),
+              (o.innerHTML = `\n          <span class="rule-item-text">\n              If <strong class="text-blue-600">${t.inputKey}</strong> ${t.operator} '<strong class="text-green-600">${t.value}</strong>', then <strong class="text-purple-600">${t.action}</strong>\n          </span>\n          <button class="delete-rule-btn">\n              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>\n          </button>\n        `);
+            o
+              .querySelector('.delete-rule-btn')
+              .addEventListener('click', () => {
+                this.deleteRule(e, n), d(), k.dispatchDesignChange();
+              }),
+              s.appendChild(o);
+          }
+        );
+      };
+    i.addEventListener('click', () => {
+      const t = {
+        inputKey: o.value,
+        operator: a.value,
+        value: l.value,
+        action: r.value,
+      };
+      this.addRule(e, t), d(), k.dispatchDesignChange();
+    }),
+      d();
+  }
+  static addRule(e, t) {
+    try {
+      const n = JSON.parse(e.getAttribute('data-visibility-rules') || '[]');
+      n.push(t), e.setAttribute('data-visibility-rules', JSON.stringify(n));
+    } catch (e) {
+      console.error('Failed to add rule:', e);
+    }
+  }
+  static deleteRule(e, t) {
+    try {
+      const n = JSON.parse(e.getAttribute('data-visibility-rules') || '[]');
+      n.splice(t, 1),
+        e.setAttribute('data-visibility-rules', JSON.stringify(n));
+    } catch (e) {
+      console.error('Failed to delete rule:', e);
+    }
+  }
+}
+class x {
   static init(e, t, n, o) {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -1823,28 +2073,29 @@ class w {
     this.controlsContainer.innerHTML = '';
     const t = getComputedStyle(e),
       n = 'canvas' === e.id.toLowerCase();
-    this.createSelectControl('Display', 'display', t.display || 'block', [
-      'block',
-      'inline',
-      'inline-block',
-      'flex',
-      'grid',
-      'none',
-    ]),
+    w.createSelectControl(
+      'Display',
+      'display',
+      t.display || 'block',
+      ['block', 'inline', 'inline-block', 'flex', 'grid', 'none'],
+      this.controlsContainer
+    ),
       ('flex' !== t.display && 'flex' !== e.style.display) ||
-        (this.createSelectControl(
+        (w.createSelectControl(
           'Flex Direction',
           'flex-direction',
           t.flexDirection || 'row',
-          ['row', 'row-reverse', 'column', 'column-reverse']
+          ['row', 'row-reverse', 'column', 'column-reverse'],
+          this.controlsContainer
         ),
-        this.createSelectControl(
+        w.createSelectControl(
           'Align Items',
           'align-items',
           t.alignItems || 'stretch',
-          ['stretch', 'flex-start', 'flex-end', 'center', 'baseline']
+          ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'],
+          this.controlsContainer
         ),
-        this.createSelectControl(
+        w.createSelectControl(
           'Justify Content',
           'justify-content',
           t.justifyContent || 'flex-start',
@@ -1855,90 +2106,117 @@ class w {
             'space-between',
             'space-around',
             'space-evenly',
-          ]
+          ],
+          this.controlsContainer
         )),
       n ||
-        (this.createControl('Width', 'width', 'number', e.offsetWidth, {
-          min: 0,
-          max: 1e3,
-          unit: 'px',
-        }),
-        this.createControl('Height', 'height', 'number', e.offsetHeight, {
-          min: 0,
-          max: 1e3,
-          unit: 'px',
-        }),
-        this.createControl(
+        (w.createControl(
+          'Width',
+          'width',
+          'number',
+          e.offsetWidth,
+          this.controlsContainer,
+          { min: 0, max: 1e3, unit: 'px' }
+        ),
+        w.createControl(
+          'Height',
+          'height',
+          'number',
+          e.offsetHeight,
+          this.controlsContainer,
+          { min: 0, max: 1e3, unit: 'px' }
+        ),
+        w.createControl(
           'Margin',
           'margin',
           'number',
           parseInt(t.margin) || 0,
+          this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         ),
-        this.createControl(
+        w.createControl(
           'Padding',
           'padding',
           'number',
           parseInt(t.padding) || 0,
+          this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         )),
-      this.createControl(
+      w.createControl(
         'Background Color',
         'background-color',
         'color',
-        t.backgroundColor
+        t.backgroundColor,
+        this.controlsContainer
       ),
-      this.createSelectControl('Text Alignment', 'alignment', t.textAlign, [
-        'left',
-        'center',
-        'right',
-      ]),
-      this.createSelectControl('Font Family', 'font-family', t.fontFamily, [
-        'Arial',
-        'Verdana',
-        'Helvetica',
-        'Times New Roman',
-        'Georgia',
-        'Courier New',
-        'sans-serif',
-        'serif',
-      ]),
-      this.createControl(
+      w.createSelectControl(
+        'Text Alignment',
+        'alignment',
+        t.textAlign,
+        ['left', 'center', 'right'],
+        this.controlsContainer
+      ),
+      w.createSelectControl(
+        'Font Family',
+        'font-family',
+        t.fontFamily,
+        [
+          'Arial',
+          'Verdana',
+          'Helvetica',
+          'Times New Roman',
+          'Georgia',
+          'Courier New',
+          'sans-serif',
+          'serif',
+        ],
+        this.controlsContainer
+      ),
+      w.createControl(
         'Font Size',
         'font-size',
         'number',
         parseInt(t.fontSize) || 16,
+        this.controlsContainer,
         { min: 0, max: 100, unit: 'px' }
       ),
-      this.createSelectControl('Font Weight', 'font-weight', t.fontWeight, [
-        'normal',
-        'bold',
-        'bolder',
-        'lighter',
-        '100',
-        '200',
-        '300',
-        '400',
-        '500',
-        '600',
-        '700',
-        '800',
-        '900',
-      ]),
-      this.createControl(
+      w.createSelectControl(
+        'Font Weight',
+        'font-weight',
+        t.fontWeight,
+        [
+          'normal',
+          'bold',
+          'bolder',
+          'lighter',
+          '100',
+          '200',
+          '300',
+          '400',
+          '500',
+          '600',
+          '700',
+          '800',
+          '900',
+        ],
+        this.controlsContainer
+      ),
+      w.createControl(
         'Text Color',
         'text-color',
         'color',
-        t.color || '#000000'
+        t.color || '#000000',
+        this.controlsContainer
       ),
-      this.createControl(
+      w.createControl(
         'Border Width',
         'border-width',
         'number',
         parseInt(t.borderWidth) || 0,
+        this.controlsContainer,
         { min: 0, max: 20, unit: 'px' }
       ),
-      this.createSelectControl(
+      w.createSelectControl(
         'Border Style',
         'border-style',
         t.borderStyle || 'none',
@@ -1952,13 +2230,15 @@ class w {
           'ridge',
           'inset',
           'outset',
-        ]
+        ],
+        this.controlsContainer
       ),
-      this.createControl(
+      w.createControl(
         'Border Color',
         'border-color',
         'color',
-        t.borderColor || '#000000'
+        t.borderColor || '#000000',
+        this.controlsContainer
       );
     const o = document.getElementById('background-color');
     o && (o.value = w.rgbToHex(t.backgroundColor));
@@ -1970,32 +2250,33 @@ class w {
   static handleInputTrigger(e) {
     return t(this, void 0, void 0, function* () {
       var e, t, n;
-      const s = w.selectedComponent;
+      const s = x.selectedComponent;
       if (!s) return;
       let i;
       if (
         (s.classList.contains('table-component')
           ? (i =
-              null === (e = w.basicComponentsConfig) || void 0 === e
+              null === (e = x.basicComponentsConfig) || void 0 === e
                 ? void 0
                 : e.components.find(e => 'table' === e.name))
           : s.classList.contains('text-component')
             ? (i =
-                null === (t = w.basicComponentsConfig) || void 0 === t
+                null === (t = x.basicComponentsConfig) || void 0 === t
                   ? void 0
                   : t.components.find(e => 'text' === e.name))
             : s.classList.contains('header-component') &&
               (i =
-                null === (n = w.basicComponentsConfig) || void 0 === n
+                null === (n = x.basicComponentsConfig) || void 0 === n
                   ? void 0
                   : n.components.find(e => 'header' === e.name)),
-        console.log(i),
         i && i.globalExecuteFunction)
       ) {
         const e = {};
-        w.functionsPanel.querySelectorAll('.attribute-input').forEach(t => {
+        x.functionsPanel.querySelectorAll('.attribute-input').forEach(t => {
           const n = t;
-          e[n.id] = n.value;
+          'checkbox' === n.type
+            ? (e[n.id] = n.checked ? 'true' : 'false')
+            : (e[n.id] = n.value);
         });
         const t = yield i.globalExecuteFunction(e),
           n = new p(),
@@ -2005,174 +2286,94 @@ class w {
           (s.seedFormulaValues(t),
           n.seedFormulaValues(t),
           l.seedFormulaValues(t),
-          L.historyManager.captureState()),
+          k.historyManager.captureState()),
           s.updateInputValues(e),
           n.updateInputValues(e),
-          l.updateInputValues(e);
+          l.updateInputValues(e),
+          n.evaluateRowVisibility(e),
+          k.historyManager.captureState();
       }
     });
   }
-  static createAttributeControls(e) {
-    const t = document.createElement('div');
-    (t.className = 'attribute-input-container'),
-      (t.innerHTML = `\n    <div class="attribute-header">\n      <label for="${e.key}" class="attribute-label">${e.title}</label>\n      ${e.editable ? '' : '<span class="readonly-badge">Read Only</span>'}\n    </div>\n    <div class="attribute-input-wrapper">\n      <input \n        type="text" \n        class="attribute-input" \n        id="${e.key}"  \n        ${e.editable ? '' : 'disabled readonly'} \n        value="${e.default_value || ''}" \n        placeholder="Enter ${e.title.toLowerCase()}..."\n      >\n    </div>\n  `),
-      this.functionsPanel.appendChild(t);
-    const n = document.getElementById(e.key);
-    if (!1 !== e.editable) {
-      const o = document.createElement('div');
-      (o.className = 'event-configurator'),
-        (o.innerHTML = `\n      <div class="event-trigger-section">\n        <div class="trigger-header">\n          <label class="trigger-label">Trigger Event:</label>\n        </div>\n        <div class="trigger-select-wrapper">\n          <select class="event-selector" id="event-selector-${e.key}">\n            <option value="input">On Input (Real-time)</option>\n            <option value="change">On Change</option>\n            <option value="blur">On Focus Lost</option>\n            <option value="keyup">On Key Release</option>\n            <option value="click">On Click</option>\n          </select>\n          <div class="select-arrow">▼</div>\n        </div>\n      </div>\n    `),
-        t.appendChild(o);
-      const s = document.getElementById(`event-selector-${e.key}`),
-        i = e => {
-          ['input', 'change', 'blur', 'keyup', 'click'].forEach(e => {
-            n.removeEventListener(e, this.handleInputTrigger);
-          }),
-            n.addEventListener(e, this.handleInputTrigger),
-            t.setAttribute('data-trigger', e);
-        };
-      s.addEventListener('change', () => {
-        var e;
-        const t = s.value;
-        i(t),
-          null === (e = s.parentElement) ||
-            void 0 === e ||
-            e.classList.add('trigger-changed'),
-          setTimeout(() => {
-            var e;
-            null === (e = s.parentElement) ||
-              void 0 === e ||
-              e.classList.remove('trigger-changed');
-          }, 300);
-      });
-      const l = 'input';
-      (s.value = l),
-        i(l),
-        n.addEventListener('focus', () => {
-          t.classList.add('input-focused');
-        }),
-        n.addEventListener('blur', () => {
-          t.classList.remove('input-focused');
-        });
-    }
+  static ShoModal(e) {
+    return !!(e && e.length > 0);
   }
   static populateFunctionalityControls(e) {
-    var t, n, s, i;
+    var t, n, o, s, i;
     let l;
     this.functionsPanel.innerHTML = '';
-    let r = !1;
+    let a = !1;
+    const r =
+      null === (t = this.basicComponentsConfig) || void 0 === t
+        ? void 0
+        : t.components.find(e => 'table' === e.name);
     if (e.classList.contains('table-component'))
-      (l =
-        null === (t = this.basicComponentsConfig) || void 0 === t
-          ? void 0
-          : t.components.find(e => 'table' === e.name)),
-        (r = !1);
+      (l = r), this.ShoModal(null == l ? void 0 : l.attributes);
     else if (e.classList.contains('text-component'))
       (l =
         null === (n = this.basicComponentsConfig) || void 0 === n
           ? void 0
           : n.components.find(e => 'text' === e.name)),
-        (r = !0);
+        (a = this.ShoModal(null == l ? void 0 : l.attributes));
     else if (e.classList.contains('header-component'))
       (l =
-        null === (s = this.basicComponentsConfig) || void 0 === s
+        null === (o = this.basicComponentsConfig) || void 0 === o
           ? void 0
-          : s.components.find(e => 'header' === e.name)),
-        (r = !0);
-    else if (e.classList.contains('table-cell')) r = !0;
-    else if (e.classList.contains('custom-component')) {
-      const t =
-          null ===
-            (i = Array.from(e.classList).find(e => e.endsWith('-component'))) ||
-          void 0 === i
+          : o.components.find(e => 'header' === e.name)),
+        (a = this.ShoModal(null == l ? void 0 : l.attributes));
+    else if (e.classList.contains('table-cell'))
+      a = this.ShoModal(null == r ? void 0 : r.attributes);
+    else {
+      if (e.classList.contains('table-row')) {
+        const t =
+          null === (s = null == r ? void 0 : r.attributes) || void 0 === s
             ? void 0
-            : i.replace('-component', ''),
-        n = w.customComponentsConfig;
-      if (t && n && n[t] && n[t].settingsComponentTagName) {
-        const o = n[t].settingsComponentTagName;
-        let s = this.functionsPanel.querySelector(o);
-        s ||
-          ((s = document.createElement(o)), this.functionsPanel.appendChild(s)),
-          s.setAttribute(
-            'data-settings',
-            JSON.stringify({ targetComponentId: e.id })
-          );
+            : s.filter(e => 'Input' === e.type);
+        return void (
+          t &&
+          t.length > 0 &&
+          this.basicComponentsConfig &&
+          w.populateRowVisibilityControls(e, t)
+        );
+      }
+      if (e.classList.contains('custom-component')) {
+        const t =
+            null ===
+              (i = Array.from(e.classList).find(e =>
+                e.endsWith('-component')
+              )) || void 0 === i
+              ? void 0
+              : i.replace('-component', ''),
+          n = x.customComponentsConfig;
+        if (t && n && n[t] && n[t].settingsComponentTagName) {
+          const o = n[t].settingsComponentTagName;
+          let s = this.functionsPanel.querySelector(o);
+          s ||
+            ((s = document.createElement(o)),
+            this.functionsPanel.appendChild(s)),
+            s.setAttribute(
+              'data-settings',
+              JSON.stringify({ targetComponentId: e.id })
+            );
+        }
       }
     }
-    if (
-      (l &&
-        l.attributes &&
-        l.attributes.length > 0 &&
-        l.attributes.forEach(e => {
-          'Input' === e.type && this.createAttributeControls(e);
-        }),
-      r && !1 !== this.editable)
-    ) {
-      const t = document.createElement('button');
-      (t.textContent = `Set ${e.classList[0].replace('-component', '')} Attribute`),
-        (t.className = 'set-attribute-button'),
-        this.functionsPanel.appendChild(t),
-        t.addEventListener('click', () => {
-          if (e.classList.contains('text-component')) {
-            new o().handleTextClick(e);
-          } else if (e.classList.contains('header-component')) {
-            new a().handleHeaderClick(e);
-          } else if (e.classList.contains('table-cell')) {
-            new p().handleCellClick(e);
-          }
-        });
-    } else
-      l ||
-        (this.functionsPanel.innerHTML =
-          '<p>No specific settings for this component.</p>');
-  }
-  static rgbToHex(e) {
-    const t = e.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/);
-    if (!t) return e;
-    return `#${((1 << 24) | (parseInt(t[1], 10) << 16) | (parseInt(t[2], 10) << 8) | parseInt(t[3], 10)).toString(16).slice(1).toUpperCase()}`;
-  }
-  static createControl(e, t, n, o, s = {}) {
-    const i = document.createElement('div');
-    i.classList.add('control-wrapper');
-    if ('number' === n && s.unit) {
-      const l = s.unit;
-      i.innerHTML = `\n                <label for="${t}">${e}:</label>\n                <div class="input-wrapper">\n                  <input type="${n}" id="${t}" value="${o}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === l ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === l ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === l ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === l ? 'selected' : ''}>%</option>\n                  </select>\n                </div\n            `;
-    } else
-      i.innerHTML = `\n        <label for="${t}">${e}:</label>\n        <div class="input-wrapper">\n          <input type="color" id="${t}" value="${o}">\n          <input type="text" id="${t}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${o}">\n        </div>\n      `;
-    const l = i.querySelector('input'),
-      a = i.querySelector(`#${t}-unit`);
     l &&
-      Object.keys(s).forEach(e => {
-        l.setAttribute(e, s[e].toString());
-      });
-    const r = i.querySelector(`input[type="color"]#${t}`),
-      d = i.querySelector(`#${t}-value`);
-    r &&
-      r.addEventListener('input', () => {
-        d && (d.value = r.value);
+      l.attributes &&
+      l.attributes.length > 0 &&
+      l.attributes.forEach(e => {
+        'Input' === e.type &&
+          w.createAttributeControls(
+            e,
+            this.functionsPanel,
+            this.handleInputTrigger
+          );
       }),
-      d &&
-        d.addEventListener('input', () => {
-          r && (r.value = d.value);
-        }),
-      this.controlsContainer.appendChild(i),
-      a &&
-        a.addEventListener('change', () => {
-          const e = a.value,
-            t = parseInt(l.value);
-          l.value = `${t}${e}`;
-        });
-  }
-  static createSelectControl(e, t, n, o) {
-    const s = document.createElement('div');
-    s.classList.add('control-wrapper');
-    const i = o
-      .map(
-        e => `<option value="${e}" ${e === n ? 'selected' : ''}>${e}</option>`
-      )
-      .join('');
-    (s.innerHTML = `\n                <label for="${t}">${e}:</label>\n                <div class="input-wrapper">\n                  <select id="${t}">${i}</select>\n                </div>\n            `),
-      this.controlsContainer.appendChild(s);
+      a
+        ? w.populateModalButton(e, this.functionsPanel, this.editable)
+        : l ||
+          (this.functionsPanel.innerHTML =
+            '<p>No specific settings for this component.</p>');
   }
   static addListeners(e) {
     var t, n, o, s, i, l, a, r, d, c, u, p, h, m, g, v, y, b, f, C;
@@ -2201,7 +2402,7 @@ class w {
           n && clearTimeout(n), (n = setTimeout(() => e(...o), t));
         };
       })(() => {
-        L.dispatchDesignChange(), L.historyManager.captureState();
+        k.dispatchDesignChange(), k.historyManager.captureState();
       }, 300);
     null === (t = w.width) ||
       void 0 === t ||
@@ -2332,11 +2533,11 @@ class w {
     return this.layersViewController;
   }
 }
-(w.selectedComponent = null),
-  (w.customComponentsConfig = null),
-  (w.basicComponentsConfig = null),
-  (w.showAttributeTab = void 0);
-class x {
+(x.selectedComponent = null),
+  (x.customComponentsConfig = null),
+  (x.basicComponentsConfig = null),
+  (x.showAttributeTab = void 0);
+class E {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -2375,13 +2576,13 @@ class x {
     return this.cellSize;
   }
 }
-var E;
-class L {
+var L;
+class k {
   static getComponents() {
-    return E.components;
+    return L.components;
   }
   static setComponents(e) {
-    E.components = e;
+    L.components = e;
   }
   static init(t = null, n, o) {
     this.editable = n;
@@ -2394,53 +2595,53 @@ class L {
     const a = o.components.find(e => 'image' === e.name);
     (this.ImageAttributeConfig = null == a ? void 0 : a.globalExecuteFunction),
       s && s.attributes && s.attributes.length,
-      (E.canvasElement = document.getElementById('canvas')),
-      (E.sidebarElement = document.getElementById('sidebar')),
+      (L.canvasElement = document.getElementById('canvas')),
+      (L.sidebarElement = document.getElementById('sidebar')),
       window.addEventListener('table-design-change', () => {
-        E.dispatchDesignChange();
+        L.dispatchDesignChange();
       }),
-      E.canvasElement.addEventListener('drop', E.onDrop.bind(E)),
-      E.canvasElement.addEventListener('dragover', e => e.preventDefault()),
-      E.canvasElement.classList.add('preview-desktop'),
-      E.canvasElement.addEventListener('click', e => {
+      L.canvasElement.addEventListener('drop', L.onDrop.bind(L)),
+      L.canvasElement.addEventListener('dragover', e => e.preventDefault()),
+      L.canvasElement.classList.add('preview-desktop'),
+      L.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && w.showSidebar(t.id);
+        t && x.showSidebar(t.id);
       }),
-      (E.canvasElement.style.position = 'relative'),
-      (this.lastCanvasWidth = E.canvasElement.offsetWidth),
-      (E.historyManager = new g(E.canvasElement)),
-      (E.jsonStorage = new v()),
-      (E.controlsManager = new y(E)),
-      (E.gridManager = new x()),
-      E.gridManager.initializeDropPreview(E.canvasElement);
-    if ((new e(E.canvasElement, E.sidebarElement).enable(), t))
-      E.restoreState(t);
+      (L.canvasElement.style.position = 'relative'),
+      (this.lastCanvasWidth = L.canvasElement.offsetWidth),
+      (L.historyManager = new g(L.canvasElement)),
+      (L.jsonStorage = new v()),
+      (L.controlsManager = new y(L)),
+      (L.gridManager = new E()),
+      L.gridManager.initializeDropPreview(L.canvasElement);
+    if ((new e(L.canvasElement, L.sidebarElement).enable(), t))
+      L.restoreState(t);
     else {
-      const e = E.jsonStorage.load();
-      e && E.restoreState(e);
+      const e = L.jsonStorage.load();
+      e && L.restoreState(e);
     }
   }
   static dispatchDesignChange() {
-    if (E.canvasElement && this.editable) {
-      const e = E.getState(),
+    if (L.canvasElement && !1 !== this.editable) {
+      const e = L.getState(),
         t = new CustomEvent('design-change', {
           detail: e,
           bubbles: !0,
           composed: !0,
         });
-      E.canvasElement.dispatchEvent(t), E.jsonStorage.save(e);
+      L.canvasElement.dispatchEvent(t), L.jsonStorage.save(e);
     }
   }
   static clearCanvas() {
-    (E.canvasElement.innerHTML = ''),
-      (E.components = []),
-      E.historyManager.captureState(),
-      E.gridManager.initializeDropPreview(E.canvasElement),
-      E.gridManager.initializeDropPreview(E.canvasElement),
-      E.dispatchDesignChange();
+    (L.canvasElement.innerHTML = ''),
+      (L.components = []),
+      L.historyManager.captureState(),
+      L.gridManager.initializeDropPreview(L.canvasElement),
+      L.gridManager.initializeDropPreview(L.canvasElement),
+      L.dispatchDesignChange();
   }
   static getState() {
-    return E.components.map(e => {
+    return L.components.map(e => {
       const t = e.classList[0].split(/\d/)[0].replace('-component', ''),
         n = e.querySelector('img'),
         o = n ? n.src : null,
@@ -2478,12 +2679,7 @@ class L {
         id: e.id,
         type: t,
         content: e.innerHTML,
-        position: {
-          x: e.offsetLeft,
-          y: e.offsetTop,
-          '@mindfiredigital/page-builder-react':
-            'file:../../../Desktop/page-builder/page-builder/packages/react/mindfiredigital-page-builder-react-1.2.3.tgz',
-        },
+        position: { x: e.offsetLeft, y: e.offsetTop },
         dimensions: { width: e.offsetWidth, height: e.offsetHeight },
         style: a,
         inlineStyle: e.getAttribute('style') || '',
@@ -2496,19 +2692,23 @@ class L {
     });
   }
   static restoreState(e) {
-    (E.canvasElement.innerHTML = ''),
-      (E.components = []),
+    (L.canvasElement.innerHTML = ''),
+      (L.components = []),
       e.forEach(e => {
         const t = e.dataAttributes['data-custom-settings'] || null,
-          n = E.createComponent(e.type, t, e.content);
+          n = L.createComponent(e.type, t, e.content);
         if (n) {
+          e.classes.includes('custom-component') || (n.innerHTML = e.content);
+          const t = n.querySelector('.component-controls');
           if (
-            (e.classes.includes('custom-component') ||
-              (n.innerHTML = e.content),
+            (t && !1 === this.editable && t.remove(),
             (n.className = ''),
             e.classes.forEach(e => {
               n.classList.add(e);
             }),
+            !1 === this.editable &&
+              n.classList.contains('component-resizer') &&
+              n.classList.remove('component-resizer'),
             'video' === e.type && e.videoSrc)
           ) {
             const t = n.querySelector('video'),
@@ -2526,8 +2726,9 @@ class L {
               Object.entries(e.dataAttributes).forEach(([e, t]) => {
                 n.setAttribute(e, t);
               }),
-            E.controlsManager.addControlButtons(n),
-            E.addDraggableListeners(n),
+            !1 !== this.editable &&
+              (L.controlsManager.addControlButtons(n),
+              L.addDraggableListeners(n)),
             n.classList.contains('container-component') &&
               r.restoreContainer(n),
             (n.classList.contains('twoCol-component') ||
@@ -2538,11 +2739,11 @@ class L {
             'table' === e.type && p.restore(n, this.editable),
             'link' === e.type && h.restore(n),
             'header' === e.type && a.restore(n),
-            E.canvasElement.appendChild(n),
-            E.components.push(n);
+            L.canvasElement.appendChild(n),
+            L.components.push(n);
         }
       }),
-      E.gridManager.initializeDropPreview(E.canvasElement);
+      L.gridManager.initializeDropPreview(L.canvasElement);
   }
   static onDrop(e) {
     var t, n;
@@ -2571,11 +2772,11 @@ class L {
     }
     const { gridX: i, gridY: l } = this.gridManager.mousePositionAtGridCorner(
         e,
-        E.canvasElement
+        L.canvasElement
       ),
-      a = E.createComponent(o, s);
+      a = L.createComponent(o, s);
     if (a && !1 !== this.editable) {
-      const t = E.generateUniqueClass(o);
+      const t = L.generateUniqueClass(o);
       (a.id = t),
         a.classList.add(t),
         (a.style.position = 'absolute'),
@@ -2584,12 +2785,12 @@ class L {
           : ((a.style.position = 'absolute'),
             (a.style.left = `${i}px`),
             (a.style.top = `${l}px`)),
-        E.components.push(a),
-        E.canvasElement.appendChild(a),
-        E.addDraggableListeners(a),
-        E.historyManager.captureState();
+        L.components.push(a),
+        L.canvasElement.appendChild(a),
+        L.addDraggableListeners(a),
+        L.historyManager.captureState();
     }
-    E.dispatchDesignChange();
+    L.dispatchDesignChange();
   }
   static reorderComponent(e, t) {
     if (
@@ -2608,11 +2809,11 @@ class L {
         o.appendChild(e);
       })),
       this.historyManager.captureState(),
-      E.dispatchDesignChange();
+      L.dispatchDesignChange();
   }
   static createComponent(e, t = null, n) {
     let o = null;
-    const s = E.componentFactory[e];
+    const s = L.componentFactory[e];
     if (s) o = s();
     else {
       const t = document.querySelector(`[data-component='${e}']`),
@@ -2623,31 +2824,31 @@ class L {
         o.classList.add(`${e}-component`, 'custom-component'),
         o.setAttribute('data-component-type', e);
     }
-    if (o) {
+    if (o && !1 !== this.editable) {
       new ResizeObserver(e => {
-        E.dispatchDesignChange();
+        L.dispatchDesignChange();
       }).observe(o),
         o.classList.add('editable-component'),
         'container' != e && o.classList.add('component-resizer');
-      const t = E.generateUniqueClass(e);
+      const t = L.generateUniqueClass(e);
       o.setAttribute('id', t),
         'image' === e
           ? o.setAttribute('contenteditable', 'false')
           : (o.setAttribute('contenteditable', 'true'),
             o.addEventListener('input', () => {
-              this.dispatchDesignChange(), E.historyManager.captureState();
+              L.historyManager.captureState(), this.dispatchDesignChange();
             }));
       const n = document.createElement('span');
       (n.className = 'component-label'),
         (n.textContent = t),
         o.appendChild(n),
-        E.controlsManager.addControlButtons(o);
+        L.controlsManager.addControlButtons(o);
     }
     return o;
   }
   static generateUniqueClass(e, t = !1, n = null) {
     if (t && n) {
-      let t = E.components.find(e => e.classList.contains(n));
+      let t = L.components.find(e => e.classList.contains(n));
       if (!t && ((t = document.querySelector(`.${n}`)), !t))
         return `${n}-${e}1`;
       const o = Array.from(t.children),
@@ -2670,7 +2871,7 @@ class L {
       const t = new RegExp(`${e}(\\d+)`);
       let n = 0;
       return (
-        E.components.forEach(e => {
+        L.components.forEach(e => {
           e.classList.forEach(e => {
             const o = e.match(t);
             if (o) {
@@ -2695,8 +2896,8 @@ class L {
       a.dataTransfer &&
         ((t = a.clientX),
         (n = a.clientY),
-        (i = E.canvasElement.scrollLeft),
-        (l = E.canvasElement.scrollTop),
+        (i = L.canvasElement.scrollLeft),
+        (l = L.canvasElement.scrollTop),
         (o = parseFloat(e.style.left) || 0),
         (s = parseFloat(e.style.top) || 0),
         (a.dataTransfer.effectAllowed = 'move'),
@@ -2704,51 +2905,51 @@ class L {
     }),
       e.addEventListener('dragend', a => {
         a.preventDefault();
-        const r = E.canvasElement.scrollLeft,
-          d = E.canvasElement.scrollTop,
+        const r = L.canvasElement.scrollLeft,
+          d = L.canvasElement.scrollTop,
           c = r - i,
           u = d - l,
           p = a.clientX - t,
           h = a.clientY - n;
         let m = o + p + c,
           g = s + h + u;
-        const v = E.canvasElement.getBoundingClientRect(),
-          y = a.clientX - v.left + E.canvasElement.scrollLeft,
-          b = a.clientY - v.top + E.canvasElement.scrollTop,
-          f = E.canvasElement.getBoundingClientRect(),
+        const v = L.canvasElement.getBoundingClientRect(),
+          y = a.clientX - v.left + L.canvasElement.scrollLeft,
+          b = a.clientY - v.top + L.canvasElement.scrollTop,
+          f = L.canvasElement.getBoundingClientRect(),
           C = t - f.left + i,
           w = n - f.top + l;
         (m = y + (o - C)), (g = b + (s - w));
         const x = e.getBoundingClientRect(),
-          L = E.canvasElement.scrollWidth - x.width,
-          k = E.canvasElement.scrollHeight - x.height;
-        (m = Math.max(0, Math.min(m, L))),
+          E = L.canvasElement.scrollWidth - x.width,
+          k = L.canvasElement.scrollHeight - x.height;
+        (m = Math.max(0, Math.min(m, E))),
           (g = Math.max(0, Math.min(g, k))),
           (e.style.left = `${m}px`),
           (e.style.top = `${g}px`),
           (e.style.cursor = 'grab'),
-          E.historyManager.captureState(),
-          E.dispatchDesignChange();
+          L.historyManager.captureState(),
+          L.dispatchDesignChange();
       });
   }
 }
-(E = L),
-  (L.components = []),
-  (L.componentFactory = {
+(L = k),
+  (k.components = []),
+  (k.componentFactory = {
     button: () => new l().create(),
-    header: () => new a().create(1, 'Header', E.headerAttributeConfig),
-    image: () => new s().create(void 0, E.ImageAttributeConfig),
-    video: () => new i(() => E.historyManager.captureState()).create(),
-    table: () => new p().create(2, 2, void 0, E.tableAttributeConfig),
-    text: () => new o().create(E.textAttributeConfig),
+    header: () => new a().create(1, 'Header', L.headerAttributeConfig),
+    image: () => new s().create(void 0, L.ImageAttributeConfig),
+    video: () => new i(() => L.historyManager.captureState()).create(),
+    table: () => new p().create(2, 2, void 0, L.tableAttributeConfig),
+    text: () => new o().create(L.textAttributeConfig),
     container: () => new r().create(),
     twoCol: () => new c().create(),
     threeCol: () => new u().create(),
     landingpage: () => new m().create(),
     link: () => new h().create(),
   });
-const k = document.getElementById('canvas'),
-  S = new (class {
+const S = document.getElementById('canvas'),
+  M = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -2766,12 +2967,12 @@ const k = document.getElementById('canvas'),
         this.selectedElement.classList.add('selected');
     }
   })();
-k &&
-  k.addEventListener('click', e => {
+S &&
+  S.addEventListener('click', e => {
     const t = e.target;
-    t !== k && S.selectElement(t);
+    t !== S && M.selectElement(t);
   });
-class M {
+class I {
   constructor(e) {
     this.canvas = e;
   }
@@ -2796,7 +2997,7 @@ class M {
       }
   }
 }
-class I {
+class A {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -2837,7 +3038,7 @@ class I {
         });
       o
         .querySelectorAll(
-          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input, .cell-controls,.add-row-button'
+          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button'
         )
         .forEach(e => e.remove()),
         o.children.length > 0 && this.cleanupElements(o);
@@ -2852,57 +3053,10 @@ class I {
       n = [],
       o = new Set();
     n.push(
-      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      min-height: 100vh;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n         \n      `
+      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      min-height: 100vh;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n          .editable-component{\n          border:none !important;\n          box-shadow:none !important;\n          }\n\n      `
     );
     const s = e.querySelectorAll('*'),
       i = [
-        'position',
-        'top',
-        'left',
-        'right',
-        'bottom',
-        'width',
-        'height',
-        'min-width',
-        'min-height',
-        'max-width',
-        'max-height',
-        'margin',
-        'padding',
-        'background-color',
-        'background-image',
-        'border',
-        'border-radius',
-        'transform',
-        'opacity',
-        'z-index',
-        'display',
-        'flex-direction',
-        'justify-content',
-        'align-items',
-        'flex-wrap',
-        'font-size',
-        'font-weight',
-        'color',
-        'text-align',
-        'line-height',
-        'font-family',
-        'box-shadow',
-        'overflow',
-        'fill',
-        'cursor',
-        'transition',
-        'border-bottom',
-        'border-top',
-        'border-left',
-        'border-right',
-        'box-sizing',
-        '-webkit-box-pack',
-        'letter-spacing',
-        '-webkit-tap-highlight-color',
-        'pointer-events',
-      ],
-      l = [
         'component-controls',
         'delete-icon',
         'component-label',
@@ -2914,33 +3068,33 @@ class I {
       ];
     return (
       s.forEach((e, t) => {
-        if (l.some(t => e.classList.contains(t))) return;
+        if (i.some(t => e.classList.contains(t))) return;
         const s = window.getComputedStyle(e),
-          a = [],
-          r = e instanceof SVGElement || e.closest('svg');
-        i.forEach(e => {
-          const t = s.getPropertyValue(e);
-          if (
-            t &&
-            'none' !== t &&
-            '' !== t &&
-            'initial' !== t &&
-            'auto' !== t
-          ) {
-            if ('background-color' === e && 'rgba(0, 0, 0, 0)' === t) return;
-            if ('border-width' === e && '0px' === t) return;
-            if ('color' === e && 'rgb(0, 0, 0)' === t && !r) return;
-            if ('font-weight' === e && '400' === t) return;
-            a.push(`${e}: ${t};`);
-          }
-        });
-        const d = this.generateUniqueSelector(e);
-        !o.has(d) &&
-          a.length > 0 &&
-          (o.add(d),
-          n.push(
-            `\n          ${d} {\n            ${a.join('\n  ')}\n          }\n        `
-          ));
+          l = [];
+        if (
+          e instanceof SVGElement ||
+          (e.closest('svg') &&
+            ['path', 'circle', 'rect', 'polygon'].includes(
+              e.tagName.toLowerCase()
+            ))
+        )
+          return void this.handleSVGElement(e, l, s, t, n, o);
+        for (let e = 0; e < s.length; e++) {
+          const t = s[e],
+            n = s.getPropertyValue(t);
+          'resize' !== t &&
+            n &&
+            'initial' !== n &&
+            'auto' !== n &&
+            'none' !== n &&
+            '' !== n &&
+            l.push(`${t}: ${n};`);
+        }
+        const a = this.generateUniqueSelector(e);
+        !o.has(a) &&
+          l.length > 0 &&
+          (o.add(a),
+          n.push(`\n        ${a} {\n          ${l.join('\n  ')}\n        }`));
       }),
       n.join('\n')
     );
@@ -3023,39 +3177,39 @@ class I {
   }
   generateUniqueSelector(e) {
     if (e.id) return `#${e.id}`;
+    if (e instanceof SVGElement) {
+      const t = e.getAttribute('class');
+      if (t) return `.${t.toString().split(' ').join('.')}`;
+    }
+    if (e.className) return `.${e.className.toString().split(' ').join('.')}`;
     const t = [];
     let n = e;
-    for (; n && 'body' !== n.tagName.toLowerCase(); ) {
-      let e = n.tagName.toLowerCase(),
-        o = n.parentElement;
-      if (n.id) {
-        t.unshift(`#${n.id}`);
-        break;
+    for (; n && 'body' !== n.tagName.toLowerCase() && !n.id; ) {
+      const e = n.parentElement;
+      if (!e) break;
+      const o = Array.from(e.children).filter(e => e.tagName === n.tagName);
+      let s = n.tagName.toLowerCase();
+      if (o.length > 1) {
+        s += `:nth-of-type(${o.indexOf(n) + 1})`;
       }
-      const s = Array.from(n.classList).filter(
+      const i = Array.from(n.classList).filter(
         e =>
-          !(
-            e.includes('component-') ||
-            e.includes('delete-') ||
-            e.includes('resizer') ||
-            e.includes('selected')
-          )
+          !e.includes('component-') &&
+          !e.includes('delete-') &&
+          !e.includes('resizer')
       );
-      if ((s.length > 0 && (e += `.${s.join('.')}`), o)) {
-        const t = Array.from(o.children).filter(e => e.tagName === n.tagName);
-        if (t.length > 1) {
-          e += `:nth-of-type(${t.indexOf(n) + 1})`;
-        }
-      }
-      t.unshift(e), (n = o);
+      i.length > 0 && (s += `.${i.join('.')}`), t.unshift(s), (n = e);
     }
-    return t.join(' > ');
+    return (
+      n && (n.id ? t.unshift(`#${n.id}`) : t.unshift(n.tagName.toLowerCase())),
+      t.join(' > ')
+    );
   }
   applyCSS(e) {
     this.styleElement.textContent = e;
   }
 }
-function A(e) {
+function $(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let o = 0;
@@ -3179,14 +3333,14 @@ class B {
     if (e.ctrlKey || e.metaKey)
       switch (e.key.toLowerCase()) {
         case 'z':
-          e.preventDefault(), L.historyManager.undo();
+          e.preventDefault(), k.historyManager.undo();
           break;
         case 'y':
-          e.preventDefault(), L.historyManager.redo();
+          e.preventDefault(), k.historyManager.redo();
       }
   }
 }
-class $ {
+class H {
   setPreviewMode(e) {
     const t = document.getElementById('canvas');
     t.classList.forEach(e => {
@@ -3195,7 +3349,7 @@ class $ {
       t.classList.add(`preview-${e}`);
   }
 }
-class H {
+class T {
   constructor(
     e = { Basic: { components: [] }, Extra: [], Custom: {} },
     t = null,
@@ -3205,25 +3359,25 @@ class H {
   ) {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
-      (this.canvas = new L()),
-      (this.sidebar = new M(this.canvas)),
-      (this.htmlGenerator = new I(this.canvas)),
+      (this.canvas = new k()),
+      (this.sidebar = new I(this.canvas)),
+      (this.htmlGenerator = new A(this.canvas)),
       (this.jsonStorage = new v()),
-      (this.previewPanel = new $()),
+      (this.previewPanel = new H()),
       (this.editable = n),
       (this.brandTitle = o),
       (this.showAttributeTab = s),
       this.initializeEventListeners();
   }
   static resetHeaderFlag() {
-    H.headerInitialized = !1;
+    T.headerInitialized = !1;
   }
   initializeEventListeners() {
-    (this.canvas = new L()),
-      (this.sidebar = new M(this.canvas)),
-      (this.htmlGenerator = new I(this.canvas)),
+    (this.canvas = new k()),
+      (this.sidebar = new I(this.canvas)),
+      (this.htmlGenerator = new A(this.canvas)),
       (this.jsonStorage = new v()),
-      (this.previewPanel = new $()),
+      (this.previewPanel = new H()),
       this.setupInitialComponents(),
       this.setupSaveButton(),
       this.setupResetButton(),
@@ -3384,10 +3538,10 @@ class H {
         }),
         n.appendChild(i);
     })(this.dynamicComponents, this.editable),
-      L.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
+      k.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
       this.sidebar.init(),
       B.init(),
-      w.init(
+      x.init(
         this.dynamicComponents.Custom,
         this.editable,
         this.dynamicComponents.Basic,
@@ -3397,7 +3551,7 @@ class H {
   }
   createHeaderIfNeeded() {
     if (document.getElementById('page-builder-header'))
-      H.headerInitialized = !0;
+      T.headerInitialized = !0;
     else {
       const e = document.getElementById('app');
       if (e && e.parentNode) {
@@ -3565,7 +3719,7 @@ class H {
             })(this.editable, this.brandTitle, this.showAttributeTab)
           ),
           e.parentNode.insertBefore(t, e),
-          (H.headerInitialized = !0);
+          (T.headerInitialized = !0);
       } else console.error('Error: #app not found in the DOM');
     }
   }
@@ -3573,7 +3727,7 @@ class H {
     const e = document.getElementById('save-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = L.getState();
+        const e = k.getState();
         this.jsonStorage.save(e), b('Saving progress...');
       });
   }
@@ -3600,7 +3754,7 @@ class H {
           'Are you sure you want to reset the layout?',
           () => {
             this.jsonStorage.remove(),
-              L.clearCanvas(),
+              k.clearCanvas(),
               b('The saved layout has been successfully reset.');
           },
           () => {
@@ -3637,7 +3791,7 @@ class H {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new I(new L()),
+        const e = new A(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = (function (e) {
@@ -3669,7 +3823,7 @@ class H {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new I(new L()),
+        const e = new A(new k()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = window.open('', '_blank');
@@ -3687,7 +3841,7 @@ class H {
     const s = document.createElement('div');
     (s.id = 'export-dialog'), s.classList.add('modal');
     const i = document.createElement('div');
-    i.classList.add('modal-content');
+    i.classList.add('export-modal-content');
     const l = this.createCloseButton(s);
     i.appendChild(l);
     const a = this.createCodeSection('HTML', e),
@@ -3733,7 +3887,7 @@ class H {
       (n.textContent = 'Export to ZIP'),
       n.classList.add('export-btn'),
       n.addEventListener('click', () => {
-        const n = A([
+        const n = $([
             { name: 'index.html', content: e },
             { name: 'styles.css', content: t },
           ]),
@@ -3854,14 +4008,14 @@ class H {
       t = document.getElementById('redo-btn');
     e &&
       e.addEventListener('click', () => {
-        L.historyManager.undo();
+        k.historyManager.undo();
       }),
       t &&
         t.addEventListener('click', () => {
-          L.historyManager.redo();
+          k.historyManager.redo();
         });
   }
 }
-H.headerInitialized = !1;
-const T = new H();
-(exports.PageBuilder = H), (exports.PageBuilderCore = T);
+T.headerInitialized = !1;
+const V = new T();
+(exports.PageBuilder = T), (exports.PageBuilderCore = V);

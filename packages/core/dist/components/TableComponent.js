@@ -75,11 +75,85 @@ export class TableComponent {
     }
     return container;
   }
+  evaluateRowVisibility(inputValues, table) {
+    let allRows;
+    if (table) {
+      allRows = table.querySelectorAll('.table-row');
+    } else {
+      allRows = document.querySelectorAll('.table-row');
+    }
+    allRows.forEach(row => {
+      const rulesAttribute = row.getAttribute('data-visibility-rules');
+      if (!rulesAttribute) {
+        row.style.display = 'grid';
+        return;
+      }
+      try {
+        const rules = JSON.parse(rulesAttribute);
+        if (rules.length === 0) {
+          row.style.display = 'grid';
+          return;
+        }
+        let isVisible = true;
+        rules.forEach(rule => {
+          const inputValue = inputValues[rule.inputKey];
+          const isConditionMet = this.evaluateRule(
+            inputValue,
+            rule.operator,
+            rule.value
+          );
+          if (isConditionMet) {
+            if (rule.action === 'hide') {
+              isVisible = false;
+            } else if (rule.action === 'show') {
+              isVisible = true;
+            }
+          }
+        });
+        if (isVisible) {
+          row.style.display = 'grid';
+        } else {
+          row.style.display = 'none';
+        }
+      } catch (e) {
+        console.error('Failed to parse or evaluate visibility rules:', e);
+      }
+    });
+  }
+  evaluateRule(inputValue, operator, ruleValue) {
+    const numInputValue = parseFloat(inputValue);
+    const numRuleValue = parseFloat(ruleValue);
+    switch (operator) {
+      case 'equals':
+        return inputValue === ruleValue;
+      case 'not_equals':
+        return inputValue !== ruleValue;
+      case 'greater_than':
+        return (
+          !isNaN(numInputValue) &&
+          !isNaN(numRuleValue) &&
+          numInputValue > numRuleValue
+        );
+      case 'less_than':
+        return (
+          !isNaN(numInputValue) &&
+          !isNaN(numRuleValue) &&
+          numInputValue < numRuleValue
+        );
+      case 'contains':
+        return inputValue && ruleValue && inputValue.includes(ruleValue);
+      default:
+        return false;
+    }
+  }
   createTableRow(rowIndex, cellCount, tableId) {
     const rowDiv = document.createElement('div');
     rowDiv.style.display = 'grid';
     rowDiv.style.gridTemplateColumns = `repeat(${cellCount}, 1fr)`;
     rowDiv.className = 'table-row';
+    rowDiv.id = `table-row-T-${tableId}-R${rowIndex}`;
+    rowDiv.style.position = 'relative';
+    rowDiv.style.cursor = 'pointer';
     for (let j = 0; j < cellCount; j++) {
       const cell = this.createTableCell(rowIndex, j, tableId);
       rowDiv.appendChild(cell);
@@ -304,6 +378,19 @@ export class TableComponent {
     tableWrapper.appendChild(newRow);
     Canvas.dispatchDesignChange();
   }
+  static getDefaultValuesOfInput() {
+    const defaults = {};
+    TableComponent.tableAttributeConfig.forEach(attr => {
+      if (
+        attr.type === 'Input' &&
+        attr.default_value !== undefined &&
+        attr.default_value !== null
+      ) {
+        defaults[attr.key] = attr.default_value;
+      }
+    });
+    return defaults;
+  }
   static restore(container, editable) {
     const instance = new TableComponent();
     const tableWrapper = container.querySelector('.table-wrapper');
@@ -372,10 +459,14 @@ export class TableComponent {
       }
     });
     const addRowButton = container.querySelector('.add-row-button');
-    if (addRowButton) {
+    if (addRowButton && editable !== false) {
       addRowButton.addEventListener('click', () => {
         instance.addRow(tableWrapper, tableId);
       });
+    } else if (editable === false) {
+      addRowButton.remove();
     }
+    const defaultValues = TableComponent.getDefaultValuesOfInput();
+    instance.evaluateRowVisibility(defaultValues, container);
   }
 }

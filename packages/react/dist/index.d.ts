@@ -9,14 +9,12 @@ interface DynamicComponents {
 interface ComponentAttribute {
   id: string;
   type: 'Constant' | 'Formula' | 'Input' | 'Image';
+  input_type: 'text' | 'number' | 'checkbox';
   title: string;
   value: string | number | boolean;
   key: string;
   execute_order: number;
-  execution_fun?: Function;
   editable?: boolean;
-  default_value?: string | boolean | null;
-  trigger?: 'blur' | 'input' | 'input' | 'click' | 'focus';
 }
 
 interface BasicComponent {

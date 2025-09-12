@@ -144,7 +144,7 @@ export class Canvas {
    * The event detail contains the current design state.
    */
   static dispatchDesignChange() {
-    if (Canvas.canvasElement && this.editable) {
+    if (Canvas.canvasElement && this.editable !== false) {
       const currentDesign = Canvas.getState();
       const event = new CustomEvent('design-change', {
         detail: currentDesign,
@@ -221,8 +221,6 @@ export class Canvas {
         position: {
           x: component.offsetLeft,
           y: component.offsetTop,
-          '@mindfiredigital/page-builder-react':
-            'file:../../../Desktop/page-builder/page-builder/packages/react/mindfiredigital-page-builder-react-1.2.3.tgz',
         },
         dimensions: {
           width: component.offsetWidth,
@@ -256,10 +254,21 @@ export class Canvas {
           component.innerHTML = componentData.content;
         }
 
+        const deleteButton = component.querySelector('.component-controls');
+        if (deleteButton && this.editable === false) {
+          deleteButton.remove();
+        }
+
         component.className = '';
         componentData.classes.forEach((cls: string) => {
           component.classList.add(cls);
         });
+
+        if (this.editable === false) {
+          if (component.classList.contains('component-resizer')) {
+            component.classList.remove('component-resizer');
+          }
+        }
 
         if (componentData.type === 'video' && componentData.videoSrc) {
           const videoElement = component.querySelector(
@@ -297,10 +306,11 @@ export class Canvas {
             }
           );
         }
-
-        // Add control buttons and listeners
-        Canvas.controlsManager.addControlButtons(component);
-        Canvas.addDraggableListeners(component);
+        if (this.editable !== false) {
+          // Add control buttons and listeners
+          Canvas.controlsManager.addControlButtons(component);
+          Canvas.addDraggableListeners(component);
+        }
 
         // Component-specific restoration
         if (component.classList.contains('container-component')) {
@@ -408,7 +418,6 @@ export class Canvas {
     }
 
     Canvas.dispatchDesignChange();
-    // Canvas.updateCanvasHeight();
   }
 
   public static reorderComponent(fromIndex: number, toIndex: number): void {
@@ -465,7 +474,7 @@ export class Canvas {
       }
     }
 
-    if (element) {
+    if (element && this.editable !== false) {
       const resizeObserver = new ResizeObserver(entries => {
         Canvas.dispatchDesignChange();
       });
@@ -482,8 +491,8 @@ export class Canvas {
       } else {
         element.setAttribute('contenteditable', 'true');
         element.addEventListener('input', () => {
-          this.dispatchDesignChange();
           Canvas.historyManager.captureState();
+          this.dispatchDesignChange();
         });
       }
 

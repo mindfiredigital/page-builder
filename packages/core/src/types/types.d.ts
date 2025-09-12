@@ -65,6 +65,7 @@ declare global {
   export interface ComponentAttribute {
     id: string;
     type: 'Constant' | 'Formula' | 'Input' | 'Image';
+    input_type: 'text' | 'number' | 'checkbox';
     title: string;
     key: string;
     value: string | number | boolean;
@@ -84,7 +85,7 @@ declare global {
   interface DynamicComponents {
     Basic: BasicComponent;
     Extra: string[];
-    Custom: Record<string, CustomComponentConfig>;
+    Custom: CustomComponentConfig;
   }
 
   // New interface for custom component settings
@@ -93,13 +94,15 @@ declare global {
     functionName: string;
   }
 
-  // Define interface for each custom component and its details
   interface CustomComponentConfig {
-    component: string;
-    svg?: string;
-    title?: string;
-    settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
-    props?: Record<string, any>;
+    [key: string]: {
+      component: string;
+      svg?: string;
+      title?: string;
+      settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
+      settingsComponentTagName?: string;
+      props?: Record<string, any>;
+    };
   }
 
   // Define a union type for different device preview modes

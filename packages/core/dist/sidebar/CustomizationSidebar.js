@@ -38,6 +38,7 @@ import { TableComponent } from '../components/TableComponent.js';
 import { svgs } from '../icons/svgs.js';
 import { TextComponent } from '../components/TextComponent.js';
 import { HeaderComponent } from '../components/HeaderComponent.js';
+import { SidebarUtils } from '../utils/customizationSidebarHelper.js';
 export class CustomizationSidebar {
   static init(
     customComponentsConfig,
@@ -56,9 +57,7 @@ export class CustomizationSidebar {
       console.error('CustomizationSidebar: Required elements not found.');
       return;
     }
-    // Initialize LayersViewController
     this.layersViewController = new LayersViewController();
-    // Create functionality panel
     this.functionsPanel = document.createElement('div');
     this.functionsPanel.id = 'functions-panel';
     this.functionsPanel.className = 'dropdown-panel';
@@ -101,7 +100,6 @@ export class CustomizationSidebar {
       layersTab.addEventListener('click', () => this.switchToLayersMode());
     }
   }
-  // --- Tab Switching Logic ---
   static switchToCustomizeMode() {
     const customizeTab = document.getElementById('customize-tab');
     const attributeTab = document.getElementById('attribute-tab');
@@ -128,11 +126,10 @@ export class CustomizationSidebar {
     attributeTab.classList.add('active');
     customizeTab.classList.remove('active');
     layersTab.classList.remove('active');
-    layersView.style.display = 'none'; // Hide layers view
+    layersView.style.display = 'none';
     this.functionsPanel.style.display = 'block';
     this.controlsContainer.style.display = 'none';
     componentName.style.display = 'block';
-    // Populate functionality controls if component is selected
     if (this.selectedComponent) {
       this.populateFunctionalityControls(this.selectedComponent);
     }
@@ -146,14 +143,12 @@ export class CustomizationSidebar {
     layersTab.classList.add('active');
     attributeTab.classList.remove('active');
     customizeTab.classList.remove('active');
-    // Hide both dropdown panels
     this.controlsContainer.style.display = 'none';
     this.functionsPanel.style.display = 'none';
-    layersView.style.display = 'block'; // Show layers view
-    componentName.style.display = 'none'; // Hide component name header
+    layersView.style.display = 'block';
+    componentName.style.display = 'none';
     LayersViewController.updateLayersView();
   }
-  // --- Sidebar Display Management ---
   static showSidebar(componentId) {
     const component = document.getElementById(componentId);
     if (!component) {
@@ -178,34 +173,33 @@ export class CustomizationSidebar {
     }
     this.switchToCustomizeMode();
   }
-  // --- Populate CSS Controls ---
   static populateCssControls(component) {
     this.controlsContainer.innerHTML = '';
     const styles = getComputedStyle(component);
     const isCanvas = component.id.toLowerCase() === 'canvas';
-    // Re-create all CSS controls
-    this.createSelectControl('Display', 'display', styles.display || 'block', [
-      'block',
-      'inline',
-      'inline-block',
-      'flex',
-      'grid',
-      'none',
-    ]);
+    SidebarUtils.createSelectControl(
+      'Display',
+      'display',
+      styles.display || 'block',
+      ['block', 'inline', 'inline-block', 'flex', 'grid', 'none'],
+      this.controlsContainer
+    );
     if (styles.display === 'flex' || component.style.display === 'flex') {
-      this.createSelectControl(
+      SidebarUtils.createSelectControl(
         'Flex Direction',
         'flex-direction',
         styles.flexDirection || 'row',
-        ['row', 'row-reverse', 'column', 'column-reverse']
+        ['row', 'row-reverse', 'column', 'column-reverse'],
+        this.controlsContainer
       );
-      this.createSelectControl(
+      SidebarUtils.createSelectControl(
         'Align Items',
         'align-items',
         styles.alignItems || 'stretch',
-        ['stretch', 'flex-start', 'flex-end', 'center', 'baseline']
+        ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'],
+        this.controlsContainer
       );
-      this.createSelectControl(
+      SidebarUtils.createSelectControl(
         'Justify Content',
         'justify-content',
         styles.justifyContent || 'flex-start',
@@ -216,108 +210,119 @@ export class CustomizationSidebar {
           'space-between',
           'space-around',
           'space-evenly',
-        ]
+        ],
+        this.controlsContainer
       );
     }
     if (!isCanvas) {
-      this.createControl('Width', 'width', 'number', component.offsetWidth, {
-        min: 0,
-        max: 1000,
-        unit: 'px',
-      });
-      this.createControl('Height', 'height', 'number', component.offsetHeight, {
-        min: 0,
-        max: 1000,
-        unit: 'px',
-      });
-      this.createControl(
+      SidebarUtils.createControl(
+        'Width',
+        'width',
+        'number',
+        component.offsetWidth,
+        this.controlsContainer,
+        { min: 0, max: 1000, unit: 'px' }
+      );
+      SidebarUtils.createControl(
+        'Height',
+        'height',
+        'number',
+        component.offsetHeight,
+        this.controlsContainer,
+        { min: 0, max: 1000, unit: 'px' }
+      );
+      SidebarUtils.createControl(
         'Margin',
         'margin',
         'number',
         parseInt(styles.margin) || 0,
-        {
-          min: 0,
-          max: 1000,
-          unit: 'px',
-        }
+        this.controlsContainer,
+        { min: 0, max: 1000, unit: 'px' }
       );
-      this.createControl(
+      SidebarUtils.createControl(
         'Padding',
         'padding',
         'number',
         parseInt(styles.padding) || 0,
-        {
-          min: 0,
-          max: 1000,
-          unit: 'px',
-        }
+        this.controlsContainer,
+        { min: 0, max: 1000, unit: 'px' }
       );
     }
-    this.createControl(
+    SidebarUtils.createControl(
       'Background Color',
-      'background-color', // Changed ID to be more specific
+      'background-color',
       'color',
-      styles.backgroundColor
+      styles.backgroundColor,
+      this.controlsContainer
     );
-    this.createSelectControl('Text Alignment', 'alignment', styles.textAlign, [
-      'left',
-      'center',
-      'right',
-    ]);
-    this.createSelectControl('Font Family', 'font-family', styles.fontFamily, [
-      'Arial',
-      'Verdana',
-      'Helvetica',
-      'Times New Roman',
-      'Georgia',
-      'Courier New',
-      'sans-serif',
-      'serif',
-    ]);
-    this.createControl(
+    SidebarUtils.createSelectControl(
+      'Text Alignment',
+      'alignment',
+      styles.textAlign,
+      ['left', 'center', 'right'],
+      this.controlsContainer
+    );
+    SidebarUtils.createSelectControl(
+      'Font Family',
+      'font-family',
+      styles.fontFamily,
+      [
+        'Arial',
+        'Verdana',
+        'Helvetica',
+        'Times New Roman',
+        'Georgia',
+        'Courier New',
+        'sans-serif',
+        'serif',
+      ],
+      this.controlsContainer
+    );
+    SidebarUtils.createControl(
       'Font Size',
       'font-size',
       'number',
       parseInt(styles.fontSize) || 16,
-      {
-        min: 0,
-        max: 100,
-        unit: 'px',
-      }
+      this.controlsContainer,
+      { min: 0, max: 100, unit: 'px' }
     );
-    this.createSelectControl('Font Weight', 'font-weight', styles.fontWeight, [
-      'normal',
-      'bold',
-      'bolder',
-      'lighter',
-      '100',
-      '200',
-      '300',
-      '400',
-      '500',
-      '600',
-      '700',
-      '800',
-      '900',
-    ]);
-    this.createControl(
+    SidebarUtils.createSelectControl(
+      'Font Weight',
+      'font-weight',
+      styles.fontWeight,
+      [
+        'normal',
+        'bold',
+        'bolder',
+        'lighter',
+        '100',
+        '200',
+        '300',
+        '400',
+        '500',
+        '600',
+        '700',
+        '800',
+        '900',
+      ],
+      this.controlsContainer
+    );
+    SidebarUtils.createControl(
       'Text Color',
       'text-color',
       'color',
-      styles.color || '#000000'
+      styles.color || '#000000',
+      this.controlsContainer
     );
-    this.createControl(
+    SidebarUtils.createControl(
       'Border Width',
       'border-width',
       'number',
       parseInt(styles.borderWidth) || 0,
-      {
-        min: 0,
-        max: 20,
-        unit: 'px',
-      }
+      this.controlsContainer,
+      { min: 0, max: 20, unit: 'px' }
     );
-    this.createSelectControl(
+    SidebarUtils.createSelectControl(
       'Border Style',
       'border-style',
       styles.borderStyle || 'none',
@@ -331,32 +336,27 @@ export class CustomizationSidebar {
         'ridge',
         'inset',
         'outset',
-      ]
+      ],
+      this.controlsContainer
     );
-    this.createControl(
+    SidebarUtils.createControl(
       'Border Color',
       'border-color',
       'color',
-      styles.borderColor || '#000000'
+      styles.borderColor || '#000000',
+      this.controlsContainer
     );
-    // Update color input value to hex for background color
     const bgColorInput = document.getElementById('background-color');
     if (bgColorInput) {
-      bgColorInput.value = CustomizationSidebar.rgbToHex(
-        styles.backgroundColor
-      );
+      bgColorInput.value = SidebarUtils.rgbToHex(styles.backgroundColor);
     }
-    // Update color input value to hex for text color
     const textColorInput = document.getElementById('text-color');
     if (textColorInput) {
-      textColorInput.value = CustomizationSidebar.rgbToHex(styles.color);
+      textColorInput.value = SidebarUtils.rgbToHex(styles.color);
     }
-    // Update color input value to hex for border color
     const borderColorInput = document.getElementById('border-color');
     if (borderColorInput) {
-      borderColorInput.value = CustomizationSidebar.rgbToHex(
-        styles.borderColor
-      );
+      borderColorInput.value = SidebarUtils.rgbToHex(styles.borderColor);
     }
     this.addListeners(component);
   }
@@ -385,7 +385,6 @@ export class CustomizationSidebar {
             ? void 0
             : _c.components.find(comp => comp.name === 'header');
       }
-      console.log(componentConfig);
       if (componentConfig && componentConfig.globalExecuteFunction) {
         const inputValues = {};
         const allInputs =
@@ -394,7 +393,12 @@ export class CustomizationSidebar {
           );
         allInputs.forEach(input => {
           const inputEl = input;
-          inputValues[inputEl.id] = inputEl.value;
+          // Check the input type and get the correct value
+          if (inputEl.type === 'checkbox') {
+            inputValues[inputEl.id] = inputEl.checked ? 'true' : 'false';
+          } else {
+            inputValues[inputEl.id] = inputEl.value;
+          }
         });
         const result = yield componentConfig.globalExecuteFunction(inputValues);
         const tableInstance = new TableComponent();
@@ -409,124 +413,82 @@ export class CustomizationSidebar {
         textInstance.updateInputValues(inputValues);
         tableInstance.updateInputValues(inputValues);
         headerInstance.updateInputValues(inputValues);
+        tableInstance.evaluateRowVisibility(inputValues);
+        Canvas.historyManager.captureState();
       }
     });
   }
-  // Add this new private helper method inside your class
-  // Replace your existing createAttributeControls method with this improved version
-  static createAttributeControls(attribute) {
-    const box = document.createElement('div');
-    box.className = 'attribute-input-container';
-    box.innerHTML = `
-    <div class="attribute-header">
-      <label for="${attribute.key}" class="attribute-label">${attribute.title}</label>
-      ${!attribute.editable ? '<span class="readonly-badge">Read Only</span>' : ''}
-    </div>
-    <div class="attribute-input-wrapper">
-      <input 
-        type="text" 
-        class="attribute-input" 
-        id="${attribute.key}"  
-        ${!attribute.editable ? 'disabled readonly' : ''} 
-        value="${attribute.default_value || ''}" 
-        placeholder="Enter ${attribute.title.toLowerCase()}..."
-      >
-    </div>
-  `;
-    this.functionsPanel.appendChild(box);
-    const inputElement = document.getElementById(attribute.key);
-    if (attribute.editable !== false) {
-      const eventConfigurator = document.createElement('div');
-      eventConfigurator.className = 'event-configurator';
-      eventConfigurator.innerHTML = `
-      <div class="event-trigger-section">
-        <div class="trigger-header">
-          <label class="trigger-label">Trigger Event:</label>
-        </div>
-        <div class="trigger-select-wrapper">
-          <select class="event-selector" id="event-selector-${attribute.key}">
-            <option value="input">On Input (Real-time)</option>
-            <option value="change">On Change</option>
-            <option value="blur">On Focus Lost</option>
-            <option value="keyup">On Key Release</option>
-            <option value="click">On Click</option>
-          </select>
-          <div class="select-arrow">▼</div>
-        </div>
-      </div>
-    `;
-      box.appendChild(eventConfigurator);
-      const eventSelector = document.getElementById(
-        `event-selector-${attribute.key}`
-      );
-      const setupListener = eventToListen => {
-        const eventTypes = ['input', 'change', 'blur', 'keyup', 'click'];
-        eventTypes.forEach(eventType => {
-          inputElement.removeEventListener(eventType, this.handleInputTrigger);
-        });
-        inputElement.addEventListener(eventToListen, this.handleInputTrigger);
-        // Visual feedback for active trigger
-        box.setAttribute('data-trigger', eventToListen);
-      };
-      eventSelector.addEventListener('change', () => {
-        var _a;
-        const selectedEvent = eventSelector.value;
-        setupListener(selectedEvent);
-        // Add visual feedback animation
-        (_a = eventSelector.parentElement) === null || _a === void 0
-          ? void 0
-          : _a.classList.add('trigger-changed');
-        setTimeout(() => {
-          var _a;
-          (_a = eventSelector.parentElement) === null || _a === void 0
-            ? void 0
-            : _a.classList.remove('trigger-changed');
-        }, 300);
-      });
-      const defaultTrigger = 'input';
-      eventSelector.value = defaultTrigger;
-      setupListener(defaultTrigger);
-      // Add focus/blur effects for better UX
-      inputElement.addEventListener('focus', () => {
-        box.classList.add('input-focused');
-      });
-      inputElement.addEventListener('blur', () => {
-        box.classList.remove('input-focused');
-      });
+  static ShoModal(componentAttributes) {
+    if (componentAttributes && componentAttributes.length > 0) {
+      return true;
     }
+    return false;
   }
   static populateFunctionalityControls(component) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     this.functionsPanel.innerHTML = '';
     let componentConfig;
     let showModalButton = false;
+    const tableConfig =
+      (_a = this.basicComponentsConfig) === null || _a === void 0
+        ? void 0
+        : _a.components.find(comp => comp.name === 'table');
     if (component.classList.contains('table-component')) {
-      componentConfig =
-        (_a = this.basicComponentsConfig) === null || _a === void 0
+      componentConfig = tableConfig;
+      this.ShoModal(
+        componentConfig === null || componentConfig === void 0
           ? void 0
-          : _a.components.find(comp => comp.name === 'table');
-      showModalButton = false;
+          : componentConfig.attributes
+      );
     } else if (component.classList.contains('text-component')) {
       componentConfig =
         (_b = this.basicComponentsConfig) === null || _b === void 0
           ? void 0
           : _b.components.find(comp => comp.name === 'text');
-      showModalButton = true;
+      showModalButton = this.ShoModal(
+        componentConfig === null || componentConfig === void 0
+          ? void 0
+          : componentConfig.attributes
+      );
     } else if (component.classList.contains('header-component')) {
       componentConfig =
         (_c = this.basicComponentsConfig) === null || _c === void 0
           ? void 0
           : _c.components.find(comp => comp.name === 'header');
-      showModalButton = true;
+      showModalButton = this.ShoModal(
+        componentConfig === null || componentConfig === void 0
+          ? void 0
+          : componentConfig.attributes
+      );
     } else if (component.classList.contains('table-cell')) {
-      showModalButton = true;
+      showModalButton = this.ShoModal(
+        tableConfig === null || tableConfig === void 0
+          ? void 0
+          : tableConfig.attributes
+      );
+    } else if (component.classList.contains('table-row')) {
+      const tableInputAttr =
+        (_d =
+          tableConfig === null || tableConfig === void 0
+            ? void 0
+            : tableConfig.attributes) === null || _d === void 0
+          ? void 0
+          : _d.filter(input => input.type === 'Input');
+      if (
+        tableInputAttr &&
+        tableInputAttr.length > 0 &&
+        this.basicComponentsConfig
+      ) {
+        SidebarUtils.populateRowVisibilityControls(component, tableInputAttr);
+      }
+      return;
     } else if (component.classList.contains('custom-component')) {
       const componentType =
-        (_d = Array.from(component.classList).find(cls =>
+        (_e = Array.from(component.classList).find(cls =>
           cls.endsWith('-component')
-        )) === null || _d === void 0
+        )) === null || _e === void 0
           ? void 0
-          : _d.replace('-component', '');
+          : _e.replace('-component', '');
       const customComponentsConfig =
         CustomizationSidebar.customComponentsConfig;
       if (
@@ -544,7 +506,6 @@ export class CustomizationSidebar {
           settingsElement = document.createElement(settingsComponentTagName);
           this.functionsPanel.appendChild(settingsElement);
         }
-        // Set the attribute as before.
         settingsElement.setAttribute(
           'data-settings',
           JSON.stringify({ targetComponentId: component.id })
@@ -558,117 +519,24 @@ export class CustomizationSidebar {
     ) {
       componentConfig.attributes.forEach(attribute => {
         if (attribute.type === 'Input') {
-          this.createAttributeControls(attribute);
+          SidebarUtils.createAttributeControls(
+            attribute,
+            this.functionsPanel,
+            this.handleInputTrigger
+          );
         }
       });
     }
-    if (showModalButton && this.editable !== false) {
-      const modalButton = document.createElement('button');
-      modalButton.textContent = `Set ${component.classList[0].replace('-component', '')} Attribute`;
-      modalButton.className = 'set-attribute-button';
-      this.functionsPanel.appendChild(modalButton);
-      modalButton.addEventListener('click', () => {
-        if (component.classList.contains('text-component')) {
-          const textComponentInstance = new TextComponent();
-          textComponentInstance.handleTextClick(component);
-        } else if (component.classList.contains('header-component')) {
-          const headerComponentInstance = new HeaderComponent();
-          headerComponentInstance.handleHeaderClick(component);
-        } else if (component.classList.contains('table-cell')) {
-          const tableComponent = new TableComponent();
-          tableComponent.handleCellClick(component);
-        }
-      });
+    if (showModalButton) {
+      SidebarUtils.populateModalButton(
+        component,
+        this.functionsPanel,
+        this.editable
+      );
     } else if (!componentConfig) {
       this.functionsPanel.innerHTML =
         '<p>No specific settings for this component.</p>';
     }
-  }
-  static rgbToHex(rgb) {
-    const result = rgb.match(
-      /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/
-    );
-    if (!result) return rgb;
-    const r = parseInt(result[1], 10);
-    const g = parseInt(result[2], 10);
-    const b = parseInt(result[3], 10);
-    return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
-  }
-  static createControl(label, id, type, value, attributes = {}) {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('control-wrapper');
-    const isNumber = type === 'number';
-    if (isNumber && attributes.unit) {
-      const unit = attributes.unit;
-      wrapper.innerHTML = `
-                <label for="${id}">${label}:</label>
-                <div class="input-wrapper">
-                  <input type="${type}" id="${id}" value="${value}">
-                  <select id="${id}-unit">
-                      <option value="px" ${unit === 'px' ? 'selected' : ''}>px</option>
-                      <option value="rem" ${unit === 'rem' ? 'selected' : ''}>rem</option>
-                      <option value="vh" ${unit === 'vh' ? 'selected' : ''}>vh</option>
-                      <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
-                  </select>
-                </div
-            `;
-    } else {
-      wrapper.innerHTML = `
-        <label for="${id}">${label}:</label>
-        <div class="input-wrapper">
-          <input type="color" id="${id}" value="${value}">
-          <input type="text" id="${id}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${value}">
-        </div>
-      `;
-    }
-    const input = wrapper.querySelector('input');
-    const unitSelect = wrapper.querySelector(`#${id}-unit`);
-    if (input) {
-      Object.keys(attributes).forEach(key => {
-        input.setAttribute(key, attributes[key].toString());
-      });
-    }
-    const colorInput = wrapper.querySelector(`input[type="color"]#${id}`);
-    const hexInput = wrapper.querySelector(`#${id}-value`);
-    if (colorInput) {
-      colorInput.addEventListener('input', () => {
-        if (hexInput) {
-          hexInput.value = colorInput.value; // Update hex code display
-        }
-      });
-    }
-    if (hexInput) {
-      hexInput.addEventListener('input', () => {
-        if (colorInput) {
-          colorInput.value = hexInput.value;
-        }
-      });
-    }
-    this.controlsContainer.appendChild(wrapper);
-    if (unitSelect) {
-      unitSelect.addEventListener('change', () => {
-        const unit = unitSelect.value;
-        const currentValue = parseInt(input.value);
-        input.value = `${currentValue}${unit}`;
-      });
-    }
-  }
-  static createSelectControl(label, id, currentValue, options) {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('control-wrapper');
-    const selectOptions = options
-      .map(
-        option =>
-          `<option value="${option}" ${option === currentValue ? 'selected' : ''}>${option}</option>`
-      )
-      .join('');
-    wrapper.innerHTML = `
-                <label for="${id}">${label}:</label>
-                <div class="input-wrapper">
-                  <select id="${id}">${selectOptions}</select>
-                </div>
-            `;
-    this.controlsContainer.appendChild(wrapper);
   }
   static addListeners(component) {
     var _a,
