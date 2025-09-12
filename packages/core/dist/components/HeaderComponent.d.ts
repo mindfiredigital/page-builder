@@ -1,5 +1,5 @@
 export declare class HeaderComponent {
-  private static headerAttributeConfig;
+  static headerAttributeConfig: ComponentAttribute[];
   private modalComponent;
   constructor();
   create(
@@ -9,8 +9,9 @@ export declare class HeaderComponent {
   ): HTMLElement;
   seedFormulaValues(values: Record<string, any>): void;
   updateInputValues(values: Record<string, any>): void;
-  handleHeaderClick(headerComponent: HTMLElement): Promise<void>;
-  private findSelectedAttribute;
-  private updateHeaderContent;
+  updateHeaderContent(
+    headerElement: HTMLElement,
+    attribute: ComponentAttribute
+  ): void;
   static restore(container: HTMLElement): void;
 }

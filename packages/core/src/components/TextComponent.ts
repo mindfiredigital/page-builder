@@ -3,7 +3,7 @@ import { ModalComponent } from './ModalManager';
 
 export class TextComponent {
   private text: string;
-  private static textAttributeConfig: ComponentAttribute[] = [];
+  static textAttributeConfig: ComponentAttribute[] = [];
   private modalComponent: ModalComponent;
 
   constructor(text: string = 'Sample Text') {
@@ -61,46 +61,7 @@ export class TextComponent {
     Canvas.dispatchDesignChange();
   }
 
-  async handleTextClick(textComponent: HTMLElement): Promise<void> {
-    if (
-      !this.modalComponent ||
-      TextComponent.textAttributeConfig?.length === 0
-    ) {
-      console.warn('Modal component or text attribute config not available');
-      return;
-    }
-
-    try {
-      const result = await this.modalComponent.show(
-        TextComponent.textAttributeConfig
-      );
-
-      if (result) {
-        const selectedAttribute = this.findSelectedAttribute(result);
-
-        if (selectedAttribute) {
-          this.updateTextContent(textComponent, selectedAttribute);
-        }
-      }
-    } catch (error) {
-      console.error('Error handling text component click:', error);
-    }
-  }
-  private findSelectedAttribute(
-    result: Record<string, any>
-  ): ComponentAttribute | null {
-    for (const attr of TextComponent.textAttributeConfig) {
-      if (
-        result.hasOwnProperty(attr.key) &&
-        result[attr.key] !== undefined &&
-        result[attr.key] !== ''
-      ) {
-        return attr;
-      }
-    }
-    return null;
-  }
-  private updateTextContent(
+  updateTextContent(
     textElement: HTMLElement,
     attribute: ComponentAttribute
   ): void {

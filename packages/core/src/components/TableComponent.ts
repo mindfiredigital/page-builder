@@ -2,7 +2,7 @@ import { Canvas } from '../canvas/Canvas';
 import { ModalComponent } from './ModalManager';
 
 export class TableComponent {
-  private static tableAttributeConfig: ComponentAttribute[];
+  static tableAttributeConfig: ComponentAttribute[];
   private modalComponent: ModalComponent | null = null;
 
   constructor() {
@@ -317,48 +317,6 @@ export class TableComponent {
     });
   }
 
-  async handleCellClick(cell: HTMLElement): Promise<void> {
-    if (
-      !this.modalComponent ||
-      !TableComponent.tableAttributeConfig ||
-      TableComponent.tableAttributeConfig.length === 0
-    ) {
-      console.warn('Modal component or table attribute config not available');
-      return;
-    }
-
-    try {
-      const result = await this.modalComponent.show(
-        TableComponent.tableAttributeConfig
-      );
-
-      if (result) {
-        const selectedAttribute = this.findSelectedAttribute(result);
-
-        if (selectedAttribute) {
-          this.updateCellContent(cell, selectedAttribute);
-        }
-      }
-    } catch (error) {
-      console.error('Error handling cell click:', error);
-    }
-  }
-
-  private findSelectedAttribute(
-    result: Record<string, any>
-  ): ComponentAttribute | null {
-    for (const attr of TableComponent.tableAttributeConfig) {
-      if (
-        result.hasOwnProperty(attr.key) &&
-        result[attr.key] !== undefined &&
-        result[attr.key] !== ''
-      ) {
-        return attr;
-      }
-    }
-    return null;
-  }
-
   seedFormulaValues(values: Record<string, any>) {
     const allTables = document.querySelectorAll('.table-component');
 
@@ -401,10 +359,7 @@ export class TableComponent {
     Canvas.dispatchDesignChange();
   }
 
-  private updateCellContent(
-    cell: HTMLElement,
-    attribute: ComponentAttribute
-  ): void {
+  updateCellContent(cell: HTMLElement, attribute: ComponentAttribute): void {
     cell.setAttribute('data-attribute-key', attribute.key);
     cell.setAttribute('data-attribute-type', attribute.type);
     const controlsElement = cell.querySelector('.cell-controls');

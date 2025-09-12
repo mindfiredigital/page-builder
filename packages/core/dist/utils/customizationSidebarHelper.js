@@ -2,6 +2,8 @@ import { TextComponent } from '../components/TextComponent.js';
 import { HeaderComponent } from '../components/HeaderComponent.js';
 import { TableComponent } from '../components/TableComponent.js';
 import { Canvas } from '../canvas/Canvas.js';
+import { ModalComponent } from '../components/ModalManager.js';
+import { handleComponentClick } from './componentClickManager.js';
 export class SidebarUtils {
   static createAttributeControls(
     attribute,
@@ -129,15 +131,31 @@ export class SidebarUtils {
     modalButton.className = 'set-attribute-button';
     functionsPanel.appendChild(modalButton);
     modalButton.addEventListener('click', () => {
+      const modalComponent = new ModalComponent(); // You might want to pass this down or create it here
       if (component.classList.contains('text-component')) {
         const textComponentInstance = new TextComponent();
-        textComponentInstance.handleTextClick(component);
+        handleComponentClick(
+          modalComponent,
+          TextComponent.textAttributeConfig, // Access static property
+          component,
+          textComponentInstance.updateTextContent
+        );
       } else if (component.classList.contains('header-component')) {
         const headerComponentInstance = new HeaderComponent();
-        headerComponentInstance.handleHeaderClick(component);
+        handleComponentClick(
+          modalComponent,
+          HeaderComponent.headerAttributeConfig, // Access static property
+          component,
+          headerComponentInstance.updateHeaderContent
+        );
       } else if (component.classList.contains('table-cell')) {
-        const tableComponent = new TableComponent();
-        tableComponent.handleCellClick(component);
+        const tableComponentInstance = new TableComponent();
+        handleComponentClick(
+          modalComponent,
+          TableComponent.tableAttributeConfig, // Access static property
+          component,
+          tableComponentInstance.updateCellContent
+        );
       }
     });
   }

@@ -1,6 +1,6 @@
 import { ModalComponent } from './ModalManager';
 export declare class TableComponent {
-  private static tableAttributeConfig;
+  static tableAttributeConfig: ComponentAttribute[];
   private modalComponent;
   constructor();
   create(
@@ -19,11 +19,9 @@ export declare class TableComponent {
   private addCellToRow;
   private deleteCell;
   private styleButton;
-  handleCellClick(cell: HTMLElement): Promise<void>;
-  private findSelectedAttribute;
   seedFormulaValues(values: Record<string, any>): void;
   updateInputValues(values: Record<string, any>): void;
-  private updateCellContent;
+  updateCellContent(cell: HTMLElement, attribute: ComponentAttribute): void;
   setModalComponent(modalComponent: ModalComponent): void;
   addRow(tableWrapper: HTMLElement, tableId: string): void;
   private static getDefaultValuesOfInput;

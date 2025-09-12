@@ -1,36 +1,3 @@
-var __awaiter =
-  (this && this.__awaiter) ||
-  function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-      return value instanceof P
-        ? value
-        : new P(function (resolve) {
-            resolve(value);
-          });
-    }
-    return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator['throw'](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done
-          ? resolve(result.value)
-          : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-  };
 import { Canvas } from '../canvas/Canvas.js';
 import { ModalComponent } from './ModalManager.js';
 export class TableComponent {
@@ -280,43 +247,6 @@ export class TableComponent {
     button.addEventListener('mouseleave', () => {
       button.style.backgroundColor = bgColor;
     });
-  }
-  handleCellClick(cell) {
-    return __awaiter(this, void 0, void 0, function* () {
-      if (
-        !this.modalComponent ||
-        !TableComponent.tableAttributeConfig ||
-        TableComponent.tableAttributeConfig.length === 0
-      ) {
-        console.warn('Modal component or table attribute config not available');
-        return;
-      }
-      try {
-        const result = yield this.modalComponent.show(
-          TableComponent.tableAttributeConfig
-        );
-        if (result) {
-          const selectedAttribute = this.findSelectedAttribute(result);
-          if (selectedAttribute) {
-            this.updateCellContent(cell, selectedAttribute);
-          }
-        }
-      } catch (error) {
-        console.error('Error handling cell click:', error);
-      }
-    });
-  }
-  findSelectedAttribute(result) {
-    for (const attr of TableComponent.tableAttributeConfig) {
-      if (
-        result.hasOwnProperty(attr.key) &&
-        result[attr.key] !== undefined &&
-        result[attr.key] !== ''
-      ) {
-        return attr;
-      }
-    }
-    return null;
   }
   seedFormulaValues(values) {
     const allTables = document.querySelectorAll('.table-component');

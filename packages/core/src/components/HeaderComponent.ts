@@ -2,7 +2,7 @@ import { Canvas } from '../canvas/Canvas';
 import { ModalComponent } from './ModalManager';
 
 export class HeaderComponent {
-  private static headerAttributeConfig: ComponentAttribute[] = [];
+  static headerAttributeConfig: ComponentAttribute[] = [];
   private modalComponent: ModalComponent;
 
   constructor() {
@@ -57,46 +57,8 @@ export class HeaderComponent {
 
     Canvas.dispatchDesignChange();
   }
-  async handleHeaderClick(headerComponent: HTMLElement): Promise<void> {
-    if (
-      !this.modalComponent ||
-      HeaderComponent.headerAttributeConfig?.length === 0
-    ) {
-      console.warn('Modal component or header attribute config not available');
-      return;
-    }
 
-    try {
-      const result = await this.modalComponent.show(
-        HeaderComponent.headerAttributeConfig
-      );
-      if (result) {
-        const selectedAttribute = this.findSelectedAttribute(result);
-        if (selectedAttribute) {
-          this.updateHeaderContent(headerComponent, selectedAttribute);
-        }
-      }
-    } catch (error) {
-      console.error('Error handling header component click:', error);
-    }
-  }
-
-  private findSelectedAttribute(
-    result: Record<string, any>
-  ): ComponentAttribute | null {
-    for (const attr of HeaderComponent.headerAttributeConfig) {
-      if (
-        result.hasOwnProperty(attr.key) &&
-        result[attr.key] !== undefined &&
-        result[attr.key] !== ''
-      ) {
-        return attr;
-      }
-    }
-    return null;
-  }
-
-  private updateHeaderContent(
+  updateHeaderContent(
     headerElement: HTMLElement,
     attribute: ComponentAttribute
   ): void {

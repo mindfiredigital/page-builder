@@ -1,36 +1,3 @@
-var __awaiter =
-  (this && this.__awaiter) ||
-  function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-      return value instanceof P
-        ? value
-        : new P(function (resolve) {
-            resolve(value);
-          });
-    }
-    return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator['throw'](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done
-          ? resolve(result.value)
-          : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-  };
 import { Canvas } from '../canvas/Canvas.js';
 import { ModalComponent } from './ModalManager.js';
 export class TextComponent {
@@ -78,45 +45,6 @@ export class TextComponent {
       }
     });
     Canvas.dispatchDesignChange();
-  }
-  handleTextClick(textComponent) {
-    return __awaiter(this, void 0, void 0, function* () {
-      var _a;
-      if (
-        !this.modalComponent ||
-        ((_a = TextComponent.textAttributeConfig) === null || _a === void 0
-          ? void 0
-          : _a.length) === 0
-      ) {
-        console.warn('Modal component or text attribute config not available');
-        return;
-      }
-      try {
-        const result = yield this.modalComponent.show(
-          TextComponent.textAttributeConfig
-        );
-        if (result) {
-          const selectedAttribute = this.findSelectedAttribute(result);
-          if (selectedAttribute) {
-            this.updateTextContent(textComponent, selectedAttribute);
-          }
-        }
-      } catch (error) {
-        console.error('Error handling text component click:', error);
-      }
-    });
-  }
-  findSelectedAttribute(result) {
-    for (const attr of TextComponent.textAttributeConfig) {
-      if (
-        result.hasOwnProperty(attr.key) &&
-        result[attr.key] !== undefined &&
-        result[attr.key] !== ''
-      ) {
-        return attr;
-      }
-    }
-    return null;
   }
   updateTextContent(textElement, attribute) {
     const controlsElement = textElement.querySelector('.component-controls');

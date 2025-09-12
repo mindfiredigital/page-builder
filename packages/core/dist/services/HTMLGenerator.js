@@ -1,4 +1,3 @@
-// import { Canvas } from '../canvas/Canvas.js';
 export class HTMLGenerator {
   constructor(canvas) {
     this.canvas = canvas;

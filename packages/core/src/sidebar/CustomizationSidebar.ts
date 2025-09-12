@@ -447,6 +447,7 @@ export class CustomizationSidebar {
       componentConfig = this.basicComponentsConfig?.components.find(
         comp => comp.name === 'text'
       );
+
       showModalButton = this.ShoModal(componentConfig?.attributes);
     } else if (component.classList.contains('header-component')) {
       componentConfig = this.basicComponentsConfig?.components.find(
