@@ -276,6 +276,9 @@ export class Canvas {
         if (componentData.type === 'header') {
           HeaderComponent.restore(component);
         }
+        if (componentData.type === 'text') {
+          TextComponent.restore(component);
+        }
         _a.canvasElement.appendChild(component);
         _a.components.push(component);
       }
@@ -393,22 +396,27 @@ export class Canvas {
       if (type != 'container') {
         element.classList.add('component-resizer');
       }
-      const uniqueClass = _a.generateUniqueClass(type);
-      element.setAttribute('id', uniqueClass);
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
-        element.setAttribute('contenteditable', 'true');
+        if (type !== 'header' && type !== 'text') {
+          element.setAttribute('contenteditable', 'true');
+        }
         element.addEventListener('input', () => {
           _a.historyManager.captureState();
           this.dispatchDesignChange();
         });
       }
+      _a.controlsManager.addControlButtons(element);
+    }
+    if (element) {
+      const uniqueClass = _a.generateUniqueClass(type);
+      element.setAttribute('id', uniqueClass);
       const label = document.createElement('span');
       label.className = 'component-label';
+      label.setAttribute('contenteditable', 'false');
       label.textContent = uniqueClass;
       element.appendChild(label);
-      _a.controlsManager.addControlButtons(element);
     }
     return element;
   }

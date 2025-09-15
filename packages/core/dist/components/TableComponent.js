@@ -29,6 +29,7 @@ export class TableComponent {
       const addRowButton = document.createElement('button');
       addRowButton.textContent = 'Add Row';
       addRowButton.className = 'add-row-button';
+      addRowButton.contentEditable = 'false';
       this.styleButton(addRowButton, '#2563eb', '#1d4ed8');
       addRowButton.addEventListener('click', () => {
         this.addRow(tableWrapper, tableId);
@@ -131,7 +132,6 @@ export class TableComponent {
     const cell = document.createElement('div');
     cell.className = 'table-cell';
     cell.id = `table-cell-T-${tableId}-R${rowIndex}-C${cellIndex}`;
-    cell.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
     cell.style.border = '1px solid #2F3132';
     cell.style.padding = '8px 12px';
     cell.style.minHeight = '45px';
@@ -151,6 +151,34 @@ export class TableComponent {
     controlsContainer.style.gap = '4px';
     controlsContainer.style.alignItems = 'center';
     controlsContainer.style.justifyContent = 'center';
+    controlsContainer.contentEditable = 'false';
+    const contentElement = document.createElement('span');
+    contentElement.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
+    contentElement.contentEditable = 'true';
+    contentElement.classList.add('table-cell-content');
+    // Add a keydown listener to prevent deleting the controls
+    contentElement.addEventListener('keydown', e => {
+      var _a;
+      // Check for Backspace or Delete key
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        const selection = window.getSelection();
+        // If the cursor is at the very beginning of the content and the content is empty
+        if (
+          selection &&
+          selection.isCollapsed &&
+          selection.anchorOffset === 0
+        ) {
+          if (
+            ((_a = contentElement.textContent) === null || _a === void 0
+              ? void 0
+              : _a.length) === 0
+          ) {
+            e.preventDefault(); // Stop the event
+            e.stopPropagation(); // Stop it from bubbling up
+          }
+        }
+      }
+    });
     // Add Cell button
     const addCellButton = document.createElement('button');
     addCellButton.textContent = '+';
@@ -205,6 +233,7 @@ export class TableComponent {
     });
     controlsContainer.appendChild(addCellButton);
     controlsContainer.appendChild(deleteCellButton);
+    cell.appendChild(contentElement);
     cell.appendChild(controlsContainer);
     return cell;
   }
@@ -255,8 +284,9 @@ export class TableComponent {
       cells.forEach(cell => {
         const controlsElement = cell.querySelector('.cell-controls');
         const key = cell.getAttribute('data-attribute-key');
-        if (key && values.hasOwnProperty(key)) {
-          cell.textContent = values[key];
+        const textContentCell = cell.querySelector('.table-cell-content');
+        if (textContentCell && key && values.hasOwnProperty(key)) {
+          textContentCell.textContent = values[key];
           cell.style.color = '#000000';
         }
         if (controlsElement) {
@@ -273,8 +303,14 @@ export class TableComponent {
       cells.forEach(cell => {
         const key = cell.getAttribute('data-attribute-key');
         const type = cell.getAttribute('data-attribute-type');
-        if (key && values.hasOwnProperty(key) && type === 'Input') {
-          cell.textContent = values[key];
+        const textContentOfCell = cell.querySelector('.table-cell-content');
+        if (
+          textContentOfCell &&
+          key &&
+          values.hasOwnProperty(key) &&
+          type === 'Input'
+        ) {
+          textContentOfCell.textContent = values[key];
         }
       });
     });
@@ -284,13 +320,14 @@ export class TableComponent {
     cell.setAttribute('data-attribute-key', attribute.key);
     cell.setAttribute('data-attribute-type', attribute.type);
     const controlsElement = cell.querySelector('.cell-controls');
-    if (attribute.type === 'Formula') {
-      cell.textContent = `${attribute.title}`;
+    const textContentOfCell = cell.querySelector('.table-cell-content');
+    if (attribute.type === 'Formula' && textContentOfCell) {
+      textContentOfCell.textContent = `${attribute.title}`;
       cell.style.fontSize = '10px';
       cell.style.color = 'rgb(188 191 198)';
       cell.style.fontWeight = '500';
-    } else if (attribute.type === 'Constant') {
-      cell.textContent = `${attribute.value}`;
+    } else if (attribute.type === 'Constant' && textContentOfCell) {
+      textContentOfCell.textContent = `${attribute.value}`;
     }
     if (controlsElement) {
       cell.appendChild(controlsElement);
@@ -341,7 +378,8 @@ export class TableComponent {
       const cellElement = cell;
       const attributeKey = cellElement.getAttribute('data-attribute-key');
       const attributeType = cellElement.getAttribute('data-attribute-type');
-      if (attributeKey) {
+      const textContentOfCell = cell.querySelector('.table-cell-content');
+      if (attributeKey && textContentOfCell) {
         const attribute = TableComponent.tableAttributeConfig.find(
           attr => attr.key === attributeKey
         );
@@ -351,12 +389,12 @@ export class TableComponent {
             attribute.default_value &&
             (attributeType === 'Formula' || attributeType === 'Input')
           ) {
-            cellElement.textContent = `${attribute.default_value}`;
+            textContentOfCell.textContent = `${attribute.default_value}`;
             cellElement.style.fontSize = '14px';
             cellElement.style.color = '#000000';
           } else if (attributeType === 'Formula') {
             // Restore the title and styling for formula cells
-            cellElement.textContent = `${attribute.title}`;
+            textContentOfCell.textContent = `${attribute.title}`;
             cellElement.style.fontSize = '10px';
             cellElement.style.color = 'rgb(188 191 198)';
             cellElement.style.fontWeight = '500';

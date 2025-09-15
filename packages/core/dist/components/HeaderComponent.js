@@ -7,21 +7,31 @@ export class HeaderComponent {
   create(level = 1, text = 'Header', headerAttributeConfig) {
     HeaderComponent.headerAttributeConfig = headerAttributeConfig || [];
     const element = document.createElement(`h${level}`);
-    element.innerText = text;
     element.classList.add('header-component');
+    // Create a new span for the editable text content
+    const textSpan = document.createElement('span');
+    textSpan.innerText = text;
+    textSpan.contentEditable = 'true';
+    textSpan.classList.add('component-text-content');
+    element.appendChild(textSpan);
     return element;
   }
   seedFormulaValues(values) {
     const allHeaders = document.querySelectorAll('.header-component');
     allHeaders.forEach(header => {
       const controlsElement = header.querySelector('.component-controls');
+      const labelElement = header.querySelector('.component-label');
+      const headerText = header.querySelector('.component-text-content');
       const key = header.getAttribute('data-attribute-key');
-      if (key && values.hasOwnProperty(key)) {
-        header.textContent = values[key];
+      if (headerText && key && values.hasOwnProperty(key)) {
+        headerText.textContent = values[key];
         header.style.color = '#000000';
       }
       if (controlsElement) {
         header.appendChild(controlsElement);
+      }
+      if (labelElement) {
+        header.appendChild(labelElement);
       }
     });
     Canvas.dispatchDesignChange();
@@ -30,30 +40,43 @@ export class HeaderComponent {
     const allHeaders = document.querySelectorAll('.header-component');
     allHeaders.forEach(header => {
       const controlsElement = header.querySelector('.component-controls');
+      const labelElement = header.querySelector('.component-label');
+      const headerText = header.querySelector('.component-text-content');
       const key = header.getAttribute('data-attribute-key');
       const type = header.getAttribute('data-attribute-type');
-      if (key && values.hasOwnProperty(key) && type === 'Input') {
-        header.textContent = values[key];
+      if (headerText && key && values.hasOwnProperty(key) && type === 'Input') {
+        headerText.textContent = values[key];
       }
       if (controlsElement) {
         header.appendChild(controlsElement);
+      }
+      if (labelElement) {
+        header.appendChild(labelElement);
       }
     });
     Canvas.dispatchDesignChange();
   }
   updateHeaderContent(headerElement, attribute) {
     const controlsElement = headerElement.querySelector('.component-controls');
+    const labelElement = headerElement.querySelector('.component-label');
+    const headerText = headerElement.querySelector('.component-text-content');
     headerElement.setAttribute('data-attribute-key', attribute.key);
     headerElement.setAttribute('data-attribute-type', attribute.type);
-    if (attribute.type === 'Formula') {
-      headerElement.textContent = `${attribute.title}`;
+    if (attribute.type === 'Formula' && headerText) {
+      headerText.textContent = `${attribute.title}`;
       headerElement.style.color = 'rgb(188 191 198)';
       headerElement.style.fontWeight = '500';
-    } else if (attribute.type === 'Constant' || attribute.type === 'Input') {
-      headerElement.textContent = `${attribute.value}`;
+    } else if (
+      (attribute.type === 'Constant' || attribute.type === 'Input') &&
+      headerText
+    ) {
+      headerText.textContent = `${attribute.value}`;
     }
     if (controlsElement) {
       headerElement.appendChild(controlsElement);
+    }
+    if (labelElement) {
+      headerElement.appendChild(labelElement);
     }
     Canvas === null || Canvas === void 0
       ? void 0
@@ -61,7 +84,8 @@ export class HeaderComponent {
   }
   static restore(container) {
     const closestHeader = container.closest('.header-component');
-    if (closestHeader) {
+    const headerText = closestHeader.querySelector('.component-text-content');
+    if (closestHeader && headerText) {
       const attributeKey = closestHeader.getAttribute('data-attribute-key');
       const attributeType = closestHeader.getAttribute('data-attribute-type');
       if (attributeKey) {
@@ -72,19 +96,23 @@ export class HeaderComponent {
           const controlsElement = closestHeader.querySelector(
             '.component-controls'
           );
+          const labelElement = closestHeader.querySelector('.component-label');
           if (
             attribute.default_value &&
             (attributeType === 'Formula' || attributeType === 'Input')
           ) {
-            closestHeader.textContent = `${attribute.default_value}`;
+            headerText.textContent = `${attribute.default_value}`;
             closestHeader.style.color = '#000000';
           } else if (attributeType === 'Formula') {
-            closestHeader.textContent = `${attribute.title}`;
+            headerText.textContent = `${attribute.title}`;
             closestHeader.style.color = 'rgb(188 191 198)';
             closestHeader.style.fontWeight = '500';
           }
           if (controlsElement) {
             closestHeader.appendChild(controlsElement);
+          }
+          if (labelElement) {
+            closestHeader.appendChild(labelElement);
           }
         }
       }

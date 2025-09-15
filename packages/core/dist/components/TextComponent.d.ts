@@ -11,4 +11,5 @@ export declare class TextComponent {
     textElement: HTMLElement,
     attribute: ComponentAttribute
   ): void;
+  static restore(container: HTMLElement): void;
 }

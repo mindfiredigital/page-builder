@@ -18,6 +18,7 @@ export class ComponentControlsManager {
     if (!controlsDiv) {
       controlsDiv = document.createElement('div');
       controlsDiv.className = 'component-controls';
+      controlsDiv.setAttribute('contenteditable', 'false');
       if (ImageComponent) {
         element.appendChild(controlsDiv);
       } else {

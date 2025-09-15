@@ -265,7 +265,6 @@ html {
 /* Editable components on the canvas */
 .editable-component {
   border: 1px solid #e2e8f0;
-  padding: 12px;
   margin: 6px;
   border-radius: 6px;
   cursor: text;
@@ -273,6 +272,12 @@ html {
   pointer-events: auto;
   background-color: #ffffff;
   transition: all 0.2s ease;
+}
+.component-text-content{
+  display: block;
+  height: 100%;
+  width: 100%;
+  padding: 12px;
 }
 
 .editable-component:hover {
@@ -508,6 +513,13 @@ html {
   padding: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+.component-controls, .component-label {
+  pointer-events: none; 
+}
+
+.component-controls img {
+  pointer-events: auto;
+}
 
 .delete-icon {
   width: 14px;
@@ -563,7 +575,6 @@ html {
   color: #ffffff;
 }
 
-/* Component name header */
 #component-name {
   background-color: #f8fafc;
   color: #334155;
