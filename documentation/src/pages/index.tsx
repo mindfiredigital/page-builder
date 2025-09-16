@@ -3,10 +3,11 @@ import clsx from 'clsx';
 // import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import HomepageFeatures from '@site/src/components/HomepageFeatures';
+import HomepageFeatures from '@site/src/components/HomePage/HomepageFeatures';
 
 import styles from './index.module.css';
 import '../css/custom.css';
+import { HeroSection } from '../components/HomePage/HeroSection';
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
@@ -27,7 +28,8 @@ export default function Home() {
       title={`${siteConfig.title}`}
       description="Description will go into a meta tag in <head />"
     >
-      <HomepageHeader />
+      <HeroSection />
+
       <main>
         <HomepageFeatures />
       </main>
