@@ -33,6 +33,8 @@ export class Canvas {
   public static jsonStorage: JSONStorage;
   public static lastCanvasWidth: number | null;
   private static tableAttributeConfig: ComponentAttribute[] | undefined;
+  private static textAttributeConfig: ComponentAttribute[] | undefined;
+  private static headerAttributeConfig: ComponentAttribute[] | undefined;
   private static ImageAttributeConfig: Function | undefined;
 
   public static getComponents(): HTMLElement[] {
@@ -46,14 +48,15 @@ export class Canvas {
   private static componentFactory: { [key: string]: () => HTMLElement | null } =
     {
       button: () => new ButtonComponent().create(),
-      header: () => new HeaderComponent().create(),
+      header: () =>
+        new HeaderComponent().create(1, 'Header', this.headerAttributeConfig),
       image: () =>
         new ImageComponent().create(undefined, this.ImageAttributeConfig),
       video: () =>
         new VideoComponent(() => Canvas.historyManager.captureState()).create(),
       table: () =>
         new TableComponent().create(2, 2, undefined, this.tableAttributeConfig),
-      text: () => new TextComponent().create(),
+      text: () => new TextComponent().create(this.textAttributeConfig),
       container: () => new ContainerComponent().create(),
       twoCol: () => new TwoColumnContainer().create(),
       threeCol: () => new ThreeColumnContainer().create(),
@@ -70,14 +73,25 @@ export class Canvas {
     const tableComponent = basicComponentsConfig.components.find(
       component => component.name === 'table'
     );
-    const tableConfig = tableComponent?.attributes?.filter(
-      attribute => attribute.type == 'Formula' || attribute.type === 'Constant'
+
+    this.tableAttributeConfig = tableComponent?.attributes;
+
+    const textComponent = basicComponentsConfig.components.find(
+      component => component.name === 'text'
     );
-    this.tableAttributeConfig = tableConfig;
+
+    this.textAttributeConfig = textComponent?.attributes;
+
+    const headerComponent = basicComponentsConfig.components.find(
+      component => component.name === 'header'
+    );
+    this.headerAttributeConfig = headerComponent?.attributes;
+
     const ImageComponent = basicComponentsConfig.components.find(
       component => component.name === 'image'
     );
     this.ImageAttributeConfig = ImageComponent?.globalExecuteFunction;
+
     if (
       tableComponent &&
       tableComponent.attributes &&
@@ -130,7 +144,7 @@ export class Canvas {
    * The event detail contains the current design state.
    */
   static dispatchDesignChange() {
-    if (Canvas.canvasElement && this.editable) {
+    if (Canvas.canvasElement && this.editable !== false) {
       const currentDesign = Canvas.getState();
       const event = new CustomEvent('design-change', {
         detail: currentDesign,
@@ -148,7 +162,6 @@ export class Canvas {
     Canvas.historyManager.captureState();
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
     Canvas.gridManager.initializeDropPreview(Canvas.canvasElement);
-
     Canvas.dispatchDesignChange();
   }
   static getState(): PageBuilderDesign {
@@ -241,10 +254,21 @@ export class Canvas {
           component.innerHTML = componentData.content;
         }
 
+        const deleteButton = component.querySelector('.component-controls');
+        if (deleteButton && this.editable === false) {
+          deleteButton.remove();
+        }
+
         component.className = '';
         componentData.classes.forEach((cls: string) => {
           component.classList.add(cls);
         });
+
+        if (this.editable === false) {
+          if (component.classList.contains('component-resizer')) {
+            component.classList.remove('component-resizer');
+          }
+        }
 
         if (componentData.type === 'video' && componentData.videoSrc) {
           const videoElement = component.querySelector(
@@ -282,10 +306,11 @@ export class Canvas {
             }
           );
         }
-
-        // Add control buttons and listeners
-        Canvas.controlsManager.addControlButtons(component);
-        Canvas.addDraggableListeners(component);
+        if (this.editable !== false) {
+          // Add control buttons and listeners
+          Canvas.controlsManager.addControlButtons(component);
+          Canvas.addDraggableListeners(component);
+        }
 
         // Component-specific restoration
         if (component.classList.contains('container-component')) {
@@ -314,6 +339,12 @@ export class Canvas {
 
         if (componentData.type === 'link') {
           LinkComponent.restore(component);
+        }
+        if (componentData.type === 'header') {
+          HeaderComponent.restore(component);
+        }
+        if (componentData.type === 'text') {
+          TextComponent.restore(component);
         }
 
         Canvas.canvasElement.appendChild(component);
@@ -364,7 +395,7 @@ export class Canvas {
 
     const component = Canvas.createComponent(componentType, customSettings);
 
-    if (component) {
+    if (component && this.editable !== false) {
       const uniqueClass = Canvas.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
@@ -390,7 +421,6 @@ export class Canvas {
     }
 
     Canvas.dispatchDesignChange();
-    // Canvas.updateCanvasHeight();
   }
 
   public static reorderComponent(fromIndex: number, toIndex: number): void {
@@ -447,7 +477,7 @@ export class Canvas {
       }
     }
 
-    if (element) {
+    if (element && this.editable !== false) {
       const resizeObserver = new ResizeObserver(entries => {
         Canvas.dispatchDesignChange();
       });
@@ -456,25 +486,30 @@ export class Canvas {
       if (type != 'container') {
         element.classList.add('component-resizer');
       }
-      const uniqueClass = Canvas.generateUniqueClass(type);
-      element.setAttribute('id', uniqueClass);
 
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
-        element.setAttribute('contenteditable', 'true');
+        if (type !== 'header' && type !== 'text') {
+          element.setAttribute('contenteditable', 'true');
+        }
         element.addEventListener('input', () => {
           Canvas.historyManager.captureState();
+          this.dispatchDesignChange();
         });
       }
 
-      const label = document.createElement('span');
-      label.className = 'component-label';
-      label.textContent = uniqueClass;
-      element.appendChild(label);
       Canvas.controlsManager.addControlButtons(element);
     }
-
+    if (element) {
+      const uniqueClass = Canvas.generateUniqueClass(type);
+      element.setAttribute('id', uniqueClass);
+      const label = document.createElement('span');
+      label.className = 'component-label';
+      label.setAttribute('contenteditable', 'false');
+      label.textContent = uniqueClass;
+      element.appendChild(label);
+    }
     return element;
   }
 

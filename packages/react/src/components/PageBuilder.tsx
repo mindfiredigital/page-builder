@@ -14,6 +14,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   onChange,
   editable = true,
   brandTitle,
+  showAttributeTab,
 }) => {
   const builderRef = useRef<PageBuilderElement>(null);
   const [processedConfig, setProcessedConfig] =
@@ -136,6 +137,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
+            builderRef.current.showAttributeTab = showAttributeTab;
           }
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);

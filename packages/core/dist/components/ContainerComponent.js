@@ -181,6 +181,7 @@ export class ContainerComponent {
     const label = document.createElement('span');
     label.className = 'component-label';
     label.textContent = uniqueClass;
+    label.setAttribute('contenteditable', 'false');
     component.id = uniqueClass;
     label.style.display = 'none';
     component.appendChild(label);

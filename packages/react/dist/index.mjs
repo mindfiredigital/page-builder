@@ -7,7 +7,8 @@ var PageBuilderReact = ({
   initialDesign,
   onChange,
   editable = true,
-  brandTitle
+  brandTitle,
+  showAttributeTab
 }) => {
   const builderRef = useRef(null);
   const [processedConfig, setProcessedConfig] = useState(config);
@@ -109,6 +110,7 @@ var PageBuilderReact = ({
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
+            builderRef.current.showAttributeTab = showAttributeTab;
           }
         } catch (error) {
           console.error("Error setting config-data and initialDesign:", error);

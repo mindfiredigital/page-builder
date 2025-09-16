@@ -28,22 +28,28 @@ export class Canvas {
     _a.components = components;
   }
   static init(initialData = null, editable, basicComponentsConfig) {
-    var _b;
     this.editable = editable;
     const tableComponent = basicComponentsConfig.components.find(
       component => component.name === 'table'
     );
-    const tableConfig =
-      (_b =
-        tableComponent === null || tableComponent === void 0
-          ? void 0
-          : tableComponent.attributes) === null || _b === void 0
+    this.tableAttributeConfig =
+      tableComponent === null || tableComponent === void 0
         ? void 0
-        : _b.filter(
-            attribute =>
-              attribute.type == 'Formula' || attribute.type === 'Constant'
-          );
-    this.tableAttributeConfig = tableConfig;
+        : tableComponent.attributes;
+    const textComponent = basicComponentsConfig.components.find(
+      component => component.name === 'text'
+    );
+    this.textAttributeConfig =
+      textComponent === null || textComponent === void 0
+        ? void 0
+        : textComponent.attributes;
+    const headerComponent = basicComponentsConfig.components.find(
+      component => component.name === 'header'
+    );
+    this.headerAttributeConfig =
+      headerComponent === null || headerComponent === void 0
+        ? void 0
+        : headerComponent.attributes;
     const ImageComponent = basicComponentsConfig.components.find(
       component => component.name === 'image'
     );
@@ -99,7 +105,7 @@ export class Canvas {
    * The event detail contains the current design state.
    */
   static dispatchDesignChange() {
-    if (_a.canvasElement && this.editable) {
+    if (_a.canvasElement && this.editable !== false) {
       const currentDesign = _a.getState();
       const event = new CustomEvent('design-change', {
         detail: currentDesign,
@@ -197,10 +203,19 @@ export class Canvas {
         if (!componentData.classes.includes('custom-component')) {
           component.innerHTML = componentData.content;
         }
+        const deleteButton = component.querySelector('.component-controls');
+        if (deleteButton && this.editable === false) {
+          deleteButton.remove();
+        }
         component.className = '';
         componentData.classes.forEach(cls => {
           component.classList.add(cls);
         });
+        if (this.editable === false) {
+          if (component.classList.contains('component-resizer')) {
+            component.classList.remove('component-resizer');
+          }
+        }
         if (componentData.type === 'video' && componentData.videoSrc) {
           const videoElement = component.querySelector('video');
           const uploadText = component.querySelector('.upload-text');
@@ -229,9 +244,11 @@ export class Canvas {
             }
           );
         }
-        // Add control buttons and listeners
-        _a.controlsManager.addControlButtons(component);
-        _a.addDraggableListeners(component);
+        if (this.editable !== false) {
+          // Add control buttons and listeners
+          _a.controlsManager.addControlButtons(component);
+          _a.addDraggableListeners(component);
+        }
         // Component-specific restoration
         if (component.classList.contains('container-component')) {
           ContainerComponent.restoreContainer(component);
@@ -255,6 +272,12 @@ export class Canvas {
         }
         if (componentData.type === 'link') {
           LinkComponent.restore(component);
+        }
+        if (componentData.type === 'header') {
+          HeaderComponent.restore(component);
+        }
+        if (componentData.type === 'text') {
+          TextComponent.restore(component);
         }
         _a.canvasElement.appendChild(component);
         _a.components.push(component);
@@ -297,7 +320,7 @@ export class Canvas {
       _a.canvasElement
     );
     const component = _a.createComponent(componentType, customSettings);
-    if (component) {
+    if (component && this.editable !== false) {
       const uniqueClass = _a.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
@@ -319,7 +342,6 @@ export class Canvas {
       _a.historyManager.captureState();
     }
     _a.dispatchDesignChange();
-    // Canvas.updateCanvasHeight();
   }
   static reorderComponent(fromIndex, toIndex) {
     if (
@@ -365,7 +387,7 @@ export class Canvas {
         return null;
       }
     }
-    if (element) {
+    if (element && this.editable !== false) {
       const resizeObserver = new ResizeObserver(entries => {
         _a.dispatchDesignChange();
       });
@@ -374,21 +396,27 @@ export class Canvas {
       if (type != 'container') {
         element.classList.add('component-resizer');
       }
-      const uniqueClass = _a.generateUniqueClass(type);
-      element.setAttribute('id', uniqueClass);
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
-        element.setAttribute('contenteditable', 'true');
+        if (type !== 'header' && type !== 'text') {
+          element.setAttribute('contenteditable', 'true');
+        }
         element.addEventListener('input', () => {
           _a.historyManager.captureState();
+          this.dispatchDesignChange();
         });
       }
+      _a.controlsManager.addControlButtons(element);
+    }
+    if (element) {
+      const uniqueClass = _a.generateUniqueClass(type);
+      element.setAttribute('id', uniqueClass);
       const label = document.createElement('span');
       label.className = 'component-label';
+      label.setAttribute('contenteditable', 'false');
       label.textContent = uniqueClass;
       element.appendChild(label);
-      _a.controlsManager.addControlButtons(element);
     }
     return element;
   }
@@ -512,13 +540,14 @@ _a = Canvas;
 Canvas.components = [];
 Canvas.componentFactory = {
   button: () => new ButtonComponent().create(),
-  header: () => new HeaderComponent().create(),
+  header: () =>
+    new HeaderComponent().create(1, 'Header', _a.headerAttributeConfig),
   image: () => new ImageComponent().create(undefined, _a.ImageAttributeConfig),
   video: () =>
     new VideoComponent(() => _a.historyManager.captureState()).create(),
   table: () =>
     new TableComponent().create(2, 2, undefined, _a.tableAttributeConfig),
-  text: () => new TextComponent().create(),
+  text: () => new TextComponent().create(_a.textAttributeConfig),
   container: () => new ContainerComponent().create(),
   twoCol: () => new TwoColumnContainer().create(),
   threeCol: () => new ThreeColumnContainer().create(),

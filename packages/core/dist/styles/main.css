@@ -265,7 +265,6 @@ html {
 /* Editable components on the canvas */
 .editable-component {
   border: 1px solid #e2e8f0;
-  padding: 12px;
   margin: 6px;
   border-radius: 6px;
   cursor: text;
@@ -273,6 +272,12 @@ html {
   pointer-events: auto;
   background-color: #ffffff;
   transition: all 0.2s ease;
+}
+.component-text-content{
+  display: block;
+  height: 100%;
+  width: 100%;
+  padding: 12px;
 }
 
 .editable-component:hover {
@@ -508,6 +513,13 @@ html {
   padding: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+.component-controls, .component-label {
+  pointer-events: none; 
+}
+
+.component-controls img {
+  pointer-events: auto;
+}
 
 .delete-icon {
   width: 14px;
@@ -563,7 +575,6 @@ html {
   color: #ffffff;
 }
 
-/* Component name header */
 #component-name {
   background-color: #f8fafc;
   color: #334155;
@@ -865,7 +876,7 @@ html {
   z-index: 9999;
   overflow: auto;
 }
-
+/*************************************EXPORT MODAL************************************/
 #close-modal-btn {
   position: absolute;
   top: 16px;
@@ -911,7 +922,7 @@ html {
   opacity: 0;
 }
 
-.modal-content {
+.export-modal-content {
   position: relative;
   background: white;
   width: 90%;
@@ -923,10 +934,12 @@ html {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   padding: 20px;
 }
-
+.close-btn{
+  position: absolute;
+  right: 2px
+}
 .modal-section {
   width: 50%;
-  padding: 16px;
 }
 
 .modal-section h2 {
@@ -997,7 +1010,8 @@ html {
   transform: translateY(-1px);
 }
 
-/* Table component enhancements */
+/*************************************TABLE COMPONENT************************************/
+
 .table-component {
   background-color: #ffffff;
   border-radius: 6px;
@@ -1012,7 +1026,14 @@ html {
 .table-cell {
 box-sizing: border-box;
 }
-/* Link component styling */
+
+.table-row {
+  border-inline: 1px solid #2F3132;
+  padding: 0 0.7px;
+}
+
+/************************************LINK COMPONENT************************************/
+
 .link-component {
   border: none;
   display: flex;
@@ -1383,7 +1404,7 @@ box-sizing: border-box;
 }
 }
 
-/*-----------------------MODAL---------------------------*/
+/***************************************************ATTRIBUT SEED MODAL*************************************/
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1681,3 +1702,339 @@ box-sizing: border-box;
   transform: translateY(-2px);
   transition: all 0.2s ease-in-out;
 }
+/****************************************************ATTRIBUTE SECTION OF CUSTOMIZATION SIDEBAR****************************************************************************************************/
+.attribute-input-container {
+  margin-bottom: 20px;
+  padding: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.attribute-input-container:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.attribute-input-container.input-focused {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.attribute-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.attribute-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  margin: 0;
+}
+
+.readonly-badge {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.attribute-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.attribute-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.attribute-input:focus {
+  border-color: #3b82f6;
+  background: #fefefe;
+}
+
+.attribute-input:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+}
+
+.attribute-input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.input-status-indicator {
+  position: absolute;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.input-status-indicator.editable {
+  background: #10b981;
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.3);
+}
+
+.input-status-indicator.readonly {
+  background: #f59e0b;
+  box-shadow: 0 0 4px rgba(245, 158, 11, 0.3);
+}
+
+.event-configurator {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+  width: 100%;
+}
+
+.event-trigger-section {
+    background: #f8fafc;
+    padding: 8px;
+    border-radius: 1px;
+    border: 1px solid #e2e8f0;
+}
+
+.trigger-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.trigger-icon {
+  font-size: 14px;
+  color: #f59e0b;
+}
+
+.trigger-label {
+  font-size: 12px !important;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.trigger-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.event-selector {
+  width: 100%;
+  padding: 6px 30px 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #ffffff;
+  font-size: 12px !important;
+  color: #374151;
+  cursor: pointer;
+  appearance: none;
+  transition: all 0.2s ease;
+}
+
+.event-selector:hover {
+  border-color: #9ca3af;
+}
+
+.event-selector:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+
+.trigger-select-wrapper:hover .select-arrow {
+  color: #374151;
+}
+
+.trigger-select-wrapper.trigger-changed {
+  animation: pulse-border 0.3s ease;
+}
+
+.trigger-select-wrapper.trigger-changed .select-arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Animation for trigger change feedback */
+@keyframes pulse-border {
+  0% { border-color: #d1d5db; }
+  50% { border-color: #10b981; }
+  100% { border-color: #d1d5db; }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .attribute-input-container {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .attribute-label {
+    color: #f9fafb;
+  }
+  
+  .attribute-input {
+    background: #111827;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .attribute-input:focus {
+    background: #1f2937;
+  }
+  
+  .event-trigger-section {
+    background: #111827;
+    border-color: #374151;
+  }
+  
+  .trigger-label {
+    color: #d1d5db;
+  }
+  
+  .event-selector {
+    background: #1f2937;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+}
+/****************************************************ATTRIBUTE RULE SET FOR TABLE ROW OF CUSTOMIZATION SIDEBAR****************************************************************************************************/
+
+  .rules-panel {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .panel-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1a202c;
+    margin: 0;
+  }
+  .rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .rule-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  .rule-item-text {
+    font-size: 0.875rem;
+    color: #4a5568;
+  }
+  .rule-item-text strong {
+    color: #2b6cb0;
+  }
+  .rule-item-text strong:nth-child(2) {
+    color: #38a169;
+  }
+  .rule-item-text strong:nth-child(3) {
+    color: #805ad5;
+  }
+  .delete-rule-btn {
+    padding: 0.25rem;
+    color: #a0aec0;
+    transition: color 0.2s ease-in-out;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.25rem;
+  }
+  .delete-rule-btn:hover {
+    color: #e53e3e;
+  }
+  .rule-builder-form {
+    border-top: 1px solid #e2e8f0;
+  }
+  .rule-builder-form-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: #2d3748;
+    margin-bottom: 1rem;
+  }
+  .form-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .form-row select,
+  .form-row input {
+    flex: 1;
+    padding: 0.5rem 0.1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    outline: none;
+  }
+  .form-row select:focus,
+  .form-row input:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+  }
+  .add-rule-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 0.5rem;
+    background-color: #3182ce;
+    color: white;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    border: none;
+    gap: 0.5rem;
+  }
+  .add-rule-btn:hover {
+    background-color: #2b6cb0;
+  }
+  .icon {
+    width: 1rem;
+    height: 1rem;
+  }

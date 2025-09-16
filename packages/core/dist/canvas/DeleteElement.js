@@ -8,7 +8,7 @@ export class DeleteElementHandler {
   deleteSelectedElement() {
     if (this.selectedElement) {
       this.selectedElement.remove();
-      this.selectedElement = null; // Clear selection
+      this.selectedElement = null;
     }
   }
   // Handle keydown events
