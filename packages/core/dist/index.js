@@ -91,17 +91,17 @@ class t {
         const a = document.createElement('div');
         a.className = 'form-value-container form-value-collapsed';
         const r = document.createElement('label');
-        let d;
+        let c;
         (r.className = 'form-label'),
           (r.textContent = 'Value:'),
           r.setAttribute('for', e.id);
-        const c = document.createElement('span');
-        (c.id = e.id),
-          (c.textContent = e.value ? e.value.toString() : null),
-          (c.className = 'form-display-value'),
-          (d = c),
+        const d = document.createElement('span');
+        (d.id = e.id),
+          (d.textContent = e.value ? e.value.toString() : null),
+          (d.className = 'form-display-value'),
+          (c = d),
           a.appendChild(r),
-          a.appendChild(d),
+          a.appendChild(c),
           t.appendChild(n),
           t.appendChild(a),
           this.contentContainer.appendChild(t),
@@ -158,10 +158,13 @@ class n {
   create(e) {
     n.textAttributeConfig = e || [];
     const t = document.createElement('div');
+    t.classList.add('text-component');
+    const o = document.createElement('span');
     return (
-      (t.innerText = this.text),
-      (t.contentEditable = 'true'),
-      t.classList.add('text-component'),
+      (o.innerText = this.text),
+      (o.contentEditable = 'true'),
+      o.classList.add('component-text-content'),
+      t.appendChild(o),
       t
     );
   }
@@ -171,37 +174,73 @@ class n {
   seedFormulaValues(e) {
     document.querySelectorAll('.text-component').forEach(t => {
       const n = t.querySelector('.component-controls'),
-        o = t.getAttribute('data-attribute-key');
-      o &&
-        e.hasOwnProperty(o) &&
-        ((t.textContent = e[o]), (t.style.color = '#000000')),
-        n && t.appendChild(n);
+        o = t.querySelector('.component-label'),
+        s = t.querySelector('.component-text-content'),
+        i = t.getAttribute('data-attribute-key');
+      s &&
+        i &&
+        e.hasOwnProperty(i) &&
+        ((s.textContent = e[i]), (t.style.color = '#000000')),
+        n && t.appendChild(n),
+        o && t.appendChild(o);
     }),
       S.dispatchDesignChange();
   }
   updateInputValues(e) {
     document.querySelectorAll('.text-component').forEach(t => {
       const n = t.querySelector('.component-controls'),
-        o = t.getAttribute('data-attribute-key'),
-        s = t.getAttribute('data-attribute-type');
-      o && e.hasOwnProperty(o) && 'Input' === s && (t.textContent = e[o]),
-        n && t.appendChild(n);
+        o = t.querySelector('.component-label'),
+        s = t.querySelector('.component-text-content'),
+        i = t.getAttribute('data-attribute-key'),
+        l = t.getAttribute('data-attribute-type');
+      s && i && e.hasOwnProperty(i) && 'Input' === l && (s.textContent = e[i]),
+        n && t.appendChild(n),
+        o && t.appendChild(o);
     }),
       S.dispatchDesignChange();
   }
   updateTextContent(e, t) {
-    const n = e.querySelector('.component-controls');
+    const n = e.querySelector('.component-controls'),
+      o = e.querySelector('.component-label'),
+      s = e.querySelector('.component-text-content');
     e.setAttribute('data-attribute-key', t.key),
       e.setAttribute('data-attribute-type', t.type),
-      'Formula' === t.type
-        ? ((e.textContent = `${t.title}`),
+      'Formula' === t.type && s
+        ? ((s.textContent = `${t.title}`),
           (e.style.fontSize = '10px'),
           (e.style.color = 'rgb(188 191 198)'),
           (e.style.fontWeight = '500'))
         : ('Constant' !== t.type && 'Input' !== t.type) ||
-          (e.textContent = `${t.value}`),
+          !s ||
+          (s.textContent = `${t.value}`),
       n && e.appendChild(n),
+      o && e.appendChild(o),
       null == S || S.dispatchDesignChange();
+  }
+  static restore(e) {
+    const t = e.closest('.text-component'),
+      o = t.querySelector('.component-text-content');
+    if (t && o) {
+      const e = t.getAttribute('data-attribute-key'),
+        s = t.getAttribute('data-attribute-type');
+      if (e) {
+        const i = n.textAttributeConfig.find(t => t.key === e);
+        if (i) {
+          const e = t.querySelector('.component-controls'),
+            n = t.querySelector('.component-label');
+          !i.default_value || ('Formula' !== s && 'Input' !== s)
+            ? 'Formula' === s &&
+              ((o.textContent = `${i.title}`),
+              (t.style.fontSize = '10px'),
+              (t.style.color = 'rgb(188 191 198)'),
+              (t.style.fontWeight = '500'))
+            : ((o.textContent = `${i.default_value}`),
+              (t.style.color = '#000000')),
+            e && t.appendChild(e),
+            n && t.appendChild(n);
+        }
+      }
+    }
   }
 }
 function o(e, t, n, o) {
@@ -276,9 +315,9 @@ class s {
       (a.style.fontSize = '24px'),
       a.addEventListener('click', () => l.click());
     const r = document.createElement('img'),
-      d = `${o}-img`;
+      c = `${o}-img`;
     return (
-      (r.id = d),
+      (r.id = c),
       (r.style.width = '100%'),
       (r.style.height = '100%'),
       (r.style.objectFit = 'contain'),
@@ -418,59 +457,81 @@ class a {
   create(e = 1, t = 'Header', n) {
     a.headerAttributeConfig = n || [];
     const o = document.createElement(`h${e}`);
-    return (o.innerText = t), o.classList.add('header-component'), o;
+    o.classList.add('header-component');
+    const s = document.createElement('span');
+    return (
+      (s.innerText = t),
+      (s.contentEditable = 'true'),
+      s.classList.add('component-text-content'),
+      o.appendChild(s),
+      o
+    );
   }
   seedFormulaValues(e) {
     document.querySelectorAll('.header-component').forEach(t => {
       const n = t.querySelector('.component-controls'),
-        o = t.getAttribute('data-attribute-key');
-      o &&
-        e.hasOwnProperty(o) &&
-        ((t.textContent = e[o]), (t.style.color = '#000000')),
-        n && t.appendChild(n);
+        o = t.querySelector('.component-label'),
+        s = t.querySelector('.component-text-content'),
+        i = t.getAttribute('data-attribute-key');
+      s &&
+        i &&
+        e.hasOwnProperty(i) &&
+        ((s.textContent = e[i]), (t.style.color = '#000000')),
+        n && t.appendChild(n),
+        o && t.appendChild(o);
     }),
       S.dispatchDesignChange();
   }
   updateInputValues(e) {
     document.querySelectorAll('.header-component').forEach(t => {
       const n = t.querySelector('.component-controls'),
-        o = t.getAttribute('data-attribute-key'),
-        s = t.getAttribute('data-attribute-type');
-      o && e.hasOwnProperty(o) && 'Input' === s && (t.textContent = e[o]),
-        n && t.appendChild(n);
+        o = t.querySelector('.component-label'),
+        s = t.querySelector('.component-text-content'),
+        i = t.getAttribute('data-attribute-key'),
+        l = t.getAttribute('data-attribute-type');
+      s && i && e.hasOwnProperty(i) && 'Input' === l && (s.textContent = e[i]),
+        n && t.appendChild(n),
+        o && t.appendChild(o);
     }),
       S.dispatchDesignChange();
   }
   updateHeaderContent(e, t) {
-    const n = e.querySelector('.component-controls');
+    const n = e.querySelector('.component-controls'),
+      o = e.querySelector('.component-label'),
+      s = e.querySelector('.component-text-content');
     e.setAttribute('data-attribute-key', t.key),
       e.setAttribute('data-attribute-type', t.type),
-      'Formula' === t.type
-        ? ((e.textContent = `${t.title}`),
+      'Formula' === t.type && s
+        ? ((s.textContent = `${t.title}`),
           (e.style.color = 'rgb(188 191 198)'),
           (e.style.fontWeight = '500'))
         : ('Constant' !== t.type && 'Input' !== t.type) ||
-          (e.textContent = `${t.value}`),
+          !s ||
+          (s.textContent = `${t.value}`),
       n && e.appendChild(n),
+      o && e.appendChild(o),
       null == S || S.dispatchDesignChange();
   }
   static restore(e) {
-    const t = e.closest('.header-component');
-    if (t) {
+    const t = e.closest('.header-component'),
+      n = t.querySelector('.component-text-content');
+    if (t && n) {
       const e = t.getAttribute('data-attribute-key'),
-        n = t.getAttribute('data-attribute-type');
+        o = t.getAttribute('data-attribute-type');
       if (e) {
-        const o = a.headerAttributeConfig.find(t => t.key === e);
-        if (o) {
-          const e = t.querySelector('.component-controls');
-          !o.default_value || ('Formula' !== n && 'Input' !== n)
-            ? 'Formula' === n &&
-              ((t.textContent = `${o.title}`),
+        const s = a.headerAttributeConfig.find(t => t.key === e);
+        if (s) {
+          const e = t.querySelector('.component-controls'),
+            i = t.querySelector('.component-label');
+          !s.default_value || ('Formula' !== o && 'Input' !== o)
+            ? 'Formula' === o &&
+              ((n.textContent = `${s.title}`),
               (t.style.color = 'rgb(188 191 198)'),
               (t.style.fontWeight = '500'))
-            : ((t.textContent = `${o.default_value}`),
+            : ((n.textContent = `${s.default_value}`),
               (t.style.color = '#000000')),
-            e && t.appendChild(e);
+            e && t.appendChild(e),
+            i && t.appendChild(i);
         }
       }
     }
@@ -599,9 +660,9 @@ class r {
         (t = !0),
         (n = r.clientX),
         (o = r.clientY);
-      const d = e.getBoundingClientRect();
-      (s = d.left),
-        (i = d.top),
+      const c = e.getBoundingClientRect();
+      (s = c.left),
+        (i = c.top),
         window.addEventListener('mousemove', l),
         window.addEventListener('mouseup', a);
     });
@@ -622,6 +683,7 @@ class r {
     const l = document.createElement('span');
     (l.className = 'component-label'),
       (l.textContent = i),
+      l.setAttribute('contenteditable', 'false'),
       (o.id = i),
       (l.style.display = 'none'),
       o.appendChild(l),
@@ -693,7 +755,7 @@ class r {
     });
   }
 }
-class d {
+class c {
   constructor(e, t = `${e}Col-component`) {
     (this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -745,6 +807,7 @@ class d {
       l ||
         ((l = document.createElement('span')),
         (l.className = 'component-label'),
+        l.setAttribute('contenteditable', 'false'),
         o.appendChild(l)),
         (l.textContent = i),
         S.historyManager.captureState();
@@ -775,12 +838,12 @@ class d {
     });
   }
 }
-class c extends d {
+class d extends c {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class u extends d {
+class u extends c {
   constructor() {
     super(3, 'threeCol-component');
   }
@@ -812,6 +875,7 @@ class p {
       const e = document.createElement('button');
       (e.textContent = 'Add Row'),
         (e.className = 'add-row-button'),
+        (e.contentEditable = 'false'),
         this.styleButton(e, '#2563eb', '#1d4ed8'),
         e.addEventListener('click', () => {
           this.addRow(l, i);
@@ -887,7 +951,6 @@ class p {
     const o = document.createElement('div');
     (o.className = 'table-cell'),
       (o.id = `table-cell-T-${n}-R${e}-C${t}`),
-      (o.textContent = `R${e + 1}C${t + 1}`),
       (o.style.border = '1px solid #2F3132'),
       (o.style.padding = '8px 12px'),
       (o.style.minHeight = '45px'),
@@ -905,58 +968,78 @@ class p {
       (s.style.display = 'flex'),
       (s.style.gap = '4px'),
       (s.style.alignItems = 'center'),
-      (s.style.justifyContent = 'center');
-    const i = document.createElement('button');
-    (i.textContent = '+'),
-      (i.className = 'add-cell-button'),
-      (i.style.width = '15px'),
-      (i.style.height = '15px'),
-      (i.style.border = 'none'),
-      (i.style.borderRadius = '3px'),
-      (i.style.backgroundColor = '#10b981'),
-      (i.style.color = 'white'),
-      (i.style.fontSize = '12px'),
-      (i.style.cursor = 'pointer'),
-      (i.style.display = 'flex'),
-      (i.style.alignItems = 'center'),
-      (i.style.justifyContent = 'center'),
-      (i.style.fontWeight = 'bold'),
-      i.addEventListener('mouseenter', () => {
-        i.style.backgroundColor = '#059669';
-      }),
-      i.addEventListener('mouseleave', () => {
-        i.style.backgroundColor = '#10b981';
-      }),
-      i.addEventListener('click', e => {
-        e.stopPropagation(), this.addCellToRow(o, n);
+      (s.style.justifyContent = 'center'),
+      (s.contentEditable = 'false');
+    const i = document.createElement('span');
+    (i.textContent = `R${e + 1}C${t + 1}`),
+      (i.contentEditable = 'true'),
+      i.classList.add('table-cell-content'),
+      i.addEventListener('keydown', e => {
+        var t;
+        if ('Backspace' === e.key || 'Delete' === e.key) {
+          const n = window.getSelection();
+          n &&
+            n.isCollapsed &&
+            0 === n.anchorOffset &&
+            0 ===
+              (null === (t = i.textContent) || void 0 === t
+                ? void 0
+                : t.length) &&
+            (e.preventDefault(), e.stopPropagation());
+        }
       });
     const l = document.createElement('button');
-    return (
-      (l.innerHTML = '×'),
-      (l.className = 'delete-cell-button'),
+    (l.textContent = '+'),
+      (l.className = 'add-cell-button'),
       (l.style.width = '15px'),
       (l.style.height = '15px'),
       (l.style.border = 'none'),
       (l.style.borderRadius = '3px'),
-      (l.style.backgroundColor = '#ef4444'),
+      (l.style.backgroundColor = '#10b981'),
       (l.style.color = 'white'),
-      (l.style.fontSize = '14px'),
+      (l.style.fontSize = '12px'),
       (l.style.cursor = 'pointer'),
       (l.style.display = 'flex'),
       (l.style.alignItems = 'center'),
       (l.style.justifyContent = 'center'),
       (l.style.fontWeight = 'bold'),
       l.addEventListener('mouseenter', () => {
-        l.style.backgroundColor = '#dc2626';
+        l.style.backgroundColor = '#059669';
       }),
       l.addEventListener('mouseleave', () => {
-        l.style.backgroundColor = '#ef4444';
+        l.style.backgroundColor = '#10b981';
       }),
       l.addEventListener('click', e => {
+        e.stopPropagation(), this.addCellToRow(o, n);
+      });
+    const a = document.createElement('button');
+    return (
+      (a.innerHTML = '×'),
+      (a.className = 'delete-cell-button'),
+      (a.style.width = '15px'),
+      (a.style.height = '15px'),
+      (a.style.border = 'none'),
+      (a.style.borderRadius = '3px'),
+      (a.style.backgroundColor = '#ef4444'),
+      (a.style.color = 'white'),
+      (a.style.fontSize = '14px'),
+      (a.style.cursor = 'pointer'),
+      (a.style.display = 'flex'),
+      (a.style.alignItems = 'center'),
+      (a.style.justifyContent = 'center'),
+      (a.style.fontWeight = 'bold'),
+      a.addEventListener('mouseenter', () => {
+        a.style.backgroundColor = '#dc2626';
+      }),
+      a.addEventListener('mouseleave', () => {
+        a.style.backgroundColor = '#ef4444';
+      }),
+      a.addEventListener('click', e => {
         e.stopPropagation(), this.deleteCell(o);
       }),
-      s.appendChild(i),
       s.appendChild(l),
+      s.appendChild(a),
+      o.appendChild(i),
       o.appendChild(s),
       o
     );
@@ -999,10 +1082,12 @@ class p {
     document.querySelectorAll('.table-component').forEach(t => {
       t.querySelectorAll('div[data-attribute-key]').forEach(t => {
         const n = t.querySelector('.cell-controls'),
-          o = t.getAttribute('data-attribute-key');
-        o &&
+          o = t.getAttribute('data-attribute-key'),
+          s = t.querySelector('.table-cell-content');
+        s &&
+          o &&
           e.hasOwnProperty(o) &&
-          ((t.textContent = e[o]), (t.style.color = '#000000')),
+          ((s.textContent = e[o]), (t.style.color = '#000000')),
           n && t.appendChild(n);
       });
     }),
@@ -1012,8 +1097,13 @@ class p {
     document.querySelectorAll('.table-component').forEach(t => {
       t.querySelectorAll('div[data-attribute-key]').forEach(t => {
         const n = t.getAttribute('data-attribute-key'),
-          o = t.getAttribute('data-attribute-type');
-        n && e.hasOwnProperty(n) && 'Input' === o && (t.textContent = e[n]);
+          o = t.getAttribute('data-attribute-type'),
+          s = t.querySelector('.table-cell-content');
+        s &&
+          n &&
+          e.hasOwnProperty(n) &&
+          'Input' === o &&
+          (s.textContent = e[n]);
       });
     }),
       S.dispatchDesignChange();
@@ -1021,13 +1111,14 @@ class p {
   updateCellContent(e, t) {
     e.setAttribute('data-attribute-key', t.key),
       e.setAttribute('data-attribute-type', t.type);
-    const n = e.querySelector('.cell-controls');
-    'Formula' === t.type
-      ? ((e.textContent = `${t.title}`),
+    const n = e.querySelector('.cell-controls'),
+      o = e.querySelector('.table-cell-content');
+    'Formula' === t.type && o
+      ? ((o.textContent = `${t.title}`),
         (e.style.fontSize = '10px'),
         (e.style.color = 'rgb(188 191 198)'),
         (e.style.fontWeight = '500'))
-      : 'Constant' === t.type && (e.textContent = `${t.value}`),
+      : 'Constant' === t.type && o && (o.textContent = `${t.value}`),
       n && e.appendChild(n),
       null == S || S.dispatchDesignChange();
   }
@@ -1060,28 +1151,29 @@ class p {
     o.querySelectorAll('.table-cell').forEach(e => {
       const o = e,
         s = o.getAttribute('data-attribute-key'),
-        l = o.getAttribute('data-attribute-type');
-      if (s) {
+        l = o.getAttribute('data-attribute-type'),
+        a = e.querySelector('.table-cell-content');
+      if (s && a) {
         const t = p.tableAttributeConfig.find(e => e.key === s);
         if (t) {
           const n = e.querySelector('.cell-controls');
           !t.default_value || ('Formula' !== l && 'Input' !== l)
             ? 'Formula' === l &&
-              ((o.textContent = `${t.title}`),
+              ((a.textContent = `${t.title}`),
               (o.style.fontSize = '10px'),
               (o.style.color = 'rgb(188 191 198)'),
               (o.style.fontWeight = '500'))
-            : ((o.textContent = `${t.default_value}`),
+            : ((a.textContent = `${t.default_value}`),
               (o.style.fontSize = '14px'),
               (o.style.color = '#000000')),
             n && e.appendChild(n);
         }
       }
-      const a = o.querySelector('.cell-controls');
+      const r = o.querySelector('.cell-controls');
       if (!1 !== t) {
-        if (a) {
-          const e = a.querySelector('.add-cell-button'),
-            t = a.querySelector('.delete-cell-button');
+        if (r) {
+          const e = r.querySelector('.add-cell-button'),
+            t = r.querySelector('.delete-cell-button');
           e &&
             e.addEventListener('click', e => {
               e.stopPropagation(), n.addCellToRow(o, i);
@@ -1091,7 +1183,7 @@ class p {
                 e.stopPropagation(), n.deleteCell(o);
               });
         }
-      } else null == a || a.remove();
+      } else null == r || r.remove();
     });
     const l = e.querySelector('.add-row-button');
     l && !1 !== t
@@ -1186,23 +1278,23 @@ class h {
     (o.style.display = 'inline'),
       (s.style.display = 'inline-flex'),
       (i.style.display = 'none');
-    const d = s.cloneNode(!0),
-      c = l.cloneNode(!0);
-    null === (t = s.parentNode) || void 0 === t || t.replaceChild(d, s),
-      null === (n = l.parentNode) || void 0 === n || n.replaceChild(c, l),
-      d.addEventListener('click', e => {
+    const c = s.cloneNode(!0),
+      d = l.cloneNode(!0);
+    null === (t = s.parentNode) || void 0 === t || t.replaceChild(c, s),
+      null === (n = l.parentNode) || void 0 === n || n.replaceChild(d, l),
+      c.addEventListener('click', e => {
         e.preventDefault(),
           (o.style.display = 'none'),
-          (d.style.display = 'none'),
+          (c.style.display = 'none'),
           (i.style.display = 'flex');
       }),
-      c.addEventListener('click', e => {
+      d.addEventListener('click', e => {
         e.preventDefault(),
           e.stopPropagation(),
           (o.href = a.value),
           (o.style.display = 'inline'),
           (o.target = r.checked ? '_blank' : '_self'),
-          (d.style.display = 'inline-flex'),
+          (c.style.display = 'inline-flex'),
           (i.style.display = 'none');
       });
   }
@@ -1227,24 +1319,24 @@ class m {
               (n = o.clientY),
               (a = parseFloat(e.getAttribute('data-x') || '0')),
               (r = parseFloat(e.getAttribute('data-y') || '0')),
-              document.addEventListener('mousemove', d),
-              document.addEventListener('mouseup', c));
+              document.addEventListener('mousemove', c),
+              document.addEventListener('mouseup', d));
           });
-        const d = o => {
+        const c = o => {
             if (i) {
               const s = o.clientX - t,
                 i = o.clientY - n,
                 l = a + s,
-                d = r + i;
-              (e.style.transform = `translate(${l}px, ${d}px)`),
+                c = r + i;
+              (e.style.transform = `translate(${l}px, ${c}px)`),
                 e.setAttribute('data-x', l.toString()),
-                e.setAttribute('data-y', d.toString());
+                e.setAttribute('data-y', c.toString());
             }
           },
-          c = () => {
+          d = () => {
             (i = !1),
-              document.removeEventListener('mousemove', d),
-              document.removeEventListener('mouseup', c);
+              document.removeEventListener('mousemove', c),
+              document.removeEventListener('mouseup', d);
           };
         if (e.classList.contains('container')) {
           const i = document.createElement('div');
@@ -1333,8 +1425,8 @@ class m {
         marginBottom: '40px',
       }),
       e(a);
-    const d = new n('Welcome to My Landing Page').create();
-    Object.assign(d.style, {
+    const c = new n('Welcome to My Landing Page').create();
+    Object.assign(c.style, {
       textAlign: 'center',
       padding: '60px 20px',
       backgroundColor: '#f9f9f9',
@@ -1342,10 +1434,10 @@ class m {
       marginBottom: '40px',
       width: '100%',
     });
-    const c = new n(
+    const d = new n(
       'Discover amazing features and build better products with us.'
     ).create();
-    Object.assign(c.style, {
+    Object.assign(d.style, {
       fontSize: '18px',
       color: '#666',
       marginBottom: '30px',
@@ -1367,8 +1459,8 @@ class m {
       u.addEventListener('mouseleave', () => {
         u.style.backgroundColor = '#007bff';
       }),
-      a.appendChild(d),
       a.appendChild(c),
+      a.appendChild(d),
       a.appendChild(u);
     const p = new r().create();
     p.classList.add('container'),
@@ -1450,6 +1542,7 @@ class y {
     n ||
       ((n = document.createElement('div')),
       (n.className = 'component-controls'),
+      n.setAttribute('contenteditable', 'false'),
       t ? e.appendChild(n) : e.prepend(n));
     const o = this.createDeleteIcon(e);
     n.appendChild(o);
@@ -1710,7 +1803,7 @@ function w(e, t, n, s) {
     else console.warn('Modal component or attribute config not available');
   });
 }
-class E {
+class x {
   static createAttributeControls(e, t, n) {
     const o = document.createElement('div');
     o.className = 'attribute-input-container';
@@ -1806,15 +1899,15 @@ class E {
       Object.keys(i).forEach(e => {
         a.setAttribute(e, i[e].toString());
       });
-    const d = l.querySelector(`input[type="color"]#${t}`),
-      c = l.querySelector(`#${t}-value`);
-    d &&
-      d.addEventListener('input', () => {
-        c && (c.value = d.value);
+    const c = l.querySelector(`input[type="color"]#${t}`),
+      d = l.querySelector(`#${t}-value`);
+    c &&
+      c.addEventListener('input', () => {
+        d && (d.value = c.value);
       }),
-      c &&
-        c.addEventListener('input', () => {
-          d && (d.value = c.value);
+      d &&
+        d.addEventListener('input', () => {
+          c && (c.value = d.value);
         }),
       s.appendChild(l),
       r &&
@@ -1853,7 +1946,7 @@ class E {
       l = document.getElementById('rule-value-input'),
       a = document.getElementById('rule-operator-select'),
       r = document.getElementById('rule-action-select'),
-      d = () => {
+      c = () => {
         s.innerHTML = '';
         JSON.parse(e.getAttribute('data-visibility-rules') || '[]').forEach(
           (t, n) => {
@@ -1863,7 +1956,7 @@ class E {
             o
               .querySelector('.delete-rule-btn')
               .addEventListener('click', () => {
-                this.deleteRule(e, n), d(), S.dispatchDesignChange();
+                this.deleteRule(e, n), c(), S.dispatchDesignChange();
               }),
               s.appendChild(o);
           }
@@ -1876,9 +1969,9 @@ class E {
         value: l.value,
         action: r.value,
       };
-      this.addRule(e, t), d(), S.dispatchDesignChange();
+      this.addRule(e, t), c(), S.dispatchDesignChange();
     }),
-      d();
+      c();
   }
   static addRule(e, t) {
     try {
@@ -1898,7 +1991,7 @@ class E {
     }
   }
 }
-class x {
+class E {
   static init(e, t, n, o) {
     if (
       ((this.sidebarElement = document.getElementById('customization')),
@@ -2015,7 +2108,7 @@ class x {
     this.controlsContainer.innerHTML = '';
     const t = getComputedStyle(e),
       n = 'canvas' === e.id.toLowerCase();
-    E.createSelectControl(
+    x.createSelectControl(
       'Display',
       'display',
       t.display || 'block',
@@ -2023,21 +2116,21 @@ class x {
       this.controlsContainer
     ),
       ('flex' !== t.display && 'flex' !== e.style.display) ||
-        (E.createSelectControl(
+        (x.createSelectControl(
           'Flex Direction',
           'flex-direction',
           t.flexDirection || 'row',
           ['row', 'row-reverse', 'column', 'column-reverse'],
           this.controlsContainer
         ),
-        E.createSelectControl(
+        x.createSelectControl(
           'Align Items',
           'align-items',
           t.alignItems || 'stretch',
           ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'],
           this.controlsContainer
         ),
-        E.createSelectControl(
+        x.createSelectControl(
           'Justify Content',
           'justify-content',
           t.justifyContent || 'flex-start',
@@ -2052,7 +2145,7 @@ class x {
           this.controlsContainer
         )),
       n ||
-        (E.createControl(
+        (x.createControl(
           'Width',
           'width',
           'number',
@@ -2060,7 +2153,7 @@ class x {
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         ),
-        E.createControl(
+        x.createControl(
           'Height',
           'height',
           'number',
@@ -2068,7 +2161,7 @@ class x {
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         ),
-        E.createControl(
+        x.createControl(
           'Margin',
           'margin',
           'number',
@@ -2076,7 +2169,7 @@ class x {
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         ),
-        E.createControl(
+        x.createControl(
           'Padding',
           'padding',
           'number',
@@ -2084,21 +2177,21 @@ class x {
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         )),
-      E.createControl(
+      x.createControl(
         'Background Color',
         'background-color',
         'color',
         t.backgroundColor,
         this.controlsContainer
       ),
-      E.createSelectControl(
+      x.createSelectControl(
         'Text Alignment',
         'alignment',
         t.textAlign,
         ['left', 'center', 'right'],
         this.controlsContainer
       ),
-      E.createSelectControl(
+      x.createSelectControl(
         'Font Family',
         'font-family',
         t.fontFamily,
@@ -2114,7 +2207,7 @@ class x {
         ],
         this.controlsContainer
       ),
-      E.createControl(
+      x.createControl(
         'Font Size',
         'font-size',
         'number',
@@ -2122,7 +2215,7 @@ class x {
         this.controlsContainer,
         { min: 0, max: 100, unit: 'px' }
       ),
-      E.createSelectControl(
+      x.createSelectControl(
         'Font Weight',
         'font-weight',
         t.fontWeight,
@@ -2143,14 +2236,14 @@ class x {
         ],
         this.controlsContainer
       ),
-      E.createControl(
+      x.createControl(
         'Text Color',
         'text-color',
         'color',
         t.color || '#000000',
         this.controlsContainer
       ),
-      E.createControl(
+      x.createControl(
         'Border Width',
         'border-width',
         'number',
@@ -2158,7 +2251,7 @@ class x {
         this.controlsContainer,
         { min: 0, max: 20, unit: 'px' }
       ),
-      E.createSelectControl(
+      x.createSelectControl(
         'Border Style',
         'border-style',
         t.borderStyle || 'none',
@@ -2175,7 +2268,7 @@ class x {
         ],
         this.controlsContainer
       ),
-      E.createControl(
+      x.createControl(
         'Border Color',
         'border-color',
         'color',
@@ -2183,38 +2276,38 @@ class x {
         this.controlsContainer
       );
     const o = document.getElementById('background-color');
-    o && (o.value = E.rgbToHex(t.backgroundColor));
+    o && (o.value = x.rgbToHex(t.backgroundColor));
     const s = document.getElementById('text-color');
-    s && (s.value = E.rgbToHex(t.color));
+    s && (s.value = x.rgbToHex(t.color));
     const i = document.getElementById('border-color');
-    i && (i.value = E.rgbToHex(t.borderColor)), this.addListeners(e);
+    i && (i.value = x.rgbToHex(t.borderColor)), this.addListeners(e);
   }
   static handleInputTrigger(e) {
     return o(this, void 0, void 0, function* () {
       var e, t, o;
-      const s = x.selectedComponent;
+      const s = E.selectedComponent;
       if (!s) return;
       let i;
       if (
         (s.classList.contains('table-component')
           ? (i =
-              null === (e = x.basicComponentsConfig) || void 0 === e
+              null === (e = E.basicComponentsConfig) || void 0 === e
                 ? void 0
                 : e.components.find(e => 'table' === e.name))
           : s.classList.contains('text-component')
             ? (i =
-                null === (t = x.basicComponentsConfig) || void 0 === t
+                null === (t = E.basicComponentsConfig) || void 0 === t
                   ? void 0
                   : t.components.find(e => 'text' === e.name))
             : s.classList.contains('header-component') &&
               (i =
-                null === (o = x.basicComponentsConfig) || void 0 === o
+                null === (o = E.basicComponentsConfig) || void 0 === o
                   ? void 0
                   : o.components.find(e => 'header' === e.name)),
         i && i.globalExecuteFunction)
       ) {
         const e = {};
-        x.functionsPanel.querySelectorAll('.attribute-input').forEach(t => {
+        E.functionsPanel.querySelectorAll('.attribute-input').forEach(t => {
           const n = t;
           'checkbox' === n.type
             ? (e[n.id] = n.checked ? 'true' : 'false')
@@ -2275,7 +2368,7 @@ class x {
           t &&
           t.length > 0 &&
           this.basicComponentsConfig &&
-          E.populateRowVisibilityControls(e, t)
+          x.populateRowVisibilityControls(e, t)
         );
       }
       if (e.classList.contains('custom-component')) {
@@ -2286,7 +2379,7 @@ class x {
               )) || void 0 === i
               ? void 0
               : i.replace('-component', ''),
-          n = x.customComponentsConfig;
+          n = E.customComponentsConfig;
         if (t && n && n[t] && n[t].settingsComponentTagName) {
           const o = n[t].settingsComponentTagName;
           let s = this.functionsPanel.querySelector(o);
@@ -2305,20 +2398,20 @@ class x {
       l.attributes.length > 0 &&
       l.attributes.forEach(e => {
         'Input' === e.type &&
-          E.createAttributeControls(
+          x.createAttributeControls(
             e,
             this.functionsPanel,
             this.handleInputTrigger
           );
       }),
       a
-        ? E.populateModalButton(e, this.functionsPanel, this.editable)
+        ? x.populateModalButton(e, this.functionsPanel, this.editable)
         : l ||
           (this.functionsPanel.innerHTML =
             '<p>No specific settings for this component.</p>');
   }
   static addListeners(e) {
-    var t, n, o, s, i, l, a, r, d, c, u, p, h, m, g, v, y, b, f, C;
+    var t, n, o, s, i, l, a, r, c, d, u, p, h, m, g, v, y, b, f, C;
     const w = {
         width: document.getElementById('width'),
         height: document.getElementById('height'),
@@ -2338,7 +2431,7 @@ class x {
         alignItems: document.getElementById('align-items'),
         justifyContent: document.getElementById('justify-content'),
       },
-      E = (function (e, t) {
+      x = (function (e, t) {
         let n = null;
         return (...o) => {
           n && clearTimeout(n), (n = setTimeout(() => e(...o), t));
@@ -2350,13 +2443,13 @@ class x {
       void 0 === t ||
       t.addEventListener('input', () => {
         const t = document.getElementById('width-unit').value;
-        (e.style.width = `${w.width.value}${t}`), E();
+        (e.style.width = `${w.width.value}${t}`), x();
       }),
       null === (n = w.height) ||
         void 0 === n ||
         n.addEventListener('input', () => {
           const t = document.getElementById('height-unit').value;
-          (e.style.height = `${w.height.value}${t}`), E();
+          (e.style.height = `${w.height.value}${t}`), x();
         }),
       null === (o = w.backgroundColor) ||
         void 0 === o ||
@@ -2364,7 +2457,7 @@ class x {
           (e.style.backgroundColor = w.backgroundColor.value),
             (document.getElementById('background-color-value').value =
               w.backgroundColor.value),
-            E();
+            x();
         }),
       null === (s = document.getElementById('background-color-value')) ||
         void 0 === s ||
@@ -2372,43 +2465,43 @@ class x {
           const n = t.target;
           (e.style.backgroundColor = n.value),
             (document.getElementById('background-color').value = n.value),
-            E();
+            x();
         }),
       null === (i = w.margin) ||
         void 0 === i ||
         i.addEventListener('input', () => {
           const t = document.getElementById('margin-unit').value;
-          (e.style.margin = `${w.margin.value}${t}`), E();
+          (e.style.margin = `${w.margin.value}${t}`), x();
         }),
       null === (l = w.padding) ||
         void 0 === l ||
         l.addEventListener('input', () => {
           const t = document.getElementById('padding-unit').value;
-          (e.style.padding = `${w.padding.value}${t}`), E();
+          (e.style.padding = `${w.padding.value}${t}`), x();
         }),
       null === (a = w.alignment) ||
         void 0 === a ||
         a.addEventListener('change', () => {
-          (e.style.textAlign = w.alignment.value), E();
+          (e.style.textAlign = w.alignment.value), x();
         }),
       null === (r = w.fontSize) ||
         void 0 === r ||
         r.addEventListener('input', () => {
           const t = document.getElementById('font-size-unit').value;
-          (e.style.fontSize = `${w.fontSize.value}${t}`), E();
+          (e.style.fontSize = `${w.fontSize.value}${t}`), x();
         }),
-      null === (d = w.fontWeight) ||
-        void 0 === d ||
-        d.addEventListener('change', () => {
-          (e.style.fontWeight = w.fontWeight.value), E();
-        }),
-      null === (c = w.textColor) ||
+      null === (c = w.fontWeight) ||
         void 0 === c ||
-        c.addEventListener('input', () => {
+        c.addEventListener('change', () => {
+          (e.style.fontWeight = w.fontWeight.value), x();
+        }),
+      null === (d = w.textColor) ||
+        void 0 === d ||
+        d.addEventListener('input', () => {
           (e.style.color = w.textColor.value),
             (document.getElementById('text-color-value').value =
               w.textColor.value),
-            E();
+            x();
         }),
       null === (u = document.getElementById('text-color-value')) ||
         void 0 === u ||
@@ -2416,18 +2509,18 @@ class x {
           const n = t.target;
           (e.style.color = n.value),
             (document.getElementById('text-color').value = n.value),
-            E();
+            x();
         }),
       null === (p = w.borderWidth) ||
         void 0 === p ||
         p.addEventListener('input', () => {
           const t = document.getElementById('border-width-unit').value;
-          (e.style.borderWidth = `${w.borderWidth.value}${t}`), E();
+          (e.style.borderWidth = `${w.borderWidth.value}${t}`), x();
         }),
       null === (h = w.borderStyle) ||
         void 0 === h ||
         h.addEventListener('change', () => {
-          (e.style.borderStyle = w.borderStyle.value), E();
+          (e.style.borderStyle = w.borderStyle.value), x();
         }),
       null === (m = w.borderColor) ||
         void 0 === m ||
@@ -2435,7 +2528,7 @@ class x {
           (e.style.borderColor = w.borderColor.value),
             (document.getElementById('border-color-value').value =
               w.borderColor.value),
-            E();
+            x();
         }),
       null === (g = document.getElementById('border-color-value')) ||
         void 0 === g ||
@@ -2443,42 +2536,42 @@ class x {
           const n = t.target;
           (e.style.borderColor = n.value),
             (document.getElementById('border-color').value = n.value),
-            E();
+            x();
         }),
       null === (v = w.display) ||
         void 0 === v ||
         v.addEventListener('change', () => {
-          (e.style.display = w.display.value), E(), this.populateCssControls(e);
+          (e.style.display = w.display.value), x(), this.populateCssControls(e);
         }),
       null === (y = w.flexDirection) ||
         void 0 === y ||
         y.addEventListener('change', () => {
-          (e.style.flexDirection = w.flexDirection.value), E();
+          (e.style.flexDirection = w.flexDirection.value), x();
         }),
       null === (b = w.alignItems) ||
         void 0 === b ||
         b.addEventListener('change', () => {
-          (e.style.alignItems = w.alignItems.value), E();
+          (e.style.alignItems = w.alignItems.value), x();
         }),
       null === (f = w.fontFamily) ||
         void 0 === f ||
         f.addEventListener('change', () => {
-          (e.style.fontFamily = w.fontFamily.value), E();
+          (e.style.fontFamily = w.fontFamily.value), x();
         }),
       null === (C = w.justifyContent) ||
         void 0 === C ||
         C.addEventListener('change', () => {
-          (e.style.justifyContent = w.justifyContent.value), E();
+          (e.style.justifyContent = w.justifyContent.value), x();
         });
   }
   static getLayersViewController() {
     return this.layersViewController;
   }
 }
-(x.selectedComponent = null),
-  (x.customComponentsConfig = null),
-  (x.basicComponentsConfig = null),
-  (x.showAttributeTab = void 0);
+(E.selectedComponent = null),
+  (E.customComponentsConfig = null),
+  (E.basicComponentsConfig = null),
+  (E.showAttributeTab = void 0);
 class L {
   constructor(e = 20) {
     this.cellSize = e;
@@ -2547,7 +2640,7 @@ class S {
       k.canvasElement.classList.add('preview-desktop'),
       k.canvasElement.addEventListener('click', e => {
         const t = e.target;
-        t && x.showSidebar(t.id);
+        t && E.showSidebar(t.id);
       }),
       (k.canvasElement.style.position = 'relative'),
       (this.lastCanvasWidth = k.canvasElement.offsetWidth),
@@ -2607,12 +2700,12 @@ class S {
         .forEach(e => {
           r[e.name] = e.value;
         });
-      let d = {};
+      let c = {};
       if (e.classList.contains('custom-component')) {
         const t = e.getAttribute('data-component-props');
         if (t)
           try {
-            d = JSON.parse(t);
+            c = JSON.parse(t);
           } catch (e) {
             console.error('Error parsing data-component-props:', e);
           }
@@ -2629,7 +2722,7 @@ class S {
         dataAttributes: r,
         imageSrc: o,
         videoSrc: i,
-        props: d,
+        props: c,
       };
     });
   }
@@ -2638,51 +2731,52 @@ class S {
       (k.components = []),
       e.forEach(e => {
         const t = e.dataAttributes['data-custom-settings'] || null,
-          n = k.createComponent(e.type, t, e.content);
-        if (n) {
-          e.classes.includes('custom-component') || (n.innerHTML = e.content);
-          const t = n.querySelector('.component-controls');
+          o = k.createComponent(e.type, t, e.content);
+        if (o) {
+          e.classes.includes('custom-component') || (o.innerHTML = e.content);
+          const t = o.querySelector('.component-controls');
           if (
             (t && !1 === this.editable && t.remove(),
-            (n.className = ''),
+            (o.className = ''),
             e.classes.forEach(e => {
-              n.classList.add(e);
+              o.classList.add(e);
             }),
             !1 === this.editable &&
-              n.classList.contains('component-resizer') &&
-              n.classList.remove('component-resizer'),
+              o.classList.contains('component-resizer') &&
+              o.classList.remove('component-resizer'),
             'video' === e.type && e.videoSrc)
           ) {
-            const t = n.querySelector('video'),
-              o = n.querySelector('.upload-text');
+            const t = o.querySelector('video'),
+              n = o.querySelector('.upload-text');
             (t.src = e.videoSrc),
               (t.style.display = 'block'),
-              (o.style.display = 'none');
+              (n.style.display = 'none');
           }
-          e.inlineStyle && n.setAttribute('style', e.inlineStyle),
+          e.inlineStyle && o.setAttribute('style', e.inlineStyle),
             e.computedStyle &&
               Object.keys(e.computedStyle).forEach(t => {
-                n.style.setProperty(t, e.computedStyle[t]);
+                o.style.setProperty(t, e.computedStyle[t]);
               }),
             e.dataAttributes &&
               Object.entries(e.dataAttributes).forEach(([e, t]) => {
-                n.setAttribute(e, t);
+                o.setAttribute(e, t);
               }),
             !1 !== this.editable &&
-              (k.controlsManager.addControlButtons(n),
-              k.addDraggableListeners(n)),
-            n.classList.contains('container-component') &&
-              r.restoreContainer(n),
-            (n.classList.contains('twoCol-component') ||
-              n.classList.contains('threeCol-component')) &&
-              d.restoreColumn(n),
+              (k.controlsManager.addControlButtons(o),
+              k.addDraggableListeners(o)),
+            o.classList.contains('container-component') &&
+              r.restoreContainer(o),
+            (o.classList.contains('twoCol-component') ||
+              o.classList.contains('threeCol-component')) &&
+              c.restoreColumn(o),
             'image' === e.type &&
-              s.restoreImageUpload(n, e.imageSrc, this.editable),
-            'table' === e.type && p.restore(n, this.editable),
-            'link' === e.type && h.restore(n),
-            'header' === e.type && a.restore(n),
-            k.canvasElement.appendChild(n),
-            k.components.push(n);
+              s.restoreImageUpload(o, e.imageSrc, this.editable),
+            'table' === e.type && p.restore(o, this.editable),
+            'link' === e.type && h.restore(o),
+            'header' === e.type && a.restore(o),
+            'text' === e.type && n.restore(o),
+            k.canvasElement.appendChild(o),
+            k.components.push(o);
         }
       }),
       k.gridManager.initializeDropPreview(k.canvasElement);
@@ -2771,20 +2865,25 @@ class S {
         k.dispatchDesignChange();
       }).observe(o),
         o.classList.add('editable-component'),
-        'container' != e && o.classList.add('component-resizer');
-      const t = k.generateUniqueClass(e);
-      o.setAttribute('id', t),
+        'container' != e && o.classList.add('component-resizer'),
         'image' === e
           ? o.setAttribute('contenteditable', 'false')
-          : (o.setAttribute('contenteditable', 'true'),
+          : ('header' !== e &&
+              'text' !== e &&
+              o.setAttribute('contenteditable', 'true'),
             o.addEventListener('input', () => {
               k.historyManager.captureState(), this.dispatchDesignChange();
-            }));
+            })),
+        k.controlsManager.addControlButtons(o);
+    }
+    if (o) {
+      const t = k.generateUniqueClass(e);
+      o.setAttribute('id', t);
       const n = document.createElement('span');
       (n.className = 'component-label'),
+        n.setAttribute('contenteditable', 'false'),
         (n.textContent = t),
-        o.appendChild(n),
-        k.controlsManager.addControlButtons(o);
+        o.appendChild(n);
     }
     return o;
   }
@@ -2848,12 +2947,12 @@ class S {
       e.addEventListener('dragend', a => {
         a.preventDefault();
         const r = k.canvasElement.scrollLeft,
-          d = k.canvasElement.scrollTop,
-          c = r - i,
-          u = d - l,
+          c = k.canvasElement.scrollTop,
+          d = r - i,
+          u = c - l,
           p = a.clientX - t,
           h = a.clientY - n;
-        let m = o + p + c,
+        let m = o + p + d,
           g = s + h + u;
         const v = k.canvasElement.getBoundingClientRect(),
           y = a.clientX - v.left + k.canvasElement.scrollLeft,
@@ -2862,10 +2961,10 @@ class S {
           C = t - f.left + i,
           w = n - f.top + l;
         (m = y + (o - C)), (g = b + (s - w));
-        const E = e.getBoundingClientRect(),
-          x = k.canvasElement.scrollWidth - E.width,
-          L = k.canvasElement.scrollHeight - E.height;
-        (m = Math.max(0, Math.min(m, x))),
+        const x = e.getBoundingClientRect(),
+          E = k.canvasElement.scrollWidth - x.width,
+          L = k.canvasElement.scrollHeight - x.height;
+        (m = Math.max(0, Math.min(m, E))),
           (g = Math.max(0, Math.min(g, L))),
           (e.style.left = `${m}px`),
           (e.style.top = `${g}px`),
@@ -2885,7 +2984,7 @@ class S {
     table: () => new p().create(2, 2, void 0, k.tableAttributeConfig),
     text: () => new n().create(k.textAttributeConfig),
     container: () => new r().create(),
-    twoCol: () => new c().create(),
+    twoCol: () => new d().create(),
     threeCol: () => new u().create(),
     landingpage: () => new m().create(),
     link: () => new h().create(),
@@ -3205,7 +3304,7 @@ function A(e) {
         );
       })(i, l, a);
     n.push(r), n.push(l);
-    const d = ((e, t, n, o) => {
+    const c = ((e, t, n, o) => {
       const s = new Uint8Array(46 + e.length);
       return (
         s.set([80, 75, 1, 2]),
@@ -3245,7 +3344,7 @@ function A(e) {
         s
       );
     })(i, l, a, o);
-    s.push(d), (o += r.length + l.length);
+    s.push(c), (o += r.length + l.length);
   }),
     n.push(...s);
   const i = s.reduce((e, t) => e + t.length, 0),
@@ -3483,7 +3582,7 @@ class V {
       S.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
       this.sidebar.init(),
       H.init(),
-      x.init(
+      E.init(
         this.dynamicComponents.Custom,
         this.editable,
         this.dynamicComponents.Basic,
@@ -3621,9 +3720,9 @@ class V {
                 });
               const r = document.createElement('div');
               r.classList.add('center-text'), (r.textContent = t);
-              const d = document.createElement('div');
+              const c = document.createElement('div');
               return (
-                d.classList.add('right-buttons'),
+                c.classList.add('right-buttons'),
                 l.forEach(({ id: e, icon: t, title: n }) => {
                   const o = document.createElement('button');
                   (o.id = e),
@@ -3633,7 +3732,7 @@ class V {
                     (o.innerHTML = t);
                   const s = o.querySelector('svg');
                   s && s.classList.add('nav-icon'),
-                    d.appendChild(o),
+                    c.appendChild(o),
                     'menu-btn' === e &&
                       o &&
                       (o.onclick = () => {
@@ -3655,7 +3754,7 @@ class V {
                 }),
                 o.appendChild(a),
                 o.appendChild(r),
-                o.appendChild(d),
+                o.appendChild(c),
                 o
               );
             })(this.editable, this.brandTitle, this.showAttributeTab)
@@ -3788,13 +3887,13 @@ class V {
     i.appendChild(l);
     const a = this.createCodeSection('HTML', e),
       r = this.createCodeSection('CSS', t),
-      d = this.createExportToZipButton(n, o);
-    i.appendChild(a), i.appendChild(r), i.appendChild(d);
-    const c = document.createElement('div');
+      c = this.createExportToZipButton(n, o);
+    i.appendChild(a), i.appendChild(r), i.appendChild(c);
+    const d = document.createElement('div');
     return (
-      c.classList.add('button-wrapper'),
-      c.appendChild(i),
-      s.appendChild(c),
+      d.classList.add('button-wrapper'),
+      d.appendChild(i),
+      s.appendChild(d),
       this.setupModalEventListeners(s),
       s
     );

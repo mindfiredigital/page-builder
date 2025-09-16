@@ -343,6 +343,9 @@ export class Canvas {
         if (componentData.type === 'header') {
           HeaderComponent.restore(component);
         }
+        if (componentData.type === 'text') {
+          TextComponent.restore(component);
+        }
 
         Canvas.canvasElement.appendChild(component);
         Canvas.components.push(component);
@@ -483,26 +486,30 @@ export class Canvas {
       if (type != 'container') {
         element.classList.add('component-resizer');
       }
-      const uniqueClass = Canvas.generateUniqueClass(type);
-      element.setAttribute('id', uniqueClass);
 
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
-        element.setAttribute('contenteditable', 'true');
+        if (type !== 'header' && type !== 'text') {
+          element.setAttribute('contenteditable', 'true');
+        }
         element.addEventListener('input', () => {
           Canvas.historyManager.captureState();
           this.dispatchDesignChange();
         });
       }
 
-      const label = document.createElement('span');
-      label.className = 'component-label';
-      label.textContent = uniqueClass;
-      element.appendChild(label);
       Canvas.controlsManager.addControlButtons(element);
     }
-
+    if (element) {
+      const uniqueClass = Canvas.generateUniqueClass(type);
+      element.setAttribute('id', uniqueClass);
+      const label = document.createElement('span');
+      label.className = 'component-label';
+      label.setAttribute('contenteditable', 'false');
+      label.textContent = uniqueClass;
+      element.appendChild(label);
+    }
     return element;
   }
 

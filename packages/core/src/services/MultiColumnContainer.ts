@@ -111,6 +111,7 @@ export class MultiColumnContainer {
       if (!componentLabel) {
         componentLabel = document.createElement('span');
         componentLabel.className = 'component-label';
+        componentLabel.setAttribute('contenteditable', 'false');
         component.appendChild(componentLabel);
       }
       componentLabel.textContent = uniqueComponentClass;
