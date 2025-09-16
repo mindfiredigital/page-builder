@@ -173,9 +173,7 @@ export class TableComponent {
     const cell = document.createElement('div');
     cell.className = 'table-cell';
 
-    cell.id = `table-cell-T-${tableId}-R${rowIndex}-C${cellIndex}`;
     cell.style.border = '1px solid #2F3132';
-    cell.style.padding = '8px 12px';
     cell.style.minHeight = '45px';
     cell.style.position = 'relative';
     cell.style.cursor = 'pointer';
@@ -199,25 +197,7 @@ export class TableComponent {
     contentElement.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
     contentElement.contentEditable = 'true';
     contentElement.classList.add('table-cell-content');
-
-    // Add a keydown listener to prevent deleting the controls
-    contentElement.addEventListener('keydown', e => {
-      // Check for Backspace or Delete key
-      if (e.key === 'Backspace' || e.key === 'Delete') {
-        const selection = window.getSelection();
-        // If the cursor is at the very beginning of the content and the content is empty
-        if (
-          selection &&
-          selection.isCollapsed &&
-          selection.anchorOffset === 0
-        ) {
-          if (contentElement.textContent?.length === 0) {
-            e.preventDefault(); // Stop the event
-            e.stopPropagation(); // Stop it from bubbling up
-          }
-        }
-      }
-    });
+    contentElement.id = `table-cell-T-${tableId}-R${rowIndex}-C${cellIndex}`;
 
     // Add Cell button
     const addCellButton = document.createElement('button');

@@ -165,6 +165,11 @@ class n {
       (o.contentEditable = 'true'),
       o.classList.add('component-text-content'),
       t.appendChild(o),
+      o.addEventListener('click', e => {
+        e.stopPropagation();
+        const t = o.closest('.text-component');
+        t && t.click();
+      }),
       t
     );
   }
@@ -464,6 +469,11 @@ class a {
       (s.contentEditable = 'true'),
       s.classList.add('component-text-content'),
       o.appendChild(s),
+      s.addEventListener('click', e => {
+        e.stopPropagation();
+        const t = s.closest('.header-component');
+        t && t.click();
+      }),
       o
     );
   }
@@ -950,9 +960,7 @@ class p {
   createTableCell(e, t, n) {
     const o = document.createElement('div');
     (o.className = 'table-cell'),
-      (o.id = `table-cell-T-${n}-R${e}-C${t}`),
       (o.style.border = '1px solid #2F3132'),
-      (o.style.padding = '8px 12px'),
       (o.style.minHeight = '45px'),
       (o.style.position = 'relative'),
       (o.style.cursor = 'pointer'),
@@ -974,20 +982,7 @@ class p {
     (i.textContent = `R${e + 1}C${t + 1}`),
       (i.contentEditable = 'true'),
       i.classList.add('table-cell-content'),
-      i.addEventListener('keydown', e => {
-        var t;
-        if ('Backspace' === e.key || 'Delete' === e.key) {
-          const n = window.getSelection();
-          n &&
-            n.isCollapsed &&
-            0 === n.anchorOffset &&
-            0 ===
-              (null === (t = i.textContent) || void 0 === t
-                ? void 0
-                : t.length) &&
-            (e.preventDefault(), e.stopPropagation());
-        }
-      });
+      (i.id = `table-cell-T-${n}-R${e}-C${t}`);
     const l = document.createElement('button');
     (l.textContent = '+'),
       (l.className = 'add-cell-button'),
@@ -1874,9 +1869,10 @@ class x {
         } else if (e.classList.contains('header-component')) {
           const t = new a();
           w(o, a.headerAttributeConfig, e, t.updateHeaderContent);
-        } else if (e.classList.contains('table-cell')) {
-          const t = new p();
-          w(o, p.tableAttributeConfig, e, t.updateCellContent);
+        } else if (e.classList.contains('table-cell-content')) {
+          const t = new p(),
+            n = e.closest('.table-cell');
+          w(o, p.tableAttributeConfig, n, t.updateCellContent);
         }
       });
   }
@@ -2356,7 +2352,7 @@ class E {
           ? void 0
           : o.components.find(e => 'header' === e.name)),
         (a = this.ShoModal(null == l ? void 0 : l.attributes));
-    else if (e.classList.contains('table-cell'))
+    else if (e.classList.contains('table-cell-content'))
       a = this.ShoModal(null == r ? void 0 : r.attributes);
     else {
       if (e.classList.contains('table-row')) {
@@ -2870,6 +2866,7 @@ class S {
           ? o.setAttribute('contenteditable', 'false')
           : ('header' !== e &&
               'text' !== e &&
+              'table' !== e &&
               o.setAttribute('contenteditable', 'true'),
             o.addEventListener('input', () => {
               k.historyManager.captureState(), this.dispatchDesignChange();
@@ -3218,33 +3215,41 @@ class B {
   }
   generateUniqueSelector(e) {
     if (e.id) return `#${e.id}`;
-    if (e instanceof SVGElement) {
-      const t = e.getAttribute('class');
-      if (t) return `.${t.toString().split(' ').join('.')}`;
-    }
-    if (e.className) return `.${e.className.toString().split(' ').join('.')}`;
     const t = [];
     let n = e;
-    for (; n && 'body' !== n.tagName.toLowerCase() && !n.id; ) {
-      const e = n.parentElement;
-      if (!e) break;
-      const o = Array.from(e.children).filter(e => e.tagName === n.tagName);
-      let s = n.tagName.toLowerCase();
-      if (o.length > 1) {
-        s += `:nth-of-type(${o.indexOf(n) + 1})`;
-      }
-      const i = Array.from(n.classList).filter(
+    for (; n && 'body' !== n.tagName.toLowerCase(); ) {
+      let e = n.tagName.toLowerCase();
+      const o = Array.from(n.classList).filter(
         e =>
-          !e.includes('component-') &&
-          !e.includes('delete-') &&
-          !e.includes('resizer')
+          ![
+            'component-controls',
+            'delete-icon',
+            'component-label',
+            'column-label',
+            'resizers',
+            'resizer',
+            'upload-btn',
+            'edit-link-form',
+            'edit-link',
+            'component-resizer',
+            'drop-preview',
+          ].includes(e)
       );
-      i.length > 0 && (s += `.${i.join('.')}`), t.unshift(s), (n = e);
+      o.length > 0 && (e += `.${o.join('.')}`);
+      const s = n.parentElement;
+      if (s) {
+        const t = Array.from(s.children).filter(e => e.tagName === n.tagName);
+        if (t.length > 1) {
+          e += `:nth-of-type(${t.indexOf(n) + 1})`;
+        }
+      }
+      if ((t.unshift(e), n.parentElement && n.parentElement.id)) {
+        t.unshift(`#${n.parentElement.id}`);
+        break;
+      }
+      n = n.parentElement;
     }
-    return (
-      n && (n.id ? t.unshift(`#${n.id}`) : t.unshift(n.tagName.toLowerCase())),
-      t.join(' > ')
-    );
+    return `#canvas > ${t.join(' > ')}`;
   }
   applyCSS(e) {
     this.styleElement.textContent = e;
@@ -3390,7 +3395,7 @@ class T {
       t.classList.add(`preview-${e}`);
   }
 }
-class V {
+class z {
   constructor(
     e = { Basic: { components: [] }, Extra: [], Custom: {} },
     t = null,
@@ -3411,7 +3416,7 @@ class V {
       this.initializeEventListeners();
   }
   static resetHeaderFlag() {
-    V.headerInitialized = !1;
+    z.headerInitialized = !1;
   }
   initializeEventListeners() {
     (this.canvas = new S()),
@@ -3592,7 +3597,7 @@ class V {
   }
   createHeaderIfNeeded() {
     if (document.getElementById('page-builder-header'))
-      V.headerInitialized = !0;
+      z.headerInitialized = !0;
     else {
       const e = document.getElementById('app');
       if (e && e.parentNode) {
@@ -3760,7 +3765,7 @@ class V {
             })(this.editable, this.brandTitle, this.showAttributeTab)
           ),
           e.parentNode.insertBefore(t, e),
-          (V.headerInitialized = !0);
+          (z.headerInitialized = !0);
       } else console.error('Error: #app not found in the DOM');
     }
   }
@@ -4057,6 +4062,6 @@ class V {
         });
   }
 }
-V.headerInitialized = !1;
-const z = new V();
-(exports.PageBuilder = V), (exports.PageBuilderCore = z);
+z.headerInitialized = !1;
+const V = new z();
+(exports.PageBuilder = z), (exports.PageBuilderCore = V);
