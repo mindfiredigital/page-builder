@@ -460,7 +460,7 @@ export class CustomizationSidebar {
           ? void 0
           : componentConfig.attributes
       );
-    } else if (component.classList.contains('table-cell')) {
+    } else if (component.classList.contains('table-cell-content')) {
       showModalButton = this.ShoModal(
         tableConfig === null || tableConfig === void 0
           ? void 0
