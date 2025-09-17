@@ -355,8 +355,8 @@ importers:
   packages/react:
     dependencies:
       '@mindfiredigital/page-builder-web-component':
-        specifier: workspace:*
-        version: link:../web-component
+        specifier: ^5.0.0
+        version: 5.0.0(@mindfiredigital/page-builder@1.8.0)
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -383,8 +383,8 @@ importers:
   packages/web-component:
     dependencies:
       '@mindfiredigital/page-builder':
-        specifier: workspace:*
-        version: link:../core
+        specifier: ^1.8.0
+        version: 1.8.0
     devDependencies:
       eslint:
         specifier: ^9.19.0
@@ -3482,6 +3482,7 @@ packages:
   /@colors/colors@1.5.0:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
+    requiresBuild: true
 
   /@commitlint/cli@19.4.0(@types/node@18.18.0)(typescript@5.7.3):
     resolution: {integrity: sha512-sJX4J9UioVwZHq7JWM9tjT5bgWYaIN3rC4FP7YwfEwBYiIO+wMyRttRvQLNkow0vCdM0D67r9NEWU0Ui03I4Eg==}
@@ -5338,6 +5339,19 @@ packages:
       read-yaml-file: 1.1.0
     dev: true
 
+  /@mindfiredigital/page-builder-web-component@5.0.0(@mindfiredigital/page-builder@1.8.0):
+    resolution: {integrity: sha512-f+t4dvuIR4pAlbArGuUy4ULjdea5pdDj+bO3V7+ISdQhDLqR6Yz0VPATlewqLWFEWlptwf6GzNMrOBZhMNvKug==}
+    peerDependencies:
+      '@mindfiredigital/page-builder': 1.8.0
+    dependencies:
+      '@mindfiredigital/page-builder': 1.8.0
+    dev: false
+
+  /@mindfiredigital/page-builder@1.8.0:
+    resolution: {integrity: sha512-owlwkPgVn23brQ0DHwNwwlW1KxqFZ4QwX0H9vRWCQ3LLE0B402NakHOBA+vvd+sF2Pf44qJ8reBxzx6gPrfuUQ==}
+    engines: {node: '>=12.0.0'}
+    dev: false
+
   /@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3:
     resolution: {integrity: sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw==}
     cpu: [arm64]
@@ -6461,6 +6475,7 @@ packages:
       '@types/express-serve-static-core': 4.19.6
       '@types/qs': 6.14.0
       '@types/serve-static': 1.15.8
+    dev: true
 
   /@types/express@4.17.23:
     resolution: {integrity: sha512-Crp6WY9aTYP3qPi2wGDo9iUe/rceX01UMhnF1jmwDcKCFM6cx7YhGP/Mpr3y9AASpfHixIG0E6azCcL5OcDHsQ==}
@@ -6569,7 +6584,7 @@ packages:
   /@types/serve-index@1.9.4:
     resolution: {integrity: sha512-qLpGZ/c2fhSs5gnYsQxtDEq3Oy8SXPClIXkW5ghvAvsNuVSA8k+gCONcUCS/UjLEYvYps+e8uBtfgXgvhwfNug==}
     dependencies:
-      '@types/express': 4.17.17
+      '@types/express': 4.17.23
 
   /@types/serve-static@1.15.8:
     resolution: {integrity: sha512-roei0UY3LhpOJvjbIP6ZZFngyLKl5dskOtDhxY5THRSpO+ZI+nzJ+m5yUMzGrp89YRa7lvknKkMYjqQFGwA7Sg==}
@@ -7534,7 +7549,7 @@ packages:
     dependencies:
       ansi-align: 3.0.1
       camelcase: 7.0.1
-      chalk: 5.0.1
+      chalk: 5.5.0
       cli-boxes: 3.0.0
       string-width: 5.1.2
       type-fest: 2.19.0

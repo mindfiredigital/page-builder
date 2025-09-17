@@ -144,8 +144,7 @@ export class SidebarUtils {
     functionsPanel.appendChild(modalButton);
 
     modalButton.addEventListener('click', () => {
-      const modalComponent = new ModalComponent(); // You might want to pass this down or create it here
-
+      const modalComponent = new ModalComponent();
       if (component.classList.contains('text-component')) {
         const textComponentInstance = new TextComponent();
         handleComponentClick(
@@ -162,12 +161,13 @@ export class SidebarUtils {
           component,
           headerComponentInstance.updateHeaderContent
         );
-      } else if (component.classList.contains('table-cell')) {
+      } else if (component.classList.contains('table-cell-content')) {
         const tableComponentInstance = new TableComponent();
+        const cell = component.closest('.table-cell');
         handleComponentClick(
           modalComponent,
           TableComponent.tableAttributeConfig, // Access static property
-          component,
+          cell as HTMLElement,
           tableComponentInstance.updateCellContent
         );
       }

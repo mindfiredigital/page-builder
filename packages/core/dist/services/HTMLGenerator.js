@@ -277,55 +277,52 @@ export class HTMLGenerator {
     if (element.id) {
       return `#${element.id}`;
     }
-    if (element instanceof SVGElement) {
-      const classAttributeValue = element.getAttribute('class');
-      if (classAttributeValue) {
-        return `.${classAttributeValue.toString().split(' ').join('.')}`;
-      }
-    }
-    if (element.className) {
-      return `.${element.className.toString().split(' ').join('.')}`;
-    }
     const selectorPath = [];
     let currentElement = element;
-    while (
-      currentElement &&
-      currentElement.tagName.toLowerCase() !== 'body' &&
-      !currentElement.id
-    ) {
-      const parent = currentElement.parentElement;
-      if (!parent) break;
-      const siblings = Array.from(parent.children);
-      const siblingsOfSameType = siblings.filter(
-        child => child.tagName === currentElement.tagName
-      );
+    while (currentElement && currentElement.tagName.toLowerCase() !== 'body') {
       let selector = currentElement.tagName.toLowerCase();
-      if (siblingsOfSameType.length > 1) {
-        const index = siblingsOfSameType.indexOf(currentElement) + 1;
-        selector += `:nth-of-type(${index})`;
-      }
-      // Add classes to the selector if they exist
+      // Add clean classes to the selector
       const cleanClasses = Array.from(currentElement.classList).filter(
         cls =>
-          !cls.includes('component-') &&
-          !cls.includes('delete-') &&
-          !cls.includes('resizer')
+          ![
+            'component-controls',
+            'delete-icon',
+            'component-label',
+            'column-label',
+            'resizers',
+            'resizer',
+            'upload-btn',
+            'edit-link-form',
+            'edit-link',
+            'component-resizer',
+            'drop-preview',
+          ].includes(cls)
       );
       if (cleanClasses.length > 0) {
         selector += `.${cleanClasses.join('.')}`;
       }
-      selectorPath.unshift(selector);
-      currentElement = parent;
-    }
-    if (currentElement) {
-      if (currentElement.id) {
-        selectorPath.unshift(`#${currentElement.id}`);
-      } else {
-        selectorPath.unshift(currentElement.tagName.toLowerCase());
+      // Add nth-of-type to differentiate siblings
+      const parent = currentElement.parentElement;
+      if (parent) {
+        const siblings = Array.from(parent.children).filter(
+          child => child.tagName === currentElement.tagName
+        );
+        if (siblings.length > 1) {
+          const index = siblings.indexOf(currentElement) + 1;
+          selector += `:nth-of-type(${index})`;
+        }
       }
+      selectorPath.unshift(selector);
+      // Stop if we hit a parent with an ID
+      if (currentElement.parentElement && currentElement.parentElement.id) {
+        selectorPath.unshift(`#${currentElement.parentElement.id}`);
+        break;
+      }
+      currentElement = currentElement.parentElement;
     }
-    // The final selector is the joined path
-    return selectorPath.join(' > ');
+    // Ensure the selector starts from the canvas
+    const finalSelector = `#canvas > ${selectorPath.join(' > ')}`;
+    return finalSelector;
   }
   applyCSS(css) {
     this.styleElement.textContent = css;

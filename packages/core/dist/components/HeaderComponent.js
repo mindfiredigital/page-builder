@@ -14,6 +14,13 @@ export class HeaderComponent {
     textSpan.contentEditable = 'true';
     textSpan.classList.add('component-text-content');
     element.appendChild(textSpan);
+    textSpan.addEventListener('click', event => {
+      event.stopPropagation();
+      const parentHeader = textSpan.closest('.header-component');
+      if (parentHeader) {
+        parentHeader.click();
+      }
+    });
     return element;
   }
   seedFormulaValues(values) {

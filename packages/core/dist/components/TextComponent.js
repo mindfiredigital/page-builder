@@ -14,6 +14,13 @@ export class TextComponent {
     textSpan.contentEditable = 'true';
     textSpan.classList.add('component-text-content');
     element.appendChild(textSpan);
+    textSpan.addEventListener('click', event => {
+      event.stopPropagation();
+      const parentHeader = textSpan.closest('.text-component');
+      if (parentHeader) {
+        parentHeader.click();
+      }
+    });
     return element;
   }
   setText(newText) {
