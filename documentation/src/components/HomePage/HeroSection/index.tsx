@@ -4,6 +4,7 @@ import { ArrowRight, Github, Sparkles, Zap } from 'lucide-react';
 import { TypeText } from '../../UI/TypeText';
 import { CopyButton } from '../../UI/CopyButton';
 import { motion } from 'framer-motion';
+import Particles from '../../UI/Liquid-Ether/Particles';
 
 // Hero Section Component
 export const HeroSection = () => {
@@ -22,24 +23,19 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative py-20 px-6 overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <section className="relative py-20 px-6 overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-full blur-3xl animate-pulse" />
-        <div
-          className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-gradient-to-br from-pink-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: '2s' }}
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+      <div className="absolute inset-0  overflow-hidden">
+        <Particles />
       </div>
 
       {/* Spotlight effect */}
       <div
         ref={spotlightRef}
-        className="fixed inset-0 pointer-events-none transition-transform duration-300 ease-out opacity-30"
+        className="fixed inset-0  transition-transform duration-300 ease-out opacity-30"
         style={{
           background:
-            'radial-gradient(600px circle at 50% 50%, rgba(59, 130, 246, 0.15), transparent 40%)',
+            'radial-gradient(600px circle at 50% 50%, rgba(220, 38, 38, 0.15), transparent 40%)',
         }}
       />
 
@@ -51,9 +47,9 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 backdrop-blur-sm">
-            <Sparkles className="h-5 w-5 text-blue-400" />
-            <span className="text-sm font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-red-500/10 to-red-600/10 border border-red-500/30 backdrop-blur-sm">
+            <Sparkles className="h-5 w-5 text-red-500" />
+            <span className="text-sm font-medium bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
               Visual Page Builder
             </span>
           </div>
@@ -61,12 +57,12 @@ export const HeroSection = () => {
 
         {/* Main Headline */}
         <motion.div
-          className="mb-8"
+          className="mb-8 flex flex-col items-center justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-white">
+          <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-foreground">
             <span className="block">Build Pages,</span>
             <span className="block">
               Not{' '}
@@ -79,9 +75,9 @@ export const HeroSection = () => {
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl  md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Create stunning web pages with our intuitive drag-and-drop builder.
-            <span className="text-blue-400 font-semibold">
+            <span className="text-red-500 font-semibold">
               {' '}
               No coding required.
             </span>
@@ -97,7 +93,7 @@ export const HeroSection = () => {
         >
           <Button
             size="xl"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
           >
             Start Building <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -105,7 +101,7 @@ export const HeroSection = () => {
           <Button
             variant="outline"
             size="xl"
-            className="border-gray-700 bg-gray-900/50 backdrop-blur-sm hover:bg-gray-800/50 text-white px-8 py-4 rounded-2xl"
+            className="border-red-500/50 bg-red-50/50 dark:bg-red-950/50 backdrop-blur-sm hover:bg-red-100/50 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-8 py-4 rounded-2xl border-2"
           >
             <Github className="mr-2 h-5 w-5" />
             View Demo
@@ -119,16 +115,18 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <div className="flex items-center gap-3 px-6 py-3 bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-full">
+          <div className="flex items-center gap-3 px-6 py-3 bg-background/50 backdrop-blur-sm border border-border rounded-full">
             <CopyButton text="npx create-page-builder my-app" />
-            <code className="text-sm text-gray-300 font-mono">
+            <code className="text-sm text-muted-foreground font-mono">
               npx create-page-builder my-app
             </code>
           </div>
 
-          <div className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-full">
-            <Zap className="h-4 w-4 text-yellow-400" />
-            <span className="text-sm text-gray-300">Ready in 30 seconds</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-full">
+            <Zap className="h-4 w-4 text-red-500" />
+            <span className="text-sm text-muted-foreground">
+              Ready in 30 seconds
+            </span>
           </div>
         </motion.div>
       </div>
