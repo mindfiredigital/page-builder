@@ -76,6 +76,10 @@ export class TableComponent {
             } else if (rule.action === 'show') {
               isVisible = true;
             }
+          } else {
+            if (rule.action === 'show') {
+              isVisible = false;
+            }
           }
         });
         if (isVisible) {
@@ -91,11 +95,13 @@ export class TableComponent {
   evaluateRule(inputValue, operator, ruleValue) {
     const numInputValue = parseFloat(inputValue);
     const numRuleValue = parseFloat(ruleValue);
+    const lowerCaseInputValue = inputValue.toLowerCase();
+    const lowerCaseRuleValue = ruleValue.toLowerCase();
     switch (operator) {
       case 'equals':
-        return inputValue === ruleValue;
+        return lowerCaseInputValue === lowerCaseRuleValue;
       case 'not_equals':
-        return inputValue !== ruleValue;
+        return lowerCaseInputValue !== lowerCaseRuleValue;
       case 'greater_than':
         return (
           !isNaN(numInputValue) &&
@@ -109,7 +115,7 @@ export class TableComponent {
           numInputValue < numRuleValue
         );
       case 'contains':
-        return inputValue && ruleValue && inputValue.includes(ruleValue);
+        return lowerCaseInputValue.includes(lowerCaseRuleValue);
       default:
         return false;
     }

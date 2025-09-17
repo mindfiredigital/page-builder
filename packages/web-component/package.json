@@ -58,8 +58,8 @@
     "webpack",
     "css"
   ],
-  "peerDependencies": {
-    "@mindfiredigital/page-builder": "workspace:*"
+  "dependencies": {
+    "@mindfiredigital/page-builder": "^1.8.0"
   },
   "devDependencies": {
     "eslint": "^9.19.0",

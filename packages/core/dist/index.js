@@ -913,10 +913,11 @@ class p {
             let s = !0;
             o.forEach(t => {
               const n = e[t.inputKey];
-              this.evaluateRule(n, t.operator, t.value) &&
-                ('hide' === t.action
+              this.evaluateRule(n, t.operator, t.value)
+                ? 'hide' === t.action
                   ? (s = !1)
-                  : 'show' === t.action && (s = !0));
+                  : 'show' === t.action && (s = !0)
+                : 'show' === t.action && (s = !1);
             }),
               (t.style.display = s ? 'grid' : 'none');
           } catch (e) {
@@ -927,18 +928,20 @@ class p {
   }
   evaluateRule(e, t, n) {
     const o = parseFloat(e),
-      s = parseFloat(n);
+      s = parseFloat(n),
+      i = e.toLowerCase(),
+      l = n.toLowerCase();
     switch (t) {
       case 'equals':
-        return e === n;
+        return i === l;
       case 'not_equals':
-        return e !== n;
+        return i !== l;
       case 'greater_than':
         return !isNaN(o) && !isNaN(s) && o > s;
       case 'less_than':
         return !isNaN(o) && !isNaN(s) && o < s;
       case 'contains':
-        return e && n && e.includes(n);
+        return i.includes(l);
       default:
         return !1;
     }
