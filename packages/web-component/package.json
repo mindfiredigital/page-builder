@@ -59,7 +59,7 @@
     "css"
   ],
   "dependencies": {
-    "@mindfiredigital/page-builder": "^1.8.0"
+    "@mindfiredigital/page-builder": "workspace:*"
   },
   "devDependencies": {
     "eslint": "^9.19.0",
