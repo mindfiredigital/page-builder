@@ -17,14 +17,12 @@ export const useRatingStore = create<RatingState>((set, get) => ({
     set(state => ({
       ratings: { ...state.ratings, [componentId]: 0 },
     }));
-  
   },
 
   setRatingToMax: (componentId: string) => {
     set(state => ({
       ratings: { ...state.ratings, [componentId]: 5 },
     }));
-   
   },
 
   incrementRating: (componentId: string) => {
@@ -33,7 +31,6 @@ export const useRatingStore = create<RatingState>((set, get) => ({
     set(state => ({
       ratings: { ...state.ratings, [componentId]: newValue },
     }));
-    console.log(`Rating (${componentId}): Incremented to ${newValue}`);
   },
 
   decrementRating: (componentId: string) => {
@@ -42,7 +39,6 @@ export const useRatingStore = create<RatingState>((set, get) => ({
     set(state => ({
       ratings: { ...state.ratings, [componentId]: newValue },
     }));
-    console.log(`Rating (${componentId}): Decremented to ${newValue}`);
   },
 
   setValue: (componentId: string, value: number | null) => {
