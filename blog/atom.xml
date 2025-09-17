@@ -6,7 +6,7 @@
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://mindfiredigital.github.io/page-builder/blog"/>
     <subtitle>Page Builder Blog</subtitle>
-    <icon>https://mindfiredigital.github.io/page-builder/img/mindfire.ico</icon>
+    <icon>https://mindfiredigital.github.io/page-builder/img/logo.png</icon>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>
         <id>https://mindfiredigital.github.io/page-builder/blog/welcome</id>
