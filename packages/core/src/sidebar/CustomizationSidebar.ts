@@ -454,7 +454,7 @@ export class CustomizationSidebar {
         comp => comp.name === 'header'
       );
       showModalButton = this.ShoModal(componentConfig?.attributes);
-    } else if (component.classList.contains('table-cell')) {
+    } else if (component.classList.contains('table-cell-content')) {
       showModalButton = this.ShoModal(tableConfig?.attributes);
     } else if (component.classList.contains('table-row')) {
       const tableInputAttr = tableConfig?.attributes?.filter(
