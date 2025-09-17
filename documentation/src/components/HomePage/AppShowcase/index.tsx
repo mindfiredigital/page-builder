@@ -82,19 +82,19 @@ export const AppShowcase = () => {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-16 flex flex-col justify-center items-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 ">
             Powerful{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
               Builder Tools
             </span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl max-w-3xl mx-auto">
             Experience our comprehensive suite of no-code builders designed to
             streamline your workflow and boost productivity.
           </p>
@@ -190,19 +190,17 @@ export const AppShowcase = () => {
             >
               {/* Title & Description */}
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-2xl font-bold  mb-3">
                   {appViews[activeView].title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className=" leading-relaxed">
                   {appViews[activeView].description}
                 </p>
               </div>
 
               {/* Features List */}
               <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
-                  Key Features:
-                </h4>
+                <h4 className="font-semibold  mb-3">Key Features:</h4>
                 <ul className="space-y-2">
                   {appViews[activeView].features.map((feature, index) => (
                     <motion.li
@@ -210,7 +208,7 @@ export const AppShowcase = () => {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="flex items-center gap-2 text-gray-600 dark:text-gray-400"
+                      className="flex items-center gap-2 "
                     >
                       <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
                       {feature}

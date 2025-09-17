@@ -62,9 +62,9 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-foreground">
-            <span className="block">Build Pages,</span>
-            <span className="block">
+          <h1 className="text-8xl md:text-7xl font-bold leading-tight mb-6 text-foreground">
+            <span className="block text-5xl">Build Pages,</span>
+            <span className="block text-5xl">
               Not{' '}
               <TypeText
                 texts={['Code', 'Templates', 'Headaches', 'Compromises']}
@@ -77,7 +77,7 @@ export const HeroSection = () => {
 
           <p className="text-xl  md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Create stunning web pages with our intuitive drag-and-drop builder.
-            <span className="text-red-500 font-semibold">
+            <span className="text-red-500 font-semibold ">
               {' '}
               No coding required.
             </span>
