@@ -399,7 +399,7 @@ export class Canvas {
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
-        if (type !== 'header' && type !== 'text') {
+        if (type !== 'header' && type !== 'text' && type !== 'table') {
           element.setAttribute('contenteditable', 'true');
         }
         element.addEventListener('input', () => {

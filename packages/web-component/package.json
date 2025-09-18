@@ -58,7 +58,7 @@
     "webpack",
     "css"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "@mindfiredigital/page-builder": "workspace:*"
   },
   "devDependencies": {
