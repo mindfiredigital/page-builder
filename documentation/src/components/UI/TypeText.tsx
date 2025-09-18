@@ -48,12 +48,11 @@ export const TypeText = ({
   return (
     <span
       className={cn(
-        'text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-500  to-gray-500',
+        'text-transparent bg-clip-text bg-gradient-to-r from-red-700 via-red-500  to-red-600',
         className
       )}
     >
       {currentText}
-      <span className="animate-pulse text-red-500">|</span>
     </span>
   );
 };

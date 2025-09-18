@@ -64,10 +64,7 @@ const config: Config = {
         },
       ],
     },
-    footer: {
-      links: [],
-      copyright: ` © ${new Date().getFullYear()} Mindfire FOSS`,
-    },
+
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,

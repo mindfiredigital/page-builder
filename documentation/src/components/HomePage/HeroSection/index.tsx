@@ -4,7 +4,7 @@ import { ArrowRight, Github, Sparkles, Zap } from 'lucide-react';
 import { TypeText } from '../../UI/TypeText';
 import { CopyButton } from '../../UI/CopyButton';
 import { motion } from 'framer-motion';
-import Particles from '../../UI/Liquid-Ether/Particles';
+import Particles from '../../UI/Background/Particles';
 
 // Hero Section Component
 export const HeroSection = () => {
@@ -63,18 +63,20 @@ export const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <h1 className="text-8xl md:text-7xl font-bold leading-tight mb-6 text-foreground">
-            <span className="block text-5xl">Build Pages,</span>
             <span className="block text-5xl">
-              Not{' '}
+              Create{' '}
               <TypeText
-                texts={['Code', 'Templates', 'Headaches', 'Compromises']}
+                texts={['Dynamic', 'Interactive', 'Professional', 'Custom']}
                 typingSpeed={80}
                 pauseDuration={1500}
                 className="inline-block"
-              />
+              />{' '}
+              Designs ,
+              <span className="block text-5xl">
+                with Drag & Drop Simplicity
+              </span>
             </span>
           </h1>
-
           <p className="text-xl  md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Create stunning web pages with our intuitive drag-and-drop builder.
             <span className="text-red-500 font-semibold ">

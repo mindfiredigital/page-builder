@@ -52,7 +52,7 @@ export const AppShowcase = () => {
       title: 'Document Builder',
       description:
         'Generate professional documents, invoices, and reports with dynamic data. Perfect for business documentation and automated workflows.',
-      image: '/api/placeholder/800/500', // Replace with your actual screenshot path
+      image: 'img/app-img-2.png', // Replace with your actual screenshot path
       category: 'Document Generation',
       features: [
         'Dynamic Templates',
@@ -90,7 +90,7 @@ export const AppShowcase = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 ">
             Powerful{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r   from-red-700 via-red-500  to-red-600">
               Builder Tools
             </span>
           </h2>
