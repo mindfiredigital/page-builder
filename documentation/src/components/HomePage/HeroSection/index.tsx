@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../../UI/Button';
 import { ArrowRight, Github, Sparkles, Zap } from 'lucide-react';
-import { TypeText } from '../../UI/TypeText';
+import { TypeText } from '../../UI/Text/TypeText';
 import { CopyButton } from '../../UI/CopyButton';
 import { motion } from 'framer-motion';
 import Particles from '../../UI/Background/Particles';
+import { AnimatedShinyText } from '../../UI/Text/AnimatedShinyText';
 
 // Hero Section Component
 export const HeroSection = () => {
@@ -117,11 +118,15 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <div className="flex items-center gap-3 px-6 py-3 bg-background/50 backdrop-blur-sm border border-border rounded-full">
+          <div className="flex items-center gap-3 px-6 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-full">
             <CopyButton text="npx create-page-builder my-app" />
-            <code className="text-sm text-muted-foreground font-mono">
-              npx create-page-builder my-app
-            </code>
+            {/* <code className="text-sm text-muted-foreground font-mono">
+              npm i @mindfiredigital/page-builder
+            </code> */}
+            <AnimatedShinyText>
+              {' '}
+              npm i @mindfiredigital/page-builder
+            </AnimatedShinyText>
           </div>
 
           <div className="flex items-center gap-2 px-4 py-2 bg-background/50 backdrop-blur-sm border border-border rounded-full">

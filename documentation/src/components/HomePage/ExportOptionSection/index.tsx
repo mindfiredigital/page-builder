@@ -9,14 +9,14 @@ export const ExportOptionsSection = () => {
       title: 'Clean HTML/CSS',
       description:
         "Production-ready code that's clean, semantic, and optimized for performance.",
-      color: 'from-red-500 via-red-400 to-red-500',
+      color: 'from-red-700 via-red-500 to-red-700',
     },
     {
       icon: FileText,
       title: 'PDF Design',
       description:
         'High-quality PDF exports perfect for client presentations and documentation.',
-      color: 'from-red-500 via-red-400 to-red-500',
+      color: 'from-red-700 via-red-500 to-red-700',
     },
   ];
 

@@ -7,26 +7,294 @@
 
 /* You can override the default Infima variables here. */
 :root {
+   --color-gradient-from-dropdown:#a855f7 ; 
+  --color-gradient-to-dropdown:#ec4899; 
   --ifm-color-primary: #ff0000;
-  --ifm-color-primary-dark: #e60000;
-  --ifm-color-primary-darker: #d90000;
-  --ifm-color-primary-darkest: #b30000;
-  --ifm-color-primary-light: #ff1a1a;
-  --ifm-color-primary-lighter: #ff2626;
-  --ifm-color-primary-lightest: #ff4d4d;
+  --ifm-color-primary-dark: #cc0511;
+  --ifm-color-primary-darker: #b70510;
+  --ifm-color-primary-darkest: #99040d;
+  --ifm-color-primary-light: #f01622;
+  --ifm-color-primary-lighter: #f33a45;
+  --ifm-color-primary-lightest: #f7777f;
+  --ifm-background-color: #ffffff;
+  --radius: 0.625rem;
+  --background: var(--ifm-background-color, #ffffff);
+  --foreground: var(--ifm-font-color-base, #1c1e21);
+  --card: var(--ifm-card-background-color, #ffffff);
+  --card-foreground: var(--ifm-font-color-base, #1c1e21);
+  --popover: var(--ifm-card-background-color, #ffffff);
+  --popover-foreground: var(--ifm-font-color-base, #1c1e21);
+  --primary: var(--ifm-color-primary);
+  --primary-light: var(--ifm-color-primary-light);
+  --primary-dark: var(--ifm-color-primary-dark);
+  --primary-darker: var(--ifm-color-primary-darker);
+  --primary-darkest: var(--ifm-color-primary-darkest);
+  --primary-lighter: var(--ifm-color-primary-lighter);
+  --primary-lightest: var(--ifm-color-primary-lightest);
+  --primary-foreground: #ffffff;
+  --secondary: var(--ifm-color-emphasis-200, #f5f5f5);
+  --secondary-foreground: var(--ifm-color-emphasis-800, #3e3e3e);
+  --muted: var(--ifm-color-emphasis-300, #e0e0e0);
+  --muted-foreground: #3e3e3e;
+  --accent: var(--ifm-color-emphasis-200, #f5f5f5);
+  --accent-foreground: var(--ifm-color-emphasis-800, #3e3e3e);
+  --destructive: var(--ifm-color-danger, #d93636);
+  --border: var(--ifm-color-emphasis-300, #e0e0e0);
+  --input: var(--ifm-color-emphasis-300, #e0e0e0);
+  --ring: var(--ifm-color-primary-light);
+  --sidebar: var(--ifm-background-color, #ffffff);
+  --sidebar-foreground: var(--ifm-font-color-base, #1c1e21);
+  --sidebar-primary: var(--ifm-color-primary);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--ifm-color-emphasis-200, #f5f5f5);
+  --sidebar-accent-foreground: var(--ifm-color-emphasis-800, #3e3e3e);
+  --sidebar-border: var(--ifm-color-emphasis-300, #e0e0e0);
+  --sidebar-ring: var(--ifm-color-primary-light);
+  --warning: var(--ifm-color-warning);
+  --warning-foreground: var(--ifm-color-warning-foreground);
+  --success: var(--ifm-color-success);
+  --success-foreground: var(--ifm-color-success-foreground);
+  --error: var(--ifm-color-error);
+  --error-foreground: var(--ifm-color-error-foreground);
+
+  --destructive-light: #ef4444;
+  --destructive-dark: #b91c1c;
+  --success-light: #34d399;
+  --success-dark: #047857;
+  --warning-light: #fbbf24;
+  --warning-dark: #b45309;
+  --info: #06b6d4;
+  --info-light: #22d3ee;
+  --info-dark: #0e7490;
+  --info-foreground: #ffffff;
+  --red-primary: #f12828;
+
+  --ifm-paragraph-margin-bottom: 0rem;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
+  --ifm-background-color: #000000;
   --ifm-color-primary: #ff0000;
-  --ifm-color-primary-dark: #e60000;
-  --ifm-color-primary-darker: #d90000;
-  --ifm-color-primary-darkest: #b30000;
-  --ifm-color-primary-light: #ff1a1a;
-  --ifm-color-primary-lighter: #ff2626;
-  --ifm-color-primary-lightest: #ff4d4d;
+  --ifm-color-primary-dark: #e7333e;
+  --ifm-color-primary-darker: #c92b34;
+  --ifm-color-primary-darkest: #a4232a;
+  --ifm-color-primary-light: #ff5a64;
+  --ifm-color-primary-lighter: #ff8087;
+  --ifm-color-primary-lightest: #ffb3b7;
+  --radius: 0.625rem;
+  --background: var(--ifm-background-color, #000000);
+  --foreground: var(--ifm-font-color-base, #ffffff);
+  --card: var(--ifm-card-background-color, #242526);
+  --card-foreground: var(--ifm-font-color-base, #ffffff);
+  --popover: var(--ifm-card-background-color, #242526);
+  --popover-foreground: var(--ifm-font-color-base, #ffffff);
+  --primary: var(--ifm-color-primary);
+  --primary-light: var(--ifm-color-primary-light);
+  --primary-dark: var(--ifm-color-primary-dark);
+  --primary-darker: var(--ifm-color-primary-darker);
+  --primary-darkest: var(--ifm-color-primary-darkest);
+  --primary-lighter: var(--ifm-color-primary-lighter);
+  --primary-lightest: var(--ifm-color-primary-lightest);
+  --primary-foreground: #121212;
+  --secondary: var(--ifm-color-emphasis-200, #303030);
+  --secondary-foreground: var(--ifm-color-emphasis-800, #d4d4d4);
+  --muted: var(--ifm-color-emphasis-300, #424242);
+  --muted-foreground: var(--ifm-color-emphasis-600, #a3a3a3);
+  --accent: var(--ifm-color-emphasis-200, #303030);
+  --accent-foreground: var(--ifm-color-emphasis-800, #d4d4d4);
+  --destructive: var(--ifm-color-danger, #ff6b6b);
+  --border: var(--ifm-color-emphasis-300, #424242);
+  --input: var(--ifm-color-emphasis-300, #424242);
+  --ring: var(--ifm-color-primary-light);
+  --sidebar: var(--ifm-background-color, #121212);
+  --sidebar-foreground: var(--ifm-font-color-base, #ffffff);
+  --sidebar-primary: var(--ifm-color-primary);
+  --sidebar-primary-foreground: #121212;
+  --sidebar-accent: var(--ifm-color-emphasis-200, #303030);
+  --sidebar-accent-foreground: var(--ifm-color-emphasis-800, #d4d4d4);
+  --sidebar-border: var(--ifm-color-emphasis-300, #424242);
+  --sidebar-ring: var(--ifm-color-primary-light);
+  --warning: var(--ifm-color-warning);
+  --warning-foreground: var(--ifm-color-warning-foreground);
+  --success: var(--ifm-color-success);
+  --success-foreground: var(--ifm-color-success-foreground);
+  --error: var(--ifm-color-error);
+  --error-foreground: var(--ifm-color-error-foreground);
+
+  --red-primary: var(--ifm-color-primary);
+
+  --destructive-light: #ef4444;
+  /* red-400 */
+  --destructive-dark: #b91c1c;
+  /* red-700 */
+  --success-light: #34d399;
+  /* emerald-400 */
+  --success-dark: #047857;
+  /* emerald-700 */
+  --warning-light: #fbbf24;
+  /* yellow-300 */
+  --warning-dark: #b45309;
+  /* yellow-500 */
+  --info: #06b6d4;
+  /* cyan-500 */
+  --info-light: #22d3ee;
+  /* cyan-400 */
+  --info-dark: #0e7490;
+  /* cyan-600 */
+  --info-foreground: #ffffff;
 }
 
+@theme inline {
+  --color-primary: var(--primary);
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-darker: var(--primary-darker);
+  --color-primary-darkest: var(--primary-darkest);
+  --color-primary-lighter: var(--primary-lighter);
+  --color-primary-lightest: var(--primary-lightest);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success-foreground: var(--success-foreground);
+  --color-error-foreground: var(--error-foreground);
+  --color-red-primary: var(--red-primary);
+
+  --color-destructive-light: var(--destructive-light);
+  --color-destructive-dark: var(--destructive-dark);
+  --color-success-light: var(--success-light);
+  --color-success-dark: var(--success-dark);
+  --color-warning-light: var(--warning-light);
+  --color-warning-dark: var(--warning-dark);
+  --color-info: var(--info);
+  --color-info-light: var(--info-light);
+  --color-info-dark: var(--info-dark);
+  --color-info-foreground: var(--info-foreground);
+
+  --animate-shine: shine var(--duration) infinite linear;
+
+  --hero-bg: var(--background);
+  --hero-fg: var(--foreground);
+  --hero-primary: var(--primary);
+  --hero-accent: var(--secondary);
+  --hero-muted: var(--muted);
+
+  --animate-shine: shine var(--duration) infinite linear;
+
+  @keyframes shine {
+    0% {
+      background-position: 0% 0%;
+    }
+
+    50% {
+      background-position: 100% 100%;
+    }
+
+    to {
+      background-position: 0% 0%;
+    }
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  --animate-gradient: gradient 8s linear infinite;
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes aurora {
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
+    }
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
+    }
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
+    }
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+  }
+}
+
+@theme inline {
+  --animate-shiny-text: shiny-text 8s infinite;
+ 
+  @keyframes shiny-text {
+    0%,
+    90%,
+    100% {
+      background-position: calc(-100% - var(--shiny-width)) 0;
+    }
+    30%,
+    60% {
+      background-position: calc(100% + var(--shiny-width)) 0;
+    }
+  }
+}
 .header--github-link {
   width: 32px;
   height: 32px;

@@ -745,7 +745,9 @@ class r {
   static restoreContainer(e) {
     r.restoreResizer(e);
     const t = new r();
-    t.element = e;
+    (t.element = e),
+      e.addEventListener('drop', t.onDrop.bind(t)),
+      e.addEventListener('dragover', e => e.preventDefault());
     e.querySelectorAll('.editable-component').forEach(e => {
       var n;
       if (
@@ -845,6 +847,7 @@ class c {
             : t.getAttribute('src')) || '';
         s.restoreImageUpload(e, n, null);
       }
+      e.classList.contains('container-component') && r.restoreContainer(e);
     });
   }
 }

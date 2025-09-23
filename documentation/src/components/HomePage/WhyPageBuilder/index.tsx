@@ -61,7 +61,7 @@ export const WhyPageBuilderSection = () => {
               whileHover={{ y: -5 }}
             >
               <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 bg-gradient-to-br from-red-500 via-red-400 to-red-500 rounded-xl text-white">
+                <div className="p-3 bg-gradient-to-br from-red-700 via-red-500 to-red-700 rounded-xl text-white">
                   <feature.icon className="h-6 w-6" />
                 </div>
                 <h3 className="text-xl font-semibold text-foreground">

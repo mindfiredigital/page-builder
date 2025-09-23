@@ -351,6 +351,12 @@ export class ContainerComponent {
     const containerInstance = new ContainerComponent();
     containerInstance.element = container;
 
+    container.addEventListener(
+      'drop',
+      containerInstance.onDrop.bind(containerInstance)
+    );
+    container.addEventListener('dragover', event => event.preventDefault());
+
     // Reapply controls to child components inside the container
     const containerChildren = container.querySelectorAll('.editable-component');
     containerChildren.forEach((child: any) => {
