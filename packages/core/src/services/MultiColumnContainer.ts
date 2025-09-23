@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas';
+import { ContainerComponent } from '../components';
 import { ImageComponent } from '../components/ImageComponent';
 
 /**
@@ -171,6 +172,9 @@ export class MultiColumnContainer {
       if (child.classList.contains('image-component')) {
         const imageSrc = child.querySelector('img')?.getAttribute('src') || '';
         ImageComponent.restoreImageUpload(child, imageSrc, null);
+      }
+      if (child.classList.contains('container-component')) {
+        ContainerComponent.restoreContainer(child);
       }
     });
   }
