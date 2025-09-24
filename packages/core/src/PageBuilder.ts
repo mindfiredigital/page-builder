@@ -32,7 +32,7 @@ export class PageBuilder {
 
   constructor(
     dynamicComponents: DynamicComponents = {
-      Basic: { components: [] },
+      Basic: [],
       Extra: [],
       Custom: {},
     },

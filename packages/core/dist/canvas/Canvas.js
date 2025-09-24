@@ -29,28 +29,28 @@ export class Canvas {
   }
   static init(initialData = null, editable, basicComponentsConfig) {
     this.editable = editable;
-    const tableComponent = basicComponentsConfig.components.find(
+    const tableComponent = basicComponentsConfig.find(
       component => component.name === 'table'
     );
     this.tableAttributeConfig =
       tableComponent === null || tableComponent === void 0
         ? void 0
         : tableComponent.attributes;
-    const textComponent = basicComponentsConfig.components.find(
+    const textComponent = basicComponentsConfig.find(
       component => component.name === 'text'
     );
     this.textAttributeConfig =
       textComponent === null || textComponent === void 0
         ? void 0
         : textComponent.attributes;
-    const headerComponent = basicComponentsConfig.components.find(
+    const headerComponent = basicComponentsConfig.find(
       component => component.name === 'header'
     );
     this.headerAttributeConfig =
       headerComponent === null || headerComponent === void 0
         ? void 0
         : headerComponent.attributes;
-    const ImageComponent = basicComponentsConfig.components.find(
+    const ImageComponent = basicComponentsConfig.find(
       component => component.name === 'image'
     );
     this.ImageAttributeConfig =

@@ -6,25 +6,24 @@ export function createSidebar(
   // We have default values if there is no custom components are specified within parameters
   if (
     !dynamicComponents ||
-    (dynamicComponents.Basic.components.length === 0 &&
+    (dynamicComponents.Basic.length === 0 &&
       dynamicComponents.Extra.length === 0 &&
       Object.keys(dynamicComponents.Custom).length === 0)
   ) {
     dynamicComponents = {
-      Basic: {
-        components: [
-          { name: 'button' },
-          { name: 'header' },
-          { name: 'text' },
-          { name: 'image' },
-          { name: 'video' },
-          { name: 'container' },
-          { name: 'twoCol' },
-          { name: 'threeCol' },
-          { name: 'table' },
-          { name: 'link' },
-        ],
-      },
+      Basic: [
+        { name: 'button' },
+        { name: 'header' },
+        { name: 'text' },
+        { name: 'image' },
+        { name: 'video' },
+        { name: 'container' },
+        { name: 'twoCol' },
+        { name: 'threeCol' },
+        { name: 'table' },
+        { name: 'link' },
+      ],
+
       // Add portfolio for version 2
       Extra: ['landingpage'],
       Custom: {},
@@ -88,12 +87,16 @@ export function createSidebar(
       }
     }
     categoryMenu.prepend(categoryHeading);
-
-    // Handling standard dynamic components (Basic and Extra)
-    if (Array.isArray(components)) {
-      components.forEach((componentId: string) => {
-        // let componentId: string;
-
+    if (category === 'Basic') {
+      components.forEach((component: BasicComponent) => {
+        let componentId!: string;
+        if (
+          typeof component === 'object' &&
+          component !== null &&
+          'name' in component
+        ) {
+          componentId = component.name as string;
+        }
         const iconElement = document.createElement('div');
         iconElement.classList.add('draggable');
         iconElement.id = componentId;
@@ -119,16 +122,12 @@ export function createSidebar(
 
         categoryMenu.appendChild(iconElement);
       });
-    } else if (category === 'Basic' && typeof components === 'object') {
-      components.components.forEach((component: BasicComponent) => {
-        let componentId!: string;
-        if (
-          typeof component === 'object' &&
-          component !== null &&
-          'name' in component
-        ) {
-          componentId = component.name as string;
-        }
+    }
+    // Handling standard dynamic components (Basic and Extra)
+    else if (Array.isArray(components)) {
+      components.forEach((componentId: string) => {
+        // let componentId: string;
+
         const iconElement = document.createElement('div');
         iconElement.classList.add('draggable');
         iconElement.id = componentId;

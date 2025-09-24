@@ -92,6 +92,13 @@ export class HeaderComponent {
   static restore(container) {
     const closestHeader = container.closest('.header-component');
     const headerText = closestHeader.querySelector('.component-text-content');
+    headerText.addEventListener('click', event => {
+      event.stopPropagation();
+      const parentHeader = headerText.closest('.header-component');
+      if (parentHeader) {
+        parentHeader.click();
+      }
+    });
     if (closestHeader && headerText) {
       const attributeKey = closestHeader.getAttribute('data-attribute-key');
       const attributeType = closestHeader.getAttribute('data-attribute-type');

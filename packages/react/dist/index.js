@@ -178,7 +178,7 @@ var PageBuilderReact = ({
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);
         }
-      }, 100);
+      }, 150);
     }
   }, [processedConfig, initialDesign]);
   (0, import_react.useEffect)(() => {

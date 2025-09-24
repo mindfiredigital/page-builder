@@ -67,27 +67,27 @@ export class Canvas {
   static init(
     initialData: PageBuilderDesign | null = null,
     editable: boolean | null,
-    basicComponentsConfig: BasicComponent
+    basicComponentsConfig: BasicComponent[]
   ) {
     this.editable = editable;
-    const tableComponent = basicComponentsConfig.components.find(
+    const tableComponent = basicComponentsConfig.find(
       component => component.name === 'table'
     );
 
     this.tableAttributeConfig = tableComponent?.attributes;
 
-    const textComponent = basicComponentsConfig.components.find(
+    const textComponent = basicComponentsConfig.find(
       component => component.name === 'text'
     );
 
     this.textAttributeConfig = textComponent?.attributes;
 
-    const headerComponent = basicComponentsConfig.components.find(
+    const headerComponent = basicComponentsConfig.find(
       component => component.name === 'header'
     );
     this.headerAttributeConfig = headerComponent?.attributes;
 
-    const ImageComponent = basicComponentsConfig.components.find(
+    const ImageComponent = basicComponentsConfig.find(
       component => component.name === 'image'
     );
     this.ImageAttributeConfig = ImageComponent?.globalExecuteFunction;

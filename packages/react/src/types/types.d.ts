@@ -1,5 +1,5 @@
 export interface DynamicComponents {
-  Basic: BasicComponent;
+  Basic: BasicComponent[];
   Extra: string[];
   Custom?: Record<string, CustomComponentConfig>;
 }
@@ -16,11 +16,9 @@ export interface ComponentAttribute {
 }
 
 export interface BasicComponent {
-  components: {
-    name: string;
-    attributes?: ComponentAttribute[];
-    globalExecuteFunction?: Function;
-  }[];
+  name: string;
+  attributes?: ComponentAttribute[];
+  globalExecuteFunction?: Function;
 }
 
 export interface PageBuilderDesign {
