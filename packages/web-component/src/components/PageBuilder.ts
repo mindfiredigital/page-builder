@@ -104,7 +104,6 @@ export class PageBuilderComponent extends HTMLElement {
 
   // Lifecycle method: Called when the element is added to the DOM
   connectedCallback() {
-    console.log(this.initialized, 'initial2');
     if (this.initialized) {
       return;
     }
@@ -121,7 +120,6 @@ export class PageBuilderComponent extends HTMLElement {
   }
 
   private hasValidConfig(): boolean {
-    console.log(this.config, 'config');
     return (
       this.config &&
       (this.config.Basic?.length > 0 ||
@@ -141,7 +139,6 @@ export class PageBuilderComponent extends HTMLElement {
   }
   // Initializes the PageBuilder instance
   private initializePageBuilder() {
-    console.log(this.initialized, 'initial');
     if (this.initialized) {
       return;
     }
@@ -162,14 +159,6 @@ export class PageBuilderComponent extends HTMLElement {
         this._editable,
         this._brandTitle,
         this.showAttributeTab
-      );
-      console.log(
-        this.config,
-        this._initialDesign,
-        this._editable,
-        this._brandTitle,
-        this.showAttributeTab,
-        'tab'
       );
       this.initialized = true;
     } catch (error) {

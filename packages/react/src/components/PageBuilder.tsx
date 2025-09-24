@@ -142,7 +142,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);
         }
-      }, 150);
+      }, 100);
     }
   }, [processedConfig, initialDesign]);
   useEffect(() => {
