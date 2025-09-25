@@ -1032,6 +1032,23 @@ html {
   transform: translateY(-1px);
 }
 
+.modal-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 8px;
+  width: 18px;
+  height: 18px;
+  color: #999;
+}
+
+.modal-search-input {
+  padding-left: 32px;
+}
 
 /*************************************TABLE COMPONENT************************************/
 
