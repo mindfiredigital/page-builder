@@ -46,6 +46,35 @@ class t {
         t.addEventListener('click', () => {
           this.onSave();
         });
+    const o = this.modalElement.querySelector('#attribute-search');
+    null == o ||
+      o.addEventListener('input', e => {
+        const t = e.target.value;
+        this.filterAttributes(t);
+      });
+  }
+  filterAttributes(e) {
+    const t = this.contentContainer.querySelectorAll('.form-field'),
+      n = e.toLowerCase().trim();
+    t.forEach(e => {
+      var t, o, s;
+      const i =
+          null === (t = e.getAttribute('data-attr-key')) || void 0 === t
+            ? void 0
+            : t.toLowerCase(),
+        l =
+          null ===
+            (s =
+              null === (o = e.querySelector('.form-title')) || void 0 === o
+                ? void 0
+                : o.textContent) || void 0 === s
+            ? void 0
+            : s.toLowerCase();
+      (null == i ? void 0 : i.includes(n)) ||
+      (null == l ? void 0 : l.includes(n))
+        ? e.classList.remove('modal-hidden')
+        : e.classList.add('modal-hidden');
+    });
   }
   createModalElement() {
     const e = document.createElement('div');
@@ -53,7 +82,7 @@ class t {
       (e.className = 'modal-overlay modal-hidden'),
       (e.id = 'modal'),
       (e.innerHTML =
-        '\n      <div class="modal-content">\n        <div class="modal-header">\n          <div class="modal-header-content">\n            <h2 class="modal-title">Component Settings</h2>\n            <button id="close-modal-button" class="modal-close-button">\n              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n              </svg>\n            </button>\n          </div>\n        </div>\n        <div class="modal-body">\n          <div id="modal-content" class="modal-form">\n            \x3c!-- Dynamic form elements will be injected here --\x3e\n          </div>\n          <div class="modal-footer">\n            <button id="save-button" class="save-button">\n              Save\n            </button>\n          </div>\n        </div>\n      </div>\n    '),
+        '\n      <div class="modal-content">\n        <div class="modal-header">\n          <div class="modal-header-content">\n            <h2 class="modal-title">Component Settings</h2>\n            <button id="close-modal-button" class="modal-close-button">\n              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n              </svg>\n            </button>\n          </div>\n            <div class="modal-search-container">\n  <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">\n    <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm7.4 12.6l4.2 4.2a1 1 0 01-1.4 1.4l-4.2-4.2a10 10 0 111.4-1.4z"/>\n  </svg>\n  <input type="text" id="attribute-search" class="modal-search-input" placeholder="Search attributes...">\n</div>\n        </div>\n        <div class="modal-body">\n          <div id="modal-content" class="modal-form">\n            \x3c!-- Dynamic form elements will be injected here --\x3e\n          </div>\n          <div class="modal-footer">\n            <button id="save-button" class="save-button">\n              Save\n            </button>\n          </div>\n        </div>\n      </div>\n    '),
       e
     );
   }
@@ -123,8 +152,10 @@ class t {
     }
   }
   show(e) {
+    this.renderForm(e);
+    const t = this.modalElement.querySelector('#attribute-search');
     return (
-      this.renderForm(e),
+      t && (t.value = ''),
       this.modalElement.classList.remove('modal-hidden'),
       new Promise(e => {
         this.resolvePromise = e;
@@ -3030,7 +3061,7 @@ M &&
     const t = e.target;
     t !== M && I.selectElement(t);
   });
-class $ {
+class A {
   constructor(e) {
     this.canvas = e;
   }
@@ -3055,7 +3086,7 @@ class $ {
       }
   }
 }
-class B {
+class $ {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -3275,7 +3306,7 @@ class B {
     this.styleElement.textContent = e;
   }
 }
-function A(e) {
+function B(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let o = 0;
@@ -3426,8 +3457,8 @@ class z {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
       (this.canvas = new S()),
-      (this.sidebar = new $(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.sidebar = new A(this.canvas)),
+      (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
       (this.editable = n),
@@ -3440,8 +3471,8 @@ class z {
   }
   initializeEventListeners() {
     (this.canvas = new S()),
-      (this.sidebar = new $(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.sidebar = new A(this.canvas)),
+      (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
       this.setupInitialComponents(),
@@ -3855,7 +3886,7 @@ class z {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new S()),
+        const e = new $(new S()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = (function (e) {
@@ -3887,7 +3918,7 @@ class z {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new S()),
+        const e = new $(new S()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = window.open('', '_blank');
@@ -3951,7 +3982,7 @@ class z {
       (n.textContent = 'Export to ZIP'),
       n.classList.add('export-btn'),
       n.addEventListener('click', () => {
-        const n = A([
+        const n = B([
             { name: 'index.html', content: e },
             { name: 'styles.css', content: t },
           ]),
