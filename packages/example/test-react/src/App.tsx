@@ -6,14 +6,12 @@ import Image from './components/Image';
 
 const App = () => {
   const dynamicComponents = {
-    Basic: {
-      components: [
-        { name: 'button' },
-        { name: 'header' },
-        { name: 'text' },
-        { name: 'table' },
-      ],
-    },
+    Basic: [
+      { name: 'button' },
+      { name: 'header' },
+      { name: 'text' },
+      { name: 'table' },
+    ],
     Extra: ['landingpage'],
   };
 

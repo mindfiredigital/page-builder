@@ -15,7 +15,7 @@ export declare class CustomizationSidebar {
   static init(
     customComponentsConfig: CustomComponentConfig,
     editable: boolean | null,
-    BasicComponent: BasicComponent,
+    BasicComponent: BasicComponent[],
     showAttributeTab?: boolean
   ): void;
   private static switchToCustomizeMode;

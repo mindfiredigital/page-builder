@@ -46,6 +46,35 @@ class t {
         t.addEventListener('click', () => {
           this.onSave();
         });
+    const o = this.modalElement.querySelector('#attribute-search');
+    null == o ||
+      o.addEventListener('input', e => {
+        const t = e.target.value;
+        this.filterAttributes(t);
+      });
+  }
+  filterAttributes(e) {
+    const t = this.contentContainer.querySelectorAll('.form-field'),
+      n = e.toLowerCase().trim();
+    t.forEach(e => {
+      var t, o, s;
+      const i =
+          null === (t = e.getAttribute('data-attr-key')) || void 0 === t
+            ? void 0
+            : t.toLowerCase(),
+        l =
+          null ===
+            (s =
+              null === (o = e.querySelector('.form-title')) || void 0 === o
+                ? void 0
+                : o.textContent) || void 0 === s
+            ? void 0
+            : s.toLowerCase();
+      (null == i ? void 0 : i.includes(n)) ||
+      (null == l ? void 0 : l.includes(n))
+        ? e.classList.remove('modal-hidden')
+        : e.classList.add('modal-hidden');
+    });
   }
   createModalElement() {
     const e = document.createElement('div');
@@ -53,7 +82,7 @@ class t {
       (e.className = 'modal-overlay modal-hidden'),
       (e.id = 'modal'),
       (e.innerHTML =
-        '\n      <div class="modal-content">\n        <div class="modal-header">\n          <div class="modal-header-content">\n            <h2 class="modal-title">Component Settings</h2>\n            <button id="close-modal-button" class="modal-close-button">\n              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n              </svg>\n            </button>\n          </div>\n        </div>\n        <div class="modal-body">\n          <div id="modal-content" class="modal-form">\n            \x3c!-- Dynamic form elements will be injected here --\x3e\n          </div>\n          <div class="modal-footer">\n            <button id="save-button" class="save-button">\n              Save\n            </button>\n          </div>\n        </div>\n      </div>\n    '),
+        '\n      <div class="modal-content">\n        <div class="modal-header">\n          <div class="modal-header-content">\n            <h2 class="modal-title">Component Settings</h2>\n            <button id="close-modal-button" class="modal-close-button">\n              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n              </svg>\n            </button>\n          </div>\n            <div class="modal-search-container">\n  <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">\n    <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm7.4 12.6l4.2 4.2a1 1 0 01-1.4 1.4l-4.2-4.2a10 10 0 111.4-1.4z"/>\n  </svg>\n  <input type="text" id="attribute-search" class="modal-search-input" placeholder="Search attributes...">\n</div>\n        </div>\n        <div class="modal-body">\n          <div id="modal-content" class="modal-form">\n            \x3c!-- Dynamic form elements will be injected here --\x3e\n          </div>\n          <div class="modal-footer">\n            <button id="save-button" class="save-button">\n              Save\n            </button>\n          </div>\n        </div>\n      </div>\n    '),
       e
     );
   }
@@ -123,8 +152,10 @@ class t {
     }
   }
   show(e) {
+    this.renderForm(e);
+    const t = this.modalElement.querySelector('#attribute-search');
     return (
-      this.renderForm(e),
+      t && (t.value = ''),
       this.modalElement.classList.remove('modal-hidden'),
       new Promise(e => {
         this.resolvePromise = e;
@@ -225,7 +256,14 @@ class n {
   static restore(e) {
     const t = e.closest('.text-component'),
       o = t.querySelector('.component-text-content');
-    if (t && o) {
+    if (
+      (o.addEventListener('click', e => {
+        e.stopPropagation();
+        const t = o.closest('.text-component');
+        t && t.click();
+      }),
+      t && o)
+    ) {
       const e = t.getAttribute('data-attribute-key'),
         s = t.getAttribute('data-attribute-type');
       if (e) {
@@ -525,7 +563,14 @@ class a {
   static restore(e) {
     const t = e.closest('.header-component'),
       n = t.querySelector('.component-text-content');
-    if (t && n) {
+    if (
+      (n.addEventListener('click', e => {
+        e.stopPropagation();
+        const t = n.closest('.header-component');
+        t && t.click();
+      }),
+      t && n)
+    ) {
       const e = t.getAttribute('data-attribute-key'),
         o = t.getAttribute('data-attribute-type');
       if (e) {
@@ -745,7 +790,9 @@ class r {
   static restoreContainer(e) {
     r.restoreResizer(e);
     const t = new r();
-    t.element = e;
+    (t.element = e),
+      e.addEventListener('drop', t.onDrop.bind(t)),
+      e.addEventListener('dragover', e => e.preventDefault());
     e.querySelectorAll('.editable-component').forEach(e => {
       var n;
       if (
@@ -845,6 +892,7 @@ class c {
             : t.getAttribute('src')) || '';
         s.restoreImageUpload(e, n, null);
       }
+      e.classList.contains('container-component') && r.restoreContainer(e);
     });
   }
 }
@@ -2292,17 +2340,17 @@ class E {
           ? (i =
               null === (e = E.basicComponentsConfig) || void 0 === e
                 ? void 0
-                : e.components.find(e => 'table' === e.name))
+                : e.find(e => 'table' === e.name))
           : s.classList.contains('text-component')
             ? (i =
                 null === (t = E.basicComponentsConfig) || void 0 === t
                   ? void 0
-                  : t.components.find(e => 'text' === e.name))
+                  : t.find(e => 'text' === e.name))
             : s.classList.contains('header-component') &&
               (i =
                 null === (o = E.basicComponentsConfig) || void 0 === o
                   ? void 0
-                  : o.components.find(e => 'header' === e.name)),
+                  : o.find(e => 'header' === e.name)),
         i && i.globalExecuteFunction)
       ) {
         const e = {};
@@ -2340,20 +2388,20 @@ class E {
     const r =
       null === (t = this.basicComponentsConfig) || void 0 === t
         ? void 0
-        : t.components.find(e => 'table' === e.name);
+        : t.find(e => 'table' === e.name);
     if (e.classList.contains('table-component'))
       (l = r), this.ShoModal(null == l ? void 0 : l.attributes);
     else if (e.classList.contains('text-component'))
       (l =
         null === (n = this.basicComponentsConfig) || void 0 === n
           ? void 0
-          : n.components.find(e => 'text' === e.name)),
+          : n.find(e => 'text' === e.name)),
         (a = this.ShoModal(null == l ? void 0 : l.attributes));
     else if (e.classList.contains('header-component'))
       (l =
         null === (o = this.basicComponentsConfig) || void 0 === o
           ? void 0
-          : o.components.find(e => 'header' === e.name)),
+          : o.find(e => 'header' === e.name)),
         (a = this.ShoModal(null == l ? void 0 : l.attributes));
     else if (e.classList.contains('table-cell-content'))
       a = this.ShoModal(null == r ? void 0 : r.attributes);
@@ -2620,13 +2668,13 @@ class S {
   }
   static init(t = null, n, o) {
     this.editable = n;
-    const s = o.components.find(e => 'table' === e.name);
+    const s = o.find(e => 'table' === e.name);
     this.tableAttributeConfig = null == s ? void 0 : s.attributes;
-    const i = o.components.find(e => 'text' === e.name);
+    const i = o.find(e => 'text' === e.name);
     this.textAttributeConfig = null == i ? void 0 : i.attributes;
-    const l = o.components.find(e => 'header' === e.name);
+    const l = o.find(e => 'header' === e.name);
     this.headerAttributeConfig = null == l ? void 0 : l.attributes;
-    const a = o.components.find(e => 'image' === e.name);
+    const a = o.find(e => 'image' === e.name);
     (this.ImageAttributeConfig = null == a ? void 0 : a.globalExecuteFunction),
       s && s.attributes && s.attributes.length,
       (k.canvasElement = document.getElementById('canvas')),
@@ -3013,7 +3061,7 @@ M &&
     const t = e.target;
     t !== M && I.selectElement(t);
   });
-class $ {
+class A {
   constructor(e) {
     this.canvas = e;
   }
@@ -3038,7 +3086,7 @@ class $ {
       }
   }
 }
-class B {
+class $ {
   constructor(e) {
     (this.canvas = e),
       (this.styleElement = document.createElement('style')),
@@ -3258,7 +3306,7 @@ class B {
     this.styleElement.textContent = e;
   }
 }
-function A(e) {
+function B(e) {
   const t = e => new TextEncoder().encode(e),
     n = [];
   let o = 0;
@@ -3400,7 +3448,7 @@ class T {
 }
 class z {
   constructor(
-    e = { Basic: { components: [] }, Extra: [], Custom: {} },
+    e = { Basic: [], Extra: [], Custom: {} },
     t = null,
     n = !0,
     o,
@@ -3409,8 +3457,8 @@ class z {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
       (this.canvas = new S()),
-      (this.sidebar = new $(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.sidebar = new A(this.canvas)),
+      (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
       (this.editable = n),
@@ -3423,8 +3471,8 @@ class z {
   }
   initializeEventListeners() {
     (this.canvas = new S()),
-      (this.sidebar = new $(this.canvas)),
-      (this.htmlGenerator = new B(this.canvas)),
+      (this.sidebar = new A(this.canvas)),
+      (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
       this.setupInitialComponents(),
@@ -3440,24 +3488,22 @@ class z {
   setupInitialComponents() {
     !(function (e, t) {
       (!e ||
-        (0 === e.Basic.components.length &&
+        (0 === e.Basic.length &&
           0 === e.Extra.length &&
           0 === Object.keys(e.Custom).length)) &&
         (e = {
-          Basic: {
-            components: [
-              { name: 'button' },
-              { name: 'header' },
-              { name: 'text' },
-              { name: 'image' },
-              { name: 'video' },
-              { name: 'container' },
-              { name: 'twoCol' },
-              { name: 'threeCol' },
-              { name: 'table' },
-              { name: 'link' },
-            ],
-          },
+          Basic: [
+            { name: 'button' },
+            { name: 'header' },
+            { name: 'text' },
+            { name: 'image' },
+            { name: 'video' },
+            { name: 'container' },
+            { name: 'twoCol' },
+            { name: 'threeCol' },
+            { name: 'table' },
+            { name: 'link' },
+          ],
           Extra: ['landingpage'],
           Custom: {},
         });
@@ -3501,40 +3547,40 @@ class z {
             (l.innerHTML = e),
             (Array.isArray(t) && t.length <= 0) ||
               (n.prepend(l),
-              Array.isArray(t)
+              'Basic' === e
                 ? t.forEach(e => {
-                    const t = document.createElement('div');
-                    t.classList.add('draggable'),
-                      (t.id = e),
-                      t.setAttribute('draggable', 'true'),
-                      t.setAttribute('data-component', e);
-                    const i = s[e] || `Drag to add ${e}`;
-                    if ((t.setAttribute('title', i), o[e])) {
-                      t.innerHTML = ` ${o[e]}\n          <div class="drag-text">${e}</div>`;
-                      const n = t.querySelector('svg');
-                      n && n.classList.add('component-icon');
-                    } else console.warn(`Icon not found for component: ${i}`);
-                    n.appendChild(t);
+                    let t;
+                    'object' == typeof e &&
+                      null !== e &&
+                      'name' in e &&
+                      (t = e.name);
+                    const i = document.createElement('div');
+                    i.classList.add('draggable'),
+                      (i.id = t),
+                      i.setAttribute('draggable', 'true'),
+                      i.setAttribute('data-component', t);
+                    const l = s[t] || `Drag to add ${t}`;
+                    if ((i.setAttribute('title', l), o[t])) {
+                      i.innerHTML = ` ${o[t]}\n          <div class="drag-text">${t}</div>`;
+                      const e = i.querySelector('svg');
+                      e && e.classList.add('component-icon');
+                    } else console.warn(`Icon not found for component: ${l}`);
+                    n.appendChild(i);
                   })
-                : 'Basic' === e && 'object' == typeof t
-                  ? t.components.forEach(e => {
-                      let t;
-                      'object' == typeof e &&
-                        null !== e &&
-                        'name' in e &&
-                        (t = e.name);
-                      const i = document.createElement('div');
-                      i.classList.add('draggable'),
-                        (i.id = t),
-                        i.setAttribute('draggable', 'true'),
-                        i.setAttribute('data-component', t);
-                      const l = s[t] || `Drag to add ${t}`;
-                      if ((i.setAttribute('title', l), o[t])) {
-                        i.innerHTML = ` ${o[t]}\n          <div class="drag-text">${t}</div>`;
-                        const e = i.querySelector('svg');
-                        e && e.classList.add('component-icon');
-                      } else console.warn(`Icon not found for component: ${l}`);
-                      n.appendChild(i);
+                : Array.isArray(t)
+                  ? t.forEach(e => {
+                      const t = document.createElement('div');
+                      t.classList.add('draggable'),
+                        (t.id = e),
+                        t.setAttribute('draggable', 'true'),
+                        t.setAttribute('data-component', e);
+                      const i = s[e] || `Drag to add ${e}`;
+                      if ((t.setAttribute('title', i), o[e])) {
+                        t.innerHTML = ` ${o[e]}\n          <div class="drag-text">${e}</div>`;
+                        const n = t.querySelector('svg');
+                        n && n.classList.add('component-icon');
+                      } else console.warn(`Icon not found for component: ${i}`);
+                      n.appendChild(t);
                     })
                   : 'Custom' === e &&
                     'object' == typeof t &&
@@ -3840,7 +3886,7 @@ class z {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new S()),
+        const e = new $(new S()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = (function (e) {
@@ -3872,7 +3918,7 @@ class z {
     const e = document.getElementById('export-pdf-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new B(new S()),
+        const e = new $(new S()),
           t = e.generateHTML(),
           n = e.generateCSS(),
           o = window.open('', '_blank');
@@ -3936,7 +3982,7 @@ class z {
       (n.textContent = 'Export to ZIP'),
       n.classList.add('export-btn'),
       n.addEventListener('click', () => {
-        const n = A([
+        const n = B([
             { name: 'index.html', content: e },
             { name: 'styles.css', content: t },
           ]),

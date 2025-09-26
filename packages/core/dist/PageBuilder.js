@@ -19,7 +19,7 @@ import { svgs } from './icons/svgs.js';
 export class PageBuilder {
   constructor(
     dynamicComponents = {
-      Basic: { components: [] },
+      Basic: [],
       Extra: [],
       Custom: {},
     },

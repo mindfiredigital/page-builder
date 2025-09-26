@@ -185,18 +185,18 @@ html {
 
 .button-component {
   padding: 10px 20px;
-  background-color: #3b82f6 !important;
-  color: #ffffff;
+  background-color: #3b82f6 ;
+  color: black;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
   font-size: 14px;
+  
 }
 
 .button-component:hover {
-  background-color: #2563eb;
   transform: translateY(-1px);
 }
 
@@ -517,6 +517,7 @@ box-sizing: border-box;
   border-radius: 4px;
   padding: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
 }
 .component-controls, .component-label {
   pointer-events: none; 
@@ -602,6 +603,8 @@ box-sizing: border-box;
   padding: 0;
   gap: 0;
   background-color: #ffffff;
+  max-height: 900px;
+  overflow: auto;
 }
 
 /* Control wrapper styling - more compact */
@@ -914,7 +917,7 @@ box-sizing: border-box;
   background: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9000;
   transition: all 0.3s ease;
 }
 
@@ -1013,6 +1016,24 @@ box-sizing: border-box;
 .export-btn:hover {
   background-color: #2563eb;
   transform: translateY(-1px);
+}
+
+.modal-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 8px;  
+  width: 18px;
+  height: 18px;
+  color: #999; 
+}
+
+.modal-search-input {
+  padding-left: 32px; 
 }
 
 /*************************************TABLE COMPONENT************************************/

@@ -11,6 +11,7 @@ export declare class ModalComponent {
   private resolvePromise;
   private attributes;
   constructor();
+  private filterAttributes;
   /**
    * Creates the base HTML structure for the modal using regular CSS classes.
    * @returns The modal HTMLElement.

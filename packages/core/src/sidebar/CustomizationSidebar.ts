@@ -17,14 +17,14 @@ export class CustomizationSidebar {
   private static functionsPanel: HTMLDivElement;
   private static selectedComponent: HTMLElement | null = null;
   private static customComponentsConfig: CustomComponentConfig | null = null;
-  private static basicComponentsConfig: BasicComponent | null = null;
+  private static basicComponentsConfig: BasicComponent[] | null = null;
   private static showAttributeTab: boolean | undefined = undefined;
   private static editable: boolean | null;
 
   static init(
     customComponentsConfig: CustomComponentConfig,
     editable: boolean | null,
-    BasicComponent: BasicComponent,
+    BasicComponent: BasicComponent[],
     showAttributeTab?: boolean
   ) {
     this.sidebarElement = document.getElementById('customization')!;
@@ -373,20 +373,17 @@ export class CustomizationSidebar {
 
     let componentConfig;
     if (component.classList.contains('table-component')) {
-      componentConfig =
-        CustomizationSidebar.basicComponentsConfig?.components.find(
-          comp => comp.name === 'table'
-        );
+      componentConfig = CustomizationSidebar.basicComponentsConfig?.find(
+        comp => comp.name === 'table'
+      );
     } else if (component.classList.contains('text-component')) {
-      componentConfig =
-        CustomizationSidebar.basicComponentsConfig?.components.find(
-          comp => comp.name === 'text'
-        );
+      componentConfig = CustomizationSidebar.basicComponentsConfig?.find(
+        comp => comp.name === 'text'
+      );
     } else if (component.classList.contains('header-component')) {
-      componentConfig =
-        CustomizationSidebar.basicComponentsConfig?.components.find(
-          comp => comp.name === 'header'
-        );
+      componentConfig = CustomizationSidebar.basicComponentsConfig?.find(
+        comp => comp.name === 'header'
+      );
     }
 
     if (componentConfig && componentConfig.globalExecuteFunction) {
@@ -437,20 +434,20 @@ export class CustomizationSidebar {
     this.functionsPanel.innerHTML = '';
     let componentConfig;
     let showModalButton = false;
-    const tableConfig = this.basicComponentsConfig?.components.find(
+    const tableConfig = this.basicComponentsConfig?.find(
       comp => comp.name === 'table'
     );
     if (component.classList.contains('table-component')) {
       componentConfig = tableConfig;
       this.ShoModal(componentConfig?.attributes);
     } else if (component.classList.contains('text-component')) {
-      componentConfig = this.basicComponentsConfig?.components.find(
+      componentConfig = this.basicComponentsConfig?.find(
         comp => comp.name === 'text'
       );
 
       showModalButton = this.ShoModal(componentConfig?.attributes);
     } else if (component.classList.contains('header-component')) {
-      componentConfig = this.basicComponentsConfig?.components.find(
+      componentConfig = this.basicComponentsConfig?.find(
         comp => comp.name === 'header'
       );
       showModalButton = this.ShoModal(componentConfig?.attributes);

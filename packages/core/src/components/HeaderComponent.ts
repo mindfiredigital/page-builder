@@ -115,7 +115,16 @@ export class HeaderComponent {
   }
   static restore(container: HTMLElement): void {
     const closestHeader = container.closest('.header-component') as HTMLElement;
-    const headerText = closestHeader.querySelector('.component-text-content');
+    const headerText = closestHeader.querySelector(
+      '.component-text-content'
+    ) as HTMLElement;
+    headerText.addEventListener('click', (event: MouseEvent) => {
+      event.stopPropagation();
+      const parentHeader = headerText.closest('.header-component');
+      if (parentHeader) {
+        (parentHeader as HTMLElement).click();
+      }
+    });
 
     if (closestHeader && headerText) {
       const attributeKey = closestHeader.getAttribute('data-attribute-key');
