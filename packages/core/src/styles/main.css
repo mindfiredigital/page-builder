@@ -1040,7 +1040,7 @@ html {
 
 .search-icon {
   position: absolute;
-  left: 8px;
+  right: 20px;
   width: 18px;
   height: 18px;
   color: #999;
@@ -1048,6 +1048,10 @@ html {
 
 .modal-search-input {
   padding-left: 32px;
+  width: 100%;
+  border-radius: 5px;
+  padding: 5px;
+  outline: none;
 }
 
 /*************************************TABLE COMPONENT************************************/
@@ -1663,12 +1667,9 @@ html {
 
 .form-display-value {
   color: #374151;
-  /* background-color: #f8fafc;
-  padding: 12px 14px; */
   border-radius: 8px;
   user-select: text;
   font-size: 14px;
-  /* border: 1px solid #e2e8f0; */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   word-wrap: break-word;
   white-space: pre-wrap;

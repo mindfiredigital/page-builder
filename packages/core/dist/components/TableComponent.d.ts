@@ -23,7 +23,7 @@ export declare class TableComponent {
   updateInputValues(values: Record<string, any>): void;
   updateCellContent(cell: HTMLElement, attribute: ComponentAttribute): void;
   setModalComponent(modalComponent: ModalComponent): void;
-  addRow(tableWrapper: HTMLElement, tableId: string): void;
+  addRows(tableWrapper: HTMLElement, tableId: string, count?: number): void;
   private static getDefaultValuesOfInput;
   static restore(container: HTMLElement, editable: boolean | null): void;
 }
