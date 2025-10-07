@@ -39,6 +39,45 @@ export class ModalComponent {
       : _b.addEventListener('click', () => {
           this.onSave();
         });
+    const searchInput = this.modalElement.querySelector('#attribute-search');
+    // Add event listener for real-time search
+    searchInput === null || searchInput === void 0
+      ? void 0
+      : searchInput.addEventListener('input', event => {
+          const query = event.target.value;
+          this.filterAttributes(query);
+        });
+  }
+  filterAttributes(query) {
+    const allFields = this.contentContainer.querySelectorAll('.form-field');
+    const normalizedQuery = query.toLowerCase().trim();
+    allFields.forEach(field => {
+      var _a, _b, _c;
+      const key =
+        (_a = field.getAttribute('data-attr-key')) === null || _a === void 0
+          ? void 0
+          : _a.toLowerCase();
+      const title =
+        (_c =
+          (_b = field.querySelector('.form-title')) === null || _b === void 0
+            ? void 0
+            : _b.textContent) === null || _c === void 0
+          ? void 0
+          : _c.toLowerCase();
+      // Check if either the key or the title includes the search query
+      if (
+        (key === null || key === void 0
+          ? void 0
+          : key.includes(normalizedQuery)) ||
+        (title === null || title === void 0
+          ? void 0
+          : title.includes(normalizedQuery))
+      ) {
+        field.classList.remove('modal-hidden'); // Show the element
+      } else {
+        field.classList.add('modal-hidden'); // Hide the element
+      }
+    });
   }
   /**
    * Creates the base HTML structure for the modal using regular CSS classes.
@@ -59,6 +98,12 @@ export class ModalComponent {
               </svg>
             </button>
           </div>
+            <div class="modal-search-container">
+  <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm7.4 12.6l4.2 4.2a1 1 0 01-1.4 1.4l-4.2-4.2a10 10 0 111.4-1.4z"/>
+  </svg>
+  <input type="text" id="attribute-search" class="modal-search-input" placeholder="Search attributes...">
+</div>
         </div>
         <div class="modal-body">
           <div id="modal-content" class="modal-form">
@@ -182,6 +227,10 @@ export class ModalComponent {
    */
   show(attributes) {
     this.renderForm(attributes);
+    const searchInput = this.modalElement.querySelector('#attribute-search');
+    if (searchInput) {
+      searchInput.value = '';
+    }
     this.modalElement.classList.remove('modal-hidden');
     return new Promise(resolve => {
       this.resolvePromise = resolve;

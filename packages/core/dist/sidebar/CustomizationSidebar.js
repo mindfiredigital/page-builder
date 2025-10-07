@@ -371,19 +371,19 @@ export class CustomizationSidebar {
           (_a = CustomizationSidebar.basicComponentsConfig) === null ||
           _a === void 0
             ? void 0
-            : _a.components.find(comp => comp.name === 'table');
+            : _a.find(comp => comp.name === 'table');
       } else if (component.classList.contains('text-component')) {
         componentConfig =
           (_b = CustomizationSidebar.basicComponentsConfig) === null ||
           _b === void 0
             ? void 0
-            : _b.components.find(comp => comp.name === 'text');
+            : _b.find(comp => comp.name === 'text');
       } else if (component.classList.contains('header-component')) {
         componentConfig =
           (_c = CustomizationSidebar.basicComponentsConfig) === null ||
           _c === void 0
             ? void 0
-            : _c.components.find(comp => comp.name === 'header');
+            : _c.find(comp => comp.name === 'header');
       }
       if (componentConfig && componentConfig.globalExecuteFunction) {
         const inputValues = {};
@@ -432,7 +432,7 @@ export class CustomizationSidebar {
     const tableConfig =
       (_a = this.basicComponentsConfig) === null || _a === void 0
         ? void 0
-        : _a.components.find(comp => comp.name === 'table');
+        : _a.find(comp => comp.name === 'table');
     if (component.classList.contains('table-component')) {
       componentConfig = tableConfig;
       this.ShoModal(
@@ -444,7 +444,7 @@ export class CustomizationSidebar {
       componentConfig =
         (_b = this.basicComponentsConfig) === null || _b === void 0
           ? void 0
-          : _b.components.find(comp => comp.name === 'text');
+          : _b.find(comp => comp.name === 'text');
       showModalButton = this.ShoModal(
         componentConfig === null || componentConfig === void 0
           ? void 0
@@ -454,7 +454,7 @@ export class CustomizationSidebar {
       componentConfig =
         (_c = this.basicComponentsConfig) === null || _c === void 0
           ? void 0
-          : _c.components.find(comp => comp.name === 'header');
+          : _c.find(comp => comp.name === 'header');
       showModalButton = this.ShoModal(
         componentConfig === null || componentConfig === void 0
           ? void 0
@@ -477,7 +477,8 @@ export class CustomizationSidebar {
       if (
         tableInputAttr &&
         tableInputAttr.length > 0 &&
-        this.basicComponentsConfig
+        this.basicComponentsConfig &&
+        this.editable !== false
       ) {
         SidebarUtils.populateRowVisibilityControls(component, tableInputAttr);
       }

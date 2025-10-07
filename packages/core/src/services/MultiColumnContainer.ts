@@ -1,5 +1,5 @@
 import { Canvas } from '../canvas/Canvas';
-import { ContainerComponent } from '../components';
+import { ContainerComponent } from '../components/ContainerComponent';
 import { ImageComponent } from '../components/ImageComponent';
 
 /**

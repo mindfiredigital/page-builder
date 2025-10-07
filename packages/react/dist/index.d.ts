@@ -1,7 +1,7 @@
 import React$1 from 'react';
 
 interface DynamicComponents {
-  Basic: BasicComponent;
+  Basic: BasicComponent[];
   Extra: string[];
   Custom?: Record<string, CustomComponentConfig>;
 }
@@ -18,11 +18,9 @@ interface ComponentAttribute {
 }
 
 interface BasicComponent {
-  components: {
-    name: string;
-    attributes?: ComponentAttribute[];
-    globalExecuteFunction?: Function;
-  }[];
+  name: string;
+  attributes?: ComponentAttribute[];
+  globalExecuteFunction?: Function;
 }
 
 interface PageBuilderDesign {

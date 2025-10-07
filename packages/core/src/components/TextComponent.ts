@@ -118,7 +118,14 @@ export class TextComponent {
     ) as HTMLElement;
     const textSpan = closestTextComponent.querySelector(
       '.component-text-content'
-    );
+    ) as HTMLElement;
+    textSpan.addEventListener('click', (event: MouseEvent) => {
+      event.stopPropagation();
+      const parentHeader = textSpan.closest('.text-component');
+      if (parentHeader) {
+        (parentHeader as HTMLElement).click();
+      }
+    });
 
     if (closestTextComponent && textSpan) {
       const attributeKey =

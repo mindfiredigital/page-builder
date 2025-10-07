@@ -6,6 +6,7 @@ import { CopyButton } from '../../UI/CopyButton';
 import { motion } from 'framer-motion';
 import Particles from '../../UI/Background/Particles';
 import { AnimatedShinyText } from '../../UI/Text/AnimatedShinyText';
+import { AuroraText } from '../../UI/Text/AuroraText';
 
 // Hero Section Component
 export const HeroSection = () => {
@@ -26,9 +27,9 @@ export const HeroSection = () => {
   return (
     <section className="relative py-20 px-6 overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0  overflow-hidden">
+      {/* <div className="absolute inset-0  overflow-hidden">
         <Particles />
-      </div>
+      </div> */}
 
       {/* Spotlight effect */}
       <div
@@ -36,7 +37,7 @@ export const HeroSection = () => {
         className="fixed inset-0  transition-transform duration-300 ease-out opacity-30"
         style={{
           background:
-            'radial-gradient(600px circle at 50% 50%, rgba(220, 38, 38, 0.15), transparent 40%)',
+            'radial-gradient(600px circle at 50% 50%,  rgba(207, 67, 31, 0.8), transparent 40%)',
         }}
       />
 
@@ -65,7 +66,7 @@ export const HeroSection = () => {
         >
           <h1 className="text-8xl md:text-7xl font-bold leading-tight mb-6 text-foreground">
             <span className="block text-5xl">
-              Create{' '}
+              {/* Create{' '}
               <TypeText
                 texts={['Dynamic', 'Interactive', 'Professional', 'Custom']}
                 typingSpeed={80}
@@ -75,15 +76,33 @@ export const HeroSection = () => {
               Designs ,
               <span className="block text-5xl">
                 with Drag & Drop Simplicity
+              </span> */}
+              <AuroraText>
+                Embed a Powerful Page Builder
+              </AuroraText>
+              <span className="block text-5xl">
+                {/* <AuroraText> */}
+                Into Your Application
+                {/* </AuroraText> */}
               </span>
             </span>
           </h1>
           <p className="text-xl  md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Create stunning web pages with our intuitive drag-and-drop builder.
-            <span className="text-red-500 font-semibold ">
-              {' '}
-              No coding required.
-            </span>
+            {/* Transform your application with an embeddable visual builder. Let your users create custom templates, forms, and layouts— */}
+            {/* <span className="text-red-500 font-semibold "> */}
+            Empower users to build {' '}<TypeText
+              texts={["Templates",
+                "Forms",
+                "Pages",
+                "Reports",
+                "Layouts"]}
+              typingSpeed={80}
+              pauseDuration={1500}
+              className="inline-block"
+            />
+            {' '} quickly and efficiently.
+            {/* no developer intervention needed. */}
+            {/* </span> */}
           </p>
         </motion.div>
 

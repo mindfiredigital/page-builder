@@ -42,6 +42,33 @@ export class ModalComponent {
       ?.addEventListener('click', () => {
         this.onSave();
       });
+    const searchInput =
+      this.modalElement.querySelector<HTMLInputElement>('#attribute-search');
+
+    // Add event listener for real-time search
+    searchInput?.addEventListener('input', event => {
+      const query = (event.target as HTMLInputElement).value;
+      this.filterAttributes(query);
+    });
+  }
+
+  private filterAttributes(query: string): void {
+    const allFields = this.contentContainer.querySelectorAll('.form-field');
+    const normalizedQuery = query.toLowerCase().trim();
+
+    allFields.forEach(field => {
+      const key = field.getAttribute('data-attr-key')?.toLowerCase();
+      const title = field
+        .querySelector('.form-title')
+        ?.textContent?.toLowerCase();
+
+      // Check if either the key or the title includes the search query
+      if (key?.includes(normalizedQuery) || title?.includes(normalizedQuery)) {
+        field.classList.remove('modal-hidden'); // Show the element
+      } else {
+        field.classList.add('modal-hidden'); // Hide the element
+      }
+    });
   }
 
   /**
@@ -63,6 +90,12 @@ export class ModalComponent {
               </svg>
             </button>
           </div>
+            <div class="modal-search-container">
+  <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm7.4 12.6l4.2 4.2a1 1 0 01-1.4 1.4l-4.2-4.2a10 10 0 111.4-1.4z"/>
+  </svg>
+  <input type="text" id="attribute-search" class="modal-search-input" placeholder="Search attributes...">
+</div>
         </div>
         <div class="modal-body">
           <div id="modal-content" class="modal-form">
@@ -203,6 +236,11 @@ export class ModalComponent {
    */
   show(attributes: ComponentAttribute[]): Promise<Record<string, any> | null> {
     this.renderForm(attributes);
+    const searchInput =
+      this.modalElement.querySelector<HTMLInputElement>('#attribute-search');
+    if (searchInput) {
+      searchInput.value = '';
+    }
     this.modalElement.classList.remove('modal-hidden');
     return new Promise(resolve => {
       this.resolvePromise = resolve;

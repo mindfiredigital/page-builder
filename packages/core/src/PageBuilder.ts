@@ -32,7 +32,7 @@ export class PageBuilder {
 
   constructor(
     dynamicComponents: DynamicComponents = {
-      Basic: { components: [] },
+      Basic: [],
       Extra: [],
       Custom: {},
     },
@@ -417,8 +417,8 @@ export class PageBuilder {
     const iframe = document.createElement('iframe');
     iframe.id = 'preview-iframe';
     iframe.style.cssText = `
-      width: 97%;
-      height: 90%;
+      width: 100%;
+      height: 100%;
       border: none;
       background: #fff;
       margin-right: 20px;
@@ -469,6 +469,7 @@ export class PageBuilder {
   public createResponsivenessControls(iframe: HTMLIFrameElement) {
     const responsivenessContainer = document.createElement('div');
     responsivenessContainer.style.cssText = `
+      position:absolute;
       display: flex;
       gap: 10px;
       margin-bottom: 10px;

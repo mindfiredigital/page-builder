@@ -160,7 +160,6 @@ export class PageBuilderComponent extends HTMLElement {
         this._brandTitle,
         this.showAttributeTab
       );
-
       this.initialized = true;
     } catch (error) {
       console.error('Failed to initialize PageBuilder:', error);

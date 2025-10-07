@@ -98,6 +98,13 @@ export class TextComponent {
     const textSpan = closestTextComponent.querySelector(
       '.component-text-content'
     );
+    textSpan.addEventListener('click', event => {
+      event.stopPropagation();
+      const parentHeader = textSpan.closest('.text-component');
+      if (parentHeader) {
+        parentHeader.click();
+      }
+    });
     if (closestTextComponent && textSpan) {
       const attributeKey =
         closestTextComponent.getAttribute('data-attribute-key');

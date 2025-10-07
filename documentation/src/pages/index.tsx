@@ -1,13 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
-// import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import '../css/custom.css';
 import { HeroSection } from '../components/HomePage/HeroSection';
 import { AppShowcase } from '../components/HomePage/AppShowcase';
 import Footer from '../components/HomePage/Footer';
-import LiquidEther from '../components/UI/Background/Liquid-Ether';
 import { GridBeams } from '../components/UI/Background/Grid-Beams';
 import { WhyPageBuilderSection } from '../components/HomePage/WhyPageBuilder';
 import { ExportOptionsSection } from '../components/HomePage/ExportOptionSection';

@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, CSSProperties, FC } from 'react';
+import { ComponentPropsWithoutRef, CSSProperties, FC, useEffect, useState } from 'react';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -18,11 +18,20 @@ export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
   shimmerWidth = 100,
   ...props
 }) => {
-  const theme = getTheme();
+  const [theme, setTheme] = useState(() => getTheme());
 
-  const gradientColor = theme === 'dark' ? 'via-white/80' : 'via-black/80'; // 👈 choose based on theme
+  useEffect(() => {
+    const observer = new MutationObserver(() => setTheme(getTheme()));
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const gradientColor = theme === 'dark' ? 'via-white' : 'via-black';
   const textColor =
-    theme === 'dark' ? 'text-neutral-400/70' : 'text-neutral-600/70';
+    theme === 'dark' ? 'text-gray-300' : 'text-gray-700';
 
   return (
     <span
