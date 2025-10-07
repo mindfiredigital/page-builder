@@ -266,6 +266,12 @@ importers:
         specifier: ~5.7.2
         version: 5.7.3
 
+  packages/example/test-core:
+    devDependencies:
+      live-server:
+        specifier: ^1.2.2
+        version: 1.2.2
+
   packages/example/test-react:
     dependencies:
       '@emotion/react':
@@ -351,16 +357,6 @@ importers:
       vite:
         specifier: ^6.0.5
         version: 6.0.5(@types/node@18.18.0)
-
-  packages/example/test-web-component:
-    dependencies:
-      '@mindfiredigital/page-builder-web-component':
-        specifier: workspace:*
-        version: link:../../web-component
-    devDependencies:
-      live-server:
-        specifier: ^1.2.2
-        version: 1.2.2
 
   packages/react:
     dependencies:

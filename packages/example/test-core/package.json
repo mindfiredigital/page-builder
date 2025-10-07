@@ -8,9 +8,6 @@
     "start": "live-server --port=3000"
   },
   "keywords": [],
-  "dependencies": {
-    "@mindfiredigital/page-builder-web-component": "workspace:*"
-  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
