@@ -251,7 +251,7 @@ export class Canvas {
         }
         // Component-specific restoration
         if (component.classList.contains('container-component')) {
-          ContainerComponent.restoreContainer(component);
+          ContainerComponent.restoreContainer(component, this.editable);
         }
         // column-specific restoration
         if (

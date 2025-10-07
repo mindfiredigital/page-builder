@@ -185,8 +185,8 @@ html {
 
 .button-component {
   padding: 10px 20px;
-  background-color: #3b82f6 !important;
-  color: #ffffff;
+  background-color: #3b82f6;
+  color: black;
   border: none;
   border-radius: 6px;
   cursor: pointer;

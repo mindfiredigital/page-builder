@@ -12,6 +12,6 @@ export declare class ImageComponent {
   static restoreImageUpload(
     component: HTMLElement,
     src: string,
-    editable: boolean | null
+    editable?: boolean | null
   ): void;
 }

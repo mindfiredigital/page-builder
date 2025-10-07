@@ -112,9 +112,7 @@ var PageBuilderComponent = class extends HTMLElement {
       if (!this.firstElementChild) {
         this.innerHTML = this.template;
       }
-      if (this.hasValidConfig()) {
-        this.initializePageBuilder();
-      }
+      this.initializePageBuilder();
     }, 0);
   }
   hasValidConfig() {

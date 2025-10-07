@@ -147,7 +147,7 @@ export class PageBuilderComponent extends HTMLElement {
       const app = this.querySelector('#app');
       if (app === null) {
         console.error('Error: #app element not found.');
-        return; // Exit if #app is not found
+        return;
       }
       if (app && this.pageBuilder) {
         app.innerHTML = '';

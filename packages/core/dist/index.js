@@ -787,26 +787,39 @@ class r {
     const o = new r();
     (o.element = e), (o.resizers = n), o.addResizeHandles(), e.appendChild(n);
   }
-  static restoreContainer(e) {
-    r.restoreResizer(e);
-    const t = new r();
-    (t.element = e),
-      e.addEventListener('drop', t.onDrop.bind(t)),
-      e.addEventListener('dragover', e => e.preventDefault());
+  static restoreContainer(e, t) {
+    !1 !== t && r.restoreResizer(e);
+    const n = new r();
+    (n.element = e),
+      !1 !== t
+        ? (e.addEventListener('drop', n.onDrop.bind(n)),
+          e.addEventListener('dragover', e => e.preventDefault()))
+        : (e.classList.remove('editable-component'),
+          e.removeAttribute('draggable'));
     e.querySelectorAll('.editable-component').forEach(e => {
-      var n;
-      if (
-        (S.controlsManager.addControlButtons(e),
-        S.addDraggableListeners(e),
-        e.addEventListener('mouseenter', n => t.showLabel(n, e)),
-        e.addEventListener('mouseleave', n => t.hideLabel(n, e)),
-        e.classList.contains('image-component'))
-      ) {
-        const t =
-          (null === (n = e.querySelector('img')) || void 0 === n
+      var o;
+      if (!1 !== t)
+        S.controlsManager.addControlButtons(e),
+          S.addDraggableListeners(e),
+          e.addEventListener('mouseenter', t => n.showLabel(t, e)),
+          e.addEventListener('mouseleave', t => n.hideLabel(t, e));
+      else {
+        const t = e.querySelectorAll('[contenteditable]');
+        t.length > 0 &&
+          t.forEach(e => {
+            e.removeAttribute('contenteditable');
+          }),
+          e.classList.remove('editable-component'),
+          e.classList.remove('component-resizer'),
+          e.removeAttribute('draggable'),
+          e.removeAttribute('contenteditable');
+      }
+      if (e.classList.contains('image-component')) {
+        const n =
+          (null === (o = e.querySelector('img')) || void 0 === o
             ? void 0
-            : n.getAttribute('src')) || '';
-        s.restoreImageUpload(e, t, null);
+            : o.getAttribute('src')) || '';
+        s.restoreImageUpload(e, n, t);
       }
       e.classList.contains('container-component') && this.restoreContainer(e);
     });
@@ -2845,7 +2858,7 @@ class S {
               (k.controlsManager.addControlButtons(o),
               k.addDraggableListeners(o)),
             o.classList.contains('container-component') &&
-              r.restoreContainer(o),
+              r.restoreContainer(o, this.editable),
             (o.classList.contains('twoCol-component') ||
               o.classList.contains('threeCol-component')) &&
               c.restoreColumn(o),
@@ -3160,7 +3173,7 @@ class $ {
         });
       o
         .querySelectorAll(
-          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button'
+          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button'
         )
         .forEach(e => e.remove()),
         o.children.length > 0 && this.cleanupElements(o);

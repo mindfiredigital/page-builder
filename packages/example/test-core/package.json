@@ -1,0 +1,19 @@
+{
+  "name": "test-web-component",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server --port=3000"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@mindfiredigital/page-builder-web-component": "workspace:*"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
