@@ -31,12 +31,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Guides',
-      items: [
-        'guides/migration-guide',
-        'guides/best-practices',
-        'guides/performance-optimization',
-        'guides/accessibility',
-      ],
+      items: ['guides/best-practices', 'guides/accessibility'],
     },
   ],
 };
