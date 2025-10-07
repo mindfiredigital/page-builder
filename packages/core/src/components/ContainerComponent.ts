@@ -350,6 +350,9 @@ export class ContainerComponent {
     // Restore resizer functionality
     if (editable !== false) {
       ContainerComponent.restoreResizer(container);
+    } else {
+      const resizers = container.querySelectorAll('.resizers');
+      resizers.forEach(resizer => resizer.remove());
     }
 
     // Create a temporary instance of ContainerComponent to reuse its methods
@@ -405,7 +408,7 @@ export class ContainerComponent {
 
       // If the child is itself a container, restore it recursively
       if (child.classList.contains('container-component')) {
-        this.restoreContainer(child);
+        this.restoreContainer(child, editable);
       }
     });
   }

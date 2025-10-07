@@ -788,7 +788,10 @@ class r {
     (o.element = e), (o.resizers = n), o.addResizeHandles(), e.appendChild(n);
   }
   static restoreContainer(e, t) {
-    !1 !== t && r.restoreResizer(e);
+    if (!1 !== t) r.restoreResizer(e);
+    else {
+      e.querySelectorAll('.resizers').forEach(e => e.remove());
+    }
     const n = new r();
     (n.element = e),
       !1 !== t
@@ -821,7 +824,8 @@ class r {
             : o.getAttribute('src')) || '';
         s.restoreImageUpload(e, n, t);
       }
-      e.classList.contains('container-component') && this.restoreContainer(e);
+      e.classList.contains('container-component') &&
+        this.restoreContainer(e, t);
     });
   }
 }
