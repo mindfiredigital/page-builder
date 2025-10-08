@@ -101,7 +101,7 @@ export default QuickStartApp;
 
 ---
 
-## 4. Angular Wrapper
+<!-- ## 4. Angular Wrapper
 
 For **Angular applications**, use the dedicated Angular module to integrate the builder into your component architecture.
 
@@ -130,14 +130,12 @@ export class AppModule {}
 
 ```html
 <!-- app.component.html -->
-<page-builder-angular
+<!-- <page-builder-angular
   [initialDesign]="design"
   [config]="config"
   (onChange)="onDesignUpdate($event)"
 ></page-builder-angular>
-```
-
----
+``` -->
 
 ## Next Steps
 
