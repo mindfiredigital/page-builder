@@ -1,4 +1,5 @@
 import { Canvas } from '../canvas/Canvas.js';
+import { ContainerComponent } from '../components/ContainerComponent.js';
 import { ImageComponent } from '../components/ImageComponent.js';
 /**
  * MultiColumnContainer is a reusable container class that dynamically creates a flexible number of columns based on the specified column count.
@@ -146,6 +147,9 @@ export class MultiColumnContainer {
             ? void 0
             : _a.getAttribute('src')) || '';
         ImageComponent.restoreImageUpload(child, imageSrc, null);
+      }
+      if (child.classList.contains('container-component')) {
+        ContainerComponent.restoreContainer(child);
       }
     });
   }

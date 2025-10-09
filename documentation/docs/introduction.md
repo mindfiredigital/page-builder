@@ -25,4 +25,4 @@ Easily save and retrieve pages, ensuring flexibility in editing and deployment.
 **Extensibility & Open-Source**  
 Built with extensibility in mind, developers can integrate additional plugins or modify core functionalities.
 
-**Page Builder** is designed to provide a developer-friendly and user-centric experience for building modern, interactive pages with ease. 🚀
+**Page Builder** is designed to provide a developer-friendly and user-centric experience for building modern, interactive pages with ease.

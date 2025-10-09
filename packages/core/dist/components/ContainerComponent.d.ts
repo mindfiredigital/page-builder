@@ -29,5 +29,8 @@ export declare class ContainerComponent {
   private addStyles;
   create(): HTMLElement;
   private static restoreResizer;
-  static restoreContainer(container: HTMLElement): void;
+  static restoreContainer(
+    container: HTMLElement,
+    editable?: boolean | null
+  ): void;
 }

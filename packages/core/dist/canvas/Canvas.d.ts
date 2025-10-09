@@ -21,7 +21,7 @@ export declare class Canvas {
   static init(
     initialData: (PageBuilderDesign | null) | undefined,
     editable: boolean | null,
-    basicComponentsConfig: BasicComponent
+    basicComponentsConfig: BasicComponent[]
   ): void;
   /**
    * Dispatches a custom event indicating that the canvas design has changed.

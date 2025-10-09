@@ -26,19 +26,44 @@ export class TableComponent {
     }
     container.appendChild(tableWrapper);
     if (!isPreview) {
-      const addRowButton = document.createElement('button');
-      addRowButton.textContent = 'Add Row';
-      addRowButton.className = 'add-row-button';
-      addRowButton.contentEditable = 'false';
-      this.styleButton(addRowButton, '#2563eb', '#1d4ed8');
-      addRowButton.addEventListener('click', () => {
-        this.addRow(tableWrapper, tableId);
-      });
+      // Create container for buttons
       const buttonContainer = document.createElement('div');
-      buttonContainer.style.textAlign = 'center';
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.gap = '10px';
+      buttonContainer.style.justifyContent = 'center';
       buttonContainer.style.marginTop = '10px';
       buttonContainer.style.marginBottom = '10px';
-      buttonContainer.appendChild(addRowButton);
+      // Multiple rows container
+      const multiRowContainer = document.createElement('div');
+      multiRowContainer.style.display = 'flex';
+      multiRowContainer.style.alignItems = 'center';
+      multiRowContainer.style.gap = '5px';
+      // Number input for row count
+      const rowCountInput = document.createElement('input');
+      rowCountInput.className = 'row-count-input';
+      rowCountInput.type = 'number';
+      rowCountInput.min = '1';
+      rowCountInput.max = '20';
+      rowCountInput.value = '1';
+      rowCountInput.style.width = '60px';
+      rowCountInput.style.padding = '4px 8px';
+      rowCountInput.style.border = '1px solid #d1d5db';
+      rowCountInput.style.borderRadius = '4px';
+      rowCountInput.style.fontSize = '14px';
+      // Multiple rows button
+      const addMultipleRowsButton = document.createElement('button');
+      addMultipleRowsButton.textContent = 'Add Row';
+      addMultipleRowsButton.className = 'add-multiple-rows-button';
+      addMultipleRowsButton.contentEditable = 'false';
+      this.styleButton(addMultipleRowsButton, '#10b981', '#059669');
+      addMultipleRowsButton.addEventListener('click', () => {
+        const count = parseInt(rowCountInput.value) || 1;
+        this.addRows(tableWrapper, tableId, Math.min(Math.max(count, 1), 20));
+      });
+      multiRowContainer.appendChild(rowCountInput);
+      multiRowContainer.appendChild(addMultipleRowsButton);
+      // buttonContainer.appendChild(addRowButton);
+      buttonContainer.appendChild(multiRowContainer);
       container.appendChild(buttonContainer);
     }
     return container;
@@ -157,7 +182,7 @@ export class TableComponent {
     controlsContainer.style.justifyContent = 'center';
     controlsContainer.contentEditable = 'false';
     const contentElement = document.createElement('span');
-    contentElement.textContent = `R${rowIndex + 1}C${cellIndex + 1}`;
+    contentElement.textContent = `R${rowIndex}C${cellIndex}`;
     contentElement.contentEditable = 'true';
     contentElement.classList.add('table-cell-content');
     contentElement.id = `table-cell-T-${tableId}-R${rowIndex}-C${cellIndex}`;
@@ -321,11 +346,21 @@ export class TableComponent {
   setModalComponent(modalComponent) {
     this.modalComponent = modalComponent;
   }
-  addRow(tableWrapper, tableId) {
-    const rowCount = tableWrapper.children.length;
-    const newRow = this.createTableRow(rowCount, 1, tableId);
-    tableWrapper.appendChild(newRow);
-    Canvas.dispatchDesignChange();
+  addRows(tableWrapper, tableId, count = 1) {
+    const tableRows = tableWrapper.children;
+    const existingRowCount = tableRows.length;
+    // Determine the number of columns from the first existing row, or default to 1
+    let cellCount = 1;
+    if (existingRowCount > 0) {
+      cellCount = tableRows[0].children.length;
+    }
+    for (let i = 0; i < count; i++) {
+      // The rowIndex needs to be unique and sequential
+      const newRowIndex = existingRowCount + i;
+      const row = this.createTableRow(newRowIndex, cellCount, tableId);
+      tableWrapper.appendChild(row);
+    }
+    Canvas.historyManager.captureState();
   }
   static getDefaultValuesOfInput() {
     const defaults = {};
@@ -408,13 +443,24 @@ export class TableComponent {
         }
       }
     });
-    const addRowButton = container.querySelector('.add-row-button');
-    if (addRowButton && editable !== false) {
-      addRowButton.addEventListener('click', () => {
-        instance.addRow(tableWrapper, tableId);
+    const addMultipleRowsButton = container.querySelector(
+      '.add-multiple-rows-button'
+    );
+    const rowCountInput = container.querySelector('.row-count-input');
+    console.log(addMultipleRowsButton, 'or');
+    if (addMultipleRowsButton && editable !== false) {
+      rowCountInput.value = '1';
+      addMultipleRowsButton.addEventListener('click', () => {
+        console.log('click');
+        const count = parseInt(rowCountInput.value) || 1;
+        instance.addRows(
+          tableWrapper,
+          tableId,
+          Math.min(Math.max(count, 1), 20)
+        );
       });
     } else if (editable === false) {
-      addRowButton.remove();
+      addMultipleRowsButton.remove();
     }
     const defaultValues = TableComponent.getDefaultValuesOfInput();
     instance.evaluateRowVisibility(defaultValues, container);

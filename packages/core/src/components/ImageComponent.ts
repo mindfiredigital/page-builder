@@ -126,7 +126,7 @@ export class ImageComponent {
   static restoreImageUpload(
     component: HTMLElement,
     src: string,
-    editable: boolean | null
+    editable?: boolean | null
   ): void {
     const uploadText = component.querySelector(
       'div:not(.upload-btn)'

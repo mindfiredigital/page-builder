@@ -69,7 +69,7 @@ export class HTMLGenerator {
       });
 
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button'
+        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button'
       );
       elementsToRemove.forEach(el => el.remove());
 
