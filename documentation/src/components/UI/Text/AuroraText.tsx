@@ -6,7 +6,7 @@ const getTheme = () => {
   if (typeof window === 'undefined') return 'dark';
   return document.documentElement.getAttribute('data-theme') || 'dark';
 };
-console.log(document.documentElement.getAttribute('data-theme'))
+
 interface AuroraTextProps {
   children: React.ReactNode
   className?: string

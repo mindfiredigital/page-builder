@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from 'react';
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 export const TypeText = ({
