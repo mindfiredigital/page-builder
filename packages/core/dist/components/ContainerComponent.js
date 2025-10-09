@@ -291,42 +291,65 @@ export class ContainerComponent {
     // Add new resizers to the element
     element.appendChild(resizersDiv);
   }
-  static restoreContainer(container) {
+  static restoreContainer(container, editable) {
     // Restore resizer functionality
-    ContainerComponent.restoreResizer(container);
+    if (editable !== false) {
+      ContainerComponent.restoreResizer(container);
+    } else {
+      const resizers = container.querySelectorAll('.resizers');
+      resizers.forEach(resizer => resizer.remove());
+    }
     // Create a temporary instance of ContainerComponent to reuse its methods
     const containerInstance = new ContainerComponent();
     containerInstance.element = container;
-    container.addEventListener(
-      'drop',
-      containerInstance.onDrop.bind(containerInstance)
-    );
-    container.addEventListener('dragover', event => event.preventDefault());
+    if (editable !== false) {
+      container.addEventListener(
+        'drop',
+        containerInstance.onDrop.bind(containerInstance)
+      );
+      container.addEventListener('dragover', event => event.preventDefault());
+    } else {
+      container.classList.remove('editable-component');
+      container.removeAttribute('draggable');
+    }
     // Reapply controls to child components inside the container
     const containerChildren = container.querySelectorAll('.editable-component');
     containerChildren.forEach(child => {
       var _a;
       // Add control buttons and draggable listeners
-      Canvas.controlsManager.addControlButtons(child);
-      Canvas.addDraggableListeners(child);
-      // Bind the showLabel and hideLabel methods
-      child.addEventListener('mouseenter', event =>
-        containerInstance.showLabel(event, child)
-      );
-      child.addEventListener('mouseleave', event =>
-        containerInstance.hideLabel(event, child)
-      );
+      if (editable !== false) {
+        Canvas.controlsManager.addControlButtons(child);
+        Canvas.addDraggableListeners(child);
+        // Bind the showLabel and hideLabel methods
+        child.addEventListener('mouseenter', event =>
+          containerInstance.showLabel(event, child)
+        );
+        child.addEventListener('mouseleave', event =>
+          containerInstance.hideLabel(event, child)
+        );
+      } else {
+        const targetElements = child.querySelectorAll(`[contenteditable]`);
+        if (targetElements.length > 0) {
+          targetElements.forEach(element => {
+            element.removeAttribute('contenteditable');
+          });
+        }
+        child.classList.remove('editable-component');
+        child.classList.remove('component-resizer');
+        child.removeAttribute('draggable');
+        child.removeAttribute('contenteditable');
+      }
       // If the child is an image component, restore the image upload feature
       if (child.classList.contains('image-component')) {
         const imageSrc =
           ((_a = child.querySelector('img')) === null || _a === void 0
             ? void 0
             : _a.getAttribute('src')) || ''; // Get the saved image source
-        ImageComponent.restoreImageUpload(child, imageSrc, null);
+        ImageComponent.restoreImageUpload(child, imageSrc, editable);
       }
       // If the child is itself a container, restore it recursively
       if (child.classList.contains('container-component')) {
-        this.restoreContainer(child);
+        this.restoreContainer(child, editable);
       }
     });
   }

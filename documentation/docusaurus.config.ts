@@ -38,32 +38,33 @@ const config: Config = {
 
   themeConfig: {
     image: 'img/docusaurus-social-card.jpg',
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
+    },
     navbar: {
-      title: '',
+      title: 'Page Builder',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.webp',
+        src: 'img/logo.png',
       },
       items: [
-        { to: '/', label: 'Home', position: 'right' },
         {
           type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'right',
-          label: 'Tutorial',
+          sidebarId: 'docs',
+          position: 'left',
+          label: 'Documentaion',
         },
         {
           href: 'https://github.com/mindfiredigital/page-builder',
-          label: 'GitHub',
+          className: 'header--github-link',
+          'aria-label': 'GitHub repository',
           position: 'right',
         },
       ],
     },
-    footer: {
-      style: 'dark',
-      links: [],
-      copyright: `Copyright © ${new Date().getFullYear()} Mindfire Digital LLP`,
-    },
+
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,

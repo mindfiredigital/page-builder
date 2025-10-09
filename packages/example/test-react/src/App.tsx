@@ -44,6 +44,8 @@ const App = () => {
   return (
     <div>
       <PageBuilderReact
+        // showAttributeTab={true}
+        // editable={false}
         config={dynamicComponents}
         customComponents={customComponents}
       />

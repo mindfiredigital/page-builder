@@ -460,7 +460,8 @@ export class CustomizationSidebar {
       if (
         tableInputAttr &&
         tableInputAttr.length > 0 &&
-        this.basicComponentsConfig
+        this.basicComponentsConfig &&
+        this.editable !== false
       ) {
         SidebarUtils.populateRowVisibilityControls(component, tableInputAttr);
       }

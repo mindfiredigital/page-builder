@@ -787,28 +787,45 @@ class r {
     const o = new r();
     (o.element = e), (o.resizers = n), o.addResizeHandles(), e.appendChild(n);
   }
-  static restoreContainer(e) {
-    r.restoreResizer(e);
-    const t = new r();
-    (t.element = e),
-      e.addEventListener('drop', t.onDrop.bind(t)),
-      e.addEventListener('dragover', e => e.preventDefault());
+  static restoreContainer(e, t) {
+    if (!1 !== t) r.restoreResizer(e);
+    else {
+      e.querySelectorAll('.resizers').forEach(e => e.remove());
+    }
+    const n = new r();
+    (n.element = e),
+      !1 !== t
+        ? (e.addEventListener('drop', n.onDrop.bind(n)),
+          e.addEventListener('dragover', e => e.preventDefault()))
+        : (e.classList.remove('editable-component'),
+          e.removeAttribute('draggable'));
     e.querySelectorAll('.editable-component').forEach(e => {
-      var n;
-      if (
-        (S.controlsManager.addControlButtons(e),
-        S.addDraggableListeners(e),
-        e.addEventListener('mouseenter', n => t.showLabel(n, e)),
-        e.addEventListener('mouseleave', n => t.hideLabel(n, e)),
-        e.classList.contains('image-component'))
-      ) {
-        const t =
-          (null === (n = e.querySelector('img')) || void 0 === n
-            ? void 0
-            : n.getAttribute('src')) || '';
-        s.restoreImageUpload(e, t, null);
+      var o;
+      if (!1 !== t)
+        S.controlsManager.addControlButtons(e),
+          S.addDraggableListeners(e),
+          e.addEventListener('mouseenter', t => n.showLabel(t, e)),
+          e.addEventListener('mouseleave', t => n.hideLabel(t, e));
+      else {
+        const t = e.querySelectorAll('[contenteditable]');
+        t.length > 0 &&
+          t.forEach(e => {
+            e.removeAttribute('contenteditable');
+          }),
+          e.classList.remove('editable-component'),
+          e.classList.remove('component-resizer'),
+          e.removeAttribute('draggable'),
+          e.removeAttribute('contenteditable');
       }
-      e.classList.contains('container-component') && this.restoreContainer(e);
+      if (e.classList.contains('image-component')) {
+        const n =
+          (null === (o = e.querySelector('img')) || void 0 === o
+            ? void 0
+            : o.getAttribute('src')) || '';
+        s.restoreImageUpload(e, n, t);
+      }
+      e.classList.contains('container-component') &&
+        this.restoreContainer(e, t);
     });
   }
 }
@@ -930,20 +947,40 @@ class p {
       l.appendChild(e);
     }
     if ((s.appendChild(l), !n)) {
-      const e = document.createElement('button');
-      (e.textContent = 'Add Row'),
-        (e.className = 'add-row-button'),
-        (e.contentEditable = 'false'),
-        this.styleButton(e, '#2563eb', '#1d4ed8'),
-        e.addEventListener('click', () => {
-          this.addRow(l, i);
-        });
+      const e = document.createElement('div');
+      (e.style.display = 'flex'),
+        (e.style.gap = '10px'),
+        (e.style.justifyContent = 'center'),
+        (e.style.marginTop = '10px'),
+        (e.style.marginBottom = '10px');
       const t = document.createElement('div');
-      (t.style.textAlign = 'center'),
-        (t.style.marginTop = '10px'),
-        (t.style.marginBottom = '10px'),
-        t.appendChild(e),
-        s.appendChild(t);
+      (t.style.display = 'flex'),
+        (t.style.alignItems = 'center'),
+        (t.style.gap = '5px');
+      const n = document.createElement('input');
+      (n.className = 'row-count-input'),
+        (n.type = 'number'),
+        (n.min = '1'),
+        (n.max = '20'),
+        (n.value = '1'),
+        (n.style.width = '60px'),
+        (n.style.padding = '4px 8px'),
+        (n.style.border = '1px solid #d1d5db'),
+        (n.style.borderRadius = '4px'),
+        (n.style.fontSize = '14px');
+      const o = document.createElement('button');
+      (o.textContent = 'Add Row'),
+        (o.className = 'add-multiple-rows-button'),
+        (o.contentEditable = 'false'),
+        this.styleButton(o, '#10b981', '#059669'),
+        o.addEventListener('click', () => {
+          const e = parseInt(n.value) || 1;
+          this.addRows(l, i, Math.min(Math.max(e, 1), 20));
+        }),
+        t.appendChild(n),
+        t.appendChild(o),
+        e.appendChild(t),
+        s.appendChild(e);
     }
     return s;
   }
@@ -1030,7 +1067,7 @@ class p {
       (s.style.justifyContent = 'center'),
       (s.contentEditable = 'false');
     const i = document.createElement('span');
-    (i.textContent = `R${e + 1}C${t + 1}`),
+    (i.textContent = `R${e}C${t}`),
       (i.contentEditable = 'true'),
       i.classList.add('table-cell-content'),
       (i.id = `table-cell-T-${n}-R${e}-C${t}`);
@@ -1171,10 +1208,17 @@ class p {
   setModalComponent(e) {
     this.modalComponent = e;
   }
-  addRow(e, t) {
-    const n = e.children.length,
-      o = this.createTableRow(n, 1, t);
-    e.appendChild(o), S.dispatchDesignChange();
+  addRows(e, t, n = 1) {
+    const o = e.children,
+      s = o.length;
+    let i = 1;
+    s > 0 && (i = o[0].children.length);
+    for (let o = 0; o < n; o++) {
+      const n = s + o,
+        l = this.createTableRow(n, i, t);
+      e.appendChild(l);
+    }
+    S.historyManager.captureState();
   }
   static getDefaultValuesOfInput() {
     const e = {};
@@ -1231,14 +1275,19 @@ class p {
         }
       } else null == r || r.remove();
     });
-    const l = e.querySelector('.add-row-button');
-    l && !1 !== t
-      ? l.addEventListener('click', () => {
-          n.addRow(o, i);
-        })
-      : !1 === t && l.remove();
-    const a = p.getDefaultValuesOfInput();
-    n.evaluateRowVisibility(a, e);
+    const l = e.querySelector('.add-multiple-rows-button'),
+      a = e.querySelector('.row-count-input');
+    console.log(l, 'or'),
+      l && !1 !== t
+        ? ((a.value = '1'),
+          l.addEventListener('click', () => {
+            console.log('click');
+            const e = parseInt(a.value) || 1;
+            n.addRows(o, i, Math.min(Math.max(e, 1), 20));
+          }))
+        : !1 === t && l.remove();
+    const r = p.getDefaultValuesOfInput();
+    n.evaluateRowVisibility(r, e);
   }
 }
 class h {
@@ -2415,6 +2464,7 @@ class E {
           t &&
           t.length > 0 &&
           this.basicComponentsConfig &&
+          !1 !== this.editable &&
           x.populateRowVisibilityControls(e, t)
         );
       }
@@ -2812,7 +2862,7 @@ class S {
               (k.controlsManager.addControlButtons(o),
               k.addDraggableListeners(o)),
             o.classList.contains('container-component') &&
-              r.restoreContainer(o),
+              r.restoreContainer(o, this.editable),
             (o.classList.contains('twoCol-component') ||
               o.classList.contains('threeCol-component')) &&
               c.restoreColumn(o),
@@ -3127,7 +3177,7 @@ class $ {
         });
       o
         .querySelectorAll(
-          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button'
+          '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button'
         )
         .forEach(e => e.remove()),
         o.children.length > 0 && this.cleanupElements(o);
@@ -4025,7 +4075,7 @@ class z {
     const n = document.createElement('iframe');
     (n.id = 'preview-iframe'),
       (n.style.cssText =
-        '\n      width: 97%;\n      height: 90%;\n      border: none;\n      background: #fff;\n      margin-right: 20px;\n    '),
+        '\n      width: 100%;\n      height: 100%;\n      border: none;\n      background: #fff;\n      margin-right: 20px;\n    '),
       (n.srcdoc = e),
       t.appendChild(n);
     const o = this.createPreviewCloseButton(t);
@@ -4052,7 +4102,7 @@ class z {
   createResponsivenessControls(e) {
     const t = document.createElement('div');
     t.style.cssText =
-      '\n      display: flex;\n      gap: 10px;\n      margin-bottom: 10px;\n    ';
+      '\n      position:absolute;\n      display: flex;\n      gap: 10px;\n      margin-bottom: 10px;\n    ';
     return (
       [
         { icon: C.mobile, title: 'Desktop', width: '375px', height: '100%' },
