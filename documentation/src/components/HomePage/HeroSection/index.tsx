@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import Particles from '../../UI/Background/Particles';
 import { AnimatedShinyText } from '../../UI/Text/AnimatedShinyText';
 import { AuroraText } from '../../UI/Text/AuroraText';
+import PixelBlast from '../../UI/Background/PixelBlast';
 
 // Hero Section Component
 export const HeroSection = () => {
@@ -27,19 +28,20 @@ export const HeroSection = () => {
   return (
     <section className="relative py-20 px-6 overflow-hidden">
       {/* Background Effects */}
-      {/* <div className="absolute inset-0  overflow-hidden">
-        <Particles />
-      </div> */}
+      <div className="absolute inset-0  overflow-hidden">
+        {/* <Particles /> */}
+        <PixelBlast />
+      </div>
 
       {/* Spotlight effect */}
-      <div
+      {/* <div
         ref={spotlightRef}
         className="fixed inset-0  transition-transform duration-300 ease-out opacity-30"
         style={{
           background:
             'radial-gradient(600px circle at 50% 50%,  rgba(207, 67, 31, 0.8), transparent 40%)',
         }}
-      />
+      /> */}
 
       <div className="max-w-7xl mx-auto text-center relative z-10">
         {/* Brand Badge */}
