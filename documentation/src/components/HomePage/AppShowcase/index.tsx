@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Code2,
-  FileText,
-  Mail,
   ChevronLeft,
   ChevronRight,
   Settings,
@@ -12,10 +9,6 @@ import {
   Eye,
 } from 'lucide-react';
 import { Button } from '../../UI/Button';
-import {
-  // BoxReveal
-  AuroraText
-} from '../../UI/Text/AuroraText';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 const getTheme = (): string => {
@@ -130,7 +123,7 @@ export const AppShowcase = () => {
 
         {/* Category Navigation */}
         <div className="flex justify-center mb-8">
-          <div className="flex bg-gray-900/50 backdrop-blur-sm border border-red-500/20 rounded-xl p-1 shadow-lg shadow-red-500/10">
+          <div className={`flex ${theme === 'dark' ? 'bg-gray-900/50' : ' bg-gray-900/70'} backdrop-blur-sm border border-red-500/20 rounded-xl p-1 shadow-lg shadow-red-500/10`}>
             {categories.map((category, index) => (
               <button
                 key={category.id}
@@ -139,7 +132,7 @@ export const AppShowcase = () => {
                   'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium',
                   activeView === index
                     ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-md shadow-red-500/25'
-                    : 'text-gray-400 hover:text-white hover:bg-red-900/30'
+                    : `${theme === 'dark' ? 'text-gray-400' : 'text-gray-100'} hover:text-white hover:bg-red-900/30`
                 )}
               >
                 <category.icon className="h-4 w-4" />
