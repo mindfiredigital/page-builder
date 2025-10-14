@@ -156,11 +156,11 @@ export class ModalComponent {
 
       const title = document.createElement('span');
       title.className = 'form-title';
-      title.textContent = attr.title;
+      title.textContent = `${attr.title}`;
 
       const key = document.createElement('span');
       key.className = 'form-key';
-      key.textContent = `(${attr.key})`;
+      key.textContent = `(${attr.key})(${attr.type})`;
 
       titleKeyContainer.appendChild(title);
       titleKeyContainer.appendChild(key);

@@ -49,7 +49,6 @@ html {
   display: flex;
   min-height: calc(100vh - 40px);
   background-color: #f8fafc;
-  margin: 4px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -79,7 +78,6 @@ html {
   flex-grow: 1;
   min-width: 0;
   background-color: #ffffff;
-  padding: 20px;
   overflow: auto;
   box-sizing: border-box;
   background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px);
@@ -272,7 +270,6 @@ html {
 /* Editable components on the canvas */
 .editable-component {
   border: 1px solid #e2e8f0;
-  margin: 6px;
   border-radius: 6px;
   cursor: text;
   position: relative;
@@ -307,7 +304,6 @@ html {
 .container-component {
   /* min-height: 100px;
   padding: 16px; */
-  margin: 6px;
   border: 2px dashed #cbd5e1;
   background-color: #f8fafc;
   display: flex;
@@ -390,7 +386,7 @@ html {
   padding: 2px 6px;
   border-radius: 4px;
   display: none;
-  z-index: 10;
+  z-index: 9000;
   pointer-events: none;
 }
 
@@ -514,7 +510,7 @@ html {
   top: 4px;
   right: 4px;
   align-items: center;
-  z-index: 10;
+  z-index: 9000;
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 4px;
@@ -1433,11 +1429,7 @@ html {
   }
 }
 
-@media (max-width: 768px) {
-  #app {
-    margin: 2px;
-  }
-}
+
 
 @media (max-width: 550px) {
   .nav-icon {

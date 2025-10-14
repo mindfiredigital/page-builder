@@ -27,4 +27,5 @@ export declare const svgs: {
   menu: string;
   sidebarMenu: string;
   customizationMenu: string;
+  closePreviewBtn: string;
 };

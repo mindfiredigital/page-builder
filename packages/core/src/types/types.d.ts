@@ -65,13 +65,13 @@ declare global {
   export interface ComponentAttribute {
     id: string;
     type: 'Constant' | 'Formula' | 'Input' | 'Image';
-    input_type: 'text' | 'number' | 'checkbox';
+    input_type?: 'text' | 'number' | 'checkbox';
     title: string;
     key: string;
     value: string | number | boolean;
     execute_order: number;
     editable?: boolean;
-    default_value?: string | boolean | null;
+    default_value?: string | number | boolean | null;
   }
 
   export interface BasicComponent {

@@ -109,10 +109,10 @@ class t {
         const s = document.createElement('div');
         s.className = 'title-key-container';
         const i = document.createElement('span');
-        (i.className = 'form-title'), (i.textContent = e.title);
+        (i.className = 'form-title'), (i.textContent = `${e.title}`);
         const l = document.createElement('span');
         (l.className = 'form-key'),
-          (l.textContent = `(${e.key})`),
+          (l.textContent = `(${e.key})(${e.type})`),
           s.appendChild(i),
           s.appendChild(l),
           n.appendChild(o),
@@ -645,7 +645,6 @@ class r {
       }),
       (this.element = document.createElement('div')),
       this.element.classList.add('container-component'),
-      this.element.setAttribute('draggable', 'true'),
       (this.resizers = document.createElement('div')),
       this.resizers.classList.add('resizers'),
       this.element.appendChild(this.resizers),
@@ -690,7 +689,7 @@ class r {
       this.element.addEventListener('mouseleave', this.onMouseLeave.bind(this));
   }
   onDragStart(e) {
-    e.stopPropagation();
+    e.target === this.element && e.stopPropagation();
   }
   makeDraggable(e) {
     let t = !1,
@@ -742,10 +741,11 @@ class r {
       (o.id = i),
       (l.style.display = 'none'),
       o.appendChild(l),
-      o.addEventListener('mouseenter', e => this.showLabel(e, o)),
-      o.addEventListener('mouseleave', e => this.hideLabel(e, o)),
+      (o.style.position = 'absolute'),
+      (o.style.left = `${e.offsetX}px`),
+      (o.style.top = `${e.offsetY}px`),
       this.element.appendChild(o),
-      this.makeDraggable(o),
+      S.addDraggableListeners(o),
       S.historyManager.captureState();
   }
   showLabel(e, t) {
@@ -948,7 +948,8 @@ class p {
     }
     if ((s.appendChild(l), !n)) {
       const e = document.createElement('div');
-      (e.style.display = 'flex'),
+      e.classList.add('table-btn-container'),
+        (e.style.display = 'flex'),
         (e.style.gap = '10px'),
         (e.style.justifyContent = 'center'),
         (e.style.marginTop = '10px'),
@@ -1201,7 +1202,8 @@ class p {
         (e.style.fontSize = '10px'),
         (e.style.color = 'rgb(188 191 198)'),
         (e.style.fontWeight = '500'))
-      : 'Constant' === t.type && o && (o.textContent = `${t.value}`),
+      : (('Constant' === t.type && o) || ('Input' === t.type && o)) &&
+        (o.textContent = `${t.value}`),
       n && e.appendChild(n),
       null == S || S.dispatchDesignChange();
   }
@@ -1276,18 +1278,17 @@ class p {
       } else null == r || r.remove();
     });
     const l = e.querySelector('.add-multiple-rows-button'),
-      a = e.querySelector('.row-count-input');
-    console.log(l, 'or'),
-      l && !1 !== t
-        ? ((a.value = '1'),
-          l.addEventListener('click', () => {
-            console.log('click');
-            const e = parseInt(a.value) || 1;
-            n.addRows(o, i, Math.min(Math.max(e, 1), 20));
-          }))
-        : !1 === t && l.remove();
-    const r = p.getDefaultValuesOfInput();
-    n.evaluateRowVisibility(r, e);
+      a = e.querySelector('.table-btn-container'),
+      r = e.querySelector('.row-count-input');
+    l && !1 !== t
+      ? ((r.value = '1'),
+        l.addEventListener('click', () => {
+          const e = parseInt(r.value) || 1;
+          n.addRows(o, i, Math.min(Math.max(e, 1), 20));
+        }))
+      : !1 === t && a && (null == a || a.remove());
+    const c = p.getDefaultValuesOfInput();
+    n.evaluateRowVisibility(c, e);
   }
 }
 class h {
@@ -1873,6 +1874,8 @@ const C = {
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
   customizationMenu:
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-brush-icon lucide-brush"><path d="m11 10 3 3"/><path d="M6.5 21A3.5 3.5 0 1 0 3 17.5a2.62 2.62 0 0 1-.708 1.792A1 1 0 0 0 3 21z"/><path d="M9.969 17.031 21.378 5.624a1 1 0 0 0-3.002-3.002L6.967 14.031"/></svg>',
+  closePreviewBtn:
+    '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>',
 };
 function w(e, t, n, s) {
   return o(this, void 0, void 0, function* () {
@@ -2880,47 +2883,50 @@ class S {
   }
   static onDrop(e) {
     var t, n;
+    e.preventDefault();
+    const o = e.target;
     if (
-      (e.preventDefault(), e.target.classList.contains('container-component'))
+      o.classList.contains('container-component') ||
+      o.closest('.container-component')
     )
       return;
-    const o =
+    const s =
       null === (t = e.dataTransfer) || void 0 === t
         ? void 0
         : t.getData('component-type');
-    let s =
+    let i =
       null === (n = e.dataTransfer) || void 0 === n
         ? void 0
         : n.getData('custom-settings');
-    if (!o) return;
-    if (!s || '' === s.trim()) {
+    if (!s) return;
+    if (!i || '' === i.trim()) {
       if (
-        document.querySelector(`[data-component="${o}"]`) &&
+        document.querySelector(`[data-component="${s}"]`) &&
         window.customComponents &&
-        window.customComponents[o]
+        window.customComponents[s]
       ) {
-        const e = window.customComponents[o];
-        e.settings && (s = JSON.stringify(e.settings));
+        const e = window.customComponents[s];
+        e.settings && (i = JSON.stringify(e.settings));
       }
     }
-    const { gridX: i, gridY: l } = this.gridManager.mousePositionAtGridCorner(
+    const { gridX: l, gridY: a } = this.gridManager.mousePositionAtGridCorner(
         e,
         k.canvasElement
       ),
-      a = k.createComponent(o, s);
-    if (a && !1 !== this.editable) {
-      const t = k.generateUniqueClass(o);
-      (a.id = t),
-        a.classList.add(t),
-        (a.style.position = 'absolute'),
-        'container' === o || 'twoCol' === o || 'threeCol' === o
-          ? (a.style.top = `${e.offsetY}px`)
-          : ((a.style.position = 'absolute'),
-            (a.style.left = `${i}px`),
-            (a.style.top = `${l}px`)),
-        k.components.push(a),
-        k.canvasElement.appendChild(a),
-        k.addDraggableListeners(a),
+      r = k.createComponent(s, i);
+    if (r && !1 !== this.editable) {
+      const t = k.generateUniqueClass(s);
+      (r.id = t),
+        r.classList.add(t),
+        (r.style.position = 'absolute'),
+        'container' === s || 'twoCol' === s || 'threeCol' === s
+          ? (r.style.top = `${e.offsetY}px`)
+          : ((r.style.position = 'absolute'),
+            (r.style.left = `${l}px`),
+            (r.style.top = `${a}px`)),
+        k.components.push(r),
+        k.canvasElement.appendChild(r),
+        k.addDraggableListeners(r),
         k.historyManager.captureState();
     }
     k.dispatchDesignChange();
@@ -3032,18 +3038,19 @@ class S {
       i = 0,
       l = 0;
     e.addEventListener('dragstart', a => {
-      a.dataTransfer &&
-        ((t = a.clientX),
-        (n = a.clientY),
-        (i = k.canvasElement.scrollLeft),
-        (l = k.canvasElement.scrollTop),
-        (o = parseFloat(e.style.left) || 0),
-        (s = parseFloat(e.style.top) || 0),
-        (a.dataTransfer.effectAllowed = 'move'),
-        (e.style.cursor = 'grabbing'));
+      a.stopPropagation(),
+        a.dataTransfer &&
+          ((t = a.clientX),
+          (n = a.clientY),
+          (i = k.canvasElement.scrollLeft),
+          (l = k.canvasElement.scrollTop),
+          (o = parseFloat(e.style.left) || 0),
+          (s = parseFloat(e.style.top) || 0),
+          (a.dataTransfer.effectAllowed = 'move'),
+          (e.style.cursor = 'grabbing'));
     }),
       e.addEventListener('dragend', a => {
-        a.preventDefault();
+        a.preventDefault(), a.stopPropagation();
         const r = k.canvasElement.scrollLeft,
           c = k.canvasElement.scrollTop,
           d = r - i,
@@ -4071,11 +4078,11 @@ class z {
     const t = document.createElement('div');
     (t.id = 'preview-modal'),
       (t.style.cssText =
-        '\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100vw;\n      height: 100vh;\n      background: #f5f5f5;\n      z-index: 10000;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n      padding: 10px;\n    ');
+        '\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100vw;\n      height: 100vh;\n      background: #f5f5f5;\n      z-index: 10000;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n    ');
     const n = document.createElement('iframe');
     (n.id = 'preview-iframe'),
       (n.style.cssText =
-        '\n      width: 100%;\n      height: 100%;\n      border: none;\n      background: #fff;\n      margin-right: 20px;\n    '),
+        '\n      width: 100%;\n      height: 100%;\n      border: none;\n      background: #fff;\n    '),
       (n.srcdoc = e),
       t.appendChild(n);
     const o = this.createPreviewCloseButton(t);
@@ -4086,9 +4093,9 @@ class z {
   createPreviewCloseButton(e) {
     const t = document.createElement('button');
     (t.id = 'close-modal-btn'),
-      (t.textContent = '✕'),
+      (t.innerHTML = C.closePreviewBtn),
       (t.style.cssText =
-        '\n      position: absolute;\n      top: 10px;\n      right: 20px;\n      font-size: 20px;\n      border: none;\n      background: none;\n      cursor: pointer;\n    ');
+        '\n      position: absolute;\n      top: 0;\n      left:0;\n      font-size: 20px;\n      border: none;\n      background: none;\n      font:bold;\n      color:black;\n      cursor: pointer;\n    ');
     const n = () => {
       setTimeout(() => e.remove(), 300),
         document.removeEventListener('keydown', o);
@@ -4107,7 +4114,7 @@ class z {
       [
         { icon: C.mobile, title: 'Desktop', width: '375px', height: '100%' },
         { icon: C.tablet, title: 'Tablet', width: '768px', height: '100%' },
-        { icon: C.desktop, title: 'Mobile', width: '97%', height: '100%' },
+        { icon: C.desktop, title: 'Mobile', width: '100%', height: '100%' },
       ].forEach(n => {
         const o = document.createElement('button');
         (o.style.cssText =

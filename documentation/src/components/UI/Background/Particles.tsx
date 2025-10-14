@@ -201,6 +201,9 @@ const Particles: React.FC<ParticlesProps> = ({
     let lastTime = performance.now();
     let elapsed = 0;
 
+    // --- ADDED Damping Factor for Smoothing ---
+    const DAMPING_FACTOR = 0.1;
+
     const update = (t: number) => {
       animationFrameId = requestAnimationFrame(update);
       const delta = t - lastTime;
@@ -210,8 +213,13 @@ const Particles: React.FC<ParticlesProps> = ({
       program.uniforms.uTime.value = elapsed * 0.001;
 
       if (moveParticlesOnHover) {
-        particles.position.x = -mouseRef.current.x * particleHoverFactor;
-        particles.position.y = -mouseRef.current.y * particleHoverFactor;
+        // Calculate the target position
+        const targetX = -mouseRef.current.x * particleHoverFactor;
+        const targetY = -mouseRef.current.y * particleHoverFactor;
+
+        // Apply interpolation (Lerp) to smoothly move the particles towards the target
+        particles.position.x += (targetX - particles.position.x) * DAMPING_FACTOR;
+        particles.position.y += (targetY - particles.position.y) * DAMPING_FACTOR;
       } else {
         particles.position.x = 0;
         particles.position.y = 0;

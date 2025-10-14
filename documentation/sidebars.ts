@@ -18,7 +18,6 @@ module.exports = {
         'configuration/features/attributes-formulas',
         'configuration/features/custom-components',
         'configuration/features/state-management',
-        'configuration/features/event-handling',
       ],
     },
     {
@@ -32,6 +31,15 @@ module.exports = {
       type: 'category',
       label: 'Guides',
       items: ['guides/best-practices', 'guides/accessibility'],
+    },
+    {
+      type: 'category',
+      label: 'Contributors',
+      items: [
+        'contributors/code-of-conduct',
+        'contributors/contributors',
+        'contributors/how-to-contribute',
+      ],
     },
   ],
 };
