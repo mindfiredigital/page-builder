@@ -427,6 +427,9 @@ export class TableComponent {
       const controls = cellElement.querySelector('.cell-controls');
       if (editable === false) {
         controls === null || controls === void 0 ? void 0 : controls.remove();
+        textContentOfCell === null || textContentOfCell === void 0
+          ? void 0
+          : textContentOfCell.removeAttribute('contenteditable');
         return;
       }
       if (controls) {

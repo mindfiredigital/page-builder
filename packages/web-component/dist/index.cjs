@@ -32,7 +32,8 @@ var PageBuilderComponent = class extends HTMLElement {
     this.initialized = false;
     this._initialDesign = null;
     this._editable = null;
-    this.config = { Basic: [], Extra: [], Custom: [] };
+    this.config = { Basic: [], Extra: [], Custom: {} };
+    // Initialize Custom as an object
     this.template = `<div id="app">
       <div id="sidebar"></div>
       <div id="canvas" class="canvas"></div>
@@ -51,6 +52,8 @@ var PageBuilderComponent = class extends HTMLElement {
       </div>
     </div>`;
   }
+  // --- Setter Implementation to trigger re-initialization ---
+  // Setters must reset initialized and call initializePageBuilder
   set editable(value) {
     if (this._editable !== value) {
       this._editable = value;
@@ -60,7 +63,6 @@ var PageBuilderComponent = class extends HTMLElement {
       }
     }
   }
-  // Corrected getter for 'editable'
   get editable() {
     return this._editable;
   }
@@ -93,59 +95,47 @@ var PageBuilderComponent = class extends HTMLElement {
       this._initialDesign = value;
       if (this.initialized) {
         this.initialized = false;
-        if (value !== null || this.initialized) {
-          this.initialized = false;
-          this.initializePageBuilder();
-        }
+        this.initializePageBuilder();
       }
     }
   }
   get initialDesign() {
     return this._initialDesign;
   }
-  // Lifecycle method: Called when the element is added to the DOM
-  connectedCallback() {
-    if (this.initialized) {
-      return;
-    }
-    setTimeout(() => {
-      if (!this.firstElementChild) {
-        this.innerHTML = this.template;
-      }
-      if (this.hasValidConfig()) {
-        this.initializePageBuilder();
-      }
-    }, 0);
-  }
-  hasValidConfig() {
-    var _a, _b;
-    return this.config && (((_a = this.config.Basic) == null ? void 0 : _a.length) > 0 || ((_b = this.config.Extra) == null ? void 0 : _b.length) > 0 || this.config.Custom && Object.keys(this.config.Custom).length > 0);
-  }
+  // CRITICAL: The config setter is the most important trigger.
   set configData(value) {
-    this.config = value;
-    this.initialized = false;
-    this.initializePageBuilder();
+    if (JSON.stringify(this.config) !== JSON.stringify(value)) {
+      this.config = value;
+      this.initialized = false;
+      this.initializePageBuilder();
+    }
   }
   get configData() {
     return this.config;
   }
+  // Lifecycle method: Called when the element is added to the DOM
+  connectedCallback() {
+    if (!this.firstElementChild) {
+      this.innerHTML = this.template;
+    }
+    if (!this.initialized) {
+      this.initializePageBuilder();
+    }
+  }
   // Initializes the PageBuilder instance
   initializePageBuilder() {
-    if (this.initialized) {
+    const app = this.querySelector("#app");
+    if (app === null) {
       return;
     }
     try {
-      const app = this.querySelector("#app");
-      if (app === null) {
-        console.error("Error: #app element not found.");
-        return;
-      }
-      if (app && this.pageBuilder) {
-        app.innerHTML = "";
+      if (this.pageBuilder) {
+        this.innerHTML = "";
         this.innerHTML = this.template;
       }
+      const effectiveConfig = this.config || { Basic: [], Extra: [], Custom: {} };
       this.pageBuilder = new import_PageBuilder.PageBuilder(
-        this.config,
+        effectiveConfig,
         this._initialDesign,
         this._editable,
         this._brandTitle,

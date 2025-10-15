@@ -1262,20 +1262,23 @@ class p {
         }
       }
       const r = o.querySelector('.cell-controls');
-      if (!1 !== t) {
-        if (r) {
-          const e = r.querySelector('.add-cell-button'),
-            t = r.querySelector('.delete-cell-button');
-          e &&
-            e.addEventListener('click', e => {
-              e.stopPropagation(), n.addCellToRow(o, i);
-            }),
-            t &&
-              t.addEventListener('click', e => {
-                e.stopPropagation(), n.deleteCell(o);
-              });
-        }
-      } else null == r || r.remove();
+      if (!1 === t)
+        return (
+          null == r || r.remove(),
+          void (null == a || a.removeAttribute('contenteditable'))
+        );
+      if (r) {
+        const e = r.querySelector('.add-cell-button'),
+          t = r.querySelector('.delete-cell-button');
+        e &&
+          e.addEventListener('click', e => {
+            e.stopPropagation(), n.addCellToRow(o, i);
+          }),
+          t &&
+            t.addEventListener('click', e => {
+              e.stopPropagation(), n.deleteCell(o);
+            });
+      }
     });
     const l = e.querySelector('.add-multiple-rows-button'),
       a = e.querySelector('.table-btn-container'),

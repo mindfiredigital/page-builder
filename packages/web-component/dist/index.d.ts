@@ -27,10 +27,9 @@ declare class PageBuilderComponent extends HTMLElement {
   get showAttributeTab(): boolean | undefined;
   set initialDesign(value: PageBuilderDesign | null);
   get initialDesign(): PageBuilderDesign | null;
-  connectedCallback(): void;
-  private hasValidConfig;
   set configData(value: any);
   get configData(): any;
+  connectedCallback(): void;
   private initializePageBuilder;
 }
 

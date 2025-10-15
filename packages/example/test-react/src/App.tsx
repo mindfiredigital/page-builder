@@ -60,7 +60,7 @@ const App = () => {
       { name: 'text', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
       { name: 'table', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
     ],
-    Extra: ['landingpage'],
+    Extra: [],
   };
 
   const customComponents = {

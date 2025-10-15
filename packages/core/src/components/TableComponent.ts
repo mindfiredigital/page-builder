@@ -517,6 +517,7 @@ export class TableComponent {
       const controls = cellElement.querySelector('.cell-controls');
       if (editable === false) {
         controls?.remove();
+        textContentOfCell?.removeAttribute('contenteditable');
         return;
       }
       if (controls) {
