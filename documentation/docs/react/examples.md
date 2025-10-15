@@ -71,10 +71,6 @@ export const localExecuteFunction = (inputValues: Record<string, any>) => {
   const sumResult = A + B;
   const productResult = A * B;
 
-  console.log(
-    `Calculation: A=${A}, B=${B}, Sum=${sumResult}, Product=${productResult}`
-  );
-
   return {
     'formula-sum-key': sumResult,
     'formula-product-key': productResult,
@@ -250,9 +246,7 @@ const ColorPickerSettings = forwardRef<unknown, ColorPickerSettingsProps>(
     const { targetComponentId } = props;
 
     const handleRandomColor = () => {
-      const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-      console.log(`Random color for ${targetComponentId}: ${randomColor}`);
-    };
+      const randomColor = '#' + Math.floor(Math.random() * 16777215).toString  };
 
     return (
       <Box

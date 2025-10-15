@@ -464,10 +464,6 @@ export const localExecuteFunction = (inputValues: {
   const sumResult = A + B;
   const productResult = A * B;
 
-  console.log(
-    `Calculation executed: A=${A}, B=${B}, Sum=${sumResult}, Product=${productResult}`
-  );
-
   // Return object with 'key' properties of Formula attributes
   return {
     'formula-sum-key': sumResult,
@@ -731,10 +727,6 @@ export const localExecuteFunction = (inputValues: {
 
   const sumResult = A + B;
   const productResult = A * B;
-
-  console.log(
-    `Calculation executed: A=${A}, B=${B}, Sum=${sumResult}, Product=${productResult}`
-  );
 
   return {
     'formula-sum-key': sumResult,
