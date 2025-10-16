@@ -288,7 +288,12 @@ export class Canvas {
   static onDrop(event) {
     var _b, _c;
     event.preventDefault();
-    if (event.target.classList.contains('container-component')) {
+    const target = event.target;
+    // Check if target is a container or child of a container
+    if (
+      target.classList.contains('container-component') ||
+      target.closest('.container-component')
+    ) {
       return;
     }
     const componentType =
@@ -473,6 +478,7 @@ export class Canvas {
     let canvasScrollStartX = 0;
     let canvasScrollStartY = 0;
     element.addEventListener('dragstart', event => {
+      event.stopPropagation();
       if (event.dataTransfer) {
         // Store exact mouse position at drag start
         dragStartX = event.clientX;
@@ -489,6 +495,7 @@ export class Canvas {
     });
     element.addEventListener('dragend', event => {
       event.preventDefault();
+      event.stopPropagation();
       // Get current canvas scroll position
       const canvasScrollCurrentX = _a.canvasElement.scrollLeft;
       const canvasScrollCurrentY = _a.canvasElement.scrollTop;

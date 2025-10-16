@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Button } from '../../UI/Button';
 import { ArrowRight, Github, Sparkles, Zap } from 'lucide-react';
 import { TypeText } from '../../UI/Text/TypeText';
@@ -7,11 +7,11 @@ import { motion } from 'framer-motion';
 import Particles from '../../UI/Background/Particles';
 import { AnimatedShinyText } from '../../UI/Text/AnimatedShinyText';
 import { AuroraText } from '../../UI/Text/AuroraText';
-import PixelBlast from '../../UI/Background/PixelBlast';
 
 // Hero Section Component
 export const HeroSection = () => {
   const spotlightRef = useRef(null);
+  const DEMO_SELECTION_PAGE_URL = 'demo/';
 
   useEffect(() => {
     const handleMouseMove = e => {
@@ -29,8 +29,8 @@ export const HeroSection = () => {
     <section className="relative py-20 px-6 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0  overflow-hidden">
-        {/* <Particles /> */}
-        <PixelBlast />
+
+        <Particles moveParticlesOnHover={true} particleHoverFactor={2.0} />
       </div>
 
       {/* Spotlight effect */}
@@ -122,14 +122,20 @@ export const HeroSection = () => {
             Start Building <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
 
-          <Button
-            variant="outline"
-            size="xl"
-            className="border-red-500/50 bg-red-50/50 dark:bg-red-950/50 backdrop-blur-sm hover:bg-red-100/50 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-8 py-4 rounded-2xl border-2"
+          <a
+            href={DEMO_SELECTION_PAGE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <Github className="mr-2 h-5 w-5" />
-            View Demo
-          </Button>
+            <Button
+              variant="outline"
+              size="xl"
+              className="border-red-500/50 bg-red-50/50 dark:bg-red-950/50 backdrop-blur-sm hover:bg-red-100/50 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-8 py-4 rounded-2xl border-2"
+            >
+              <Github className="mr-2 h-5 w-5" />
+              View Demo
+            </Button>
+          </a>
         </motion.div>
 
         {/* Installation & Features */}

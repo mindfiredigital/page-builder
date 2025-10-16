@@ -28,6 +28,7 @@ export class TableComponent {
     if (!isPreview) {
       // Create container for buttons
       const buttonContainer = document.createElement('div');
+      buttonContainer.classList.add('table-btn-container');
       buttonContainer.style.display = 'flex';
       buttonContainer.style.gap = '10px';
       buttonContainer.style.justifyContent = 'center';
@@ -335,6 +336,8 @@ export class TableComponent {
       cell.style.fontWeight = '500';
     } else if (attribute.type === 'Constant' && textContentOfCell) {
       textContentOfCell.textContent = `${attribute.value}`;
+    } else if (attribute.type === 'Input' && textContentOfCell) {
+      textContentOfCell.textContent = `${attribute.value}`;
     }
     if (controlsElement) {
       cell.appendChild(controlsElement);
@@ -424,6 +427,9 @@ export class TableComponent {
       const controls = cellElement.querySelector('.cell-controls');
       if (editable === false) {
         controls === null || controls === void 0 ? void 0 : controls.remove();
+        textContentOfCell === null || textContentOfCell === void 0
+          ? void 0
+          : textContentOfCell.removeAttribute('contenteditable');
         return;
       }
       if (controls) {
@@ -446,12 +452,11 @@ export class TableComponent {
     const addMultipleRowsButton = container.querySelector(
       '.add-multiple-rows-button'
     );
+    const btnContainer = container.querySelector('.table-btn-container');
     const rowCountInput = container.querySelector('.row-count-input');
-    console.log(addMultipleRowsButton, 'or');
     if (addMultipleRowsButton && editable !== false) {
       rowCountInput.value = '1';
       addMultipleRowsButton.addEventListener('click', () => {
-        console.log('click');
         const count = parseInt(rowCountInput.value) || 1;
         instance.addRows(
           tableWrapper,
@@ -459,8 +464,10 @@ export class TableComponent {
           Math.min(Math.max(count, 1), 20)
         );
       });
-    } else if (editable === false) {
-      addMultipleRowsButton.remove();
+    } else if (editable === false && btnContainer) {
+      btnContainer === null || btnContainer === void 0
+        ? void 0
+        : btnContainer.remove();
     }
     const defaultValues = TableComponent.getDefaultValuesOfInput();
     instance.evaluateRowVisibility(defaultValues, container);

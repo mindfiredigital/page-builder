@@ -343,7 +343,6 @@ export class PageBuilder {
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 10px;
     `;
     const iframe = document.createElement('iframe');
     iframe.id = 'preview-iframe';
@@ -352,7 +351,6 @@ export class PageBuilder {
       height: 100%;
       border: none;
       background: #fff;
-      margin-right: 20px;
     `;
     iframe.srcdoc = html;
     fullScreenModal.appendChild(iframe);
@@ -365,14 +363,16 @@ export class PageBuilder {
   createPreviewCloseButton(fullScreenModal) {
     const closeButton = document.createElement('button');
     closeButton.id = 'close-modal-btn';
-    closeButton.textContent = '✕';
+    closeButton.innerHTML = svgs.closePreviewBtn;
     closeButton.style.cssText = `
       position: absolute;
-      top: 10px;
-      right: 20px;
+      top: 0;
+      left:0;
       font-size: 20px;
       border: none;
       background: none;
+      font:bold;
+      color:black;
       cursor: pointer;
     `;
     const closeModal = () => {
@@ -412,7 +412,7 @@ export class PageBuilder {
       {
         icon: svgs.desktop,
         title: 'Mobile',
-        width: '97%',
+        width: '100%',
         height: '100%',
       },
     ];
