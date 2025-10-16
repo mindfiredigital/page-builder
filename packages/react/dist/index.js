@@ -55,6 +55,7 @@ var PageBuilderReact = ({
   brandTitle,
   showAttributeTab,
 }) => {
+  console.log(config, 'config');
   const builderRef = (0, import_react.useRef)(null);
   const [processedConfig, setProcessedConfig] = (0, import_react.useState)(
     config
@@ -160,27 +161,23 @@ var PageBuilderReact = ({
     setProcessedConfig(modifiedConfig);
   }, [config, customComponents]);
   (0, import_react.useEffect)(() => {
-    if (builderRef.current) {
-      setTimeout(() => {
-        var _a;
-        try {
-          const configString = JSON.stringify(processedConfig);
-          (_a = builderRef.current) == null
-            ? void 0
-            : _a.setAttribute('config-data', configString);
-          if (builderRef.current) {
-            builderRef.current.configData = processedConfig;
-            builderRef.current.initialDesign = initialDesign;
-            builderRef.current.editable = editable;
-            builderRef.current.brandTitle = brandTitle;
-            builderRef.current.showAttributeTab = showAttributeTab;
-          }
-        } catch (error) {
-          console.error('Error setting config-data and initialDesign:', error);
-        }
-      }, 100);
+    const builder = builderRef.current;
+    if (builder) {
+      try {
+        builder.configData = processedConfig;
+        builder.initialDesign = initialDesign;
+        builder.editable = editable;
+        builder.brandTitle = brandTitle;
+        builder.showAttributeTab = showAttributeTab;
+        console.log(builder.configData, 'builder');
+      } catch (error) {
+        console.error(
+          'Error setting properties on page-builder web component:',
+          error
+        );
+      }
     }
-  }, [processedConfig, initialDesign]);
+  }, [processedConfig, initialDesign, editable, brandTitle, showAttributeTab]);
   (0, import_react.useEffect)(() => {
     const webComponent = builderRef.current;
     const handleDesignChange = event => {

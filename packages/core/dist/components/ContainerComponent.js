@@ -69,7 +69,7 @@ export class ContainerComponent {
     };
     this.element = document.createElement('div');
     this.element.classList.add('container-component');
-    this.element.setAttribute('draggable', 'true');
+    // this.element.setAttribute('draggable', 'true');
     // Initialize resizers container
     this.resizers = document.createElement('div');
     this.resizers.classList.add('resizers');
@@ -121,7 +121,9 @@ export class ContainerComponent {
     this.element.addEventListener('mouseleave', this.onMouseLeave.bind(this));
   }
   onDragStart(event) {
-    event.stopPropagation();
+    if (event.target === this.element) {
+      event.stopPropagation();
+    }
   }
   makeDraggable(element) {
     let isDragging = false;
@@ -185,11 +187,15 @@ export class ContainerComponent {
     component.id = uniqueClass;
     label.style.display = 'none';
     component.appendChild(label);
-    component.addEventListener('mouseenter', e => this.showLabel(e, component));
-    component.addEventListener('mouseleave', e => this.hideLabel(e, component));
+    // component.addEventListener('mouseenter', e => this.showLabel(e, component));
+    // component.addEventListener('mouseleave', e => this.hideLabel(e, component));
+    component.style.position = 'absolute';
+    component.style.left = `${event.offsetX}px`;
+    component.style.top = `${event.offsetY}px`;
     this.element.appendChild(component);
     // Apply draggable functionality to the new component
-    this.makeDraggable(component);
+    // this.makeDraggable(component);
+    Canvas.addDraggableListeners(component);
     // Capture state for undo/redo
     Canvas.historyManager.captureState();
   }
