@@ -113,9 +113,9 @@ export class PageBuilderComponent extends HTMLElement {
         this.innerHTML = this.template;
       }
 
-      if (this.hasValidConfig()) {
-        this.initializePageBuilder();
-      }
+      // if (this.hasValidConfig()) {
+      this.initializePageBuilder();
+      // }
     }, 0);
   }
 
