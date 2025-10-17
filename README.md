@@ -18,6 +18,10 @@ Click the button below to open the project on StackBlitz.
   <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz">
 </a>
 
+## Documentation
+
+For detailed documentation, visit: [https://mindfiredigital.github.io/page-builder/](https://mindfiredigital.github.io/page-builder/)
+
 ## Screenshot
 
  <p align="center">

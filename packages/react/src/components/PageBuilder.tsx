@@ -126,25 +126,29 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
     setProcessedConfig(modifiedConfig);
   }, [config, customComponents]);
 
+  // PageBuilderReact.tsx - Modified useEffect to use customElements.whenDefined
+
   useEffect(() => {
     if (builderRef.current) {
-      setTimeout(() => {
+      customElements.whenDefined('page-builder').then(() => {
         try {
-          const configString = JSON.stringify(processedConfig);
-          builderRef.current?.setAttribute('config-data', configString);
           if (builderRef.current) {
+            // Now it's safe to set properties, they will hit the setters
             builderRef.current.configData = processedConfig;
             builderRef.current.initialDesign = initialDesign;
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
             builderRef.current.showAttributeTab = showAttributeTab;
+
+            const configString = JSON.stringify(processedConfig);
+            builderRef.current.setAttribute('config-data', configString);
           }
         } catch (error) {
           console.error('Error setting config-data and initialDesign:', error);
         }
-      }, 100);
+      });
     }
-  }, [processedConfig, initialDesign]);
+  }, [processedConfig, initialDesign, editable, brandTitle, showAttributeTab]);
   useEffect(() => {
     const webComponent = builderRef.current;
 
