@@ -1,5 +1,12 @@
 # @mindfiredigital/page-builder-angular
 
+## 4.0.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @mindfiredigital/page-builder-web-component@5.0.5
+
 ## 4.0.4
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@mindfiredigital/page-builder-angular",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "private": true,
   "description": "Angular wrapper for @mindfiredigital/page-builder",
   "main": "dist/index.js",
