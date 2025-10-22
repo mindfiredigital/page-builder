@@ -11,16 +11,22 @@ import {
 import { Button } from '../../UI/Button';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
-const getTheme = (): string => {
-  if (typeof window === 'undefined') return 'dark';
-  return document.documentElement.getAttribute('data-theme') || 'dark';
+const getClientTheme = (): string => {
+  // Will only be called on the client side
+  return document.documentElement.getAttribute('data-theme') || 'light';
+  // Changed fallback to 'light' to match Docusaurus's typical initial state, 
+  // but 'dark' is also fine if your preference is dark.
 };
 export const AppShowcase = () => {
   const [activeView, setActiveView] = useState(0);
-  const [theme, setTheme] = useState(() => getTheme());
+  const [theme, setTheme] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const observer = new MutationObserver(() => setTheme(getTheme()));
+    // 2. Set the initial theme ONLY after the component mounts
+    setTheme(getClientTheme());
+
+    // 3. Keep the observer logic to handle theme *changes*
+    const observer = new MutationObserver(() => setTheme(getClientTheme()));
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['data-theme'],

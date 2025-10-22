@@ -43,6 +43,7 @@ const config: Config = {
       disableSwitch: false,
       respectPrefersColorScheme: false,
     },
+    noFlash: true,
     navbar: {
       title: 'Page Builder',
       logo: {
