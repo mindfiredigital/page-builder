@@ -226,63 +226,157 @@ export class PageBuilder {
   /**
    * This function handles the exporting feature in PDF format
    */
+  // public setupExportPDFButton() {
+  //   const exportButton = document.getElementById('export-pdf-btn');
+  //   if (exportButton) {
+  //     exportButton.addEventListener('click', () => {
+  //       const htmlGenerator = new HTMLGenerator(new Canvas());
+  //       const html = htmlGenerator.generateHTML();
+  //       const css = htmlGenerator.generateCSS();
+
+  //       // Create a new window
+  //       const printWindow = window.open('', '_blank');
+
+  //       if (printWindow) {
+  //         const fullHTML = `
+  //           <html>
+  //             <head>
+  //               <title>Export PDF</title>
+  //               <style>
+  //                 ${css}
+  //                 body {
+  //                   margin: 0;
+  //                   padding: 20px;
+  //                   font-family: Arial, sans-serif;
+  //                 }
+  //                 @media print {
+  //                   /* Ensure print styles are applied */
+  //                   body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+  //                   /* Remove browser headers and footers */
+  //                   @page {
+  //                     size: auto;
+  //                     margin: 0mm;  /* Remove default margins */
+  //                   }
+
+  //                   /* For Chrome/Safari */
+  //                   @page { margin: 0; }
+  //                   html { margin: 0; }
+  //                 }
+  //               </style>
+  //             </head>
+  //             <body>
+  //               ${html} <!-- Generated HTML -->
+  //             </body>
+  //           </html>
+  //         `;
+  //         printWindow.document.write(fullHTML);
+  //         printWindow.document.close();
+
+  //         // Delay printing slightly to allow CSS processing
+  //         setTimeout(() => {
+  //           printWindow.print();
+  //           printWindow.close();
+  //         }, 500);
+  //       }
+  //     });
+  //   }
+  // }
   public setupExportPDFButton() {
     const exportButton = document.getElementById('export-pdf-btn');
     if (exportButton) {
       exportButton.addEventListener('click', () => {
         const htmlGenerator = new HTMLGenerator(new Canvas());
         const html = htmlGenerator.generateHTML();
-        const css = htmlGenerator.generateCSS();
+        let css = htmlGenerator.generateCSS();
 
-        // Create a new window
+        const canvasElement = document.getElementById('canvas');
+        if (!canvasElement) return;
+
+        const canvasWidth = canvasElement.scrollWidth;
+        const canvasHeight = canvasElement.scrollHeight;
+
+        // A4 dimensions: 210mm x 297mm
+        // At 96 DPI: ~794px x ~1123px
+        // With 10mm margins: ~755px x ~1085px usable
+        const a4UsableWidth = 755;
+        const scale = Math.min(a4UsableWidth / canvasWidth, 1);
+
+        // Remove min-height: 100vh from CSS
+        css = css.replace(/min-height:\s*100vh/gi, 'min-height: auto');
+
         const printWindow = window.open('', '_blank');
 
         if (printWindow) {
           const fullHTML = `
-            <html>
-              <head>
-                <title>Export PDF</title>
-                <style>
-                  ${css} 
-                  body {
-                    margin: 0;
-                    padding: 20px;
-                    font-family: Arial, sans-serif;
-                  }
-                  @media print {
-                    /* Ensure print styles are applied */
-                    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-                    
-                    /* Remove browser headers and footers */
-                    @page {
-                      size: auto;
-                      margin: 0mm;  /* Remove default margins */
-                    }
-                    
-                    /* For Chrome/Safari */
-                    @page { margin: 0; }
-                    html { margin: 0; }
-                  }
-                </style>
-              </head>
-              <body>
-                ${html} <!-- Generated HTML -->
-              </body>
-            </html>
-          `;
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export PDF</title>
+    <style>
+      ${css}
+      
+      body {
+        margin: 20px;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      @media print {
+        @page {
+          size: A4 portrait;
+          margin: 8mm;
+        }
+        
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          height: auto !important;
+          overflow: hidden !important;
+        }
+        
+        body {
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+        }
+        
+        #canvas.home {
+          width: ${canvasWidth}px !important;
+          height: ${canvasHeight}px !important;
+          min-height: auto !important;
+          transform: scale(${scale}) !important;
+          transform-origin: top left !important;
+          position: relative !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: visible !important;
+        }
+        
+        /* Maintain absolute positioning of children during scale */
+        #canvas.home > * {
+          position: absolute;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    ${html}
+  </body>
+</html>`;
+
           printWindow.document.write(fullHTML);
           printWindow.document.close();
 
-          // Delay printing slightly to allow CSS processing
           setTimeout(() => {
             printWindow.print();
-            printWindow.close();
-          }, 500);
+          }, 1000);
         }
       });
     }
   }
-
   public createExportModal(
     highlightedHTML: string,
     highlightedCSS: string,

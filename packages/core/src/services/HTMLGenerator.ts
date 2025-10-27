@@ -101,7 +101,6 @@ export class HTMLGenerator {
       position: relative;
       display: block;
       width: 100%;
-      min-height: 100vh;
       background-color: ${backgroundColor};
       margin: 0;
       overflow: visible;

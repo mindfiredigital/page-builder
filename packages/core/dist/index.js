@@ -3202,7 +3202,7 @@ class $ {
       n = [],
       o = new Set();
     n.push(
-      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      min-height: 100vh;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n          .editable-component{\n          border:none !important;\n          box-shadow:none !important;\n          }\n\n      `
+      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n          .editable-component{\n          border:none !important;\n          box-shadow:none !important;\n          }\n\n      `
     );
     const s = e.querySelectorAll('*'),
       i = [
@@ -3979,16 +3979,22 @@ class z {
     e &&
       e.addEventListener('click', () => {
         const e = new $(new S()),
-          t = e.generateHTML(),
-          n = e.generateCSS(),
-          o = window.open('', '_blank');
-        if (o) {
-          const e = `\n            <html>\n              <head>\n                <title>Export PDF</title>\n                <style>\n                  ${n} \n                  body {\n                    margin: 0;\n                    padding: 20px;\n                    font-family: Arial, sans-serif;\n                  }\n                  @media print {\n                    /* Ensure print styles are applied */\n                    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }\n                    \n                    /* Remove browser headers and footers */\n                    @page {\n                      size: auto;\n                      margin: 0mm;  /* Remove default margins */\n                    }\n                    \n                    /* For Chrome/Safari */\n                    @page { margin: 0; }\n                    html { margin: 0; }\n                  }\n                </style>\n              </head>\n              <body>\n                ${t} \x3c!-- Generated HTML --\x3e\n              </body>\n            </html>\n          `;
-          o.document.write(e),
-            o.document.close(),
+          t = e.generateHTML();
+        let n = e.generateCSS();
+        const o = document.getElementById('canvas');
+        if (!o) return;
+        const s = o.scrollWidth,
+          i = o.scrollHeight,
+          l = Math.min(755 / s, 1);
+        n = n.replace(/min-height:\s*100vh/gi, 'min-height: auto');
+        const a = window.open('', '_blank');
+        if (a) {
+          const e = `\n<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Export PDF</title>\n    <style>\n      ${n}\n      \n      body {\n        margin: 20px;\n        padding: 0;\n        font-family: Arial, sans-serif;\n      }\n\n      @media print {\n        @page {\n          size: A4 portrait;\n          margin: 8mm;\n        }\n        \n        html, body {\n          margin: 0 !important;\n          padding: 0 !important;\n          width: 100% !important;\n          height: auto !important;\n          overflow: hidden !important;\n        }\n        \n        body {\n          print-color-adjust: exact !important;\n          -webkit-print-color-adjust: exact !important;\n        }\n        \n        #canvas.home {\n          width: ${s}px !important;\n          height: ${i}px !important;\n          min-height: auto !important;\n          transform: scale(${l}) !important;\n          transform-origin: top left !important;\n          position: relative !important;\n          margin: 0 !important;\n          padding: 0 !important;\n          overflow: visible !important;\n        }\n        \n        /* Maintain absolute positioning of children during scale */\n        #canvas.home > * {\n          position: absolute;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    ${t}\n  </body>\n</html>`;
+          a.document.write(e),
+            a.document.close(),
             setTimeout(() => {
-              o.print(), o.close();
-            }, 500);
+              a.print();
+            }, 1e3);
         }
       });
   }
