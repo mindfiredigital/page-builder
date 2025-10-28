@@ -3098,7 +3098,7 @@ class S {
     link: () => new h().create(),
   });
 const M = document.getElementById('canvas'),
-  I = new (class {
+  A = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -3119,9 +3119,9 @@ const M = document.getElementById('canvas'),
 M &&
   M.addEventListener('click', e => {
     const t = e.target;
-    t !== M && I.selectElement(t);
+    t !== M && A.selectElement(t);
   });
-class A {
+class I {
   constructor(e) {
     this.canvas = e;
   }
@@ -3202,7 +3202,7 @@ class $ {
       n = [],
       o = new Set();
     n.push(
-      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n          .editable-component{\n          border:none !important;\n          box-shadow:none !important;\n          }\n\n      `
+      `\n      body, html {\n          margin: 0;\n          padding: 0;\n          width: 100%;\n          height: 100%;\n          box-sizing: border-box;\n      }\n        #canvas.home {\n      position: relative;\n      display: block;\n      width: 100%;\n      min-height: 100vh;\n      background-color: ${t};\n      margin: 0;\n      overflow: visible;\n  }\n\n      table {\n          border-collapse: collapse ;\n\n      }\n          .editable-component{\n          border:none !important;\n          box-shadow:none !important;\n          }\n\n      `
     );
     const s = e.querySelectorAll('*'),
       i = [
@@ -3517,7 +3517,7 @@ class z {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
       (this.canvas = new S()),
-      (this.sidebar = new A(this.canvas)),
+      (this.sidebar = new I(this.canvas)),
       (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
@@ -3531,7 +3531,7 @@ class z {
   }
   initializeEventListeners() {
     (this.canvas = new S()),
-      (this.sidebar = new A(this.canvas)),
+      (this.sidebar = new I(this.canvas)),
       (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
@@ -3981,20 +3981,18 @@ class z {
         const e = new $(new S()),
           t = e.generateHTML();
         let n = e.generateCSS();
-        const o = document.getElementById('canvas');
-        if (!o) return;
-        const s = o.scrollWidth,
-          i = o.scrollHeight,
-          l = Math.min(755 / s, 1);
+        if (!document.getElementById('canvas')) return;
+        const o = 1645,
+          s = Math.min(755 / o, 1);
         n = n.replace(/min-height:\s*100vh/gi, 'min-height: auto');
-        const a = window.open('', '_blank');
-        if (a) {
-          const e = `\n<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Export PDF</title>\n    <style>\n      ${n}\n      \n      body {\n        margin: 20px;\n        padding: 0;\n        font-family: Arial, sans-serif;\n      }\n\n      @media print {\n        @page {\n          size: A4 portrait;\n          margin: 8mm;\n        }\n        \n        html, body {\n          margin: 0 !important;\n          padding: 0 !important;\n          width: 100% !important;\n          height: auto !important;\n          overflow: hidden !important;\n        }\n        \n        body {\n          print-color-adjust: exact !important;\n          -webkit-print-color-adjust: exact !important;\n        }\n        \n        #canvas.home {\n          width: ${s}px !important;\n          height: ${i}px !important;\n          min-height: auto !important;\n          transform: scale(${l}) !important;\n          transform-origin: top left !important;\n          position: relative !important;\n          margin: 0 !important;\n          padding: 0 !important;\n          overflow: visible !important;\n        }\n        \n        /* Maintain absolute positioning of children during scale */\n        #canvas.home > * {\n          position: absolute;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    ${t}\n  </body>\n</html>`;
-          a.document.write(e),
-            a.document.close(),
+        const i = window.open('', '_blank');
+        if (i) {
+          const e = `\n<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Export PDF</title>\n    <style>\n      ${n}\n      \n      body {\n        margin: 0;\n        padding: 0;\n        font-family: Arial, sans-serif;\n      }\n\n      @media print {\n        @page {\n          /* Set A4 size and ensure 8mm margin, matching the print container */\n          size: A4 portrait;\n          margin: 4mm; /* Ensures the print container matches this margin */\n        }\n        \n        html, body {\n          /* Reset external margins/padding */\n          margin: 0 !important;\n          padding: 0 !important;\n          /* Explicitly set the wrapper size to the scaled dimensions to manage page breaks */\n          width: ${o * s}px; \n          height: ${694 * s}px;\n          overflow: hidden !important; /* Hide scrollbars */\n        }\n        \n        body {\n          print-color-adjust: exact !important;\n          -webkit-print-color-adjust: exact !important;\n        }\n        \n        /* THE CANVAS WRAPPER - Apply scale here */\n        #canvas.home {\n          /* Set to the original (unscaled) dimensions */\n          width: 1645px !important;\n          height: 694px !important;\n          min-height: auto !important;\n          \n          /* Apply the calculated scale */\n          transform: scale(${s}) !important;\n          transform-origin: top left !important;\n          \n          /* Positioning fixes */\n          position: relative !important;\n          margin: 0 !important;\n          padding: 0 !important;\n          overflow: visible !important;\n        }\n        \n      \n      }\n    </style>\n  </head>\n  <body>\n    ${t}\n  </body>\n</html>`;
+          i.document.write(e),
+            i.document.close(),
             setTimeout(() => {
-              a.print();
-            }, 1e3);
+              i.print();
+            }, 1500);
         }
       });
   }
