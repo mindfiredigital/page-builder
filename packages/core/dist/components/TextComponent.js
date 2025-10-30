@@ -1,5 +1,5 @@
-import { Canvas } from '../canvas/Canvas.js';
-import { ModalComponent } from './ModalManager.js';
+import { Canvas } from '../canvas/Canvas';
+import { ModalComponent } from './ModalManager';
 export class TextComponent {
   constructor(text = 'Sample Text') {
     this.text = text;

@@ -1,4 +1,4 @@
-import { Canvas } from '../canvas/Canvas.js';
+import { Canvas } from '../canvas/Canvas';
 export class ShortcutManager {
   /**
    * Initializes keyboard shortcuts.

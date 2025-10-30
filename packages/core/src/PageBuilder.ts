@@ -29,6 +29,7 @@ export class PageBuilder {
   private editable: boolean | null;
   private brandTitle: string | undefined;
   private showAttributeTab: boolean | undefined;
+  private static initialCanvasWidth: number | null = null;
 
   constructor(
     dynamicComponents: DynamicComponents = {
@@ -234,12 +235,16 @@ export class PageBuilder {
         const canvasElement = document.getElementById('canvas');
         if (!canvasElement) return;
 
-        // 1. Get the LIVE rendered dimensions of the canvas
-        // Using getBoundingClientRect() provides the accurate, currently displayed size
-        // const rect = canvasElement.getBoundingClientRect();
-        const canvasWidth = 1645;
+        let canvasWidth: number;
+        if (PageBuilder.initialCanvasWidth === null) {
+          const rect = canvasElement.getBoundingClientRect();
+          canvasWidth = rect.width + 172;
+          PageBuilder.initialCanvasWidth = canvasWidth;
+        } else {
+          canvasWidth = PageBuilder.initialCanvasWidth;
+        }
 
-        const canvasHeight = 694;
+        const canvasHeight = canvasElement.getBoundingClientRect().height;
 
         const A4_MARGIN_MM = 4;
         const A4_USABLE_WIDTH_PX = 755;
