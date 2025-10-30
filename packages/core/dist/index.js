@@ -3098,7 +3098,7 @@ class S {
     link: () => new h().create(),
   });
 const M = document.getElementById('canvas'),
-  I = new (class {
+  A = new (class {
     constructor() {
       (this.selectedElement = null),
         document.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -3119,9 +3119,9 @@ const M = document.getElementById('canvas'),
 M &&
   M.addEventListener('click', e => {
     const t = e.target;
-    t !== M && I.selectElement(t);
+    t !== M && A.selectElement(t);
   });
-class A {
+class I {
   constructor(e) {
     this.canvas = e;
   }
@@ -3517,7 +3517,7 @@ class z {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
       (this.canvas = new S()),
-      (this.sidebar = new A(this.canvas)),
+      (this.sidebar = new I(this.canvas)),
       (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
@@ -3531,7 +3531,7 @@ class z {
   }
   initializeEventListeners() {
     (this.canvas = new S()),
-      (this.sidebar = new A(this.canvas)),
+      (this.sidebar = new I(this.canvas)),
       (this.htmlGenerator = new $(this.canvas)),
       (this.jsonStorage = new v()),
       (this.previewPanel = new T()),
@@ -3979,16 +3979,20 @@ class z {
     e &&
       e.addEventListener('click', () => {
         const e = new $(new S()),
-          t = e.generateHTML(),
-          n = e.generateCSS(),
-          o = window.open('', '_blank');
-        if (o) {
-          const e = `\n            <html>\n              <head>\n                <title>Export PDF</title>\n                <style>\n                  ${n} \n                  body {\n                    margin: 0;\n                    padding: 20px;\n                    font-family: Arial, sans-serif;\n                  }\n                  @media print {\n                    /* Ensure print styles are applied */\n                    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }\n                    \n                    /* Remove browser headers and footers */\n                    @page {\n                      size: auto;\n                      margin: 0mm;  /* Remove default margins */\n                    }\n                    \n                    /* For Chrome/Safari */\n                    @page { margin: 0; }\n                    html { margin: 0; }\n                  }\n                </style>\n              </head>\n              <body>\n                ${t} \x3c!-- Generated HTML --\x3e\n              </body>\n            </html>\n          `;
-          o.document.write(e),
-            o.document.close(),
+          t = e.generateHTML();
+        let n = e.generateCSS();
+        if (!document.getElementById('canvas')) return;
+        const o = 1645,
+          s = Math.min(755 / o, 1);
+        n = n.replace(/min-height:\s*100vh/gi, 'min-height: auto');
+        const i = window.open('', '_blank');
+        if (i) {
+          const e = `\n<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Export PDF</title>\n    <style>\n      ${n}\n      \n      body {\n        margin: 0;\n        padding: 0;\n        font-family: Arial, sans-serif;\n      }\n\n      @media print {\n        @page {\n          /* Set A4 size and ensure 8mm margin, matching the print container */\n          size: A4 portrait;\n          margin: 4mm; /* Ensures the print container matches this margin */\n        }\n        \n        html, body {\n          /* Reset external margins/padding */\n          margin: 0 !important;\n          padding: 0 !important;\n          /* Explicitly set the wrapper size to the scaled dimensions to manage page breaks */\n          width: ${o * s}px; \n          height: ${694 * s}px;\n          overflow: hidden !important; /* Hide scrollbars */\n        }\n        \n        body {\n          print-color-adjust: exact !important;\n          -webkit-print-color-adjust: exact !important;\n        }\n        \n        /* THE CANVAS WRAPPER - Apply scale here */\n        #canvas.home {\n          /* Set to the original (unscaled) dimensions */\n          width: 1645px !important;\n          height: 694px !important;\n          min-height: auto !important;\n          \n          /* Apply the calculated scale */\n          transform: scale(${s}) !important;\n          transform-origin: top left !important;\n          \n          /* Positioning fixes */\n          position: relative !important;\n          margin: 0 !important;\n          padding: 0 !important;\n          overflow: visible !important;\n        }\n        \n      \n      }\n    </style>\n  </head>\n  <body>\n    ${t}\n  </body>\n</html>`;
+          i.document.write(e),
+            i.document.close(),
             setTimeout(() => {
-              o.print(), o.close();
-            }, 500);
+              i.print();
+            }, 1500);
         }
       });
   }
