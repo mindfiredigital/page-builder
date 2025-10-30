@@ -16,6 +16,7 @@ module.exports = {
         'configuration/features/styling-components',
         'configuration/features/view-mode',
         'configuration/features/attributes-formulas',
+        'configuration/features/components',
         'configuration/features/custom-components',
         'configuration/features/state-management',
       ],

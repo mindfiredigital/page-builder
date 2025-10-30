@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../../UI/Button';
 import { ArrowRight, Github, Sparkles, Zap } from 'lucide-react';
 import { TypeText } from '../../UI/Text/TypeText';
@@ -26,23 +26,22 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative py-20 px-6 overflow-hidden">
+    <section className={`relative py-20 px-6 overflow-hidden`}>
       {/* Background Effects */}
-      <div className="absolute inset-0  overflow-hidden">
-
+      <div className="absolute top-10 inset-0  overflow-hidden" >
         <Particles moveParticlesOnHover={true} particleHoverFactor={2.0} />
+
+
+        {/* Spotlight effect */}
+        {/* <div
+          ref={spotlightRef}
+          className="fixed inset-0  transition-transform duration-300 ease-out opacity-30"
+          style={{
+            background:
+              'radial-gradient(600px circle at 50% 50%,  rgba(207, 67, 31, 0.8), transparent 40%)',
+          }}
+        /> */}
       </div>
-
-      {/* Spotlight effect */}
-      {/* <div
-        ref={spotlightRef}
-        className="fixed inset-0  transition-transform duration-300 ease-out opacity-30"
-        style={{
-          background:
-            'radial-gradient(600px circle at 50% 50%,  rgba(207, 67, 31, 0.8), transparent 40%)',
-        }}
-      /> */}
-
       <div className="max-w-7xl mx-auto text-center relative z-10">
         {/* Brand Badge */}
         <motion.div
@@ -117,7 +116,7 @@ export const HeroSection = () => {
         >
           <Button
             size="xl"
-            className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
           >
             Start Building <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -130,7 +129,8 @@ export const HeroSection = () => {
             <Button
               variant="outline"
               size="xl"
-              className="border-red-500/50 bg-red-50/50 dark:bg-red-950/50 backdrop-blur-sm hover:bg-red-100/50 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-8 py-4 rounded-2xl border-2"
+              className="border-red-500/50 backdrop-blur-sm hover:bg-red-100/50 text-red-600 px-8 py-4 rounded-2xl border-2"
+
             >
               <Github className="mr-2 h-5 w-5" />
               View Demo

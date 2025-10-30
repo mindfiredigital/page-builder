@@ -223,66 +223,110 @@ export class PageBuilder {
     }
   }
 
-  /**
-   * This function handles the exporting feature in PDF format
-   */
   public setupExportPDFButton() {
     const exportButton = document.getElementById('export-pdf-btn');
     if (exportButton) {
       exportButton.addEventListener('click', () => {
         const htmlGenerator = new HTMLGenerator(new Canvas());
         const html = htmlGenerator.generateHTML();
-        const css = htmlGenerator.generateCSS();
+        let css = htmlGenerator.generateCSS();
 
-        // Create a new window
+        const canvasElement = document.getElementById('canvas');
+        if (!canvasElement) return;
+
+        // 1. Get the LIVE rendered dimensions of the canvas
+        // Using getBoundingClientRect() provides the accurate, currently displayed size
+        // const rect = canvasElement.getBoundingClientRect();
+        const canvasWidth = 1645;
+
+        const canvasHeight = 694;
+
+        const A4_MARGIN_MM = 4;
+        const A4_USABLE_WIDTH_PX = 755;
+
+        const scale = Math.min(A4_USABLE_WIDTH_PX / canvasWidth, 1);
+        // console.log(rect.width, rect.height, scale)
+        css = css.replace(/min-height:\s*100vh/gi, 'min-height: auto');
+
         const printWindow = window.open('', '_blank');
 
         if (printWindow) {
           const fullHTML = `
-            <html>
-              <head>
-                <title>Export PDF</title>
-                <style>
-                  ${css} 
-                  body {
-                    margin: 0;
-                    padding: 20px;
-                    font-family: Arial, sans-serif;
-                  }
-                  @media print {
-                    /* Ensure print styles are applied */
-                    body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-                    
-                    /* Remove browser headers and footers */
-                    @page {
-                      size: auto;
-                      margin: 0mm;  /* Remove default margins */
-                    }
-                    
-                    /* For Chrome/Safari */
-                    @page { margin: 0; }
-                    html { margin: 0; }
-                  }
-                </style>
-              </head>
-              <body>
-                ${html} <!-- Generated HTML -->
-              </body>
-            </html>
-          `;
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export PDF</title>
+    <style>
+      ${css}
+      
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      @media print {
+        @page {
+          /* Set A4 size and ensure 8mm margin, matching the print container */
+          size: A4 portrait;
+          margin: ${A4_MARGIN_MM}mm; /* Ensures the print container matches this margin */
+        }
+        
+        html, body {
+          /* Reset external margins/padding */
+          margin: 0 !important;
+          padding: 0 !important;
+          /* Explicitly set the wrapper size to the scaled dimensions to manage page breaks */
+          width: ${canvasWidth * scale}px; 
+          height: ${canvasHeight * scale}px;
+          overflow: hidden !important; /* Hide scrollbars */
+        }
+        
+        body {
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+        }
+        
+        /* THE CANVAS WRAPPER - Apply scale here */
+        #canvas.home {
+          /* Set to the original (unscaled) dimensions */
+          width: ${canvasWidth}px !important;
+          height: ${canvasHeight}px !important;
+          min-height: auto !important;
+          
+          /* Apply the calculated scale */
+          transform: scale(${scale}) !important;
+          transform-origin: top left !important;
+          
+          /* Positioning fixes */
+          position: relative !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: visible !important;
+        }
+        
+      
+      }
+    </style>
+  </head>
+  <body>
+    ${html}
+  </body>
+</html>`;
+
           printWindow.document.write(fullHTML);
           printWindow.document.close();
 
-          // Delay printing slightly to allow CSS processing
+          // Wait a little longer for resources to load before printing
           setTimeout(() => {
             printWindow.print();
-            printWindow.close();
-          }, 500);
+          }, 1500); // Increased delay for safety
         }
       });
     }
   }
-
   public createExportModal(
     highlightedHTML: string,
     highlightedCSS: string,

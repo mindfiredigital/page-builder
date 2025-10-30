@@ -2,9 +2,9 @@
 
 import React, { memo, useEffect, useState } from "react"
 import { ComponentPropsWithoutRef, CSSProperties, FC } from 'react';
-const getTheme = () => {
-  if (typeof window === 'undefined') return 'dark';
-  return document.documentElement.getAttribute('data-theme') || 'dark';
+
+const getClientTheme = (): string => {
+  return document.documentElement.getAttribute('data-theme') || 'light';
 };
 
 interface AuroraTextProps {
@@ -21,10 +21,14 @@ export const AuroraText = memo(
     colors: propColors,
     speed = 1,
   }: AuroraTextProps) => {
-    const [theme, setTheme] = useState(() => getTheme());
+    const [theme, setTheme] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-      const observer = new MutationObserver(() => setTheme(getTheme()));
+      // 2. Set the initial theme ONLY after the component mounts
+      setTheme(getClientTheme());
+
+      // 3. Keep the observer logic to handle theme *changes*
+      const observer = new MutationObserver(() => setTheme(getClientTheme()));
       observer.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['data-theme'],
@@ -52,7 +56,7 @@ export const AuroraText = memo(
       <span className={`relative inline-block ${className}`}>
         <span className="sr-only">{children}</span>
         <span
-          className="animate-aurora relative bg-[length:200%_auto] bg-clip-text text-transparent"
+          className="animate-aurora relative bg-size-[200%_auto] bg-clip-text text-transparent"
           style={gradientStyle}
           aria-hidden="true"
         >
