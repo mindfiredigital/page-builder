@@ -1,4 +1,4 @@
-import { svgs } from '../icons/svgs.js';
+import { svgs } from '../icons/svgs';
 export function createNavbar(
   editable,
   brandTitle = 'Page Builder',

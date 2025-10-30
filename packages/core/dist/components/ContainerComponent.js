@@ -1,5 +1,5 @@
-import { Canvas } from '../canvas/Canvas.js';
-import { ImageComponent } from './ImageComponent.js';
+import { Canvas } from '../canvas/Canvas';
+import { ImageComponent } from './ImageComponent';
 export class ContainerComponent {
   constructor() {
     this.MINIMUM_SIZE = 20;
