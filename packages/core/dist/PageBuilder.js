@@ -1,21 +1,21 @@
-import { Canvas } from './canvas/Canvas.js';
-import { Sidebar } from './sidebar/ConfigSidebar.js';
-import { CustomizationSidebar } from './sidebar/CustomizationSidebar.js';
-import { createSidebar } from './sidebar/CreateSidebar.js';
-import { createNavbar } from './navbar/CreateNavbar.js';
-import { HTMLGenerator } from './services/HTMLGenerator.js';
-import { JSONStorage } from './services/JSONStorage.js';
+import { Canvas } from './canvas/Canvas';
+import { Sidebar } from './sidebar/ConfigSidebar';
+import { CustomizationSidebar } from './sidebar/CustomizationSidebar';
+import { createSidebar } from './sidebar/CreateSidebar';
+import { createNavbar } from './navbar/CreateNavbar';
+import { HTMLGenerator } from './services/HTMLGenerator';
+import { JSONStorage } from './services/JSONStorage';
 import {
   showDialogBox,
   showNotification,
   syntaxHighlightCSS,
   syntaxHighlightHTML,
-} from './utils/utilityFunctions.js';
-import { createZipFile } from './utils/zipGenerator.js';
-import { ShortcutManager } from './services/ShortcutManager.js';
-import { PreviewPanel } from './canvas/PreviewPanel.js';
+} from './utils/utilityFunctions';
+import { createZipFile } from './utils/zipGenerator';
+import { ShortcutManager } from './services/ShortcutManager';
+import { PreviewPanel } from './canvas/PreviewPanel';
 import './styles/main.css';
-import { svgs } from './icons/svgs.js';
+import { svgs } from './icons/svgs';
 export class PageBuilder {
   constructor(
     dynamicComponents = {
@@ -196,11 +196,15 @@ export class PageBuilder {
         let css = htmlGenerator.generateCSS();
         const canvasElement = document.getElementById('canvas');
         if (!canvasElement) return;
-        // 1. Get the LIVE rendered dimensions of the canvas
-        // Using getBoundingClientRect() provides the accurate, currently displayed size
-        // const rect = canvasElement.getBoundingClientRect();
-        const canvasWidth = 1645;
-        const canvasHeight = 694;
+        let canvasWidth;
+        if (PageBuilder.initialCanvasWidth === null) {
+          const rect = canvasElement.getBoundingClientRect();
+          canvasWidth = rect.width + 172;
+          PageBuilder.initialCanvasWidth = canvasWidth;
+        } else {
+          canvasWidth = PageBuilder.initialCanvasWidth;
+        }
+        const canvasHeight = canvasElement.getBoundingClientRect().height;
         const A4_MARGIN_MM = 4;
         const A4_USABLE_WIDTH_PX = 755;
         const scale = Math.min(A4_USABLE_WIDTH_PX / canvasWidth, 1);
@@ -521,3 +525,4 @@ export class PageBuilder {
   }
 }
 PageBuilder.headerInitialized = false;
+PageBuilder.initialCanvasWidth = null;
