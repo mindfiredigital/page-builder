@@ -2722,17 +2722,17 @@ class S {
   static setComponents(e) {
     k.components = e;
   }
-  static init(t = null, n, o) {
-    this.editable = n;
-    const s = o.find(e => 'table' === e.name);
-    this.tableAttributeConfig = null == s ? void 0 : s.attributes;
-    const i = o.find(e => 'text' === e.name);
-    this.textAttributeConfig = null == i ? void 0 : i.attributes;
-    const l = o.find(e => 'header' === e.name);
-    this.headerAttributeConfig = null == l ? void 0 : l.attributes;
-    const a = o.find(e => 'image' === e.name);
-    (this.ImageAttributeConfig = null == a ? void 0 : a.globalExecuteFunction),
-      s && s.attributes && s.attributes.length,
+  static init(t = null, n, o, s = 'absolute') {
+    (this.editable = n), (this.layoutMode = s);
+    const i = o.find(e => 'table' === e.name);
+    this.tableAttributeConfig = null == i ? void 0 : i.attributes;
+    const l = o.find(e => 'text' === e.name);
+    this.textAttributeConfig = null == l ? void 0 : l.attributes;
+    const a = o.find(e => 'header' === e.name);
+    this.headerAttributeConfig = null == a ? void 0 : a.attributes;
+    const r = o.find(e => 'image' === e.name);
+    (this.ImageAttributeConfig = null == r ? void 0 : r.globalExecuteFunction),
+      i && i.attributes && i.attributes.length,
       (k.canvasElement = document.getElementById('canvas')),
       (k.sidebarElement = document.getElementById('sidebar')),
       window.addEventListener('table-design-change', () => {
@@ -2745,6 +2745,7 @@ class S {
         const t = e.target;
         t && E.showSidebar(t.id);
       }),
+      'grid' == s && k.canvasElement.classList.add('grid-layout-active'),
       (k.canvasElement.style.position = 'relative'),
       (this.lastCanvasWidth = k.canvasElement.offsetWidth),
       (k.historyManager = new g(k.canvasElement)),
@@ -2921,15 +2922,20 @@ class S {
       const t = k.generateUniqueClass(s);
       (r.id = t),
         r.classList.add(t),
-        (r.style.position = 'absolute'),
-        'container' === s || 'twoCol' === s || 'threeCol' === s
-          ? (r.style.top = `${e.offsetY}px`)
-          : ((r.style.position = 'absolute'),
-            (r.style.left = `${l}px`),
-            (r.style.top = `${a}px`)),
+        'absolute' === k.layoutMode
+          ? ((r.style.position = 'absolute'),
+            'container' === s || 'twoCol' === s || 'threeCol' === s
+              ? (r.style.top = `${e.offsetY}px`)
+              : ((r.style.position = 'absolute'),
+                (r.style.left = `${l}px`),
+                (r.style.top = `${a}px`)),
+            k.addDraggableListeners(r))
+          : 'grid' === k.layoutMode &&
+            ((r.style.position = ''),
+            r.hasAttribute('draggable') &&
+              (r.removeAttribute('draggable'), (r.style.cursor = 'default'))),
         k.components.push(r),
         k.canvasElement.appendChild(r),
-        k.addDraggableListeners(r),
         k.historyManager.captureState();
     }
     k.dispatchDesignChange();
@@ -3512,7 +3518,8 @@ class z {
     t = null,
     n = !0,
     o,
-    s
+    s,
+    i = 'absolute'
   ) {
     (this.dynamicComponents = e),
       (this.initialDesign = t),
@@ -3524,7 +3531,9 @@ class z {
       (this.editable = n),
       (this.brandTitle = o),
       (this.showAttributeTab = s),
-      this.initializeEventListeners();
+      (this.layoutMode = i),
+      this.initializeEventListeners(),
+      console.log(i, 'layout');
   }
   static resetHeaderFlag() {
     z.headerInitialized = !1;
@@ -3693,7 +3702,12 @@ class z {
         }),
         n.appendChild(i);
     })(this.dynamicComponents, this.editable),
-      S.init(this.initialDesign, this.editable, this.dynamicComponents.Basic),
+      S.init(
+        this.initialDesign,
+        this.editable,
+        this.dynamicComponents.Basic,
+        this.layoutMode
+      ),
       this.sidebar.init(),
       H.init(),
       E.init(
@@ -3981,17 +3995,27 @@ class z {
         const e = new $(new S()),
           t = e.generateHTML();
         let n = e.generateCSS();
-        if (!document.getElementById('canvas')) return;
-        const o = 1645,
-          s = Math.min(755 / o, 1);
+        const o = document.getElementById('canvas'),
+          s = document.getElementById('sidebar');
+        if (!o) return;
+        let i;
+        if (null === z.initialCanvasWidth) {
+          const e = o.getBoundingClientRect();
+          (i = s
+            ? e.width + (null == s ? void 0 : s.getBoundingClientRect().width)
+            : e.width),
+            (z.initialCanvasWidth = i);
+        } else i = z.initialCanvasWidth;
+        const l = o.getBoundingClientRect().height,
+          a = Math.min(755 / i, 1);
         n = n.replace(/min-height:\s*100vh/gi, 'min-height: auto');
-        const i = window.open('', '_blank');
-        if (i) {
-          const e = `\n<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Export PDF</title>\n    <style>\n      ${n}\n      \n      body {\n        margin: 0;\n        padding: 0;\n        font-family: Arial, sans-serif;\n      }\n\n      @media print {\n        @page {\n          /* Set A4 size and ensure 8mm margin, matching the print container */\n          size: A4 portrait;\n          margin: 4mm; /* Ensures the print container matches this margin */\n        }\n        \n        html, body {\n          /* Reset external margins/padding */\n          margin: 0 !important;\n          padding: 0 !important;\n          /* Explicitly set the wrapper size to the scaled dimensions to manage page breaks */\n          width: ${o * s}px; \n          height: ${694 * s}px;\n          overflow: hidden !important; /* Hide scrollbars */\n        }\n        \n        body {\n          print-color-adjust: exact !important;\n          -webkit-print-color-adjust: exact !important;\n        }\n        \n        /* THE CANVAS WRAPPER - Apply scale here */\n        #canvas.home {\n          /* Set to the original (unscaled) dimensions */\n          width: 1645px !important;\n          height: 694px !important;\n          min-height: auto !important;\n          \n          /* Apply the calculated scale */\n          transform: scale(${s}) !important;\n          transform-origin: top left !important;\n          \n          /* Positioning fixes */\n          position: relative !important;\n          margin: 0 !important;\n          padding: 0 !important;\n          overflow: visible !important;\n        }\n        \n      \n      }\n    </style>\n  </head>\n  <body>\n    ${t}\n  </body>\n</html>`;
-          i.document.write(e),
-            i.document.close(),
+        const r = window.open('', '_blank');
+        if (r) {
+          const e = `\n<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Export PDF</title>\n    <style>\n      ${n}\n      \n      body {\n        margin: 0;\n        padding: 0;\n        font-family: Arial, sans-serif;\n      }\n\n      @media print {\n        @page {\n          /* Set A4 size and ensure 8mm margin, matching the print container */\n          size: A4 portrait;\n          margin: 4mm; /* Ensures the print container matches this margin */\n        }\n        \n        html, body {\n          /* Reset external margins/padding */\n          margin: 0 !important;\n          padding: 0 !important;\n          /* Explicitly set the wrapper size to the scaled dimensions to manage page breaks */\n          width: ${i * a}px; \n          height: ${l * a}px;\n          overflow: hidden !important; /* Hide scrollbars */\n        }\n        \n        body {\n          print-color-adjust: exact !important;\n          -webkit-print-color-adjust: exact !important;\n        }\n        \n        /* THE CANVAS WRAPPER - Apply scale here */\n        #canvas.home {\n          /* Set to the original (unscaled) dimensions */\n          width: ${i}px !important;\n          height: ${l}px !important;\n          min-height: auto !important;\n          \n          /* Apply the calculated scale */\n          transform: scale(${a}) !important;\n          transform-origin: top left !important;\n          \n          /* Positioning fixes */\n          position: relative !important;\n          margin: 0 !important;\n          padding: 0 !important;\n          overflow: visible !important;\n        }\n        \n      \n      }\n    </style>\n  </head>\n  <body>\n    ${t}\n  </body>\n</html>`;
+          r.document.write(e),
+            r.document.close(),
             setTimeout(() => {
-              i.print();
+              r.print();
             }, 1500);
         }
       });
@@ -4175,6 +4199,6 @@ class z {
         });
   }
 }
-z.headerInitialized = !1;
+(z.headerInitialized = !1), (z.initialCanvasWidth = null);
 const V = new z();
 (exports.PageBuilder = z), (exports.PageBuilderCore = V);

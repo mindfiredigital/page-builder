@@ -15,6 +15,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   editable = true,
   brandTitle,
   showAttributeTab,
+  layoutMode = 'absolute'
 }) => {
   const builderRef = useRef<PageBuilderElement>(null);
   const [processedConfig, setProcessedConfig] =
@@ -126,8 +127,6 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
     setProcessedConfig(modifiedConfig);
   }, [config, customComponents]);
 
-  // PageBuilderReact.tsx - Modified useEffect to use customElements.whenDefined
-
   useEffect(() => {
     if (builderRef.current) {
       customElements.whenDefined('page-builder').then(() => {
@@ -139,6 +138,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
             builderRef.current.showAttributeTab = showAttributeTab;
+            builderRef.current.layoutMode = layoutMode;
 
             const configString = JSON.stringify(processedConfig);
             builderRef.current.setAttribute('config-data', configString);

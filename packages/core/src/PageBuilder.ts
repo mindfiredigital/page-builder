@@ -29,6 +29,8 @@ export class PageBuilder {
   private editable: boolean | null;
   private brandTitle: string | undefined;
   private showAttributeTab: boolean | undefined;
+  private layoutMode: 'absolute' | 'grid' | undefined;
+  private static initialCanvasWidth: number | null = null;
 
   constructor(
     dynamicComponents: DynamicComponents = {
@@ -39,7 +41,8 @@ export class PageBuilder {
     initialDesign: PageBuilderDesign | null = null,
     editable: boolean | null = true,
     brandTitle?: string,
-    showAttributeTab?: boolean
+    showAttributeTab?: boolean,
+    layoutMode: 'absolute' | 'grid' | undefined = 'absolute'
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -51,7 +54,9 @@ export class PageBuilder {
     this.editable = editable;
     this.brandTitle = brandTitle;
     this.showAttributeTab = showAttributeTab;
+    this.layoutMode = layoutMode;
     this.initializeEventListeners();
+    console.log(layoutMode, 'layout');
   }
 
   // Static method to reset header flag (called during cleanup)
@@ -85,7 +90,8 @@ export class PageBuilder {
     Canvas.init(
       this.initialDesign,
       this.editable,
-      this.dynamicComponents.Basic
+      this.dynamicComponents.Basic,
+      this.layoutMode
     );
 
     this.sidebar.init();
@@ -232,20 +238,28 @@ export class PageBuilder {
         let css = htmlGenerator.generateCSS();
 
         const canvasElement = document.getElementById('canvas');
+        const sidebarElement = document.getElementById('sidebar');
         if (!canvasElement) return;
+        let canvasWidth: number;
+        if (PageBuilder.initialCanvasWidth === null) {
+          const rect = canvasElement.getBoundingClientRect();
+          if (sidebarElement) {
+            canvasWidth =
+              rect.width + sidebarElement?.getBoundingClientRect().width;
+          } else {
+            canvasWidth = rect.width;
+          }
+          PageBuilder.initialCanvasWidth = canvasWidth;
+        } else {
+          canvasWidth = PageBuilder.initialCanvasWidth;
+        }
 
-        // 1. Get the LIVE rendered dimensions of the canvas
-        // Using getBoundingClientRect() provides the accurate, currently displayed size
-        // const rect = canvasElement.getBoundingClientRect();
-        const canvasWidth = 1645;
-
-        const canvasHeight = 694;
+        const canvasHeight = canvasElement.getBoundingClientRect().height;
 
         const A4_MARGIN_MM = 4;
         const A4_USABLE_WIDTH_PX = 755;
 
         const scale = Math.min(A4_USABLE_WIDTH_PX / canvasWidth, 1);
-        // console.log(rect.width, rect.height, scale)
         css = css.replace(/min-height:\s*100vh/gi, 'min-height: auto');
 
         const printWindow = window.open('', '_blank');

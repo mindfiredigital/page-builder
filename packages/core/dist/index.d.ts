@@ -10,12 +10,15 @@ declare class PageBuilder {
   private editable;
   private brandTitle;
   private showAttributeTab;
+  private layoutMode;
+  private static initialCanvasWidth;
   constructor(
     dynamicComponents?: DynamicComponents,
     initialDesign?: PageBuilderDesign | null,
     editable?: boolean | null,
     brandTitle?: string,
-    showAttributeTab?: boolean
+    showAttributeTab?: boolean,
+    layoutMode?: 'absolute' | 'grid' | undefined
   );
   static resetHeaderFlag(): void;
   initializeEventListeners(): void;

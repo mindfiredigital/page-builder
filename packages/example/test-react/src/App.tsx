@@ -104,6 +104,7 @@ const App = () => {
       <PageBuilderReact
         config={dynamicComponents}
         customComponents={customComponents}
+        layoutMode='grid'
       />
     </div>
   );

@@ -2106,3 +2106,9 @@ html {
   width: 1rem;
   height: 1rem;
 }
+
+/*------------------------------*/
+#canvas.grid-layout-active {
+  display: block;
+  overflow: auto;
+}

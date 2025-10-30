@@ -50,6 +50,7 @@ interface PageBuilderReactProps {
   editable?: boolean;
   brandTitle?: string;
   showAttributeTab?: boolean;
+  layoutMode?: 'absolute' | 'grid';
 }
 
 declare const PageBuilderReact: React$1.FC<PageBuilderReactProps>;

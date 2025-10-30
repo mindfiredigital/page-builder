@@ -27,8 +27,14 @@ export class Canvas {
   static setComponents(components) {
     _a.components = components;
   }
-  static init(initialData = null, editable, basicComponentsConfig) {
+  static init(
+    initialData = null,
+    editable,
+    basicComponentsConfig,
+    layouMode = 'absolute'
+  ) {
     this.editable = editable;
+    this.layoutMode = layouMode;
     const tableComponent = basicComponentsConfig.find(
       component => component.name === 'table'
     );
@@ -79,6 +85,9 @@ export class Canvas {
         CustomizationSidebar.showSidebar(component.id);
       }
     });
+    if (layouMode == 'grid') {
+      _a.canvasElement.classList.add('grid-layout-active');
+    }
     _a.canvasElement.style.position = 'relative';
     this.lastCanvasWidth = _a.canvasElement.offsetWidth;
     _a.historyManager = new HistoryManager(_a.canvasElement);
@@ -329,21 +338,29 @@ export class Canvas {
       const uniqueClass = _a.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
-      component.style.position = 'absolute';
-      if (
-        componentType === 'container' ||
-        componentType === 'twoCol' ||
-        componentType === 'threeCol'
-      ) {
-        component.style.top = `${event.offsetY}px`;
-      } else {
+      if (_a.layoutMode === 'absolute') {
         component.style.position = 'absolute';
-        component.style.left = `${gridX}px`;
-        component.style.top = `${gridY}px`;
+        if (
+          componentType === 'container' ||
+          componentType === 'twoCol' ||
+          componentType === 'threeCol'
+        ) {
+          component.style.top = `${event.offsetY}px`;
+        } else {
+          component.style.position = 'absolute';
+          component.style.left = `${gridX}px`;
+          component.style.top = `${gridY}px`;
+        }
+        _a.addDraggableListeners(component);
+      } else if (_a.layoutMode === 'grid') {
+        component.style.position = '';
+        if (component.hasAttribute('draggable')) {
+          component.removeAttribute('draggable');
+          component.style.cursor = 'default';
+        }
       }
       _a.components.push(component);
       _a.canvasElement.appendChild(component);
-      _a.addDraggableListeners(component);
       _a.historyManager.captureState();
     }
     _a.dispatchDesignChange();
