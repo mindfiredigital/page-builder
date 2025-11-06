@@ -28,7 +28,7 @@ export class Canvas {
   public static controlsManager: ComponentControlsManager;
   private static gridManager: GridManager;
   private static editable: boolean | null;
-  private static layoutMode: 'grid' | 'absolute';
+  public static layoutMode: 'grid' | 'absolute';
 
   public static historyManager: HistoryManager;
   public static jsonStorage: JSONStorage;
@@ -69,7 +69,7 @@ export class Canvas {
     initialData: PageBuilderDesign | null = null,
     editable: boolean | null,
     basicComponentsConfig: BasicComponent[],
-    layouMode: 'absolute' | 'grid' = 'absolute'
+    layouMode: 'absolute' | 'grid'
   ) {
     this.editable = editable;
     this.layoutMode = layouMode;
@@ -269,6 +269,10 @@ export class Canvas {
         componentData.classes.forEach((cls: string) => {
           component.classList.add(cls);
         });
+
+        if (component.classList.contains('selected')) {
+          component.classList.remove('selected');
+        }
 
         if (this.editable === false) {
           if (component.classList.contains('component-resizer')) {
@@ -500,7 +504,9 @@ export class Canvas {
       resizeObserver.observe(element);
       element.classList.add('editable-component');
       if (type != 'container') {
-        element.classList.add('component-resizer');
+        if (Canvas.layoutMode !== 'grid') {
+          element.classList.add('component-resizer');
+        }
       }
 
       if (type === 'image') {
@@ -682,6 +688,10 @@ const deleteElementHandler = new DeleteElementHandler();
 
 if (canvas) {
   canvas.addEventListener('click', (event: MouseEvent) => {
+    const selected = document.querySelector('.editable-component.selected');
+    if (selected) {
+      selected.classList.remove('selected');
+    }
     const target = event.target as HTMLElement;
     if (target !== canvas) {
       deleteElementHandler.selectElement(target);

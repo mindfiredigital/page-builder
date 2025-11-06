@@ -27,12 +27,7 @@ export class Canvas {
   static setComponents(components) {
     _a.components = components;
   }
-  static init(
-    initialData = null,
-    editable,
-    basicComponentsConfig,
-    layouMode = 'absolute'
-  ) {
+  static init(initialData = null, editable, basicComponentsConfig, layouMode) {
     this.editable = editable;
     this.layoutMode = layouMode;
     const tableComponent = basicComponentsConfig.find(
@@ -220,6 +215,9 @@ export class Canvas {
         componentData.classes.forEach(cls => {
           component.classList.add(cls);
         });
+        if (component.classList.contains('selected')) {
+          component.classList.remove('selected');
+        }
         if (this.editable === false) {
           if (component.classList.contains('component-resizer')) {
             component.classList.remove('component-resizer');
@@ -416,7 +414,9 @@ export class Canvas {
       resizeObserver.observe(element);
       element.classList.add('editable-component');
       if (type != 'container') {
-        element.classList.add('component-resizer');
+        if (_a.layoutMode !== 'grid') {
+          element.classList.add('component-resizer');
+        }
       }
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
@@ -582,6 +582,10 @@ const canvas = document.getElementById('canvas');
 const deleteElementHandler = new DeleteElementHandler();
 if (canvas) {
   canvas.addEventListener('click', event => {
+    const selected = document.querySelector('.editable-component.selected');
+    if (selected) {
+      selected.classList.remove('selected');
+    }
     const target = event.target;
     if (target !== canvas) {
       deleteElementHandler.selectElement(target);

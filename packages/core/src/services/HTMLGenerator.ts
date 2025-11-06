@@ -18,28 +18,31 @@ export class HTMLGenerator {
     }
 
     const cleanCanvas = canvasElement.cloneNode(true) as HTMLElement;
-
+    const canvasClasses = Array.from(canvasElement.classList).join(' ');
     this.cleanupElements(cleanCanvas);
-    return this.getBaseHTML(cleanCanvas.innerHTML);
+    return this.getBaseHTML(cleanCanvas.innerHTML, canvasClasses);
   }
 
-  private getBaseHTML(bodyContent: string = 'children'): string {
+  private getBaseHTML(
+    bodyContent: string = 'children',
+    canvasClasses: string = 'home'
+  ): string {
     return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page Builder</title>
-    <style>
-      ${this.generateCSS()}
-    </style>
- </head>
-        <body>
-            <div id="canvas" class="home">
-            ${bodyContent}
-            </div>
-        </body>
-      </html>`;
+    <html>
+      <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Page Builder</title>
+          <style>
+            ${this.generateCSS()}
+          </style>
+      </head>
+      <body>
+          <div id="canvas"  class="${canvasClasses}">
+          ${bodyContent}
+          </div>
+      </body>
+    </html>`;
   }
   private cleanupElements(element: HTMLElement) {
     const attributesToRemove = ['contenteditable', 'draggable'];
@@ -69,7 +72,7 @@ export class HTMLGenerator {
       });
 
       const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button'
+        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button,.table-btn-container'
       );
       elementsToRemove.forEach(el => el.remove());
 
@@ -105,11 +108,48 @@ export class HTMLGenerator {
       background-color: ${backgroundColor};
       margin: 0;
       overflow: visible;
+      box-sizing: border-box;
   }
+      #canvas.grid-layout-active {
+  display: block;
+  overflow: auto;
+  height: calc(100vh - 40px);
+  max-height: 2000px;
+        position: relative;
+      display: block;
+      width: 100%;
+      min-height: 100vh;
+      background-color: ${backgroundColor};
+      margin: 0;
+      overflow: visible;
+      box-sizing: border-box;
+}
 
-      table {
+.container-grid-active {
+  display: block;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+      .table-componet {
           border-collapse: collapse ;
-
+ box-sizing: border-box;
       }
           .editable-component{
           border:none !important;
@@ -129,6 +169,23 @@ export class HTMLGenerator {
       'upload-btn',
       'edit-link-form',
       'edit-link',
+    ];
+    const propertiesToExclude = [
+      'left',
+      'top',
+      'right',
+      'bottom',
+      'position',
+      'margin-left',
+      'margin-right',
+      'width',
+      'height',
+      'min-width',
+      'max-width',
+      'min-height',
+      'max-height',
+      'cursor',
+      'resize',
     ];
 
     elements.forEach((component, index) => {
@@ -159,7 +216,7 @@ export class HTMLGenerator {
       for (let i = 0; i < computedStyles.length; i++) {
         const prop = computedStyles[i];
         const value = computedStyles.getPropertyValue(prop);
-        if (prop === 'resize') {
+        if (prop === 'resize' || propertiesToExclude.includes(prop)) {
           continue;
         }
 

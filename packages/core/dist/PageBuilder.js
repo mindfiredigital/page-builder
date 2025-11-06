@@ -27,7 +27,7 @@ export class PageBuilder {
     editable = true,
     brandTitle,
     showAttributeTab,
-    layoutMode = 'absolute'
+    layoutMode = 'grid'
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;

@@ -11,7 +11,7 @@ export declare class PageBuilder {
   private editable;
   private brandTitle;
   private showAttributeTab;
-  private layoutMode;
+  layoutMode: 'absolute' | 'grid';
   private static initialCanvasWidth;
   constructor(
     dynamicComponents?: DynamicComponents,

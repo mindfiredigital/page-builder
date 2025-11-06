@@ -399,6 +399,19 @@ export class TableComponent {
       const attributeKey = cellElement.getAttribute('data-attribute-key');
       const attributeType = cellElement.getAttribute('data-attribute-type');
       const textContentOfCell = cell.querySelector('.table-cell-content');
+      console.log(
+        textContentOfCell === null || textContentOfCell === void 0
+          ? void 0
+          : textContentOfCell.classList,
+        'cell element'
+      );
+      if (
+        textContentOfCell === null || textContentOfCell === void 0
+          ? void 0
+          : textContentOfCell.classList.contains('selected')
+      ) {
+        textContentOfCell.classList.remove('selected');
+      }
       if (attributeKey && textContentOfCell) {
         const attribute = TableComponent.tableAttributeConfig.find(
           attr => attr.key === attributeKey

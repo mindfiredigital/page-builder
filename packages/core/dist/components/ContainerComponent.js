@@ -75,7 +75,9 @@ export class ContainerComponent {
     this.resizers.classList.add('resizers');
     this.element.appendChild(this.resizers);
     // Add resizer handles
-    this.addResizeHandles();
+    if (Canvas.layoutMode === 'absolute') {
+      this.addResizeHandles();
+    }
     // Add styles
     this.addStyles();
     // Add event listeners
@@ -125,43 +127,6 @@ export class ContainerComponent {
       event.stopPropagation();
     }
   }
-  makeDraggable(element) {
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-    let offsetX = 0;
-    let offsetY = 0;
-    const onMouseDown = event => {
-      event.preventDefault();
-      event.stopPropagation();
-      isDragging = true;
-      // Calculate initial positions
-      startX = event.clientX;
-      startY = event.clientY;
-      const rect = element.getBoundingClientRect();
-      offsetX = rect.left;
-      offsetY = rect.top;
-      // Add event listeners for dragging
-      window.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('mouseup', onMouseUp);
-    };
-    const onMouseMove = event => {
-      if (!isDragging) return;
-      // Calculate the new position
-      const deltaX = event.clientX - startX;
-      const deltaY = event.clientY - startY;
-      // Update the element's position using CSS transform
-      element.style.transform = `translate(${offsetX + deltaX}px, ${offsetY + deltaY}px)`;
-    };
-    const onMouseUp = () => {
-      isDragging = false;
-      // Remove event listeners to stop dragging
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-    };
-    // Attach the mousedown event to the element
-    element.addEventListener('mousedown', onMouseDown);
-  }
   onDrop(event) {
     var _a;
     event.preventDefault();
@@ -187,15 +152,15 @@ export class ContainerComponent {
     component.id = uniqueClass;
     label.style.display = 'none';
     component.appendChild(label);
-    // component.addEventListener('mouseenter', e => this.showLabel(e, component));
-    // component.addEventListener('mouseleave', e => this.hideLabel(e, component));
-    component.style.position = 'absolute';
-    component.style.left = `${event.offsetX}px`;
-    component.style.top = `${event.offsetY}px`;
+    if (Canvas.layoutMode === 'absolute') {
+      component.style.position = 'absolute';
+      component.style.left = `${event.offsetX}px`;
+      component.style.top = `${event.offsetY}px`;
+      Canvas.addDraggableListeners(component);
+    } else if (Canvas.layoutMode === 'grid') {
+      this.element.classList.add('container-grid-active');
+    }
     this.element.appendChild(component);
-    // Apply draggable functionality to the new component
-    // this.makeDraggable(component);
-    Canvas.addDraggableListeners(component);
     // Capture state for undo/redo
     Canvas.historyManager.captureState();
   }
@@ -234,7 +199,6 @@ export class ContainerComponent {
     style.textContent = `
       .container-component {
         position: relative !important;
-        display: flex;
         min-width: 100px;
         min-height: 100px;
         cursor: grab;
@@ -298,8 +262,9 @@ export class ContainerComponent {
     element.appendChild(resizersDiv);
   }
   static restoreContainer(container, editable) {
+    const isGridMode = Canvas.layoutMode === 'grid';
     // Restore resizer functionality
-    if (editable !== false) {
+    if (editable !== false && !isGridMode) {
       ContainerComponent.restoreResizer(container);
     } else {
       const resizers = container.querySelectorAll('.resizers');
@@ -308,16 +273,6 @@ export class ContainerComponent {
     // Create a temporary instance of ContainerComponent to reuse its methods
     const containerInstance = new ContainerComponent();
     containerInstance.element = container;
-    if (editable !== false) {
-      container.addEventListener(
-        'drop',
-        containerInstance.onDrop.bind(containerInstance)
-      );
-      container.addEventListener('dragover', event => event.preventDefault());
-    } else {
-      container.classList.remove('editable-component');
-      container.removeAttribute('draggable');
-    }
     // Reapply controls to child components inside the container
     const containerChildren = container.querySelectorAll('.editable-component');
     containerChildren.forEach(child => {
@@ -325,7 +280,18 @@ export class ContainerComponent {
       // Add control buttons and draggable listeners
       if (editable !== false) {
         Canvas.controlsManager.addControlButtons(child);
-        Canvas.addDraggableListeners(child);
+        if (isGridMode) {
+          child.classList.remove('component-resizer');
+          child.removeAttribute('draggable');
+          child.style.cursor = 'default';
+          child.style.position = '';
+          child.style.left = '';
+          child.style.top = '';
+        } else {
+          Canvas.addDraggableListeners(child);
+          child.style.position = 'absolute';
+          child.classList.add('component-resizer');
+        }
         // Bind the showLabel and hideLabel methods
         child.addEventListener('mouseenter', event =>
           containerInstance.showLabel(event, child)

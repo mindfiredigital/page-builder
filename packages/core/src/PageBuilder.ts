@@ -29,7 +29,7 @@ export class PageBuilder {
   private editable: boolean | null;
   private brandTitle: string | undefined;
   private showAttributeTab: boolean | undefined;
-  private layoutMode: 'absolute' | 'grid' | undefined;
+  public layoutMode: 'absolute' | 'grid';
   private static initialCanvasWidth: number | null = null;
 
   constructor(
@@ -42,7 +42,7 @@ export class PageBuilder {
     editable: boolean | null = true,
     brandTitle?: string,
     showAttributeTab?: boolean,
-    layoutMode: 'absolute' | 'grid' | undefined = 'absolute'
+    layoutMode: 'absolute' | 'grid' | undefined = 'grid'
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;

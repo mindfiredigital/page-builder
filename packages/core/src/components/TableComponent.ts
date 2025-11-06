@@ -486,7 +486,10 @@ export class TableComponent {
       const attributeKey = cellElement.getAttribute('data-attribute-key');
       const attributeType = cellElement.getAttribute('data-attribute-type');
       const textContentOfCell = cell.querySelector('.table-cell-content');
-
+      console.log(textContentOfCell?.classList, 'cell element');
+      if (textContentOfCell?.classList.contains('selected')) {
+        textContentOfCell.classList.remove('selected');
+      }
       if (attributeKey && textContentOfCell) {
         const attribute = TableComponent.tableAttributeConfig.find(
           attr => attr.key === attributeKey

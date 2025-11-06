@@ -14,6 +14,7 @@ html {
   color: #334155;
 }
 
+
 /* Navbar for preview buttons */
 #preview-navbar {
   background-color: #ffffff;
@@ -74,7 +75,7 @@ html {
 
 /* Canvas Area */
 #canvas {
-  /* width: 100%; */
+  width: 100%;
   flex-grow: 1;
   min-width: 0;
   background-color: #ffffff;
@@ -186,7 +187,6 @@ html {
   background-color: #3b82f6;
   color: black;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
@@ -201,7 +201,7 @@ html {
   font-size: 24px;
   font-weight: 700;
   color: #1e293b;
-  margin: 12px 0;
+  margin: 0;
 }
 
 .image-component {
@@ -210,8 +210,6 @@ html {
   position: relative;
   display: flex;
   justify-content: center;
-  /* width: 300px;
-  height: 300px; */
   background-color: #f8fafc;
   border: 2px dashed #cbd5e1;
   overflow: hidden;
@@ -270,7 +268,6 @@ html {
 /* Editable components on the canvas */
 .editable-component {
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
   cursor: text;
   position: relative;
   pointer-events: auto;
@@ -282,7 +279,8 @@ html {
   display: block;
   height: 100%;
   width: 100%;
-  padding: 12px;
+  box-sizing: border-box;
+  /* padding: 2px; */
 }
 
 .editable-component:hover {
@@ -295,22 +293,14 @@ html {
   resize: both !important;
 }
 
-.container-highlight {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-}
-
 /* Container Component */
 .container-component {
-  /* min-height: 100px;
-  padding: 16px; */
   border: 2px dashed #cbd5e1;
   background-color: #f8fafc;
-  display: flex;
   flex-direction: column;
   position: relative;
   pointer-events: auto;
-  border-radius: 6px;
+  overflow: auto;
 }
 
 /* Draggable Icons */
@@ -390,7 +380,7 @@ html {
   pointer-events: none;
 }
 
-.editable-component:hover .component-label {
+.editable-component:hover>.component-label:first-of-type {
   display: block;
 }
 
@@ -541,7 +531,7 @@ html {
   transform: scale(1.1);
 }
 
-.editable-component:hover .component-controls {
+.editable-component:hover>.component-controls:first-of-type {
   display: flex;
   gap: 2px;
 }
@@ -2111,4 +2101,26 @@ html {
 #canvas.grid-layout-active {
   display: block;
   overflow: auto;
+  height: calc(100vh - 40px);
+  max-height: 2000px
+}
+
+.container-grid-active {
+  display: block;
+}
+
+.editable-component.selected,
+.table-cell-content.selected {
+  border: 2px solid #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  outline: none;
+  position: relative;
+}
+
+.editable-component.selected>.component-controls:first-of-type {
+  display: flex !important;
+}
+
+.editable-component.selected>.component-label:first-of-type {
+  display: block !important;
 }
