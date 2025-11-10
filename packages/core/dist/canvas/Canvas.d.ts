@@ -19,6 +19,7 @@ export declare class Canvas {
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
   private static componentFactory;
+  private static deleteElementHandler;
   static init(
     initialData: (PageBuilderDesign | null) | undefined,
     editable: boolean | null,

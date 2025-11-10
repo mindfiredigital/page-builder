@@ -16,6 +16,7 @@ import { ShortcutManager } from './services/ShortcutManager';
 import { PreviewPanel } from './canvas/PreviewPanel';
 import './styles/main.css';
 import { svgs } from './icons/svgs';
+import html2pdf from 'html2pdf.js';
 
 export class PageBuilder {
   private canvas: Canvas;
@@ -42,7 +43,7 @@ export class PageBuilder {
     editable: boolean | null = true,
     brandTitle?: string,
     showAttributeTab?: boolean,
-    layoutMode: 'absolute' | 'grid' | undefined = 'grid'
+    layoutMode: 'absolute' | 'grid' | undefined = 'absolute'
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -56,7 +57,6 @@ export class PageBuilder {
     this.showAttributeTab = showAttributeTab;
     this.layoutMode = layoutMode;
     this.initializeEventListeners();
-    console.log(layoutMode, 'layout');
   }
 
   // Static method to reset header flag (called during cleanup)
@@ -229,114 +229,297 @@ export class PageBuilder {
     }
   }
 
+  // public setupExportPDFButton() {
+  //   const exportButton = document.getElementById('export-pdf-btn');
+  //   if (exportButton) {
+  //     exportButton.addEventListener('click', async () => {
+  //       showNotification('Generating PDF for download...');
+  //       await new Promise(resolve => setTimeout(resolve, 1500));
+
+  //       const tempContainer = document.createElement('div');
+
+  //       try {
+  //         const worker = html2pdf();
+  //         if (!worker) {
+  //           showNotification('html2pdf library not loaded');
+  //           return;
+  //         }
+
+  //         const htmlGenerator = new HTMLGenerator(new Canvas());
+  //         const contentHTML = htmlGenerator.generateHTML();
+  //         let css = htmlGenerator.generateCSS();
+
+  //         const canvasElement = document.getElementById('canvas');
+  //         const sidebarElement = document.getElementById('sidebar');
+  //         if (!canvasElement) return;
+
+  //         const MARGIN_MM = 4;
+  //         let canvasWidth: number;
+  //         if (PageBuilder.initialCanvasWidth === null) {
+  //           const rect = canvasElement.getBoundingClientRect();
+  //           if (sidebarElement) {
+  //             canvasWidth =
+  //               rect.width + sidebarElement?.getBoundingClientRect().width;
+  //           } else {
+  //             canvasWidth = rect.width;
+  //           }
+  //           PageBuilder.initialCanvasWidth = canvasWidth;
+  //         } else {
+  //           canvasWidth = PageBuilder.initialCanvasWidth;
+  //         }
+
+  //         css = css.replace(/min-height:\s*100vh/gi, 'min-height: auto');
+
+  //         const pdfContent = `
+  //           <style>
+  //             ${css}
+
+  //             * { box-sizing: border-box; }
+  //             html, body, #pdf-wrapper {
+  //               margin: 0; padding: 0;
+  //               overflow: visible !important;
+  //               font-family: Arial, sans-serif !important;
+  //               background-color: white !important;
+  //             }
+
+  //             /* CRITICAL VERTICAL FIX: Ensure auto height for full expansion */
+  //             #pdf-wrapper {
+  //               width: ${canvasWidth}px !important;
+  //               height: auto !important;
+  //               overflow: visible !important;
+  //               transform: none !important;
+  //             }
+
+  //             #canvas.home {
+  //               width: ${canvasWidth}px !important;
+  //               height: auto !important;
+  //               min-height: auto !important;
+  //               transform: none !important;
+
+  //               position: relative !important;
+  //               margin: 0 !important;
+  //               padding: 0 !important;
+  //               overflow: visible !important;
+  //             }
+
+  //             /* Added for clean page breaking */
+  //             table, #pdf-wrapper, #canvas.home {
+  //               page-break-inside: avoid !important;
+  //             }
+  //           </style>
+  //           <div id="pdf-wrapper">
+  //             ${contentHTML}
+  //           </div>
+  //         `;
+
+  //         tempContainer.innerHTML = pdfContent;
+  //         tempContainer.style.cssText = `
+  //                   position: absolute;
+  //                   left: -99999px;
+  //                   top: 0;
+  //                   width: ${canvasWidth}px;
+  //                   height: auto;
+  //                   overflow: visible;
+  //                   background-color: white;
+  //               `;
+  //         document.body.appendChild(tempContainer);
+
+  //         // Give a solid, but shorter, wait time.
+  //         await new Promise(resolve => setTimeout(resolve, 1500));
+
+  //         const sourceElement = tempContainer.querySelector('#pdf-wrapper') as HTMLElement;
+
+  //         if (!sourceElement) {
+  //           throw new Error("PDF source element (#pdf-wrapper) not found.");
+  //         }
+
+  //         await worker
+  //           .set({
+  //             filename: 'exported_page_download.pdf',
+  //             image: { type: 'png', quality: 1 },
+  //             html2canvas: {
+  //               scale: 3,
+  //               width: canvasWidth,
+  //               useCORS: true,
+  //               logging: false,
+  //               backgroundColor: null,
+  //               letterRendering: true,
+  //               allowTaint: true,
+  //             },
+  //             jsPDF: {
+  //               unit: 'mm',
+  //               format: 'a4',
+  //               orientation: 'portrait',
+  //             },
+  //             margin: MARGIN_MM,
+  //           })
+  //           .from(sourceElement)
+  //           .save();
+
+  //         showNotification('PDF downloaded successfully!');
+
+  //       } catch (error) {
+  //         console.error('PDF generation error:', error);
+  //         showNotification('Error generating PDF. Check console for details.');
+  //       } finally {
+  //         if (document.body.contains(tempContainer)) {
+  //           document.body.removeChild(tempContainer);
+  //         }
+  //       }
+  //     });
+  //   }
+  // }
   public setupExportPDFButton() {
     const exportButton = document.getElementById('export-pdf-btn');
     if (exportButton) {
-      exportButton.addEventListener('click', () => {
-        const htmlGenerator = new HTMLGenerator(new Canvas());
-        const html = htmlGenerator.generateHTML();
-        let css = htmlGenerator.generateCSS();
+      exportButton.addEventListener('click', async () => {
+        showNotification('Generating PDF for download...');
+        // Note: Keeping this initial delay for stability
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        const canvasElement = document.getElementById('canvas');
-        const sidebarElement = document.getElementById('sidebar');
-        if (!canvasElement) return;
-        let canvasWidth: number;
-        if (PageBuilder.initialCanvasWidth === null) {
-          const rect = canvasElement.getBoundingClientRect();
-          if (sidebarElement) {
-            canvasWidth =
-              rect.width + sidebarElement?.getBoundingClientRect().width;
-          } else {
-            canvasWidth = rect.width;
+        const tempContainer = document.createElement('div');
+
+        try {
+          const worker = html2pdf();
+          if (!worker) {
+            showNotification('html2pdf library not loaded');
+            return;
           }
-          PageBuilder.initialCanvasWidth = canvasWidth;
-        } else {
-          canvasWidth = PageBuilder.initialCanvasWidth;
-        }
 
-        const canvasHeight = canvasElement.getBoundingClientRect().height;
+          const htmlGenerator = new HTMLGenerator(new Canvas());
+          const contentHTML = htmlGenerator.generateHTML();
+          let css = htmlGenerator.generateCSS();
 
-        const A4_MARGIN_MM = 4;
-        const A4_USABLE_WIDTH_PX = 755;
+          const canvasElement = document.getElementById('canvas');
+          if (!canvasElement) return;
 
-        const scale = Math.min(A4_USABLE_WIDTH_PX / canvasWidth, 1);
-        css = css.replace(/min-height:\s*100vh/gi, 'min-height: auto');
+          // 1. GET TRUE CONTENT DIMENSIONS (CRUCIAL FIX)
+          // Use scroll dimensions to get the full size of the content, even if it's off-screen.
+          const contentWidth = canvasElement.scrollWidth;
+          const contentHeight = canvasElement.scrollHeight;
 
-        const printWindow = window.open('', '_blank');
+          // 2. CALCULATE UNIFIED SHRINK FACTOR
+          const A4_WIDTH_PX = 794; // A4 width at 96 DPI
+          const A4_HEIGHT_PX = 1123; // A4 height at 96 DPI
+          const MARGIN_BUFFER_PX = 40; // Small buffer for margins
+          const QUALITY_SCALE = 3;
 
-        if (printWindow) {
-          const fullHTML = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Export PDF</title>
-    <style>
-      ${css}
-      
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-      }
+          // Calculate factor needed to shrink content to fit A4 usable area
+          const widthScaleFactor =
+            (A4_WIDTH_PX - MARGIN_BUFFER_PX) / contentWidth;
+          const heightScaleFactor =
+            (A4_HEIGHT_PX - MARGIN_BUFFER_PX) / contentHeight;
 
-      @media print {
-        @page {
-          /* Set A4 size and ensure 8mm margin, matching the print container */
-          size: A4 portrait;
-          margin: ${A4_MARGIN_MM}mm; /* Ensures the print container matches this margin */
-        }
-        
-        html, body {
-          /* Reset external margins/padding */
-          margin: 0 !important;
-          padding: 0 !important;
-          /* Explicitly set the wrapper size to the scaled dimensions to manage page breaks */
-          width: ${canvasWidth * scale}px; 
-          height: ${canvasHeight * scale}px;
-          overflow: hidden !important; /* Hide scrollbars */
-        }
-        
-        body {
-          print-color-adjust: exact !important;
-          -webkit-print-color-adjust: exact !important;
-        }
-        
-        /* THE CANVAS WRAPPER - Apply scale here */
-        #canvas.home {
-          /* Set to the original (unscaled) dimensions */
-          width: ${canvasWidth}px !important;
-          height: ${canvasHeight}px !important;
-          min-height: auto !important;
-          
-          /* Apply the calculated scale */
-          transform: scale(${scale}) !important;
-          transform-origin: top left !important;
-          
-          /* Positioning fixes */
-          position: relative !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          overflow: visible !important;
-        }
-        
-      
-      }
-    </style>
-  </head>
-  <body>
-    ${html}
-  </body>
-</html>`;
+          // Use the smallest factor (width or height) to ensure ALL content fits on one page.
+          const SHRINK_FACTOR = Math.min(
+            widthScaleFactor,
+            heightScaleFactor,
+            1
+          );
+          const FINAL_HTML2CANVAS_SCALE = SHRINK_FACTOR * QUALITY_SCALE;
 
-          printWindow.document.write(fullHTML);
-          printWindow.document.close();
+          // 3. APPLY CLEANUP CSS
+          css = css.replace(/min-height:\s*100vh/gi, 'min-height: auto');
 
-          // Wait a little longer for resources to load before printing
-          setTimeout(() => {
-            printWindow.print();
-          }, 1500); // Increased delay for safety
+          const pdfContent = `
+            <style>
+              ${css}
+
+              /* General Styles for isolated rendering */
+              * { box-sizing: border-box; }
+              html, body, #pdf-wrapper { 
+                margin: 0; padding: 0; 
+                overflow: visible !important; 
+                font-family: Arial, sans-serif !important; 
+                background-color: white !important; 
+              }
+
+              /* Set wrapper to the full, non-scaled content size */
+              #pdf-wrapper {
+                width: ${contentWidth}px !important; 
+                height: ${contentHeight}px !important; // Use full scrollable height
+                overflow: visible !important; 
+                transform: none !important; 
+              }
+
+              #canvas.home {
+                width: ${contentWidth}px !important;
+                height: ${contentHeight}px !important; // Use full scrollable height
+                min-height: auto !important; 
+                transform: none !important; 
+
+                position: relative !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+              }
+
+              /* Prevent breaking elements */
+              table, #pdf-wrapper, #canvas.home {
+                page-break-inside: avoid !important;
+              }
+            </style>
+            <div id="pdf-wrapper">
+              ${contentHTML}
+            </div>
+          `;
+
+          tempContainer.innerHTML = pdfContent;
+          tempContainer.style.cssText = `
+                    position: absolute;
+                    left: -99999px;
+                    top: 0;
+                    width: ${contentWidth}px;
+                    height: ${contentHeight}px; // Must match inner content size
+                    overflow: visible;
+                    background-color: white; 
+                `;
+          document.body.appendChild(tempContainer);
+
+          // Give time for DOM insertion/rendering
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+          const sourceElement = tempContainer.querySelector(
+            '#pdf-wrapper'
+          ) as HTMLElement;
+
+          if (!sourceElement) {
+            throw new Error('PDF source element (#pdf-wrapper) not found.');
+          }
+
+          // 4. APPLY UNIFIED SCALE TO HTML2CANVAS
+          await worker
+            .set({
+              filename: 'exported_page_download.pdf',
+              image: { type: 'png', quality: 1 },
+              html2canvas: {
+                scale: FINAL_HTML2CANVAS_SCALE, // Scale is now based on the limiting factor (width or height)
+                width: contentWidth, // Explicitly tell html2canvas the content width
+                height: contentHeight, // Explicitly tell html2canvas the content height
+                useCORS: true,
+                logging: false,
+                backgroundColor: null,
+                letterRendering: true,
+                allowTaint: true,
+              },
+              jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait',
+              },
+              margin: MARGIN_BUFFER_PX / 3.78, // Convert pixel buffer to MM (approx 3.78px/mm at 96DPI)
+            })
+            .from(sourceElement)
+            .save();
+
+          showNotification('PDF downloaded successfully!');
+        } catch (error) {
+          console.error('PDF generation error:', error);
+          showNotification('Error generating PDF. Check console for details.');
+        } finally {
+          if (document.body.contains(tempContainer)) {
+            document.body.removeChild(tempContainer);
+          }
         }
       });
     }
@@ -463,12 +646,12 @@ export class PageBuilder {
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: #f5f5f5;
       z-index: 10000;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
+      background-color: #ffffff;
     `;
 
     const iframe = document.createElement('iframe');
@@ -527,10 +710,13 @@ export class PageBuilder {
   public createResponsivenessControls(iframe: HTMLIFrameElement) {
     const responsivenessContainer = document.createElement('div');
     responsivenessContainer.style.cssText = `
-      position:absolute;
-      display: flex;
       gap: 10px;
-      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid #e2e8f0;
+      width: 100%
     `;
 
     const sizes = [

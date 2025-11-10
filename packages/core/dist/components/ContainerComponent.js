@@ -69,7 +69,6 @@ export class ContainerComponent {
     };
     this.element = document.createElement('div');
     this.element.classList.add('container-component');
-    // this.element.setAttribute('draggable', 'true');
     // Initialize resizers container
     this.resizers = document.createElement('div');
     this.resizers.classList.add('resizers');
@@ -197,14 +196,6 @@ export class ContainerComponent {
   addStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      .container-component {
-        position: relative !important;
-        min-width: 100px;
-        min-height: 100px;
-        cursor: grab;
-        border: 1px solid #ddd;
-      }
-
       .resizer {
         width: 10px;
         height: 10px;

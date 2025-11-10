@@ -30,13 +30,8 @@ export class MultiColumnContainer {
     const column = document.createElement('div');
     column.classList.add('column', className);
     column.setAttribute('draggable', 'true');
-    column.style.width = `${100 / this.columnCount}%`; // Equal width for all columns
+    column.style.width = `${100 / this.columnCount}%`;
     const parentId = this.element.id;
-    console.log(
-      this.element,
-      this.element.getAttribute('id'),
-      'current elememnt id '
-    );
     column.id = `${this.columnCount}Col-component${parentId}-${className}`;
     return column;
   }

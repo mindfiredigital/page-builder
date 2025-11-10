@@ -73,6 +73,16 @@ export class Canvas {
     _a.canvasElement.addEventListener('dragover', event =>
       event.preventDefault()
     );
+    _a.canvasElement.addEventListener('click', event => {
+      const selected = document.querySelector('.editable-component.selected');
+      if (selected) {
+        selected.classList.remove('selected');
+      }
+      const target = event.target;
+      if (target !== _a.canvasElement) {
+        _a.deleteElementHandler.selectElement(target);
+      }
+    });
     _a.canvasElement.classList.add('preview-desktop');
     _a.canvasElement.addEventListener('click', event => {
       const component = event.target;
@@ -129,7 +139,36 @@ export class Canvas {
     _a.dispatchDesignChange();
   }
   static getState() {
-    return _a.components.map(component => {
+    const canvasElement = _a.canvasElement;
+    const computedStyles = window.getComputedStyle(canvasElement);
+    const canvasStyles = {};
+    ['background-color', 'min-height', 'padding', 'margin'].forEach(prop => {
+      const value = computedStyles.getPropertyValue(prop);
+      if (
+        value &&
+        value !== 'initial' &&
+        value !== 'auto' &&
+        value !== 'none'
+      ) {
+        canvasStyles[prop] = value;
+      }
+    });
+    const canvasState = {
+      id: 'canvas',
+      type: 'canvas',
+      content: '',
+      position: { x: 0, y: 0 },
+      dimensions: {
+        width: canvasElement.offsetWidth,
+        height: canvasElement.offsetHeight,
+      },
+      style: canvasStyles,
+      inlineStyle: canvasElement.getAttribute('style') || '',
+      classes: Array.from(canvasElement.classList),
+      dataAttributes: {},
+      props: {},
+    };
+    const componentStates = _a.components.map(component => {
       const baseType = component.classList[0]
         .split(/\d/)[0]
         .replace('-component', '');
@@ -191,8 +230,24 @@ export class Canvas {
         props: componentProps,
       };
     });
+    return [canvasState, ...componentStates];
   }
   static restoreState(state) {
+    const canvasDataIndex = state.findIndex(
+      data => data.id === 'canvas' && data.type === 'canvas'
+    );
+    if (canvasDataIndex !== -1) {
+      const canvasData = state[canvasDataIndex];
+      const canvasElement = _a.canvasElement;
+      if (canvasData.inlineStyle) {
+        canvasElement.setAttribute('style', canvasData.inlineStyle);
+      }
+      canvasElement.className = '';
+      canvasData.classes.forEach(cls => {
+        canvasElement.classList.add(cls);
+      });
+      state.splice(canvasDataIndex, 1);
+    }
     _a.canvasElement.innerHTML = '';
     _a.components = [];
     state.forEach(componentData => {
@@ -578,17 +633,4 @@ Canvas.componentFactory = {
   landingpage: () => new LandingPageTemplate().create(),
   link: () => new LinkComponent().create(),
 };
-const canvas = document.getElementById('canvas');
-const deleteElementHandler = new DeleteElementHandler();
-if (canvas) {
-  canvas.addEventListener('click', event => {
-    const selected = document.querySelector('.editable-component.selected');
-    if (selected) {
-      selected.classList.remove('selected');
-    }
-    const target = event.target;
-    if (target !== canvas) {
-      deleteElementHandler.selectElement(target);
-    }
-  });
-}
+Canvas.deleteElementHandler = new DeleteElementHandler();

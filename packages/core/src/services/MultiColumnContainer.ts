@@ -19,10 +19,10 @@ export class MultiColumnContainer {
     this.element = document.createElement('div');
     this.element.classList.add(className);
     this.element.setAttribute('draggable', 'true');
-
     // Create columns dynamically based on columnCount
     for (let i = 1; i <= columnCount; i++) {
       const column = this.createColumn(`column-${i}`);
+
       this.element.appendChild(column);
     }
 
@@ -43,11 +43,6 @@ export class MultiColumnContainer {
     column.setAttribute('draggable', 'true');
     column.style.width = `${100 / this.columnCount}%`;
     const parentId = this.element.id;
-    console.log(
-      this.element,
-      this.element.getAttribute('id'),
-      'current elememnt id '
-    );
     column.id = `${this.columnCount}Col-component${parentId}-${className}`;
     return column;
   }
