@@ -4,13 +4,7 @@ node_modules/
 packages/example/client
 packages/example/.env
 .turbo
-<<<<<<< HEAD
-packages/react/mindfiredigital-page-builder-react-1.2.3.tgz
-packages/web-component/mindfiredigital-page-builder-web-component-3.0.0.tgz
-packages/core/mindfiredigital-page-builder-1.14.0.tgz
-=======
 packages/react/mindfiredigital-page-builder-react-1.2.12.tgz
 packages/web-component/mindfiredigital-page-builder-web-component-5.0.7.tgz
 packages/core/mindfiredigital-page-builder-1.15.0.tgz
->>>>>>> f1f0e72db551505c2c3e7779ef036ca91e44db2f
 packages/angular/mindfiredigital-page-builder-angular-2.0.0.tgz
