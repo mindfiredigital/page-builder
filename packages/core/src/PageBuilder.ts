@@ -234,7 +234,6 @@ export class PageBuilder {
     if (exportButton) {
       exportButton.addEventListener('click', async () => {
         showNotification('Generating PDF for download...');
-        // Note: Keeping this initial delay for stability
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         const tempContainer = document.createElement('div');
