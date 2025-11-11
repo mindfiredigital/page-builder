@@ -507,7 +507,6 @@ export class PageBuilder {
                 format: 'a4',
                 orientation: 'portrait',
               },
-              margin: MARGIN_BUFFER_PX / 3.78, // Convert pixel buffer to MM (approx 3.78px/mm at 96DPI)
             })
             .from(sourceElement)
             .save();
