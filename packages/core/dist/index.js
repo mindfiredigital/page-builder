@@ -46920,7 +46920,6 @@ class Of {
                   allowTaint: !0,
                 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                margin: a / 3.78,
               })
               .from(f)
               .save(),
