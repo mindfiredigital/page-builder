@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder
 
+## 1.18.0
+
+### Minor Changes
+
+- Merge pull request #161 from mindfiredigital/dev
+
 ## 1.17.0
 
 ### Minor Changes
