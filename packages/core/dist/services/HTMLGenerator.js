@@ -1,3 +1,4 @@
+import { Canvas } from '../canvas/Canvas.js';
 export class HTMLGenerator {
   constructor(canvas) {
     this.canvas = canvas;
@@ -16,21 +17,21 @@ export class HTMLGenerator {
   }
   getBaseHTML(bodyContent = 'children') {
     return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page Builder</title>
-    <style>
-      ${this.generateCSS()}
-    </style>
- </head>
-        <body>
-            <div id="canvas" class="home">
-            ${bodyContent}
-            </div>
-        </body>
-      </html>`;
+    <html>
+      <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Page Builder</title>
+          <style>
+            ${this.generateCSS()}
+          </style>
+      </head>
+      <body>
+          <div id="canvas"  class=${Canvas.layoutMode === 'grid' ? 'grid-layout-active' : 'home'}>
+          ${bodyContent}
+          </div>
+      </body>
+    </html>`;
   }
   cleanupElements(element) {
     const attributesToRemove = ['contenteditable', 'draggable'];
@@ -52,12 +53,12 @@ export class HTMLGenerator {
       attributesToRemove.forEach(attr => {
         childElement.removeAttribute(attr);
       });
+      const elementsToRemove = childElement.querySelectorAll(
+        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button,.table-btn-container, .drop-preview.visible'
+      );
       classesToRemove.forEach(classToRemove => {
         childElement.classList.remove(classToRemove);
       });
-      const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button'
-      );
       elementsToRemove.forEach(el => el.remove());
       if (childElement.children.length > 0) {
         this.cleanupElements(childElement);
@@ -74,7 +75,64 @@ export class HTMLGenerator {
       : 'rgb(255, 255, 255)';
     const styles = [];
     const processedSelectors = new Set();
-    styles.push(`
+    Canvas.layoutMode === 'grid'
+      ? styles.push(`
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        display:flex;
+        overflow: hidden;
+      }
+      #canvas {
+        position: relative;
+        width: 100%;
+        flex-grow: 1;
+        min-width: 0;
+        background-color: ${backgroundColor};
+        margin: 0;
+        overflow: auto;
+        box-sizing: border-box;
+      }
+      #canvas.grid-layout-active {
+        display: block;
+      }
+
+      .container-grid-active {
+        display: block;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      .table-componet {
+        border-collapse: collapse ;
+        box-sizing: border-box;
+      }
+      .editable-component{
+        border:none !important;
+        box-shadow:none !important;
+      }
+
+      `)
+      : styles.push(`
       body, html {
           margin: 0;
           padding: 0;
@@ -113,6 +171,29 @@ export class HTMLGenerator {
       'edit-link-form',
       'edit-link',
     ];
+    const propertiesToExclude = [
+      'left',
+      'top',
+      'right',
+      'bottom',
+      'position',
+      'margin-left',
+      'margin-right',
+      'width',
+      'height',
+      'min-width',
+      'max-width',
+      'min-height',
+      'max-height',
+      'cursor',
+      'resize',
+      'inline-size',
+      'block-size',
+      'min-inline-size',
+      'min-block-size',
+      'max-inline-size',
+      'max-block-size',
+    ];
     elements.forEach((component, index) => {
       // Skip excluded elements
       if (classesToExclude.some(cls => component.classList.contains(cls))) {
@@ -140,8 +221,14 @@ export class HTMLGenerator {
       for (let i = 0; i < computedStyles.length; i++) {
         const prop = computedStyles[i];
         const value = computedStyles.getPropertyValue(prop);
-        if (prop === 'resize') {
-          continue;
+        if (Canvas.layoutMode === 'grid') {
+          if (prop === 'resize' || propertiesToExclude.includes(prop)) {
+            continue;
+          }
+        } else {
+          if (prop === 'resize') {
+            continue;
+          }
         }
         if (
           value &&

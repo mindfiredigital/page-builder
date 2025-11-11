@@ -31,7 +31,7 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { Canvas } from '../canvas/Canvas';
+import { Canvas } from '../canvas/Canvas.js';
 export class ImageComponent {
   create(src = null, imageAttributeConfig) {
     ImageComponent.imageAttributeConfig = imageAttributeConfig;

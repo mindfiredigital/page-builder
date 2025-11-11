@@ -1,4 +1,5 @@
-import { svgs } from '../icons/svgs';
+import { Canvas } from '../canvas/Canvas.js';
+import { svgs } from '../icons/svgs.js';
 export function createNavbar(
   editable,
   brandTitle = 'Page Builder',
@@ -19,30 +20,45 @@ export function createNavbar(
     menu: svgs.customizationMenu,
     sidebarMenu: svgs.sidebarMenu,
   };
+  const isGridMode = Canvas.layoutMode === 'grid';
   // Array of button data with only titles
-  const leftButtons = editable
+  const allLeftButtons = editable
     ? [
         {
           id: 'preview-desktop',
           icon: icons.desktop,
           title: 'Preview in Desktop',
+          isPreview: true,
         },
         {
           id: 'preview-tablet',
           icon: icons.tablet,
           title: 'Preview in Tablet',
+          isPreview: true,
         },
         {
           id: 'preview-mobile',
           icon: icons.mobile,
           title: 'Preview in Mobile',
+          isPreview: true,
         },
-        { id: 'undo-btn', icon: icons.undo, title: 'Undo button' },
-        { id: 'redo-btn', icon: icons.redo, title: 'Redo button' },
+        {
+          id: 'undo-btn',
+          icon: icons.undo,
+          title: 'Undo button',
+          isPreview: false,
+        },
+        {
+          id: 'redo-btn',
+          icon: icons.redo,
+          title: 'Redo button',
+          isPreview: false,
+        },
         {
           id: 'sidebar-menu',
           icon: icons.sidebarMenu,
           title: 'Sidebar Menu',
+          isPreview: false,
         },
       ]
     : [
@@ -50,18 +66,28 @@ export function createNavbar(
           id: 'preview-desktop',
           icon: icons.desktop,
           title: 'Preview in Desktop',
+          isPreview: true,
         },
         {
           id: 'preview-tablet',
           icon: icons.tablet,
           title: 'Preview in Tablet',
+          isPreview: true,
         },
         {
           id: 'preview-mobile',
           icon: icons.mobile,
           title: 'Preview in Mobile',
+          isPreview: true,
         },
       ];
+  const leftButtons = allLeftButtons.filter(button => {
+    if (button.isPreview) {
+      return isGridMode;
+    }
+    // Always show non-preview buttons (undo/redo/sidebar menu).
+    return true;
+  });
   const rightButtons =
     editable === true || editable === null
       ? [

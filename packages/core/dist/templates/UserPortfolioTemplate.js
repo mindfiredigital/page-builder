@@ -3,7 +3,7 @@ import {
   TextComponent,
   ContainerComponent,
   TwoColumnContainer,
-} from '../components/index';
+} from '../components/index.js';
 export class UserPortfolioTemplate {
   create() {
     // Create main portfolio container using ContainerComponent

@@ -20,7 +20,6 @@ export declare class ContainerComponent {
   private stopResize;
   private initializeEventListeners;
   private onDragStart;
-  private makeDraggable;
   private onDrop;
   private showLabel;
   private hideLabel;

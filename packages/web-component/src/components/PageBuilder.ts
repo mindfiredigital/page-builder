@@ -18,6 +18,7 @@ export class PageBuilderComponent extends HTMLElement {
   private _editable: boolean | null = null;
   private _brandTitle?: string;
   private _showAttributeTab?: boolean;
+  private _layoutMode?: 'absolute' | 'grid';
   private config = { Basic: [], Extra: [], Custom: [] };
   private template = `<div id="app">
       <div id="sidebar"></div>
@@ -83,6 +84,19 @@ export class PageBuilderComponent extends HTMLElement {
 
   get showAttributeTab(): boolean | undefined {
     return this._showAttributeTab;
+  }
+  set layoutMode(value: 'absolute' | 'grid' | undefined) {
+    if (this._layoutMode !== value) {
+      this._layoutMode = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+
+  get layoutMode(): 'absolute' | 'grid' | undefined {
+    return this._layoutMode;
   }
 
   set initialDesign(value: PageBuilderDesign | null) {
@@ -158,7 +172,8 @@ export class PageBuilderComponent extends HTMLElement {
         this._initialDesign,
         this._editable,
         this._brandTitle,
-        this.showAttributeTab
+        this.showAttributeTab,
+        this._layoutMode
       );
       this.initialized = true;
     } catch (error) {

@@ -8,6 +8,7 @@ export declare class Canvas {
   static controlsManager: ComponentControlsManager;
   private static gridManager;
   private static editable;
+  static layoutMode: 'grid' | 'absolute';
   static historyManager: HistoryManager;
   static jsonStorage: JSONStorage;
   static lastCanvasWidth: number | null;
@@ -18,10 +19,12 @@ export declare class Canvas {
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
   private static componentFactory;
+  private static deleteElementHandler;
   static init(
-    initialData: PageBuilderDesign | null | undefined,
+    initialData: (PageBuilderDesign | null) | undefined,
     editable: boolean | null,
-    basicComponentsConfig: BasicComponent[]
+    basicComponentsConfig: BasicComponent[],
+    layouMode: 'absolute' | 'grid'
   ): void;
   /**
    * Dispatches a custom event indicating that the canvas design has changed.

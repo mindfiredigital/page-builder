@@ -8,7 +8,8 @@ var PageBuilderReact = ({
   onChange,
   editable = true,
   brandTitle,
-  showAttributeTab
+  showAttributeTab,
+  layoutMode = "absolute"
 }) => {
   const builderRef = useRef(null);
   const [processedConfig, setProcessedConfig] = useState(config);
@@ -108,6 +109,7 @@ var PageBuilderReact = ({
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
             builderRef.current.showAttributeTab = showAttributeTab;
+            builderRef.current.layoutMode = layoutMode;
             const configString = JSON.stringify(processedConfig);
             builderRef.current.setAttribute("config-data", configString);
           }
