@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder
 
+## 1.16.0
+
+### Minor Changes
+
+- release new version from mindfiredigital/dev
+
 ## 1.15.0
 
 ### Minor Changes
