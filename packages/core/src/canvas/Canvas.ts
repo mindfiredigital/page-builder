@@ -28,6 +28,7 @@ export class Canvas {
   public static controlsManager: ComponentControlsManager;
   private static gridManager: GridManager;
   private static editable: boolean | null;
+  private static layoutMode: 'grid' | 'absolute';
 
   public static historyManager: HistoryManager;
   public static jsonStorage: JSONStorage;
@@ -67,9 +68,11 @@ export class Canvas {
   static init(
     initialData: PageBuilderDesign | null = null,
     editable: boolean | null,
-    basicComponentsConfig: BasicComponent[]
+    basicComponentsConfig: BasicComponent[],
+    layouMode: 'absolute' | 'grid' = 'absolute'
   ) {
     this.editable = editable;
+    this.layoutMode = layouMode;
     const tableComponent = basicComponentsConfig.find(
       component => component.name === 'table'
     );
@@ -115,6 +118,9 @@ export class Canvas {
         CustomizationSidebar.showSidebar(component.id);
       }
     });
+    if (layouMode == 'grid') {
+      Canvas.canvasElement.classList.add('grid-layout-active');
+    }
     Canvas.canvasElement.style.position = 'relative';
     this.lastCanvasWidth = Canvas.canvasElement.offsetWidth;
     Canvas.historyManager = new HistoryManager(Canvas.canvasElement);
@@ -402,24 +408,31 @@ export class Canvas {
       const uniqueClass = Canvas.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
-
-      component.style.position = 'absolute';
-
-      if (
-        componentType === 'container' ||
-        componentType === 'twoCol' ||
-        componentType === 'threeCol'
-      ) {
-        component.style.top = `${event.offsetY}px`;
-      } else {
+      if (Canvas.layoutMode === 'absolute') {
         component.style.position = 'absolute';
-        component.style.left = `${gridX}px`;
-        component.style.top = `${gridY}px`;
-      }
 
+        if (
+          componentType === 'container' ||
+          componentType === 'twoCol' ||
+          componentType === 'threeCol'
+        ) {
+          component.style.top = `${event.offsetY}px`;
+        } else {
+          component.style.position = 'absolute';
+          component.style.left = `${gridX}px`;
+          component.style.top = `${gridY}px`;
+        }
+
+        Canvas.addDraggableListeners(component);
+      } else if (Canvas.layoutMode === 'grid') {
+        component.style.position = '';
+        if (component.hasAttribute('draggable')) {
+          component.removeAttribute('draggable');
+          component.style.cursor = 'default';
+        }
+      }
       Canvas.components.push(component);
       Canvas.canvasElement.appendChild(component);
-      Canvas.addDraggableListeners(component);
       Canvas.historyManager.captureState();
     }
 

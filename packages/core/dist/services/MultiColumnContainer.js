@@ -1,6 +1,6 @@
-import { Canvas } from '../canvas/Canvas';
-import { ContainerComponent } from '../components/ContainerComponent';
-import { ImageComponent } from '../components/ImageComponent';
+import { Canvas } from '../canvas/Canvas.js';
+import { ContainerComponent } from '../components/ContainerComponent.js';
+import { ImageComponent } from '../components/ImageComponent.js';
 /**
  * MultiColumnContainer is a reusable container class that dynamically creates a flexible number of columns based on the specified column count.
  * It handles the creation of the container element, dynamically creates columns, sets up drag-and-drop functionality,

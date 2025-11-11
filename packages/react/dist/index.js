@@ -54,6 +54,7 @@ var PageBuilderReact = ({
   editable = true,
   brandTitle,
   showAttributeTab,
+  layoutMode = 'absolute',
 }) => {
   const builderRef = (0, import_react.useRef)(null);
   const [processedConfig, setProcessedConfig] = (0, import_react.useState)(
@@ -169,6 +170,7 @@ var PageBuilderReact = ({
             builderRef.current.editable = editable;
             builderRef.current.brandTitle = brandTitle;
             builderRef.current.showAttributeTab = showAttributeTab;
+            builderRef.current.layoutMode = layoutMode;
             const configString = JSON.stringify(processedConfig);
             builderRef.current.setAttribute('config-data', configString);
           }

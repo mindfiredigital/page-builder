@@ -1,9 +1,9 @@
-import { TextComponent } from '../components/TextComponent';
-import { HeaderComponent } from '../components/HeaderComponent';
-import { TableComponent } from '../components/TableComponent';
-import { Canvas } from '../canvas/Canvas';
-import { ModalComponent } from '../components/ModalManager';
-import { handleComponentClick } from './componentClickManager';
+import { TextComponent } from '../components/TextComponent.js';
+import { HeaderComponent } from '../components/HeaderComponent.js';
+import { TableComponent } from '../components/TableComponent.js';
+import { Canvas } from '../canvas/Canvas.js';
+import { ModalComponent } from '../components/ModalManager.js';
+import { handleComponentClick } from './componentClickManager.js';
 export class SidebarUtils {
   static createAttributeControls(
     attribute,

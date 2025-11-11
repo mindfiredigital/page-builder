@@ -1,21 +1,21 @@
-import { Canvas } from './canvas/Canvas';
-import { Sidebar } from './sidebar/ConfigSidebar';
-import { CustomizationSidebar } from './sidebar/CustomizationSidebar';
-import { createSidebar } from './sidebar/CreateSidebar';
-import { createNavbar } from './navbar/CreateNavbar';
-import { HTMLGenerator } from './services/HTMLGenerator';
-import { JSONStorage } from './services/JSONStorage';
+import { Canvas } from './canvas/Canvas.js';
+import { Sidebar } from './sidebar/ConfigSidebar.js';
+import { CustomizationSidebar } from './sidebar/CustomizationSidebar.js';
+import { createSidebar } from './sidebar/CreateSidebar.js';
+import { createNavbar } from './navbar/CreateNavbar.js';
+import { HTMLGenerator } from './services/HTMLGenerator.js';
+import { JSONStorage } from './services/JSONStorage.js';
 import {
   showDialogBox,
   showNotification,
   syntaxHighlightCSS,
   syntaxHighlightHTML,
-} from './utils/utilityFunctions';
-import { createZipFile } from './utils/zipGenerator';
-import { ShortcutManager } from './services/ShortcutManager';
-import { PreviewPanel } from './canvas/PreviewPanel';
+} from './utils/utilityFunctions.js';
+import { createZipFile } from './utils/zipGenerator.js';
+import { ShortcutManager } from './services/ShortcutManager.js';
+import { PreviewPanel } from './canvas/PreviewPanel.js';
 import './styles/main.css';
-import { svgs } from './icons/svgs';
+import { svgs } from './icons/svgs.js';
 export class PageBuilder {
   constructor(
     dynamicComponents = {
