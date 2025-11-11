@@ -91,20 +91,22 @@ export class TableComponent {
         let isVisible = true;
         rules.forEach(rule => {
           const inputValue = inputValues[rule.inputKey];
-          const isConditionMet = this.evaluateRule(
-            inputValue,
-            rule.operator,
-            rule.value
-          );
-          if (isConditionMet) {
-            if (rule.action === 'hide') {
-              isVisible = false;
-            } else if (rule.action === 'show') {
-              isVisible = true;
-            }
-          } else {
-            if (rule.action === 'show') {
-              isVisible = false;
+          if (inputValue) {
+            const isConditionMet = this.evaluateRule(
+              inputValue,
+              rule.operator,
+              rule.value
+            );
+            if (isConditionMet) {
+              if (rule.action === 'hide') {
+                isVisible = false;
+              } else if (rule.action === 'show') {
+                isVisible = true;
+              }
+            } else {
+              if (rule.action === 'show') {
+                isVisible = false;
+              }
             }
           }
         });
@@ -296,6 +298,7 @@ export class TableComponent {
         if (textContentCell && key && values.hasOwnProperty(key)) {
           textContentCell.textContent = values[key];
           cell.style.color = '#000000';
+          cell.style.fontSize = '16px';
         }
         if (controlsElement) {
           cell.appendChild(controlsElement);
@@ -394,11 +397,25 @@ export class TableComponent {
       return;
     }
     const cells = tableWrapper.querySelectorAll('.table-cell');
+    const rows = tableWrapper.querySelectorAll('.table-row');
+    rows.forEach(row => {
+      const rowElement = row;
+      if (rowElement.classList.contains('selected')) {
+        rowElement.classList.remove('selected');
+      }
+    });
     cells.forEach(cell => {
       const cellElement = cell;
       const attributeKey = cellElement.getAttribute('data-attribute-key');
       const attributeType = cellElement.getAttribute('data-attribute-type');
       const textContentOfCell = cell.querySelector('.table-cell-content');
+      if (
+        textContentOfCell === null || textContentOfCell === void 0
+          ? void 0
+          : textContentOfCell.classList.contains('selected')
+      ) {
+        textContentOfCell.classList.remove('selected');
+      }
       if (attributeKey && textContentOfCell) {
         const attribute = TableComponent.tableAttributeConfig.find(
           attr => attr.key === attributeKey

@@ -214,6 +214,16 @@ export class CustomizationSidebar {
         this.controlsContainer
       );
     }
+    if (isCanvas) {
+      SidebarUtils.createControl(
+        'Min Height',
+        'min-height',
+        'number',
+        parseInt(styles.minHeight) || 100,
+        this.controlsContainer,
+        { min: 0, max: 2000, unit: 'px' }
+      );
+    }
     if (!isCanvas) {
       SidebarUtils.createControl(
         'Width',

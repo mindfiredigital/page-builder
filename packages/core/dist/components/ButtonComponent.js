@@ -6,7 +6,6 @@ export class ButtonComponent {
     // Optional styling
     element.style.padding = '10px 20px';
     element.style.fontSize = '14px';
-    element.style.borderRadius = '4px';
     element.style.cursor = 'pointer';
     return element;
   }

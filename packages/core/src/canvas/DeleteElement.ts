@@ -23,6 +23,7 @@ export class DeleteElementHandler {
 
   // Method to set the selected element
   public selectElement(element: HTMLElement): void {
+    console.log(element, 'clcikced');
     if (this.selectedElement) {
       this.selectedElement.classList.remove('selected');
     }

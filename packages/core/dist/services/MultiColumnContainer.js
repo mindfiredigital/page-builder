@@ -30,7 +30,9 @@ export class MultiColumnContainer {
     const column = document.createElement('div');
     column.classList.add('column', className);
     column.setAttribute('draggable', 'true');
-    column.style.width = `${100 / this.columnCount}%`; // Equal width for all columns
+    column.style.width = `${100 / this.columnCount}%`;
+    const parentId = this.element.id;
+    column.id = `${this.columnCount}Col-component${parentId}-${className}`;
     return column;
   }
   /**
@@ -105,7 +107,6 @@ export class MultiColumnContainer {
     style.textContent = `
       .${className} {
         display: flex;
-        width: 97%;
         min-width: 100px;
         min-height: 100px;
       }
@@ -113,7 +114,6 @@ export class MultiColumnContainer {
         flex-grow: 1;
         min-width: 50px;
         border: 1px dashed #ddd;
-        padding: 10px;
         position: relative;
       }
       .column:hover {
