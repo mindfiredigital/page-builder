@@ -14,6 +14,7 @@ module.exports = [
       file: 'dist/index.js',
       format: 'cjs',
       exports: 'auto',
+      inlineDynamicImports: true,
     },
     plugins: [
       replace({

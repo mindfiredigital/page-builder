@@ -1,4 +1,4 @@
-import { Canvas } from '../canvas/Canvas';
+import { Canvas } from '../canvas/Canvas.js';
 export default class LayersViewController {
   static updateLayersView() {
     const layersView = document.getElementById('layers-view');

@@ -2,7 +2,7 @@ import {
   ContainerComponent,
   TextComponent,
   ButtonComponent,
-} from '../components/index';
+} from '../components/index.js';
 export class LandingPageTemplate {
   create() {
     const enableDragAndResize = element => {

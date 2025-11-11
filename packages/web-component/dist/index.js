@@ -62,6 +62,18 @@ var PageBuilderComponent = class extends HTMLElement {
   get showAttributeTab() {
     return this._showAttributeTab;
   }
+  set layoutMode(value) {
+    if (this._layoutMode !== value) {
+      this._layoutMode = value;
+      if (this.initialized) {
+        this.initialized = false;
+        this.initializePageBuilder();
+      }
+    }
+  }
+  get layoutMode() {
+    return this._layoutMode;
+  }
   set initialDesign(value) {
     if (this._initialDesign !== value) {
       this._initialDesign = value;
@@ -126,7 +138,8 @@ var PageBuilderComponent = class extends HTMLElement {
         this._initialDesign,
         this._editable,
         this._brandTitle,
-        this.showAttributeTab
+        this.showAttributeTab,
+        this._layoutMode
       );
       this.initialized = true;
     } catch (error) {

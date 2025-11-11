@@ -1,4 +1,4 @@
-import { svgs } from '../icons/svgs';
+import { svgs } from '../icons/svgs.js';
 export function createSidebar(dynamicComponents, editable) {
   // We have default values if there is no custom components are specified within parameters
   if (

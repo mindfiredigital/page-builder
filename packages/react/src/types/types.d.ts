@@ -41,6 +41,7 @@ export interface PageBuilderElement extends HTMLElement {
   getDebugInfo?: any;
   brandTitle?: string;
   showAttributeTab?: boolean;
+  layoutMode?: 'absolute' | 'grid';
 }
 export interface CustomComponentConfig {
   component: React.ComponentType<any> | string;
@@ -57,4 +58,5 @@ export interface PageBuilderReactProps {
   editable?: boolean;
   brandTitle?: string;
   showAttributeTab?: boolean;
+  layoutMode?: 'absolute' | 'grid';
 }

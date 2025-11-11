@@ -31,14 +31,14 @@ var __awaiter =
       step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
   };
-import { Canvas } from '../canvas/Canvas';
-import { debounce } from '../utils/utilityFunctions';
-import LayersViewController from './LayerViewController';
-import { TableComponent } from '../components/TableComponent';
-import { svgs } from '../icons/svgs';
-import { TextComponent } from '../components/TextComponent';
-import { HeaderComponent } from '../components/HeaderComponent';
-import { SidebarUtils } from '../utils/customizationSidebarHelper';
+import { Canvas } from '../canvas/Canvas.js';
+import { debounce } from '../utils/utilityFunctions.js';
+import LayersViewController from './LayerViewController.js';
+import { TableComponent } from '../components/TableComponent.js';
+import { svgs } from '../icons/svgs.js';
+import { TextComponent } from '../components/TextComponent.js';
+import { HeaderComponent } from '../components/HeaderComponent.js';
+import { SidebarUtils } from '../utils/customizationSidebarHelper.js';
 export class CustomizationSidebar {
   static init(
     customComponentsConfig,
@@ -214,6 +214,16 @@ export class CustomizationSidebar {
         this.controlsContainer
       );
     }
+    if (isCanvas) {
+      SidebarUtils.createControl(
+        'Min Height',
+        'min-height',
+        'number',
+        parseInt(styles.minHeight) || 100,
+        this.controlsContainer,
+        { min: 0, max: 2000, unit: 'px' }
+      );
+    }
     if (!isCanvas) {
       SidebarUtils.createControl(
         'Width',
@@ -361,8 +371,8 @@ export class CustomizationSidebar {
     this.addListeners(component);
   }
   static handleInputTrigger(event) {
-    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
+      var _a, _b, _c;
       const component = CustomizationSidebar.selectedComponent;
       if (!component) return;
       let componentConfig;
