@@ -1,4 +1,8 @@
 export declare class SidebarUtils {
+  static createPageSizeSelect(
+    container: HTMLElement,
+    canvasElement: HTMLElement
+  ): void;
   static createAttributeControls(
     attribute: ComponentAttribute,
     functionsPanel: HTMLElement,

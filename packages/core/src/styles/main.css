@@ -90,6 +90,28 @@ html {
 
 }
 
+#canvas.preview-printable {
+  max-width: 794px;
+  min-height: 1123px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  position: relative;
+  padding: 30px;
+  overflow: auto;
+}
+
+#canvas.preview-printable.grid-layout-active {
+  max-width: 100%;
+  /* Keep grid mode full width */
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
 
 #customization {
   position: relative;

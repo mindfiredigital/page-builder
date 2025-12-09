@@ -90,6 +90,39 @@ html {
 
 }
 
+#canvas.preview-printable {
+  /* A4 Portrait Size at 96 DPI: 794px width (approx. 210mm) */
+  /* This is the paper width, the editor padding will act as the surrounding canvas area */
+  max-width: 794px;
+  /* min-height will typically be 1123px (A4 height) but let it grow for content */
+  min-height: 1123px;
+
+  /* Center the "paper" within the screen */
+  margin-left: auto;
+  margin-right: auto;
+
+  /* Background and shadow for the "paper" look */
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  /* Slight roundness for aesthetics */
+
+  /* Set the surrounding area (the full canvas element) to a darker shade to emphasize the paper */
+  position: relative;
+  /* The padding here creates the visible margin around the paper inside the editor. */
+  padding: 30px;
+  overflow: auto;
+}
+
+#canvas.preview-printable.grid-layout-active {
+  max-width: 100%;
+  /* Keep grid mode full width */
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
 
 #customization {
   position: relative;
