@@ -1,5 +1,11 @@
 # @mindfiredigital/page-builder
 
+## 1.18.1
+
+### Patch Changes
+
+- Update SECURITY.md
+
 ## 1.18.0
 
 ### Minor Changes
