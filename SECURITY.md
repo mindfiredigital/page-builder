@@ -6,7 +6,7 @@ If you discover a security vulnerability in this project, please follow these st
 
 1. **Do not report security vulnerabilities in public**: Please report security vulnerabilities privately. Publicly disclosing vulnerabilities can lead to potential risks and exploits.
 
-2. **Contact us directly**: Send a detailed report to our security team at [security@yourdomain.com](mailto:security@yourdomain.com). Provide as much detail as possible, including:
+2. **Contact us directly**: Send a detailed report by creating an issue provide as much detail as possible, including:
 
    - Description of the vulnerability
    - Steps to reproduce the issue
