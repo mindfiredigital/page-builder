@@ -1,5 +1,12 @@
 # @mindfiredigital/page-builder-web-component
 
+## 5.0.11
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @mindfiredigital/page-builder@1.18.1
+
 ## 5.0.10
 
 ### Patch Changes
