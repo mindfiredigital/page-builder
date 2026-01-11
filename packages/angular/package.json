@@ -17,13 +17,13 @@
   },
   "peerDependencies": {
     "@angular/common": ">=15.0.0",
-    "@angular/core": ">=15.0.0",
+    "@angular/core": ">=21.0.7",
     "@mindfiredigital/page-builder-web-component": "workspace:*"
   },
   "sideEffects": false,
   "devDependencies": {
-    "@angular/cli": "^17.3.17",
-    "@angular/compiler-cli": "^17.3.12",
+    "@angular/cli": "^21.0.5",
+    "@angular/compiler-cli": "^21.0.8",
     "css-loader": "^7.1.2",
     "ng-packagr": "^17.3.0",
     "ngx-build-plus": "^19.0.0",

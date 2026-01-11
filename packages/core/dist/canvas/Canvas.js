@@ -408,7 +408,6 @@ export class Canvas {
       // Get the padding values (which define the margin area in CSS)
       const paddingTop = parseFloat(style.paddingTop); // CSS padding: 30px
       const paddingRight = parseFloat(style.paddingRight); // CSS padding: 30px
-      const paddingBottom = parseFloat(style.paddingBottom); // CSS padding: 30px
       const paddingLeft = parseFloat(style.paddingLeft); // CSS padding: 30px
       // Estimate minimum space needed for the new component
       const MIN_COMPONENT_WIDTH = 100;
