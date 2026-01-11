@@ -92,14 +92,16 @@ html {
 
 #canvas.preview-printable {
   max-width: 869px;
-  min-height: 1123px;
+  max-height: 1123px;
   margin-left: auto;
   margin-right: auto;
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-radius: 4px;
   position: relative;
-  padding: 75px;
+  padding-top: 75px;
+  padding-left: 75px;
+  padding-right: 75px;
   overflow: auto;
   
 }

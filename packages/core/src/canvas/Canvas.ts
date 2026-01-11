@@ -490,27 +490,19 @@ export class Canvas {
       // Get the padding values (which define the margin area in CSS)
       const paddingTop = parseFloat(style.paddingTop); // CSS padding: 30px
       const paddingRight = parseFloat(style.paddingRight); // CSS padding: 30px
-      const paddingBottom = parseFloat(style.paddingBottom); // CSS padding: 30px
       const paddingLeft = parseFloat(style.paddingLeft); // CSS padding: 30px
 
       // Estimate minimum space needed for the new component
       const MIN_COMPONENT_WIDTH = 100;
-      const MIN_COMPONENT_HEIGHT = 50;
-
       // Calculate the inner content boundaries (where dropping is allowed)
       const innerContentRightX =
         Canvas.canvasElement.offsetWidth - paddingRight - MIN_COMPONENT_WIDTH;
-      const innerContentBottomY =
-        Canvas.canvasElement.offsetHeight -
-        paddingBottom -
-        MIN_COMPONENT_HEIGHT;
 
       // Check if the drop position (gridX, gridY) is in the restricted margin area
       if (
         gridX < paddingLeft || // Too far left (in left margin)
         gridY < paddingTop || // Too far up (in top margin)
-        gridX > innerContentRightX || // Too far right (in right margin)
-        gridY > innerContentBottomY // Too far down (in bottom margin)
+        gridX > innerContentRightX
       ) {
         // Drop is outside the editable area. Prevent component creation.
         console.warn('Component dropped into margin area. Drop prevented.');
@@ -616,6 +608,40 @@ export class Canvas {
 
     if (element && this.editable !== false) {
       const resizeObserver = new ResizeObserver(entries => {
+        // Add resize constraints for printable mode
+        if (
+          Canvas.layoutMode === 'absolute' &&
+          Canvas.canvasElement.classList.contains('preview-printable')
+        ) {
+          const style = window.getComputedStyle(Canvas.canvasElement);
+          const paddingLeft = parseFloat(style.paddingLeft);
+          const paddingRight = parseFloat(style.paddingRight);
+          const paddingTop = parseFloat(style.paddingTop);
+
+          const elementLeft = parseFloat(element.style.left) || 0;
+          const elementTop = parseFloat(element.style.top) || 0;
+          const elementWidth = element.offsetWidth;
+
+          const maxCanvasWidth = Canvas.canvasElement.offsetWidth;
+
+          // Constrain width to not exceed right padding
+          if (elementLeft + elementWidth > maxCanvasWidth - paddingRight) {
+            const maxAllowedWidth =
+              maxCanvasWidth - paddingLeft - paddingRight - elementLeft;
+            element.style.width = `${Math.max(50, maxAllowedWidth)}px`;
+          }
+
+          // Constrain position if resized beyond left padding
+          if (elementLeft < paddingLeft) {
+            element.style.left = `${paddingLeft}px`;
+          }
+
+          // Constrain top position
+          if (elementTop < paddingTop) {
+            element.style.top = `${paddingTop}px`;
+          }
+        }
+
         Canvas.dispatchDesignChange();
       });
       resizeObserver.observe(element);
