@@ -104,7 +104,15 @@ export class Canvas {
     ) {
     }
     Canvas.canvasElement = document.getElementById('canvas')!;
+    if (Canvas.canvasElement) {
+      if (this.layoutMode === 'absolute') {
+        Canvas.canvasElement.classList.add('preview-printable');
+      } else {
+        Canvas.canvasElement.classList.remove('preview-printable');
+      }
+    }
     Canvas.sidebarElement = document.getElementById('sidebar')!;
+
     window.addEventListener('table-design-change', () => {
       Canvas.dispatchDesignChange();
     });
@@ -186,7 +194,14 @@ export class Canvas {
     const canvasElement = Canvas.canvasElement;
     const computedStyles = window.getComputedStyle(canvasElement);
     const canvasStyles: { [key: string]: string } = {};
-    ['background-color', 'min-height', 'padding', 'margin'].forEach(prop => {
+    [
+      'background-color',
+      'min-height',
+      'padding',
+      'margin',
+      'height',
+      'width',
+    ].forEach(prop => {
       const value = computedStyles.getPropertyValue(prop);
       if (
         value &&
@@ -467,13 +482,45 @@ export class Canvas {
       event,
       Canvas.canvasElement
     );
+    if (
+      Canvas.layoutMode === 'absolute' &&
+      Canvas.canvasElement.classList.contains('preview-printable')
+    ) {
+      const style = window.getComputedStyle(Canvas.canvasElement);
+      // Get the padding values (which define the margin area in CSS)
+      const paddingTop = parseFloat(style.paddingTop); // CSS padding: 30px
+      const paddingRight = parseFloat(style.paddingRight); // CSS padding: 30px
+      const paddingLeft = parseFloat(style.paddingLeft); // CSS padding: 30px
 
+      // Estimate minimum space needed for the new component
+      const MIN_COMPONENT_WIDTH = 100;
+      // Calculate the inner content boundaries (where dropping is allowed)
+      const innerContentRightX =
+        Canvas.canvasElement.offsetWidth - paddingRight - MIN_COMPONENT_WIDTH;
+
+      // Check if the drop position (gridX, gridY) is in the restricted margin area
+      if (
+        gridX < paddingLeft || // Too far left (in left margin)
+        gridY < paddingTop || // Too far up (in top margin)
+        gridX > innerContentRightX
+      ) {
+        // Drop is outside the editable area. Prevent component creation.
+        console.warn('Component dropped into margin area. Drop prevented.');
+        // Display a quick visual feedback (optional)
+        Canvas.canvasElement.classList.add('container-highlight');
+        setTimeout(() => {
+          Canvas.canvasElement.classList.remove('container-highlight');
+        }, 300);
+        return;
+      }
+    }
     const component = Canvas.createComponent(componentType, customSettings);
 
     if (component && this.editable !== false) {
       const uniqueClass = Canvas.generateUniqueClass(componentType);
       component.id = uniqueClass;
       component.classList.add(uniqueClass);
+
       if (Canvas.layoutMode === 'absolute') {
         component.style.position = 'absolute';
 
@@ -561,6 +608,40 @@ export class Canvas {
 
     if (element && this.editable !== false) {
       const resizeObserver = new ResizeObserver(entries => {
+        // Add resize constraints for printable mode
+        if (
+          Canvas.layoutMode === 'absolute' &&
+          Canvas.canvasElement.classList.contains('preview-printable')
+        ) {
+          const style = window.getComputedStyle(Canvas.canvasElement);
+          const paddingLeft = parseFloat(style.paddingLeft);
+          const paddingRight = parseFloat(style.paddingRight);
+          const paddingTop = parseFloat(style.paddingTop);
+
+          const elementLeft = parseFloat(element.style.left) || 0;
+          const elementTop = parseFloat(element.style.top) || 0;
+          const elementWidth = element.offsetWidth;
+
+          const maxCanvasWidth = Canvas.canvasElement.offsetWidth;
+
+          // Constrain width to not exceed right padding
+          if (elementLeft + elementWidth > maxCanvasWidth - paddingRight) {
+            const maxAllowedWidth =
+              maxCanvasWidth - paddingLeft - paddingRight - elementLeft;
+            element.style.width = `${Math.max(50, maxAllowedWidth)}px`;
+          }
+
+          // Constrain position if resized beyond left padding
+          if (elementLeft < paddingLeft) {
+            element.style.left = `${paddingLeft}px`;
+          }
+
+          // Constrain top position
+          if (elementTop < paddingTop) {
+            element.style.top = `${paddingTop}px`;
+          }
+        }
+
         Canvas.dispatchDesignChange();
       });
       resizeObserver.observe(element);
@@ -649,14 +730,107 @@ export class Canvas {
     }
   }
 
+  // static addDraggableListeners(element: HTMLElement) {
+  //   element.setAttribute('draggable', 'true');
+  //   element.style.cursor = 'grab';
+
+  //   let dragStartX = 0;
+  //   let dragStartY = 0;
+  //   let elementStartX = 0;
+  //   let elementStartY = 0;
+  //   let canvasScrollStartX = 0;
+  //   let canvasScrollStartY = 0;
+
+  //   element.addEventListener('dragstart', (event: DragEvent) => {
+  //     event.stopPropagation();
+  //     if (event.dataTransfer) {
+  //       // Store exact mouse position at drag start
+  //       dragStartX = event.clientX;
+  //       dragStartY = event.clientY;
+
+  //       // Store canvas scroll position at drag start
+  //       canvasScrollStartX = Canvas.canvasElement.scrollLeft;
+  //       canvasScrollStartY = Canvas.canvasElement.scrollTop;
+
+  //       // Get current element position relative to canvas
+  //       elementStartX = parseFloat(element.style.left) || 0;
+  //       elementStartY = parseFloat(element.style.top) || 0;
+
+  //       event.dataTransfer.effectAllowed = 'move';
+  //       element.style.cursor = 'grabbing';
+  //     }
+  //   });
+
+  //   element.addEventListener('dragend', (event: DragEvent) => {
+  //     event.preventDefault();
+  //     event.stopPropagation();
+
+  //     // Get current canvas scroll position
+  //     const canvasScrollCurrentX = Canvas.canvasElement.scrollLeft;
+  //     const canvasScrollCurrentY = Canvas.canvasElement.scrollTop;
+
+  //     // Calculate scroll delta (how much the canvas scrolled during drag)
+  //     const scrollDeltaX = canvasScrollCurrentX - canvasScrollStartX;
+  //     const scrollDeltaY = canvasScrollCurrentY - canvasScrollStartY;
+
+  //     // Calculate mouse movement delta
+  //     const mouseDeltaX = event.clientX - dragStartX;
+  //     const mouseDeltaY = event.clientY - dragStartY;
+
+  //     // Calculate new position accounting for both mouse movement and scroll changes
+  //     let newX = elementStartX + mouseDeltaX + scrollDeltaX;
+  //     let newY = elementStartY + mouseDeltaY + scrollDeltaY;
+
+  //     // Alternative approach: Use the actual mouse position relative to canvas
+  //     // This is more accurate when dealing with scrolling
+  //     const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+  //     const actualMouseX =
+  //       event.clientX - canvasRect.left + Canvas.canvasElement.scrollLeft;
+  //     const actualMouseY =
+  //       event.clientY - canvasRect.top + Canvas.canvasElement.scrollTop;
+
+  //     // Calculate the offset between drag start mouse position and element position
+  //     const canvasRectStart = Canvas.canvasElement.getBoundingClientRect();
+  //     const dragStartMouseX =
+  //       dragStartX - canvasRectStart.left + canvasScrollStartX;
+  //     const dragStartMouseY =
+  //       dragStartY - canvasRectStart.top + canvasScrollStartY;
+
+  //     const offsetX = elementStartX - dragStartMouseX;
+  //     const offsetY = elementStartY - dragStartMouseY;
+
+  //     // Use actual mouse position for more precise positioning
+  //     newX = actualMouseX + offsetX;
+  //     newY = actualMouseY + offsetY;
+
+  //     // Constrain within canvas boundaries (accounting for scroll area)
+  //     const elementRect = element.getBoundingClientRect();
+  //     const maxX = Canvas.canvasElement.scrollWidth - elementRect.width;
+  //     const maxY = Canvas.canvasElement.scrollHeight - elementRect.height;
+
+  //     newX = Math.max(0, Math.min(newX, maxX));
+  //     newY = Math.max(0, Math.min(newY, maxY));
+
+  //     // Set new position
+  //     element.style.left = `${newX}px`;
+  //     element.style.top = `${newY}px`;
+
+  //     // Reset cursor
+  //     element.style.cursor = 'grab';
+
+  //     // Capture the state after dragging
+  //     Canvas.historyManager.captureState();
+  //     Canvas.dispatchDesignChange();
+  //   });
+  // }
   static addDraggableListeners(element: HTMLElement) {
     element.setAttribute('draggable', 'true');
     element.style.cursor = 'grab';
 
     let dragStartX = 0;
     let dragStartY = 0;
-    let elementStartX = 0;
-    let elementStartY = 0;
+    let elementStartX = parseFloat(element.style.left) || 0;
+    let elementStartY = parseFloat(element.style.top) || 0;
     let canvasScrollStartX = 0;
     let canvasScrollStartY = 0;
 
@@ -671,7 +845,7 @@ export class Canvas {
         canvasScrollStartX = Canvas.canvasElement.scrollLeft;
         canvasScrollStartY = Canvas.canvasElement.scrollTop;
 
-        // Get current element position relative to canvas
+        // Re-read initial element position
         elementStartX = parseFloat(element.style.left) || 0;
         elementStartY = parseFloat(element.style.top) || 0;
 
@@ -684,30 +858,6 @@ export class Canvas {
       event.preventDefault();
       event.stopPropagation();
 
-      // Get current canvas scroll position
-      const canvasScrollCurrentX = Canvas.canvasElement.scrollLeft;
-      const canvasScrollCurrentY = Canvas.canvasElement.scrollTop;
-
-      // Calculate scroll delta (how much the canvas scrolled during drag)
-      const scrollDeltaX = canvasScrollCurrentX - canvasScrollStartX;
-      const scrollDeltaY = canvasScrollCurrentY - canvasScrollStartY;
-
-      // Calculate mouse movement delta
-      const mouseDeltaX = event.clientX - dragStartX;
-      const mouseDeltaY = event.clientY - dragStartY;
-
-      // Calculate new position accounting for both mouse movement and scroll changes
-      let newX = elementStartX + mouseDeltaX + scrollDeltaX;
-      let newY = elementStartY + mouseDeltaY + scrollDeltaY;
-
-      // Alternative approach: Use the actual mouse position relative to canvas
-      // This is more accurate when dealing with scrolling
-      const canvasRect = Canvas.canvasElement.getBoundingClientRect();
-      const actualMouseX =
-        event.clientX - canvasRect.left + Canvas.canvasElement.scrollLeft;
-      const actualMouseY =
-        event.clientY - canvasRect.top + Canvas.canvasElement.scrollTop;
-
       // Calculate the offset between drag start mouse position and element position
       const canvasRectStart = Canvas.canvasElement.getBoundingClientRect();
       const dragStartMouseX =
@@ -718,17 +868,59 @@ export class Canvas {
       const offsetX = elementStartX - dragStartMouseX;
       const offsetY = elementStartY - dragStartMouseY;
 
+      // Calculate actual mouse position relative to canvas
+      const canvasRect = Canvas.canvasElement.getBoundingClientRect();
+      const actualMouseX =
+        event.clientX - canvasRect.left + Canvas.canvasElement.scrollLeft;
+      const actualMouseY =
+        event.clientY - canvasRect.top + Canvas.canvasElement.scrollTop;
+
       // Use actual mouse position for more precise positioning
-      newX = actualMouseX + offsetX;
-      newY = actualMouseY + offsetY;
+      let newX = actualMouseX + offsetX;
+      let newY = actualMouseY + offsetY;
 
-      // Constrain within canvas boundaries (accounting for scroll area)
-      const elementRect = element.getBoundingClientRect();
-      const maxX = Canvas.canvasElement.scrollWidth - elementRect.width;
-      const maxY = Canvas.canvasElement.scrollHeight - elementRect.height;
+      // --- 🎯 FINAL MARGIN/SCROLL LOGIC FOR DRAGEND START ---
+      if (
+        Canvas.layoutMode === 'absolute' &&
+        Canvas.canvasElement.classList.contains('preview-printable')
+      ) {
+        const style = window.getComputedStyle(Canvas.canvasElement);
+        const paddingRight = parseFloat(style.paddingRight);
+        const paddingLeft = parseFloat(style.paddingLeft);
+        const paddingTop = parseFloat(style.paddingTop);
 
-      newX = Math.max(0, Math.min(newX, maxX));
-      newY = Math.max(0, Math.min(newY, maxY));
+        // Get the current dimensions of the element being dragged
+        const elementWidth = element.offsetWidth;
+
+        // --- HORIZONTAL MARGIN CLAMPING (Fixed Width/A4) ---
+
+        // 1. Constrain Left (must be greater than or equal to paddingLeft)
+        newX = Math.max(newX, paddingLeft);
+
+        // 2. Constrain Right
+        // The canvas width is max-width: 794px. We calculate the max allowed left position (newX)
+        const maxCanvasContentWidth = Canvas.canvasElement.offsetWidth;
+        const innerContentRightX =
+          maxCanvasContentWidth - paddingRight - elementWidth;
+
+        newX = Math.min(newX, innerContentRightX);
+
+        // --- VERTICAL MARGIN CLAMPING (Only top constraint needed for scrollable area) ---
+
+        // 3. Constrain Top (must be greater than or equal to paddingTop)
+        newY = Math.max(newY, paddingTop);
+
+        // 4. IMPORTANT: DO NOT add a maximum Y constraint. This is what breaks scrolling.
+        // We rely on the canvas's `scrollHeight` growing naturally.
+      } else {
+        // --- Existing general canvas boundary constraint (only runs if not in A4 mode) ---
+        const elementRect = element.getBoundingClientRect();
+        const maxX = Canvas.canvasElement.scrollWidth - elementRect.width;
+        const maxY = Canvas.canvasElement.scrollHeight - elementRect.height;
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+      }
+      // --- 🎯 FINAL MARGIN/SCROLL LOGIC FOR DRAGEND END ---
 
       // Set new position
       element.style.left = `${newX}px`;
