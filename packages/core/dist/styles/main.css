@@ -91,27 +91,72 @@ html {
 }
 
 #canvas.preview-printable {
-  /* A4 Portrait Size at 96 DPI: 794px width (approx. 210mm) */
-  /* This is the paper width, the editor padding will act as the surrounding canvas area */
-  max-width: 794px;
-  /* min-height will typically be 1123px (A4 height) but let it grow for content */
+  max-width: 869px;
   min-height: 1123px;
-
-  /* Center the "paper" within the screen */
   margin-left: auto;
   margin-right: auto;
-
-  /* Background and shadow for the "paper" look */
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-radius: 4px;
-  /* Slight roundness for aesthetics */
-
-  /* Set the surrounding area (the full canvas element) to a darker shade to emphasize the paper */
   position: relative;
-  /* The padding here creates the visible margin around the paper inside the editor. */
-  padding: 30px;
+  padding: 75px;
   overflow: auto;
+  
+}
+/* L-shaped corner margin indicators - Word style */
+#canvas.preview-printable {
+  position: relative;
+}
+
+#canvas.preview-printable::before {
+  content: '';
+  position: absolute;
+  top: 75px;
+  left: 75px;
+  width: 20px;
+  height: 20px;
+  border-left: 1.5px solid #94a3b8;
+  border-top: 1.5px solid #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#canvas.preview-printable::after {
+  content: '';
+  position: absolute;
+  top: 75px;
+  right: 75px;
+  width: 20px;
+  height: 20px;
+  border-right: 1.5px solid #94a3b8;
+  border-top: 1.5px solid #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Add bottom corners using additional styling */
+#canvas.preview-printable {
+  background-image: 
+    /* Bottom-left L */
+    linear-gradient(to right, #94a3b8 1.5px, transparent 1.5px),
+    linear-gradient(to bottom, #94a3b8 1.5px, transparent 1.5px),
+    /* Bottom-right L */
+    linear-gradient(to left, #94a3b8 1.5px, transparent 1.5px),
+    linear-gradient(to bottom, #94a3b8 1.5px, transparent 1.5px);
+  
+  background-size: 
+    20px 1.5px,
+    1.5px 20px,
+    20px 1.5px,
+    1.5px 20px;
+  
+  background-position: 
+    75px calc(100% - 75px),
+    75px calc(100% - 75px),
+    calc(100% - 75px) calc(100% - 75px),
+    calc(100% - 75px) calc(100% - 75px);
+  
+  background-repeat: no-repeat;
 }
 
 #canvas.preview-printable.grid-layout-active {
