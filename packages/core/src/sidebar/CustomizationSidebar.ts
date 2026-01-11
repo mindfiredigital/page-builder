@@ -212,6 +212,15 @@ export class CustomizationSidebar {
       );
     }
     if (isCanvas) {
+      SidebarUtils.createPageSizeSelect(this.controlsContainer, component);
+      SidebarUtils.createControl(
+        'Width',
+        'width', // Use 'width' property for dynamic sizing
+        'number',
+        component.offsetWidth,
+        this.controlsContainer,
+        { min: 300, max: 2000, unit: 'px' } // Increased max for custom large sizes
+      );
       SidebarUtils.createControl(
         'Min Height',
         'min-height',
@@ -219,6 +228,15 @@ export class CustomizationSidebar {
         parseInt(styles.minHeight) || 100,
         this.controlsContainer,
         { min: 0, max: 2000, unit: 'px' }
+      );
+
+      SidebarUtils.createControl(
+        'Margin',
+        'margin',
+        'number',
+        parseInt(styles.margin) || 0,
+        this.controlsContainer,
+        { min: 0, max: 100, unit: 'px' }
       );
     }
     if (!isCanvas) {
