@@ -1114,9 +1114,15 @@ class d {
     const A = e.parentElement;
     if (!A) return;
     const n = Array.from(A.parentElement.children).indexOf(A),
-      r = A.children.length,
-      s = this.createTableCell(n, r, t);
-    (A.appendChild(s), (A.style.gridTemplateColumns = `repeat(${r + 1}, 1fr)`));
+      r = A.children.length;
+    let s = -1;
+    Array.from(A.querySelectorAll('.table-cell-content')).forEach(e => {
+      const t = e.id.match(/-C(\d+)$/);
+      t && (s = Math.max(s, parseInt(t[1], 10)));
+    });
+    const i = s + 1,
+      o = this.createTableCell(n, i, t);
+    (A.appendChild(o), (A.style.gridTemplateColumns = `repeat(${r + 1}, 1fr)`));
   }
   deleteCell(e) {
     const t = e.parentElement;
