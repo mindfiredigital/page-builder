@@ -1,5 +1,29 @@
 # @mindfiredigital/page-builder
 
+## 1.19.0
+
+### Minor Changes
+
+- merge pull request #165 from mindfiredigital/dev
+
+## 1.18.1
+
+### Patch Changes
+
+- Update SECURITY.md
+
+## 1.18.0
+
+### Minor Changes
+
+- Merge pull request #161 from mindfiredigital/dev
+
+## 1.17.0
+
+### Minor Changes
+
+- Merge pull request #155 from mindfiredigital/dev
+
 ## 1.16.0
 
 ### Minor Changes

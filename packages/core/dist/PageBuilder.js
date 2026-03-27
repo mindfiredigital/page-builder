@@ -229,7 +229,18 @@ export class PageBuilder {
     if (exportButton) {
       exportButton.addEventListener('click', () =>
         __awaiter(this, void 0, void 0, function* () {
+          var _a;
           showNotification('Generating PDF for download...');
+          // Blur active element and remove all selected/focus states
+          (_a = document.activeElement) === null || _a === void 0
+            ? void 0
+            : _a.blur();
+          document.querySelectorAll('.selected').forEach(el => {
+            el.classList.remove('selected');
+          });
+          document.querySelectorAll('.table-cell-content').forEach(el => {
+            el.blur();
+          });
           yield new Promise(resolve => setTimeout(resolve, 1500));
           const tempContainer = document.createElement('div');
           try {
@@ -259,81 +270,94 @@ export class PageBuilder {
               1
             );
             const FINAL_HTML2CANVAS_SCALE = SHRINK_FACTOR * QUALITY_SCALE;
-            // 3. APPLY CLEANUP CSS
             css = css.replace(/min-height:\s*100vh/gi, 'min-height: auto');
             const pdfContent = `
-            <style>
-              ${css}
+          <style>
+            ${css}
 
-              /* General Styles for isolated rendering */
-              * { box-sizing: border-box; }
-              html, body, #pdf-wrapper { 
-                margin: 0; padding: 0; 
-                overflow: visible !important; 
-                font-family: Arial, sans-serif !important; 
-                background-color: white !important; 
-              }
+            /* General Styles for isolated rendering */
+            * { box-sizing: border-box; }
+            html, body, #pdf-wrapper { 
+              margin: 0; padding: 0; 
+              overflow: visible !important; 
+              font-family: Arial, sans-serif !important; 
+              background-color: white !important; 
+            }
 
-              /* Set wrapper to the full, non-scaled content size */
-              #pdf-wrapper {
-                width: ${contentWidth}px !important; 
-                height: ${contentHeight}px !important; // Use full scrollable height
-                overflow: visible !important; 
-                transform: none !important; 
-              }
+            /* Remove all focus and selection styles */
+            *:focus { outline: none !important; box-shadow: none !important; }
+            .selected { outline: none !important; box-shadow: none !important; border-color: inherit !important; }
+            .table-cell-content:focus { outline: none !important; border: none !important; }
 
-              #canvas.home {
-                width: ${contentWidth}px !important;
-                height: ${contentHeight}px !important; // Use full scrollable height
-                min-height: auto !important; 
-                transform: none !important; 
+            /* Set wrapper to the full, non-scaled content size */
+            #pdf-wrapper {
+              width: ${contentWidth}px !important; 
+              height: ${contentHeight}px !important;
+              overflow: visible !important; 
+              transform: none !important; 
+            }
 
-                position: relative !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-              }
+            #canvas.home {
+              width: ${contentWidth}px !important;
+              height: ${contentHeight}px !important;
+              min-height: auto !important; 
+              transform: none !important; 
+              position: relative !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              overflow: visible !important;
+            }
 
-              /* Prevent breaking elements */
-              table, #pdf-wrapper, #canvas.home {
-                page-break-inside: avoid !important;
-              }
-            </style>
-            <div id="pdf-wrapper">
-              ${contentHTML}
-            </div>
-          `;
+            /* Prevent breaking elements */
+            table, #pdf-wrapper, #canvas.home {
+              page-break-inside: avoid !important;
+            }
+          </style>
+          <div id="pdf-wrapper">
+            ${contentHTML}
+          </div>
+        `;
             tempContainer.innerHTML = pdfContent;
             tempContainer.style.cssText = `
-                    position: absolute;
-                    left: -99999px;
-                    top: 0;
-                    width: ${contentWidth}px;
-                    height: ${contentHeight}px; // Must match inner content size
-                    overflow: visible;
-                    background-color: white; 
-                `;
+          position: absolute;
+          left: -99999px;
+          top: 0;
+          width: ${contentWidth}px;
+          height: ${contentHeight}px;
+          overflow: visible;
+          background-color: white; 
+        `;
             document.body.appendChild(tempContainer);
-            // Give time for DOM insertion/rendering
             yield new Promise(resolve => setTimeout(resolve, 100));
             const sourceElement = tempContainer.querySelector('#pdf-wrapper');
             if (!sourceElement) {
               throw new Error('PDF source element (#pdf-wrapper) not found.');
             }
-            // 4. APPLY UNIFIED SCALE TO HTML2CANVAS
             yield worker
               .set({
                 filename: 'exported_page_download.pdf',
                 image: { type: 'png', quality: 1 },
                 html2canvas: {
-                  scale: FINAL_HTML2CANVAS_SCALE, // Scale is now based on the limiting factor (width or height)
-                  width: contentWidth, // Explicitly tell html2canvas the content width
-                  height: contentHeight, // Explicitly tell html2canvas the content height
+                  scale: FINAL_HTML2CANVAS_SCALE,
+                  width: contentWidth,
+                  height: contentHeight,
                   useCORS: true,
                   logging: false,
                   backgroundColor: null,
                   letterRendering: true,
                   allowTaint: true,
+                  onclone: clonedDoc => {
+                    // ✅ Clean up focus/selection styles in the cloned document
+                    clonedDoc.querySelectorAll('.selected').forEach(el => {
+                      el.classList.remove('selected');
+                    });
+                    clonedDoc
+                      .querySelectorAll('.table-cell-content')
+                      .forEach(el => {
+                        el.style.outline = 'none';
+                        el.style.boxShadow = 'none';
+                      });
+                  },
                 },
                 jsPDF: {
                   unit: 'mm',
