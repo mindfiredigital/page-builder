@@ -252,7 +252,16 @@ export class TableComponent {
     if (!row) return;
     const rowIndex = Array.from(row.parentElement.children).indexOf(row);
     const currentCellCount = row.children.length;
-    const newCell = this.createTableCell(rowIndex, currentCellCount, tableId);
+    // Find the highest existing cell index to avoid duplicates after deletions
+    let maxCellIndex = -1;
+    Array.from(row.querySelectorAll('.table-cell-content')).forEach(el => {
+      const match = el.id.match(/-C(\d+)$/);
+      if (match) {
+        maxCellIndex = Math.max(maxCellIndex, parseInt(match[1], 10));
+      }
+    });
+    const newCellIndex = maxCellIndex + 1;
+    const newCell = this.createTableCell(rowIndex, newCellIndex, tableId);
     row.appendChild(newCell);
     row.style.gridTemplateColumns = `repeat(${currentCellCount + 1}, 1fr)`;
   }
