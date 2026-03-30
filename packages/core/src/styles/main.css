@@ -929,6 +929,46 @@ html {
   background-color: #2563eb;
 }
 
+/* Set attribute button */
+.set-attribute-button {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.set-attribute-button:hover {
+  background-color: #2563eb;
+}
+
+/* Delete attribute button */
+.delete-attribute-button {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+  background-color: #fff1f2 !important;
+  color: #dc2626 !important;
+  border: 1px solid #fecaca !important;
+  padding: 8px 14px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-attribute-button:hover {
+  background-color: #fee2e2 !important;
+  border-color: #f87171 !important;
+  color: #b91c1c !important;
+}
+
 /* Improved spacing for multi-input controls */
 .input-wrapper {
   flex-wrap: wrap;
