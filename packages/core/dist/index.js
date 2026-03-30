@@ -2009,26 +2009,68 @@ class x {
         }));
     }
   }
-  static populateModalButton(e, t, r) {
-    if (!1 === r) return;
-    const s = document.createElement('button');
-    ((s.textContent = `Set ${e.classList[0].replace('-component', '')} Attribute`),
-      (s.className = 'set-attribute-button'),
-      t.appendChild(s),
-      s.addEventListener('click', () => {
-        const t = new A();
-        if (e.classList.contains('text-component')) {
-          const A = new n();
-          B(t, n.textAttributeConfig, e, A.updateTextContent);
-        } else if (e.classList.contains('header-component')) {
-          const A = new o();
-          B(t, o.headerAttributeConfig, e, A.updateHeaderContent);
-        } else if (e.classList.contains('table-cell-content')) {
-          const A = new d(),
-            n = e.closest('.table-cell');
-          B(t, d.tableAttributeConfig, n, A.updateCellContent);
+  static populateModalButton(t, r, s) {
+    if (!1 === s) return;
+    const i = t.classList[0].replace('-component', ''),
+      a = t.classList.contains('table-cell-content'),
+      l = a ? t.closest('.table-cell') : t,
+      c = document.createElement('button');
+    ((c.textContent = `Set ${i} Attribute`),
+      (c.className = 'set-attribute-button'),
+      r.appendChild(c));
+    const u = document.createElement('button');
+    ((u.textContent = `Delete ${i} Attribute`),
+      (u.className = 'delete-attribute-button'),
+      r.appendChild(u));
+    const h = () => {
+      u.style.display =
+        l && l.hasAttribute('data-attribute-key') ? 'block' : 'none';
+    };
+    (h(),
+      u.addEventListener('click', () => {
+        if (l) {
+          if (
+            (l.removeAttribute('data-attribute-key'),
+            l.removeAttribute('data-attribute-type'),
+            a)
+          ) {
+            const e = l.querySelector('.table-cell-content');
+            (e && (e.textContent = ''),
+              (l.style.color = ''),
+              (l.style.fontSize = ''),
+              (l.style.fontWeight = ''));
+          } else if (t.classList.contains('header-component')) {
+            const e = t.querySelector('.component-text-content');
+            (e && (e.textContent = 'Header'),
+              (t.style.color = ''),
+              (t.style.fontWeight = ''));
+          } else if (t.classList.contains('text-component')) {
+            const e = t.querySelector('.component-text-content');
+            (e && (e.textContent = 'Text'),
+              (t.style.color = ''),
+              (t.style.fontSize = ''),
+              (t.style.fontWeight = ''));
+          }
+          (Q.dispatchDesignChange(), Q.historyManager.captureState(), h());
         }
-      }));
+      }),
+      c.addEventListener('click', () =>
+        e(this, void 0, void 0, function* () {
+          const e = new A();
+          if (t.classList.contains('text-component')) {
+            const A = new n();
+            yield B(e, n.textAttributeConfig, t, A.updateTextContent);
+          } else if (t.classList.contains('header-component')) {
+            const A = new o();
+            yield B(e, o.headerAttributeConfig, t, A.updateHeaderContent);
+          } else if (a) {
+            const A = new d(),
+              n = t.closest('.table-cell');
+            yield B(e, d.tableAttributeConfig, n, A.updateCellContent);
+          }
+          h();
+        })
+      ));
   }
   static rgbToHex(e) {
     const t = e.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/);
@@ -2042,7 +2084,10 @@ class x {
       const r = s.unit;
       i.innerHTML = `\n                <label for="${t}">${e}:</label>\n                <div class="input-wrapper">\n                  <input type="${A}" id="${t}" value="${n}">\n                  <select id="${t}-unit">\n                      <option value="px" ${'px' === r ? 'selected' : ''}>px</option>\n                      <option value="rem" ${'rem' === r ? 'selected' : ''}>rem</option>\n                      <option value="vh" ${'vh' === r ? 'selected' : ''}>vh</option>\n                      <option value="%" ${'%' === r ? 'selected' : ''}>%</option>\n                  </select>\n                </div>\n            `;
     } else
-      i.innerHTML = `\n        <label for="${t}">${e}:</label>\n        <div class="input-wrapper">\n          <input type="color" id="${t}" value="${n}">\n          <input type="text" id="${t}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${n}">\n        </div>\n      `;
+      i.innerHTML =
+        'color' === A
+          ? `\n        <label for="${t}">${e}:</label>\n        <div class="input-wrapper">\n          <input type="color" id="${t}" value="${n}">\n          <input type="text" id="${t}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${n}">\n        </div>\n      `
+          : `\n        <label for="${t}">${e}:</label>\n        <div class="input-wrapper">\n          <input type="${A}" id="${t}" value="${n}">\n        </div>\n      `;
     const o = i.querySelector('input'),
       a = i.querySelector(`#${t}-unit`);
     o &&
@@ -50021,16 +50066,15 @@ var ao,
                           }
                         return { data: a, reverseChain: l.reverse().join(' ') };
                       };
-                    })(D.API),
-                    (/**
+                    })(D.API) /**
                      * @license
                      * jsPDF fileloading PlugIn
                      * Copyright (c) 2018 Aras Abbasi (aras.abbasi@gmail.com)
                      *
                      * Licensed under the MIT License.
                      * http://opensource.org/licenses/mit-license
-                     */
-                    (Je = D.API).loadFile = function (e, t, A) {
+                     */,
+                    ((Je = D.API).loadFile = function (e, t, A) {
                       return (function (e, t, A) {
                         ((t = !1 !== t),
                           (A = 'function' == typeof A ? A : function () {}));

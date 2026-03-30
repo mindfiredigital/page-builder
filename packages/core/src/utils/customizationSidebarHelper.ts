@@ -197,16 +197,91 @@ export class SidebarUtils {
   ) {
     if (editable === false) return;
 
+    const componentType = component.classList[0].replace('-component', '');
+
+    // For table cells, the attribute is stored on the .table-cell parent,
+    // not on the .table-cell-content element that was clicked.
+    const isTableCell = component.classList.contains('table-cell-content');
+    const attributeTarget = isTableCell
+      ? (component.closest('.table-cell') as HTMLElement)
+      : component;
+
+    // ── SET ATTRIBUTE BUTTON ─────────────────────────────────────────────────
     const modalButton = document.createElement('button');
-    modalButton.textContent = `Set ${component.classList[0].replace('-component', '')} Attribute`;
+    modalButton.textContent = `Set ${componentType} Attribute`;
     modalButton.className = 'set-attribute-button';
     functionsPanel.appendChild(modalButton);
 
-    modalButton.addEventListener('click', () => {
+    // ── DELETE ATTRIBUTE BUTTON ──────────────────────────────────────────────
+    const deleteAttributeButton = document.createElement('button');
+    deleteAttributeButton.textContent = `Delete ${componentType} Attribute`;
+    deleteAttributeButton.className = 'delete-attribute-button';
+    functionsPanel.appendChild(deleteAttributeButton);
+
+    // Only show the delete button when an attribute is already bound.
+    // Re-checked after "Set" so the button appears as soon as one is set.
+    const refreshDeleteVisibility = () => {
+      deleteAttributeButton.style.display =
+        attributeTarget && attributeTarget.hasAttribute('data-attribute-key')
+          ? 'block'
+          : 'none';
+    };
+    refreshDeleteVisibility();
+
+    deleteAttributeButton.addEventListener('click', () => {
+      if (!attributeTarget) return;
+
+      // Remove the binding attributes from the correct target element
+      attributeTarget.removeAttribute('data-attribute-key');
+      attributeTarget.removeAttribute('data-attribute-type');
+
+      if (isTableCell) {
+        // For table cells: reset the text inside .table-cell-content
+        // and clear inline styles set by updateCellContent
+        const textContentOfCell = attributeTarget.querySelector(
+          '.table-cell-content'
+        ) as HTMLElement | null;
+        if (textContentOfCell) {
+          textContentOfCell.textContent = '';
+        }
+        attributeTarget.style.color = '';
+        attributeTarget.style.fontSize = '';
+        attributeTarget.style.fontWeight = '';
+      } else if (component.classList.contains('header-component')) {
+        // For headers: reset .component-text-content and clear Formula styles
+        const textContent = component.querySelector(
+          '.component-text-content'
+        ) as HTMLElement | null;
+        if (textContent) {
+          textContent.textContent = 'Header';
+        }
+        component.style.color = '';
+        component.style.fontWeight = '';
+      } else if (component.classList.contains('text-component')) {
+        // For text: reset .component-text-content and clear Formula styles
+        const textContent = component.querySelector(
+          '.component-text-content'
+        ) as HTMLElement | null;
+        if (textContent) {
+          textContent.textContent = 'Text';
+        }
+        component.style.color = '';
+        component.style.fontSize = '';
+        component.style.fontWeight = '';
+      }
+
+      // Persist the deletion and hide the button since nothing is bound anymore
+      Canvas.dispatchDesignChange();
+      Canvas.historyManager.captureState();
+      refreshDeleteVisibility();
+    });
+    // ────────────────────────────────────────────────────────────────────────
+
+    modalButton.addEventListener('click', async () => {
       const modalComponent = new ModalComponent();
       if (component.classList.contains('text-component')) {
         const textComponentInstance = new TextComponent();
-        handleComponentClick(
+        await handleComponentClick(
           modalComponent,
           TextComponent.textAttributeConfig,
           component,
@@ -214,22 +289,24 @@ export class SidebarUtils {
         );
       } else if (component.classList.contains('header-component')) {
         const headerComponentInstance = new HeaderComponent();
-        handleComponentClick(
+        await handleComponentClick(
           modalComponent,
           HeaderComponent.headerAttributeConfig,
           component,
           headerComponentInstance.updateHeaderContent
         );
-      } else if (component.classList.contains('table-cell-content')) {
+      } else if (isTableCell) {
         const tableComponentInstance = new TableComponent();
         const cell = component.closest('.table-cell');
-        handleComponentClick(
+        await handleComponentClick(
           modalComponent,
           TableComponent.tableAttributeConfig,
           cell as HTMLElement,
           tableComponentInstance.updateCellContent
         );
       }
+      // After setting, re-check whether delete button should now be visible
+      refreshDeleteVisibility();
     });
   }
 
@@ -272,12 +349,19 @@ export class SidebarUtils {
                   </select>
                 </div>
             `;
-    } else {
+    } else if (type === 'color') {
       wrapper.innerHTML = `
         <label for="${id}">${label}:</label>
         <div class="input-wrapper">
           <input type="color" id="${id}" value="${value}">
           <input type="text" id="${id}-value" style="font-size: 0.8rem; width: 200px; margin-left: 8px;" value="${value}">
+        </div>
+      `;
+    } else {
+      wrapper.innerHTML = `
+        <label for="${id}">${label}:</label>
+        <div class="input-wrapper">
+          <input type="${type}" id="${id}" value="${value}">
         </div>
       `;
     }
