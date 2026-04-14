@@ -65067,17 +65067,21 @@ class po {
     const t = document.createElement('div');
     ((t.id = 'preview-modal'),
       (t.style.cssText =
-        '\n      position: fixed;\n      top: 0;\n      left: 0;\n      width: 100vw;\n      height: 100vh;\n      z-index: 10000;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: flex-start;\n      background-color: #ffffff;\n    '));
-    const A = document.createElement('iframe');
-    ((A.id = 'preview-iframe'),
-      (A.style.cssText =
-        '\n      width: 100%;\n      height: 100%;\n      border: none;\n      background: #fff;\n    '),
-      (A.srcdoc = e),
+        '\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    z-index: 10000;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: flex-start;\n    background-color: #f8fafc;          /* ← was #ffffff, now grey like editor */\n  '));
+    const A = document.createElement('div');
+    A.style.cssText =
+      '\n    flex: 1;\n    width: 100%;\n    display: flex;\n    align-items: flex-start;\n    justify-content: center;\n    overflow: auto;\n    box-sizing: border-box;\n  ';
+    const n = document.createElement('iframe');
+    ((n.id = 'preview-iframe'),
+      (n.style.cssText =
+        '\n    width: 100%;\n    height: 100%;\n    border: none;\n    background: #fff;\n    box-shadow: 0 4px 24px rgba(0,0,0,0.12);   /* ← paper shadow */\n    border-radius: 4px;\n  '),
+      (n.srcdoc = e),
+      A.appendChild(n),
       t.appendChild(A));
-    const n = this.createPreviewCloseButton(t);
-    t.appendChild(n);
-    const r = this.createResponsivenessControls(A);
-    return (t.insertBefore(r, A), t);
+    const r = this.createPreviewCloseButton(t);
+    t.appendChild(r);
+    const s = this.createResponsivenessControls(n);
+    return (t.insertBefore(s, A), t);
   }
   createPreviewCloseButton(e) {
     const t = document.createElement('button');
@@ -65098,32 +65102,54 @@ class po {
   createResponsivenessControls(e) {
     const t = document.createElement('div');
     t.style.cssText =
-      '\n      gap: 10px;\n      display: flex;\n      justify-content: center;\n      align-items: center;\n      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n      border-bottom: 1px solid #e2e8f0;\n      width: 100%\n    ';
+      '\n    gap: 10px;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n    border-bottom: 1px solid #e2e8f0;\n    width: 100%;\n    background-color: #ffffff;\n    padding: 4px 0;\n  ';
+    let A = null;
+    [
+      { icon: v.mobile, title: 'Mobile', width: '375px', height: '100%' },
+      { icon: v.tablet, title: 'Tablet', width: '768px', height: '100%' },
+      { icon: v.desktop, title: 'Desktop', width: '100%', height: '100%' },
+    ].forEach(n => {
+      const r = document.createElement('button');
+      ((r.style.cssText =
+        '\n      padding: 6px 8px;\n      border: 1px solid transparent;\n      background: none;\n      cursor: pointer;\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      border-radius: 4px;\n      transition: background-color 0.2s ease, border-color 0.2s ease;\n    '),
+        (r.title = n.title),
+        r.addEventListener('mouseenter', () => {
+          r !== A &&
+            ((r.style.backgroundColor = '#f1f5f9'),
+            (r.style.borderColor = '#cbd5e1'));
+        }),
+        r.addEventListener('mouseleave', () => {
+          r !== A &&
+            ((r.style.backgroundColor = 'transparent'),
+            (r.style.borderColor = 'transparent'));
+        }));
+      const s = document.createElement('div');
+      s.innerHTML = n.icon;
+      const i = s.querySelector('svg');
+      (i &&
+        ((i.style.width = '24px'),
+        (i.style.height = '24px'),
+        i.classList.add('component-icon')),
+        r.appendChild(s),
+        r.addEventListener('click', () => {
+          (A &&
+            ((A.style.backgroundColor = 'transparent'),
+            (A.style.borderColor = 'transparent')),
+            (A = r),
+            (r.style.backgroundColor = '#e2e8f0'),
+            (r.style.borderColor = '#cbd5e1'),
+            (e.style.width = n.width),
+            (e.style.height = n.height),
+            (e.style.transition = 'all 0.5s ease'));
+        }),
+        t.appendChild(r));
+    });
+    const n = t.lastElementChild;
     return (
-      [
-        { icon: v.mobile, title: 'Desktop', width: '375px', height: '100%' },
-        { icon: v.tablet, title: 'Tablet', width: '768px', height: '100%' },
-        { icon: v.desktop, title: 'Mobile', width: '100%', height: '100%' },
-      ].forEach(A => {
-        const n = document.createElement('button');
-        ((n.style.cssText =
-          '\n        padding: 5px;\n        border: none;\n        background: none;\n        cursor: pointer;\n        display: flex;\n        align-items: center;\n        justify-content: center;\n      '),
-          (n.title = A.title));
-        const r = document.createElement('div');
-        r.innerHTML = A.icon;
-        const s = r.querySelector('svg');
-        (s &&
-          ((s.style.width = '24px'),
-          (s.style.height = '24px'),
-          s.classList.add('component-icon')),
-          n.appendChild(r),
-          n.addEventListener('click', () => {
-            ((e.style.width = A.width),
-              (e.style.height = A.height),
-              (e.style.transition = 'all 0.5s ease'));
-          }),
-          t.appendChild(n));
-      }),
+      n &&
+        ((A = n),
+        (n.style.backgroundColor = '#e2e8f0'),
+        (n.style.borderColor = '#cbd5e1')),
       t
     );
   }
