@@ -1,166 +1,216 @@
 import { Canvas } from '../canvas/Canvas.js';
+// ─── Constants ────────────────────────────────────────────────────────────────
+const EDITOR_CLASSES_TO_REMOVE = [
+  'component-controls',
+  'delete-icon',
+  'component-label',
+  'column-label',
+  'resizers',
+  'resizer',
+  'upload-btn',
+  'component-resizer',
+  'drop-preview',
+  'edit-link-form',
+  'edit-link',
+];
+const EDITOR_NODES_SELECTOR = [
+  '.component-controls',
+  '.delete-icon',
+  '.component-label',
+  '.column-label',
+  '.resizers',
+  '.resizer',
+  '.drop-preview',
+  '.upload-btn',
+  '.edit-link',
+  '.edit-link-form',
+  '.cell-controls',
+  '.add-row-button',
+  '.add-multiple-rows-button',
+  '.table-btn-container',
+  '.drop-preview.visible',
+  'input:not([type="radio"])',
+].join(', ');
+const SVG_ACCESSIBILITY_SELECTOR = 'svg title, svg desc';
+const EDITOR_ATTRS_TO_STRIP = ['contenteditable', 'draggable'];
+// ─── HTMLGenerator ────────────────────────────────────────────────────────────
 export class HTMLGenerator {
   constructor(canvas) {
     this.canvas = canvas;
     this.styleElement = document.createElement('style');
     document.head.appendChild(this.styleElement);
   }
+  // ─── Public API ─────────────────────────────────────────────────────────────
   generateHTML() {
     const canvasElement = document.getElementById('canvas');
     if (!canvasElement) {
-      console.warn('Canvas element not found!');
-      return this.getBaseHTML();
-    }
-    const cleanCanvas = canvasElement.cloneNode(true);
-    this.cleanupElements(cleanCanvas);
-    return this.getBaseHTML(cleanCanvas.innerHTML);
-  }
-  getBaseHTML(bodyContent = 'children') {
-    return `<!DOCTYPE html>
-    <html>
-      <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Page Builder</title>
-          <style>
-            ${this.generateCSS()}
-          </style>
-      </head>
-      <body>
-          <div id="canvas"  class=${Canvas.layoutMode === 'grid' ? 'grid-layout-active' : 'home'}>
-          ${bodyContent}
-          </div>
-      </body>
-    </html>`;
-  }
-  cleanupElements(element) {
-    const attributesToRemove = ['contenteditable', 'draggable'];
-    const classesToRemove = [
-      'component-controls',
-      'delete-icon',
-      'component-label',
-      'column-label',
-      'resizers',
-      'resizer',
-      'upload-btn',
-      'component-resizer',
-      'drop-preview',
-      'edit-link-form',
-      'edit-link',
-    ];
-    Array.from(element.children).forEach(child => {
-      const childElement = child;
-      attributesToRemove.forEach(attr => {
-        childElement.removeAttribute(attr);
-      });
-      const elementsToRemove = childElement.querySelectorAll(
-        '.component-controls, .delete-icon, .component-label, .column-label, .resizers, .resizer, .drop-preview, .upload-btn, .edit-link, .edit-link-form, input,.cell-controls,.add-row-button,.add-multiple-rows-button,.table-btn-container, .drop-preview.visible'
+      console.warn(
+        '[HTMLGenerator] Canvas element not found — returning shell.'
       );
-      classesToRemove.forEach(classToRemove => {
-        childElement.classList.remove(classToRemove);
+      return this.buildHTMLShell('', '');
+    }
+    const embeddedStyles = this.collectHeadStyles();
+    const svgRecords = this.stampSVGDimensions(canvasElement);
+    const clone = canvasElement.cloneNode(true);
+    this.stripEditorChrome(clone);
+    this.restoreSVGStamps(svgRecords);
+    return this.buildHTMLShell(clone.innerHTML, embeddedStyles);
+  }
+  // ─── Phase 1 — collect all head <style> sheets ───────────────────────────────
+  collectHeadStyles() {
+    const sheets = [];
+    document.querySelectorAll('head style').forEach(styleEl => {
+      var _a;
+      if (styleEl === this.styleElement) return;
+      const text =
+        (_a = styleEl.textContent) !== null && _a !== void 0 ? _a : '';
+      if (text.trim()) sheets.push(text);
+    });
+    return sheets.join('\n');
+  }
+  // ─── Phase 5 — stamp SVG dimensions ─────────────────────────────────────────
+  stampSVGDimensions(canvas) {
+    const records = [];
+    canvas.querySelectorAll('svg').forEach(svg => {
+      var _a;
+      const rect = svg.getBoundingClientRect();
+      if (rect.width === 0) return;
+      const w = Math.round(rect.width);
+      const h = Math.round(rect.height);
+      const prevWidth = svg.getAttribute('width');
+      const prevHeight = svg.getAttribute('height');
+      const prevViewBox = svg.getAttribute('viewBox');
+      const prevStyle =
+        (_a = svg.getAttribute('style')) !== null && _a !== void 0 ? _a : '';
+      const addedViewBox = !prevViewBox && w > 0 && h > 0;
+      svg.setAttribute('width', String(w));
+      svg.setAttribute('height', String(h));
+      if (addedViewBox) svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      const computed = window.getComputedStyle(svg);
+      const disp = computed.getPropertyValue('display');
+      const styleExtras = [`width: ${w}px`, `height: ${h}px`, `flex-shrink: 0`];
+      if (disp && disp !== 'inline') styleExtras.push(`display: ${disp}`);
+      const base = prevStyle
+        ? prevStyle.trimEnd().replace(/;?\s*$/, ';') + ' '
+        : '';
+      svg.setAttribute('style', base + styleExtras.join('; ') + ';');
+      records.push({
+        el: svg,
+        prevWidth,
+        prevHeight,
+        prevViewBox,
+        prevStyle,
+        addedViewBox,
       });
-      elementsToRemove.forEach(el => el.remove());
-      if (childElement.children.length > 0) {
-        this.cleanupElements(childElement);
+    });
+    return records;
+  }
+  restoreSVGStamps(records) {
+    records.forEach(
+      ({ el, prevWidth, prevHeight, prevViewBox, prevStyle, addedViewBox }) => {
+        prevWidth !== null
+          ? el.setAttribute('width', prevWidth)
+          : el.removeAttribute('width');
+        prevHeight !== null
+          ? el.setAttribute('height', prevHeight)
+          : el.removeAttribute('height');
+        if (addedViewBox) el.removeAttribute('viewBox');
+        else if (prevViewBox !== null) el.setAttribute('viewBox', prevViewBox);
+        if (prevStyle) el.setAttribute('style', prevStyle);
+        else el.removeAttribute('style');
       }
+    );
+  }
+  // ─── Phase 7 — strip editor chrome ──────────────────────────────────────────
+  stripEditorChrome(root) {
+    root
+      .querySelectorAll(SVG_ACCESSIBILITY_SELECTOR)
+      .forEach(el => el.remove());
+    root.querySelectorAll('[class*="MuiRating-label"]').forEach(labelSpan => {
+      labelSpan
+        .querySelectorAll('input[type="radio"]')
+        .forEach(input => input.remove());
+      Array.from(labelSpan.childNodes).forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) node.remove();
+      });
+    });
+    root
+      .querySelectorAll('[class*="MuiRating-visuallyHidden"]')
+      .forEach(el => el.remove());
+    this.stripNodeRecursive(root);
+  }
+  stripNodeRecursive(el) {
+    EDITOR_ATTRS_TO_STRIP.forEach(attr => el.removeAttribute(attr));
+    EDITOR_CLASSES_TO_REMOVE.forEach(cls => el.classList.remove(cls));
+    el.querySelectorAll(EDITOR_NODES_SELECTOR).forEach(node => node.remove());
+    Array.from(el.children).forEach(child => {
+      this.stripNodeRecursive(child);
     });
   }
+  // ─── Phase 9 — HTML shell ────────────────────────────────────────────────────
+  buildHTMLShell(bodyContent, embeddedStyles) {
+    const layoutClass =
+      Canvas.layoutMode === 'grid' ? 'grid-layout-active' : 'home';
+    return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Builder</title>
+    <style>
+${embeddedStyles}
+    </style>
+    <style>
+${this.generateCSS()}
+    </style>
+  </head>
+  <body>
+    <div id="canvas" class="${layoutClass}">
+${bodyContent}
+    </div>
+  </body>
+</html>`;
+  }
+  // ─── CSS — Doc 23's approach (computed styles per element) ───────────────────
   generateCSS() {
     const canvasElement = document.getElementById('canvas');
     if (!canvasElement) return '';
-    const backgroundColor = canvasElement
-      ? window
-          .getComputedStyle(canvasElement)
-          .getPropertyValue('background-color')
-      : 'rgb(255, 255, 255)';
+    const backgroundColor = window
+      .getComputedStyle(canvasElement)
+      .getPropertyValue('background-color');
     const styles = [];
     const processedSelectors = new Set();
     Canvas.layoutMode === 'grid'
       ? styles.push(`
       body, html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
-        display:flex;
-        overflow: hidden;
+        margin: 0; padding: 0; width: 100%; height: 100%;
+        box-sizing: border-box; display: flex; overflow: hidden;
       }
       #canvas {
-        position: relative;
-        width: 100%;
-        flex-grow: 1;
-        min-width: 0;
-        background-color: ${backgroundColor};
-        margin: 0;
-        overflow: auto;
+        position: relative; width: 100%; flex-grow: 1; min-width: 0;
+        background-color: ${backgroundColor}; margin: 0; overflow: auto;
         box-sizing: border-box;
       }
-      #canvas.grid-layout-active {
-        display: block;
-      }
-
-      .container-grid-active {
-        display: block;
-      }
-
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-
-      ::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 3px;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 3px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-      .table-componet {
-        border-collapse: collapse ;
-        box-sizing: border-box;
-      }
-      .editable-component{
-        border:none !important;
-        box-shadow:none !important;
-      }
-
+      #canvas.grid-layout-active { display: block; }
+      .container-grid-active { display: block; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      .table-component { border-collapse: collapse; box-sizing: border-box; }
+      .editable-component { border: none !important; box-shadow: none !important; }
       `)
       : styles.push(`
       body, html {
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
+        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box;
       }
-        #canvas.home {
-      position: relative;
-      display: block;
-      width: 100%;
-      min-height: 100vh;
-      background-color: ${backgroundColor};
-      margin: 0;
-      overflow: visible;
-  }
-
-      table {
-          border-collapse: collapse ;
-
+      #canvas.home {
+        position: relative; display: block; width: 100%; min-height: 100vh;
+        background-color: ${backgroundColor}; margin: 0; overflow: visible;
       }
-          .editable-component{
-          border:none !important;
-          box-shadow:none !important;
-          }
-
+      table { border-collapse: collapse; }
+      .editable-component { border: none !important; box-shadow: none !important; }
       `);
-    const elements = canvasElement.querySelectorAll('*');
     const classesToExclude = [
       'component-controls',
       'delete-icon',
@@ -171,6 +221,7 @@ export class HTMLGenerator {
       'edit-link-form',
       'edit-link',
     ];
+    // ✅ From Doc 23: exclude positioning props for grid, keep for absolute
     const propertiesToExclude = [
       'left',
       'top',
@@ -194,11 +245,10 @@ export class HTMLGenerator {
       'max-inline-size',
       'max-block-size',
     ];
+    const elements = canvasElement.querySelectorAll('*');
     elements.forEach((component, index) => {
-      // Skip excluded elements
-      if (classesToExclude.some(cls => component.classList.contains(cls))) {
+      if (classesToExclude.some(cls => component.classList.contains(cls)))
         return;
-      }
       const computedStyles = window.getComputedStyle(component);
       const componentStyles = [];
       if (
@@ -222,13 +272,9 @@ export class HTMLGenerator {
         const prop = computedStyles[i];
         const value = computedStyles.getPropertyValue(prop);
         if (Canvas.layoutMode === 'grid') {
-          if (prop === 'resize' || propertiesToExclude.includes(prop)) {
-            continue;
-          }
+          if (prop === 'resize' || propertiesToExclude.includes(prop)) continue;
         } else {
-          if (prop === 'resize') {
-            continue;
-          }
+          if (prop === 'resize') continue;
         }
         if (
           value &&
@@ -243,10 +289,7 @@ export class HTMLGenerator {
       const selector = this.generateUniqueSelector(component);
       if (!processedSelectors.has(selector) && componentStyles.length > 0) {
         processedSelectors.add(selector);
-        styles.push(`
-        ${selector} {
-          ${componentStyles.join('\n  ')}
-        }`);
+        styles.push(`${selector} {\n  ${componentStyles.join('\n  ')}\n}`);
       }
     });
     return styles.join('\n');
@@ -259,11 +302,9 @@ export class HTMLGenerator {
     styles,
     processedSelectors
   ) {
-    const isSVGChild =
-      component.tagName.toLowerCase() === 'path' ||
-      component.tagName.toLowerCase() === 'circle' ||
-      component.tagName.toLowerCase() === 'rect' ||
-      component.tagName.toLowerCase() === 'polygon';
+    const isSVGChild = ['path', 'circle', 'rect', 'polygon'].includes(
+      component.tagName.toLowerCase()
+    );
     if (isSVGChild) {
       const specificSelector = this.generateSVGSpecificSelector(
         component,
@@ -284,10 +325,9 @@ export class HTMLGenerator {
         }
       });
       if (componentStyles.length > 0) {
-        styles.push(`
-        ${specificSelector} {
-          ${componentStyles.join('\n  ')}
-        }`);
+        styles.push(
+          `${specificSelector} {\n  ${componentStyles.join('\n  ')}\n}`
+        );
       }
     } else {
       for (let i = 0; i < computedStyles.length; i++) {
@@ -307,10 +347,7 @@ export class HTMLGenerator {
       const selector = this.generateUniqueSelector(component);
       if (!processedSelectors.has(selector) && componentStyles.length > 0) {
         processedSelectors.add(selector);
-        styles.push(`
-        ${selector} {
-          ${componentStyles.join('\n  ')}
-        }`);
+        styles.push(`${selector} {\n  ${componentStyles.join('\n  ')}\n}`);
       }
     }
   }
@@ -335,40 +372,32 @@ export class HTMLGenerator {
               !cls.includes('resizer')
           )
           .join('.');
-        if (cleanClasses) {
-          selector += `.${cleanClasses} `;
-        }
+        if (cleanClasses) selector += `.${cleanClasses} `;
       }
     }
     if (parentSVG) {
-      if (parentSVG.className.baseVal) {
-        selector += `svg.${parentSVG.className.baseVal.split(' ').join('.')} `;
-      } else {
-        selector += 'svg ';
-      }
+      selector += parentSVG.className.baseVal
+        ? `svg.${parentSVG.className.baseVal.split(' ').join('.')} `
+        : 'svg ';
     }
     const parent = element.parentElement;
     if (parent) {
       const siblings = Array.from(parent.children).filter(
-        child => child.tagName === element.tagName
+        c => c.tagName === element.tagName
       );
-      const elementIndex = siblings.indexOf(element);
-      selector += `${element.tagName.toLowerCase()}:nth-of-type(${elementIndex + 1})`;
+      selector += `${element.tagName.toLowerCase()}:nth-of-type(${siblings.indexOf(element) + 1})`;
     } else {
-      selector += `${element.tagName.toLowerCase()}`;
+      selector += element.tagName.toLowerCase();
     }
     return selector || `${element.tagName.toLowerCase()}-${index}`;
   }
   generateUniqueSelector(element) {
-    // If the element has an ID, that is the most unique selector
-    if (element.id) {
-      return `#${element.id}`;
-    }
+    var _a;
+    if (element.id) return `#${element.id}`;
     const selectorPath = [];
     let currentElement = element;
     while (currentElement && currentElement.tagName.toLowerCase() !== 'body') {
       let selector = currentElement.tagName.toLowerCase();
-      // Add clean classes to the selector
       const cleanClasses = Array.from(currentElement.classList).filter(
         cls =>
           ![
@@ -385,31 +414,27 @@ export class HTMLGenerator {
             'drop-preview',
           ].includes(cls)
       );
-      if (cleanClasses.length > 0) {
-        selector += `.${cleanClasses.join('.')}`;
-      }
-      // Add nth-of-type to differentiate siblings
+      if (cleanClasses.length > 0) selector += `.${cleanClasses.join('.')}`;
       const parent = currentElement.parentElement;
       if (parent) {
         const siblings = Array.from(parent.children).filter(
-          child => child.tagName === currentElement.tagName
+          c => c.tagName === currentElement.tagName
         );
-        if (siblings.length > 1) {
-          const index = siblings.indexOf(currentElement) + 1;
-          selector += `:nth-of-type(${index})`;
-        }
+        if (siblings.length > 1)
+          selector += `:nth-of-type(${siblings.indexOf(currentElement) + 1})`;
       }
       selectorPath.unshift(selector);
-      // Stop if we hit a parent with an ID
-      if (currentElement.parentElement && currentElement.parentElement.id) {
+      if (
+        (_a = currentElement.parentElement) === null || _a === void 0
+          ? void 0
+          : _a.id
+      ) {
         selectorPath.unshift(`#${currentElement.parentElement.id}`);
         break;
       }
       currentElement = currentElement.parentElement;
     }
-    // Ensure the selector starts from the canvas
-    const finalSelector = `#canvas > ${selectorPath.join(' > ')}`;
-    return finalSelector;
+    return `#canvas > ${selectorPath.join(' > ')}`;
   }
   applyCSS(css) {
     this.styleElement.textContent = css;
