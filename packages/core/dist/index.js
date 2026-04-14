@@ -2299,14 +2299,42 @@ class _ {
         ? this.switchToCustomizeMode()
         : this.switchToAttributeMode());
   }
+  static disableControlWrapper(e, t = 'Not supported for inline display') {
+    const A = document.getElementById(e);
+    if (!A) return;
+    const n = A.closest('.control-wrapper');
+    if (!n) return;
+    ((n.style.opacity = '0.45'),
+      (n.style.pointerEvents = 'none'),
+      (n.style.cursor = 'not-allowed'),
+      (n.title = t));
+    const r = n.querySelector('label');
+    if (r && !r.querySelector('.inline-disabled-badge')) {
+      const e = document.createElement('span');
+      ((e.className = 'inline-disabled-badge'),
+        (e.title = t),
+        (e.style.cssText =
+          '\n        display: inline-flex;\n        align-items: center;\n        justify-content: center;\n        margin-left: 6px;\n        width: 14px;\n        height: 14px;\n        border-radius: 50%;\n        background-color: #94a3b8;\n        color: #ffffff;\n        font-size: 9px;\n        font-weight: 700;\n        cursor: not-allowed;\n        vertical-align: middle;\n        flex-shrink: 0;\n        line-height: 1;\n      '),
+        (e.textContent = '⊘'),
+        r.appendChild(e));
+    }
+    n.querySelectorAll('input, select').forEach(e => {
+      ((e.disabled = !0),
+        (e.style.cursor = 'not-allowed'),
+        (e.style.backgroundColor = '#f1f5f9'),
+        (e.style.color = '#94a3b8'));
+    });
+  }
   static populateCssControls(e) {
     this.controlsContainer.innerHTML = '';
     const t = getComputedStyle(e),
-      A = 'canvas' === e.id.toLowerCase();
+      A = 'canvas' === e.id.toLowerCase(),
+      n = e.dataset.displayIntent || t.display || 'block',
+      r = 'inline' === n;
     (x.createSelectControl(
       'Display',
       'display',
-      t.display || 'block',
+      n,
       ['block', 'inline', 'inline-block', 'flex', 'grid', 'none'],
       this.controlsContainer
     ),
@@ -2374,6 +2402,11 @@ class _ {
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         ),
+        r &&
+          this.disableControlWrapper(
+            'width',
+            'Width is not supported for inline display'
+          ),
         x.createControl(
           'Height',
           'height',
@@ -2382,6 +2415,11 @@ class _ {
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         ),
+        r &&
+          this.disableControlWrapper(
+            'height',
+            'Height is not supported for inline display'
+          ),
         x.createControl(
           'Margin',
           'margin',
@@ -2390,6 +2428,11 @@ class _ {
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
         ),
+        r &&
+          this.disableControlWrapper(
+            'margin',
+            'Top/bottom margin is not supported for inline display'
+          ),
         x.createControl(
           'Padding',
           'padding',
@@ -2397,7 +2440,12 @@ class _ {
           parseInt(t.padding) || 0,
           this.controlsContainer,
           { min: 0, max: 1e3, unit: 'px' }
-        )),
+        ),
+        r &&
+          this.disableControlWrapper(
+            'padding',
+            'Top/bottom padding is not supported for inline display'
+          )),
       x.createControl(
         'Background Color',
         'background-color',
@@ -2496,12 +2544,12 @@ class _ {
         t.borderColor || '#000000',
         this.controlsContainer
       ));
-    const n = document.getElementById('background-color');
-    n && (n.value = x.rgbToHex(t.backgroundColor));
-    const r = document.getElementById('text-color');
-    r && (r.value = x.rgbToHex(t.color));
-    const s = document.getElementById('border-color');
-    (s && (s.value = x.rgbToHex(t.borderColor)), this.addListeners(e));
+    const s = document.getElementById('background-color');
+    s && (s.value = x.rgbToHex(t.backgroundColor));
+    const i = document.getElementById('text-color');
+    i && (i.value = x.rgbToHex(t.color));
+    const o = document.getElementById('border-color');
+    (o && (o.value = x.rgbToHex(t.borderColor)), this.addListeners(e));
   }
   static handleInputTrigger(t) {
     return e(this, void 0, void 0, function* () {
@@ -2763,7 +2811,11 @@ class _ {
       null === (g = B.display) ||
         void 0 === g ||
         g.addEventListener('change', () => {
-          ((e.style.display = B.display.value),
+          const t = B.display.value;
+          ('inline' === t
+            ? ((e.style.display = 'inline-block'),
+              (e.dataset.displayIntent = 'inline'))
+            : ((e.style.display = t), delete e.dataset.displayIntent),
             b(),
             this.populateCssControls(e));
         }),
@@ -50159,15 +50211,16 @@ var uo,
                           }
                         return { data: a, reverseChain: l.reverse().join(' ') };
                       };
-                    })(D.API) /**
+                    })(D.API),
+                    (/**
                      * @license
                      * jsPDF fileloading PlugIn
                      * Copyright (c) 2018 Aras Abbasi (aras.abbasi@gmail.com)
                      *
                      * Licensed under the MIT License.
                      * http://opensource.org/licenses/mit-license
-                     */,
-                    ((Je = D.API).loadFile = function (e, t, A) {
+                     */
+                    (Je = D.API).loadFile = function (e, t, A) {
                       return (function (e, t, A) {
                         ((t = !1 !== t),
                           (A = 'function' == typeof A ? A : function () {}));
