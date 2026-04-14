@@ -50,7 +50,10 @@ declare class PageBuilder {
   setupModalEventListeners(modal: HTMLElement): void;
   closeModal(modal: HTMLElement): void;
   setupViewButton(): void;
-  createFullScreenPreviewModal(html: string): HTMLDivElement;
+  createFullScreenPreviewModal(
+    html: string,
+    layoutMode?: 'absolute' | 'grid'
+  ): HTMLDivElement;
   createPreviewCloseButton(fullScreenModal: HTMLElement): HTMLButtonElement;
   createResponsivenessControls(iframe: HTMLIFrameElement): HTMLDivElement;
   setupPreviewModeButtons(): void;

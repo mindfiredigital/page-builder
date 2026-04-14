@@ -3563,7 +3563,8 @@ class I {
       }));
   }
   buildHTMLShell(e, t) {
-    const A = 'grid' === Q.layoutMode ? 'grid-layout-active' : 'home';
+    const A =
+      'grid' === Q.layoutMode ? 'grid-layout-active' : 'preview-printable';
     return `<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>Page Builder</title>\n    <style>\n${t}\n    </style>\n    <style>\n${this.generateCSS()}\n    </style>\n  </head>\n  <body>\n    <div id="canvas" class="${A}">\n${e}\n    </div>\n  </body>\n</html>`;
   }
   generateCSS() {
@@ -3577,7 +3578,7 @@ class I {
           `\n      body, html {\n        margin: 0; padding: 0; width: 100%; height: 100%;\n        box-sizing: border-box; display: flex; overflow: hidden;\n      }\n      #canvas {\n        position: relative; width: 100%; flex-grow: 1; min-width: 0;\n        background-color: ${t}; margin: 0; overflow: auto;\n        box-sizing: border-box;\n      }\n      #canvas.grid-layout-active { display: block; }\n      .container-grid-active { display: block; }\n      ::-webkit-scrollbar { width: 6px; height: 6px; }\n      ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }\n      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }\n      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }\n      .table-component { border-collapse: collapse; box-sizing: border-box; }\n      .editable-component { border: none !important; box-shadow: none !important; }\n      `
         )
       : A.push(
-          `\n      body, html {\n        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box;\n      }\n      #canvas.home {\n        position: relative; display: block; width: 100%; min-height: 100vh;\n        background-color: ${t}; margin: 0; overflow: visible;\n      }\n      table { border-collapse: collapse; }\n      .editable-component { border: none !important; box-shadow: none !important; }\n      `
+          `\n      body, html {\n        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box; background-color: #f8fafc;\n      }\n      #canvas.home {\n        position: relative; display: block; width: 100%; min-height: 100vh;\n        background-color: ${t}; margin: 0; overflow: visible;\n      }\n      table { border-collapse: collapse; }\n      .editable-component { border: none !important; box-shadow: none !important; }\n      `
         );
     const r = [
         'component-controls',
@@ -65059,29 +65060,33 @@ class po {
     e &&
       e.addEventListener('click', () => {
         const e = this.htmlGenerator.generateHTML(),
-          t = this.createFullScreenPreviewModal(e);
+          t = this.createFullScreenPreviewModal(e, this.layoutMode);
         document.body.appendChild(t);
       });
   }
-  createFullScreenPreviewModal(e) {
-    const t = document.createElement('div');
-    ((t.id = 'preview-modal'),
-      (t.style.cssText =
-        '\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    z-index: 10000;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: flex-start;\n    background-color: #f8fafc;          /* ← was #ffffff, now grey like editor */\n  '));
-    const A = document.createElement('div');
-    A.style.cssText =
-      '\n    flex: 1;\n    width: 100%;\n    display: flex;\n    align-items: flex-start;\n    justify-content: center;\n    overflow: auto;\n    box-sizing: border-box;\n  ';
-    const n = document.createElement('iframe');
-    ((n.id = 'preview-iframe'),
+  createFullScreenPreviewModal(e, t = 'grid') {
+    const A = 'absolute' === t,
+      n = document.createElement('div');
+    ((n.id = 'preview-modal'),
       (n.style.cssText =
-        '\n    width: 100%;\n    height: 100%;\n    border: none;\n    background: #fff;\n    box-shadow: 0 4px 24px rgba(0,0,0,0.12);   /* ← paper shadow */\n    border-radius: 4px;\n  '),
-      (n.srcdoc = e),
-      A.appendChild(n),
-      t.appendChild(A));
-    const r = this.createPreviewCloseButton(t);
-    t.appendChild(r);
-    const s = this.createResponsivenessControls(n);
-    return (t.insertBefore(s, A), t);
+        '\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100vw;\n    height: 100vh;\n    z-index: 10000;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: flex-start;\n    background-color: #f8fafc;\n  '));
+    const r = document.createElement('div');
+    r.style.cssText =
+      '\n    flex: 1;\n    width: 100%;\n    display: flex;\n    align-items: flex-start;\n    justify-content: center;\n    overflow: auto;\n    box-sizing: border-box;\n  ';
+    const s = document.createElement('iframe');
+    ((s.id = 'preview-iframe'),
+      (s.style.cssText = A
+        ? '\n      width: 869px;                              /* A4 width — fixed, never changes */\n      min-height: 1123px;                        /* A4 height */\n      border: none;\n      background: #fff;\n      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);\n      border-radius: 4px;\n      flex-shrink: 0;\n    '
+        : '\n      width: 100%;\n      height: 100%;\n      border: none;\n      background: #fff;\n      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);\n      border-radius: 4px;\n    '),
+      (s.srcdoc = e),
+      r.appendChild(s),
+      n.appendChild(r));
+    const i = this.createPreviewCloseButton(n);
+    if ((n.appendChild(i), !A)) {
+      const e = this.createResponsivenessControls(s);
+      n.insertBefore(e, r);
+    }
+    return n;
   }
   createPreviewCloseButton(e) {
     const t = document.createElement('button');

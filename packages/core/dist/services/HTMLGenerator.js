@@ -150,7 +150,7 @@ export class HTMLGenerator {
   // ─── Phase 9 — HTML shell ────────────────────────────────────────────────────
   buildHTMLShell(bodyContent, embeddedStyles) {
     const layoutClass =
-      Canvas.layoutMode === 'grid' ? 'grid-layout-active' : 'home';
+      Canvas.layoutMode === 'grid' ? 'grid-layout-active' : 'preview-printable';
     return `<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -202,7 +202,7 @@ ${bodyContent}
       `)
       : styles.push(`
       body, html {
-        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box;
+        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box; background-color: #f8fafc;
       }
       #canvas.home {
         position: relative; display: block; width: 100%; min-height: 100vh;

@@ -508,13 +508,21 @@ export class PageBuilder {
     if (viewButton) {
       viewButton.addEventListener('click', () => {
         const html = this.htmlGenerator.generateHTML();
-        const fullScreenModal = this.createFullScreenPreviewModal(html);
+        const fullScreenModal = this.createFullScreenPreviewModal(
+          html,
+          this.layoutMode
+        );
         document.body.appendChild(fullScreenModal);
       });
     }
   }
 
-  public createFullScreenPreviewModal(html: string) {
+  public createFullScreenPreviewModal(
+    html: string,
+    layoutMode: 'absolute' | 'grid' = 'grid'
+  ) {
+    const isAbsolute = layoutMode === 'absolute';
+
     const fullScreenModal = document.createElement('div');
     fullScreenModal.id = 'preview-modal';
     fullScreenModal.style.cssText = `
@@ -528,10 +536,9 @@ export class PageBuilder {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    background-color: #f8fafc;          /* ← was #ffffff, now grey like editor */
+    background-color: #f8fafc;
   `;
 
-    // Paper wrapper — gives the iframe the same shadow as the editor canvas
     const paperWrapper = document.createElement('div');
     paperWrapper.style.cssText = `
     flex: 1;
@@ -545,24 +552,37 @@ export class PageBuilder {
 
     const iframe = document.createElement('iframe');
     iframe.id = 'preview-iframe';
-    iframe.style.cssText = `
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: #fff;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12);   /* ← paper shadow */
-    border-radius: 4px;
-  `;
-    iframe.srcdoc = html;
+    iframe.style.cssText = isAbsolute
+      ? `
+      width: 869px;                              /* A4 width — fixed, never changes */
+      min-height: 1123px;                        /* A4 height */
+      border: none;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+      flex-shrink: 0;
+    `
+      : `
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+    `;
 
+    iframe.srcdoc = html;
     paperWrapper.appendChild(iframe);
-    fullScreenModal.appendChild(paperWrapper); // append wrapper, not iframe directly
+    fullScreenModal.appendChild(paperWrapper);
 
     const closeButton = this.createPreviewCloseButton(fullScreenModal);
     fullScreenModal.appendChild(closeButton);
 
-    const responsivenessContainer = this.createResponsivenessControls(iframe);
-    fullScreenModal.insertBefore(responsivenessContainer, paperWrapper); // before wrapper
+    // Only show device toggle buttons in grid mode — hide them for absolute (A4)
+    if (!isAbsolute) {
+      const responsivenessContainer = this.createResponsivenessControls(iframe);
+      fullScreenModal.insertBefore(responsivenessContainer, paperWrapper);
+    }
 
     return fullScreenModal;
   }
