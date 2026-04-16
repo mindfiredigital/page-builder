@@ -234,7 +234,8 @@ export class CustomizationSidebar {
     const isCanvas = component.id.toLowerCase() === 'canvas';
     // Read the stored display intent (handles inline -> inline-block mapping)
     const displayIntent = component.dataset.displayIntent;
-    const displayValue = displayIntent || styles.display || 'block';
+    const displayValue =
+      displayIntent || component.style.display || styles.display || 'block';
     const isInline = displayValue === 'inline';
     SidebarUtils.createSelectControl(
       'Display',
