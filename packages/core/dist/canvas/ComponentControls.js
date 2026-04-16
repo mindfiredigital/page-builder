@@ -1,46 +1,46 @@
+import { CanvasSharedState } from './CanvasCore/CanvasSharedState.js';
+import { CanvasEventDispatcher } from './CanvasCore/CanvasEventDispatcher.js';
 export class ComponentControlsManager {
-  constructor(canvas) {
+  /* No longer takes Canvas as constructor arg — reads shared state directly */
+  constructor(_canvas) {
     this.icons = {
       delete:
         'https://res.cloudinary.com/dodvwsaqj/image/upload/v1737366522/delete-2-svgrepo-com_fwkzn7.svg',
     };
-    this.canvas = canvas;
   }
-  /**
-   * First check if there is already a div with class  as component-controls exists
-   * Add a div for each components in which we can add control buttons
-   * We have added delete button
-   * NB: For image container we are using appendChild method instead of prepend since it is hampering the style.
-   */
   addControlButtons(element) {
-    let ImageComponent = element.querySelector('img');
+    if (!element.style.position || element.style.position === 'static') {
+      element.style.position = 'relative';
+    }
     let controlsDiv = element.querySelector('.component-controls');
     if (!controlsDiv) {
       controlsDiv = document.createElement('div');
       controlsDiv.className = 'component-controls';
       controlsDiv.setAttribute('contenteditable', 'false');
-      if (ImageComponent) {
-        element.appendChild(controlsDiv);
-      } else {
-        element.prepend(controlsDiv);
-      }
+      controlsDiv.style.position = 'absolute';
+      controlsDiv.style.top = '0';
+      controlsDiv.style.right = '0';
+      controlsDiv.style.zIndex = '100';
+      controlsDiv.style.display = 'flex';
+      controlsDiv.style.gap = '4px';
+      controlsDiv.style.padding = '2px';
+      controlsDiv.style.pointerEvents = 'none';
+      element.prepend(controlsDiv);
     }
-    const deleteIcon = this.createDeleteIcon(element);
+    const deleteIcon = this.createDeleteIcon(element, controlsDiv);
     controlsDiv.appendChild(deleteIcon);
   }
-  /**
-   * First check if there is already deleteIcon within element
-   * Creating delete icon
-   * Adding click event for the  delete icon
-   */
-  createDeleteIcon(element) {
-    let deleteIcon = element.querySelector('.delete-icon');
+  createDeleteIcon(element, controlsDiv) {
+    let deleteIcon = controlsDiv.querySelector('.delete-icon');
     if (!deleteIcon) {
       deleteIcon = document.createElement('img');
       deleteIcon.src = this.icons.delete;
       deleteIcon.alt = 'Delete';
       deleteIcon.classList.add('delete-icon');
-      element.appendChild(deleteIcon);
+      deleteIcon.style.pointerEvents = 'all';
+      deleteIcon.style.cursor = 'pointer';
+      deleteIcon.style.width = '16px';
+      deleteIcon.style.height = '16px';
     }
     deleteIcon.onclick = e => {
       e.stopPropagation();
@@ -48,20 +48,13 @@ export class ComponentControlsManager {
     };
     return deleteIcon;
   }
-  /**
-   * This function handle deletion of component
-   * It captures the current state and state after deletion for undo redo functionality
-   * Then removes the component from canvas
-   * And updates the component list with the help of getters and setters
-   */
   handleDelete(element) {
-    this.canvas.historyManager.captureState();
+    /* Read historyManager at call-time, not at import-time — avoids circular dep */
+    const { historyManager, components } = CanvasSharedState;
+    historyManager.captureState();
     element.remove();
-    const updatedComponents = this.canvas
-      .getComponents()
-      .filter(comp => comp !== element);
-    this.canvas.setComponents(updatedComponents);
-    this.canvas.historyManager.captureState();
-    this.canvas.dispatchDesignChange();
+    CanvasSharedState.components = components.filter(c => c !== element);
+    historyManager.captureState();
+    CanvasEventDispatcher.dispatchDesignChange();
   }
 }

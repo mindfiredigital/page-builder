@@ -2041,44 +2041,56 @@ class B {
 }
 class b {
   constructor(e) {
-    ((this.icons = {
+    this.icons = {
       delete:
         'https://res.cloudinary.com/dodvwsaqj/image/upload/v1737366522/delete-2-svgrepo-com_fwkzn7.svg',
-    }),
-      (this.canvas = e));
+    };
   }
   addControlButtons(e) {
-    let t = e.querySelector('img'),
-      A = e.querySelector('.component-controls');
-    A ||
-      ((A = document.createElement('div')),
-      (A.className = 'component-controls'),
-      A.setAttribute('contenteditable', 'false'),
-      t ? e.appendChild(A) : e.prepend(A));
-    const n = this.createDeleteIcon(e);
-    A.appendChild(n);
+    (e.style.position && 'static' !== e.style.position) ||
+      (e.style.position = 'relative');
+    let t = e.querySelector('.component-controls');
+    t ||
+      ((t = document.createElement('div')),
+      (t.className = 'component-controls'),
+      t.setAttribute('contenteditable', 'false'),
+      (t.style.position = 'absolute'),
+      (t.style.top = '0'),
+      (t.style.right = '0'),
+      (t.style.zIndex = '100'),
+      (t.style.display = 'flex'),
+      (t.style.gap = '4px'),
+      (t.style.padding = '2px'),
+      (t.style.pointerEvents = 'none'),
+      e.prepend(t));
+    const A = this.createDeleteIcon(e, t);
+    t.appendChild(A);
   }
-  createDeleteIcon(e) {
-    let t = e.querySelector('.delete-icon');
+  createDeleteIcon(e, t) {
+    let A = t.querySelector('.delete-icon');
     return (
-      t ||
-        ((t = document.createElement('img')),
-        (t.src = this.icons.delete),
-        (t.alt = 'Delete'),
-        t.classList.add('delete-icon'),
-        e.appendChild(t)),
-      (t.onclick = t => {
+      A ||
+        ((A = document.createElement('img')),
+        (A.src = this.icons.delete),
+        (A.alt = 'Delete'),
+        A.classList.add('delete-icon'),
+        (A.style.pointerEvents = 'all'),
+        (A.style.cursor = 'pointer'),
+        (A.style.width = '16px'),
+        (A.style.height = '16px')),
+      (A.onclick = t => {
         (t.stopPropagation(), this.handleDelete(e));
       }),
-      t
+      A
     );
   }
   handleDelete(e) {
-    (this.canvas.historyManager.captureState(), e.remove());
-    const t = this.canvas.getComponents().filter(t => t !== e);
-    (this.canvas.setComponents(t),
-      this.canvas.historyManager.captureState(),
-      this.canvas.dispatchDesignChange());
+    const { historyManager: n, components: r } = t;
+    (n.captureState(),
+      e.remove(),
+      (t.components = r.filter(t => t !== e)),
+      n.captureState(),
+      A.dispatchDesignChange());
   }
 }
 class C {
