@@ -3565,7 +3565,7 @@ class I {
   buildHTMLShell(e, t) {
     const A =
       'grid' === Q.layoutMode ? 'grid-layout-active' : 'preview-printable';
-    return `<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>Page Builder</title>\n    <style>\n${t}\n    </style>\n    <style>\n${this.generateCSS()}\n    </style>\n  </head>\n  <body>\n    <div id="canvas" class="${A}">\n${e}\n    </div>\n  </body>\n</html>`;
+    return `<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>Page Builder</title>\n        <style>\n      /* Preserve inline element bottom alignment from editor */\n      #canvas [style*="display: inline"],\n      #canvas [style*="display: inline-block"] {\n        vertical-align: bottom;\n      }\n    </style>\n    <style>\n${t}\n    </style>\n    <style>\n${this.generateCSS()}\n    </style>\n  </head>\n  <body>\n    <div id="canvas" class="${A}">\n${e}\n    </div>\n  </body>\n</html>`;
   }
   generateCSS() {
     const e = document.getElementById('canvas');
@@ -3643,6 +3643,11 @@ class I {
         !n.has(a) &&
           o.length > 0 &&
           (n.add(a), A.push(`${a} {\n  ${o.join('\n  ')}\n}`));
+        const l = i.getPropertyValue('display');
+        if ('inline' === l || 'inline-block' === l || 'inline-flex' === l) {
+          const e = o.findIndex(e => e.startsWith('vertical-align:'));
+          (-1 !== e && o.splice(e, 1), o.push('vertical-align: bottom;'));
+        }
       }),
       A.join('\n')
     );
@@ -64414,7 +64419,7 @@ class po {
     A = !0,
     n,
     r,
-    s = 'absolute'
+    s = 'grid'
   ) {
     ((this.dynamicComponents = e),
       (this.initialDesign = t),

@@ -157,6 +157,13 @@ export class HTMLGenerator {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Page Builder</title>
+        <style>
+      /* Preserve inline element bottom alignment from editor */
+      #canvas [style*="display: inline"],
+      #canvas [style*="display: inline-block"] {
+        vertical-align: bottom;
+      }
+    </style>
     <style>
 ${embeddedStyles}
     </style>
@@ -290,6 +297,20 @@ ${bodyContent}
       if (!processedSelectors.has(selector) && componentStyles.length > 0) {
         processedSelectors.add(selector);
         styles.push(`${selector} {\n  ${componentStyles.join('\n  ')}\n}`);
+      }
+      // Inside the elements.forEach loop, after computing componentStyles:
+      const display = computedStyles.getPropertyValue('display');
+      const isInline =
+        display === 'inline' ||
+        display === 'inline-block' ||
+        display === 'inline-flex';
+      if (isInline) {
+        // Remove any computed vertical-align and replace with bottom
+        const vaIdx = componentStyles.findIndex(s =>
+          s.startsWith('vertical-align:')
+        );
+        if (vaIdx !== -1) componentStyles.splice(vaIdx, 1);
+        componentStyles.push('vertical-align: bottom;');
       }
     });
     return styles.join('\n');
