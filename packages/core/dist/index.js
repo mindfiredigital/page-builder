@@ -78,12 +78,21 @@ class A {
 }
 class n {
   constructor() {
-    var e, t;
-    ((this.resolvePromise = null), (this.attributes = []));
-    const A = document.getElementById('modal');
-    (A
-      ? (this.modalElement = A)
-      : ((this.modalElement = this.createModalElement()),
+    var e, t, A;
+    ((this.attributes = []), (this.resolvePromise = null));
+    const n = document.getElementById('modal');
+    (n
+      ? (this.modalElement = n)
+      : ((this.modalElement = (function () {
+          const e = document.createElement('div');
+          return (
+            (e.className = 'modal-overlay modal-hidden'),
+            (e.id = 'modal'),
+            (e.innerHTML =
+              '\n    <div class="modal-content">\n      <div class="modal-header">\n        <div class="modal-header-content">\n          <h2 class="modal-title">Component Settings</h2>\n          <button id="close-modal-button" class="modal-close-button">\n            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n            </svg>\n          </button>\n        </div>\n        <div class="modal-search-container">\n          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">\n            <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm7.4 12.6l4.2 4.2a1 1 0 01-1.4 1.4l-4.2-4.2a10 10 0 111.4-1.4z"/>\n          </svg>\n          <input type="text" id="attribute-search" class="modal-search-input" placeholder="Search attributes...">\n        </div>\n      </div>\n      <div class="modal-body">\n        <div id="modal-content" class="modal-form">\n          \x3c!-- Dynamic form elements will be injected here --\x3e\n        </div>\n        <div class="modal-footer">\n          <button id="save-button" class="save-button">Save</button>\n        </div>\n      </div>\n    </div>\n  '),
+            e
+          );
+        })()),
         document.body.appendChild(this.modalElement)),
       (this.contentContainer =
         this.modalElement.querySelector('#modal-content')),
@@ -100,117 +109,120 @@ class n {
       null === (t = this.modalElement.querySelector('#save-button')) ||
         void 0 === t ||
         t.addEventListener('click', () => {
-          this.onSave();
+          !(function (e, t, A, n) {
+            const r = e.querySelector('.form-field.selected'),
+              s = {};
+            if (r) {
+              const e = r.getAttribute('data-attr-key'),
+                A = t.find(t => t.key === e);
+              A && (s[A.key] = A.value);
+            }
+            (n(), A(s));
+          })(
+            this.contentContainer,
+            this.attributes,
+            e => {
+              var t;
+              (null === (t = this.resolvePromise) ||
+                void 0 === t ||
+                t.call(this, e),
+                (this.resolvePromise = null));
+            },
+            () => this.hide()
+          );
+        }),
+      null === (A = this.modalElement.querySelector('#attribute-search')) ||
+        void 0 === A ||
+        A.addEventListener('input', e => {
+          !(function (e, t) {
+            const A = e.toLowerCase().trim();
+            t.querySelectorAll('.form-field').forEach(e => {
+              var t, n, r;
+              const s =
+                  null === (t = e.getAttribute('data-attr-key')) || void 0 === t
+                    ? void 0
+                    : t.toLowerCase(),
+                i =
+                  null ===
+                    (r =
+                      null === (n = e.querySelector('.form-title')) ||
+                      void 0 === n
+                        ? void 0
+                        : n.textContent) || void 0 === r
+                    ? void 0
+                    : r.toLowerCase();
+              (null == s ? void 0 : s.includes(A)) ||
+              (null == i ? void 0 : i.includes(A))
+                ? e.classList.remove('modal-hidden')
+                : e.classList.add('modal-hidden');
+            });
+          })(e.target.value, this.contentContainer);
         }));
-    const n = this.modalElement.querySelector('#attribute-search');
-    null == n ||
-      n.addEventListener('input', e => {
-        const t = e.target.value;
-        this.filterAttributes(t);
-      });
-  }
-  filterAttributes(e) {
-    const t = this.contentContainer.querySelectorAll('.form-field'),
-      A = e.toLowerCase().trim();
-    t.forEach(e => {
-      var t, n, r;
-      const s =
-          null === (t = e.getAttribute('data-attr-key')) || void 0 === t
-            ? void 0
-            : t.toLowerCase(),
-        i =
-          null ===
-            (r =
-              null === (n = e.querySelector('.form-title')) || void 0 === n
-                ? void 0
-                : n.textContent) || void 0 === r
-            ? void 0
-            : r.toLowerCase();
-      (null == s ? void 0 : s.includes(A)) ||
-      (null == i ? void 0 : i.includes(A))
-        ? e.classList.remove('modal-hidden')
-        : e.classList.add('modal-hidden');
-    });
-  }
-  createModalElement() {
-    const e = document.createElement('div');
-    return (
-      (e.className = 'modal-overlay modal-hidden'),
-      (e.id = 'modal'),
-      (e.innerHTML =
-        '\n      <div class="modal-content">\n        <div class="modal-header">\n          <div class="modal-header-content">\n            <h2 class="modal-title">Component Settings</h2>\n            <button id="close-modal-button" class="modal-close-button">\n              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />\n              </svg>\n            </button>\n          </div>\n            <div class="modal-search-container">\n  <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">\n    <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm7.4 12.6l4.2 4.2a1 1 0 01-1.4 1.4l-4.2-4.2a10 10 0 111.4-1.4z"/>\n  </svg>\n  <input type="text" id="attribute-search" class="modal-search-input" placeholder="Search attributes...">\n</div>\n        </div>\n        <div class="modal-body">\n          <div id="modal-content" class="modal-form">\n            \x3c!-- Dynamic form elements will be injected here --\x3e\n          </div>\n          <div class="modal-footer">\n            <button id="save-button" class="save-button">\n              Save\n            </button>\n          </div>\n        </div>\n      </div>\n    '),
-      e
-    );
-  }
-  renderForm(e) {
-    ((this.contentContainer.innerHTML = ''),
-      (this.attributes = e),
-      e.forEach(e => {
-        const t = document.createElement('div');
-        ((t.className = 'form-field'), t.setAttribute('data-attr-key', e.key));
-        const A = document.createElement('div');
-        ((A.className = 'form-field-header'),
-          A.setAttribute('data-attr-id', e.id),
-          t.addEventListener('click', () => {
-            (this.contentContainer
-              .querySelectorAll('.form-field')
-              .forEach(e => {
-                e.classList.remove('selected');
-              }),
-              t.classList.add('selected'));
-          }));
-        const n = document.createElement('button');
-        ((n.className = 'expand-button'),
-          (n.type = 'button'),
-          (n.innerHTML =
-            '\n        <svg class="expand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />\n        </svg>\n      '));
-        const r = document.createElement('div');
-        r.className = 'title-key-container';
-        const s = document.createElement('span');
-        ((s.className = 'form-title'), (s.textContent = `${e.title}`));
-        const i = document.createElement('span');
-        ((i.className = 'form-key'),
-          (i.textContent = `(${e.key})(${e.type})`),
-          r.appendChild(s),
-          r.appendChild(i),
-          A.appendChild(n),
-          A.appendChild(r));
-        const o = document.createElement('div');
-        o.className = 'form-value-container form-value-collapsed';
-        const a = document.createElement('label');
-        let l;
-        ((a.className = 'form-label'),
-          (a.textContent = 'Value:'),
-          a.setAttribute('for', e.id));
-        const c = document.createElement('span');
-        ((c.id = e.id),
-          (c.textContent = e.value ? e.value.toString() : null),
-          (c.className = 'form-display-value'),
-          (l = c),
-          o.appendChild(a),
-          o.appendChild(l),
-          t.appendChild(A),
-          t.appendChild(o),
-          this.contentContainer.appendChild(t),
-          A.addEventListener('click', () => {
-            this.toggleFieldExpansion(e.id);
-          }));
-      }));
-  }
-  toggleFieldExpansion(e) {
-    const t = this.modalElement.querySelector(`[data-attr-id="${e}"]`),
-      A = null == t ? void 0 : t.nextElementSibling,
-      n = null == t ? void 0 : t.querySelector('.expand-icon');
-    if (A && n) {
-      !A.classList.contains('form-value-collapsed')
-        ? (A.classList.add('form-value-collapsed'),
-          (n.style.transform = 'rotate(0deg)'))
-        : (A.classList.remove('form-value-collapsed'),
-          (n.style.transform = 'rotate(90deg)'));
-    }
   }
   show(e) {
-    this.renderForm(e);
+    (!(function (e, t) {
+      ((e.innerHTML = ''),
+        t.forEach(t => {
+          const A = document.createElement('div');
+          ((A.className = 'form-field'),
+            A.setAttribute('data-attr-key', t.key),
+            A.addEventListener('click', () => {
+              (e.querySelectorAll('.form-field').forEach(e => {
+                e.classList.remove('selected');
+              }),
+                A.classList.add('selected'));
+            }));
+          const n = document.createElement('div');
+          ((n.className = 'form-field-header'),
+            n.setAttribute('data-attr-id', t.id));
+          const r = document.createElement('button');
+          ((r.className = 'expand-button'),
+            (r.type = 'button'),
+            (r.innerHTML =
+              '\n      <svg class="expand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">\n        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />\n      </svg>\n    '));
+          const s = document.createElement('div');
+          s.className = 'title-key-container';
+          const i = document.createElement('span');
+          ((i.className = 'form-title'), (i.textContent = `${t.title}`));
+          const o = document.createElement('span');
+          ((o.className = 'form-key'),
+            (o.textContent = `(${t.key})(${t.type})`),
+            s.appendChild(i),
+            s.appendChild(o),
+            n.appendChild(r),
+            n.appendChild(s));
+          const a = document.createElement('div');
+          a.className = 'form-value-container form-value-collapsed';
+          const l = document.createElement('label');
+          ((l.className = 'form-label'),
+            (l.textContent = 'Value:'),
+            l.setAttribute('for', t.id));
+          const c = document.createElement('span');
+          ((c.id = t.id),
+            (c.textContent = t.value ? t.value.toString() : null),
+            (c.className = 'form-display-value'),
+            a.appendChild(l),
+            a.appendChild(c),
+            A.appendChild(n),
+            A.appendChild(a),
+            e.appendChild(A),
+            n.addEventListener('click', () => {
+              !(function (e, t) {
+                const A = t.querySelector(`[data-attr-id="${e}"]`),
+                  n = null == A ? void 0 : A.nextElementSibling,
+                  r = null == A ? void 0 : A.querySelector('.expand-icon');
+                n &&
+                  r &&
+                  (n.classList.contains('form-value-collapsed')
+                    ? (n.classList.remove('form-value-collapsed'),
+                      (r.style.transform = 'rotate(90deg)'))
+                    : (n.classList.add('form-value-collapsed'),
+                      (r.style.transform = 'rotate(0deg)')));
+              })(t.id, e);
+            }));
+        }));
+    })(this.contentContainer, e),
+      (this.attributes = e));
     const t = this.modalElement.querySelector('#attribute-search');
     return (
       t && (t.value = ''),
@@ -222,22 +234,6 @@ class n {
   }
   hide() {
     this.modalElement.classList.add('modal-hidden');
-  }
-  onSave() {
-    var e;
-    const t = this.contentContainer.querySelector('.form-field.selected'),
-      A = {};
-    if (t) {
-      const e = t.getAttribute('data-attr-key'),
-        n = this.attributes.find(t => t.key === e);
-      n && (A[n.key] = n.value);
-    }
-    (this.hide(),
-      null === (e = this.resolvePromise) || void 0 === e || e.call(this, A),
-      this.resetPromise());
-  }
-  resetPromise() {
-    this.resolvePromise = null;
   }
 }
 class r {

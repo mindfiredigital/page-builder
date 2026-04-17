@@ -1,0 +1,26 @@
+import { ComponentAttribute } from './ModalTypes';
+
+/* Reads the selected field from the form and resolves the modal's promise */
+export function handleSave(
+  contentContainer: HTMLElement,
+  attributes: ComponentAttribute[],
+  resolve: (result: Record<string, any> | null) => void,
+  hideFn: () => void
+): void {
+  const selectedField = contentContainer.querySelector('.form-field.selected');
+  const newValues: Record<string, any> = {};
+
+  if (selectedField) {
+    const selectedKey = selectedField.getAttribute('data-attr-key');
+
+    /* Match the clicked field back to its full attribute object */
+    const selectedAttribute = attributes.find(attr => attr.key === selectedKey);
+
+    if (selectedAttribute) {
+      newValues[selectedAttribute.key] = selectedAttribute.value;
+    }
+  }
+
+  hideFn();
+  resolve(newValues);
+}

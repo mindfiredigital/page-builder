@@ -42,7 +42,15 @@ Directory structure:
     │   │   ├── TextComponent.ts
     │   │   ├── ThreeColumnContainer.ts
     │   │   ├── TwoColumnContainer.ts
-    │   │   └── VideoComponent.ts
+    │   │   ├── VideoComponent.ts
+    │   │   └── ContainerCore/
+    │   │       ├── ContainerDropHandler.ts
+    │   │       ├── ContainerEventListeners.ts
+    │   │       ├── ContainerResizeHandler.ts
+    │   │       ├── ContainerRestorer.ts
+    │   │       ├── ContainerStyles.ts
+    │   │       ├── ContainerTypes.ts
+    │   │       └── index.ts
     │   ├── icons/
     │   │   └── svgs.ts
     │   ├── navbar/
@@ -85,7 +93,8 @@ Directory structure:
             ├── 05e94503d7901506-turbo.log.2026-04-13
             ├── 05e94503d7901506-turbo.log.2026-04-14
             ├── 05e94503d7901506-turbo.log.2026-04-15
-            └── 05e94503d7901506-turbo.log.2026-04-16
+            ├── 05e94503d7901506-turbo.log.2026-04-16
+            └── 05e94503d7901506-turbo.log.2026-04-17
 
 ================================================
 FILE: README.md
@@ -748,7 +757,7 @@ export class PageBuilder {
     editable: boolean | null = true,
     brandTitle?: string,
     showAttributeTab?: boolean,
-    layoutMode: 'absolute' | 'grid' | undefined = 'absolute'
+    layoutMode: 'absolute' | 'grid' | undefined = 'grid'
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -1652,7 +1661,7 @@ export class ComponentControlsManager {
   };
 
   /* No longer takes Canvas as constructor arg â€” reads shared state directly */
-  constructor(_canvas?: any) {}
+  constructor(_canvas?: unknown) {}
 
   public addControlButtons(element: HTMLElement): void {
     if (!element.style.position || element.style.position === 'static') {
@@ -1668,13 +1677,13 @@ export class ComponentControlsManager {
       controlsDiv.className = 'component-controls';
       controlsDiv.setAttribute('contenteditable', 'false');
 
-      controlsDiv.style.position    = 'absolute';
-      controlsDiv.style.top         = '0';
-      controlsDiv.style.right       = '0';
-      controlsDiv.style.zIndex      = '100';
-      controlsDiv.style.display     = 'flex';
-      controlsDiv.style.gap         = '4px';
-      controlsDiv.style.padding     = '2px';
+      controlsDiv.style.position = 'absolute';
+      controlsDiv.style.top = '0';
+      controlsDiv.style.right = '0';
+      controlsDiv.style.zIndex = '100';
+      controlsDiv.style.display = 'flex';
+      controlsDiv.style.gap = '4px';
+      controlsDiv.style.padding = '2px';
       controlsDiv.style.pointerEvents = 'none';
 
       element.prepend(controlsDiv);
@@ -1698,9 +1707,9 @@ export class ComponentControlsManager {
       deleteIcon.alt = 'Delete';
       deleteIcon.classList.add('delete-icon');
       deleteIcon.style.pointerEvents = 'all';
-      deleteIcon.style.cursor        = 'pointer';
-      deleteIcon.style.width         = '16px';
-      deleteIcon.style.height        = '16px';
+      deleteIcon.style.cursor = 'pointer';
+      deleteIcon.style.width = '16px';
+      deleteIcon.style.height = '16px';
     }
 
     deleteIcon.onclick = e => {
@@ -1726,60 +1735,45 @@ export class ComponentControlsManager {
 }
 
 
+
 ================================================
 FILE: src/canvas/DeleteElement.ts
 ================================================
-import { Canvas } from './Canvas';
-
 export class DeleteElementHandler {
   private selectedElement: HTMLElement | null = null;
 
   constructor() {
+    // Listen for keydown events
     document.addEventListener('keydown', this.handleKeydown.bind(this));
   }
 
+  // Method to delete the selected element
   private deleteSelectedElement(): void {
     if (this.selectedElement) {
-      /* Capture before state for undo */
-      Canvas.historyManager.captureState();
-
       this.selectedElement.remove();
-
-      /* Keep the components array in sync */
-      const updated = Canvas.getComponents().filter(
-        c => c !== this.selectedElement
-      );
-      Canvas.setComponents(updated);
-
       this.selectedElement = null;
-
-      /* Capture after state + notify listeners */
-      Canvas.historyManager.captureState();
-      Canvas.dispatchDesignChange();
     }
   }
 
+  // Handle keydown events
   private handleKeydown(event: KeyboardEvent): void {
-    /* Don't intercept Delete while the user is typing in an editable field */
-    const active = document.activeElement as HTMLElement;
-    const isEditing =
-      active?.isContentEditable ||
-      active?.tagName === 'INPUT' ||
-      active?.tagName === 'TEXTAREA';
-
-    if (event.key === 'Delete' && !isEditing) {
+    if (event.key === 'Delete') {
       this.deleteSelectedElement();
     }
   }
 
+  // Method to set the selected element
   public selectElement(element: HTMLElement): void {
+    console.log(element, 'clcikced');
     if (this.selectedElement) {
       this.selectedElement.classList.remove('selected');
     }
+
     this.selectedElement = element;
     this.selectedElement.classList.add('selected');
   }
 }
+
 
 
 ================================================
@@ -2930,367 +2924,53 @@ export class ButtonComponent {
 FILE: src/components/ContainerComponent.ts
 ================================================
 import { Canvas } from '../canvas/Canvas';
-import { ImageComponent } from './ImageComponent';
+import {
+  injectResizerStyles,
+  ContainerResizeHandler,
+  initContainerEventListeners,
+  restoreContainer,
+} from './ContainerCore';
 
 export class ContainerComponent {
   private element: HTMLElement;
   private resizers: HTMLElement;
-  private readonly MINIMUM_SIZE = 20;
-  private originalWidth: number = 0;
-  private originalHeight: number = 0;
-  private originalX: number = 0;
-  private originalY: number = 0;
-  private originalMouseX: number = 0;
-  private originalMouseY: number = 0;
-  private currentResizer: HTMLElement | null = null;
 
   constructor() {
     this.element = document.createElement('div');
     this.element.classList.add('container-component');
 
-    // Initialize resizers container
+    /* Wrapper that holds the four corner resize handles */
     this.resizers = document.createElement('div');
     this.resizers.classList.add('resizers');
     this.element.appendChild(this.resizers);
 
-    // Add resizer handles
+    /* Resize handles are only needed in absolute layout mode */
     if (Canvas.layoutMode === 'absolute') {
-      this.addResizeHandles();
+      const resizeHandler = new ContainerResizeHandler(
+        this.element,
+        this.resizers
+      );
+      resizeHandler.addResizeHandles();
     }
 
-    // Add styles
-    this.addStyles();
+    /* Inject corner-handle CSS into <head> */
+    injectResizerStyles();
 
-    // Add event listeners
-    this.initializeEventListeners();
+    /* Bind drag/drop and hover events onto the element */
+    initContainerEventListeners(this.element);
   }
 
-  private addResizeHandles(): void {
-    const positions = [
-      { class: 'top-left', cursor: 'nwse-resize' },
-      { class: 'top-right', cursor: 'nesw-resize' },
-      { class: 'bottom-left', cursor: 'nesw-resize' },
-      { class: 'bottom-right', cursor: 'nwse-resize' },
-    ];
-
-    positions.forEach(position => {
-      const resizer = document.createElement('div');
-      resizer.classList.add('resizer', position.class);
-      resizer.addEventListener('mousedown', e => this.initResize(e, resizer));
-      this.resizers.appendChild(resizer);
-    });
-  }
-
-  private initResize(e: MouseEvent, resizer: HTMLElement): void {
-    e.preventDefault();
-    this.currentResizer = resizer;
-
-    // Store original dimensions and positions
-    this.originalWidth = parseFloat(
-      getComputedStyle(this.element).getPropertyValue('width')
-    );
-    this.originalHeight = parseFloat(
-      getComputedStyle(this.element).getPropertyValue('height')
-    );
-    this.originalX = this.element.getBoundingClientRect().left;
-    this.originalY = this.element.getBoundingClientRect().top;
-    this.originalMouseX = e.pageX;
-    this.originalMouseY = e.pageY;
-
-    // Add resize events
-    window.addEventListener('mousemove', this.resize);
-    window.addEventListener('mouseup', this.stopResize);
-  }
-
-  private resize = (e: MouseEvent): void => {
-    if (!this.currentResizer) return;
-
-    const deltaX = e.pageX - this.originalMouseX;
-    const deltaY = e.pageY - this.originalMouseY;
-
-    if (this.currentResizer.classList.contains('bottom-right')) {
-      const width = this.originalWidth + deltaX;
-      const height = this.originalHeight + deltaY;
-
-      if (width > this.MINIMUM_SIZE) {
-        this.element.style.width = `${width}px`;
-      }
-      if (height > this.MINIMUM_SIZE) {
-        this.element.style.height = `${height}px`;
-      }
-    } else if (this.currentResizer.classList.contains('bottom-left')) {
-      const height = this.originalHeight + deltaY;
-      const width = this.originalWidth - deltaX;
-
-      if (height > this.MINIMUM_SIZE) {
-        this.element.style.height = `${height}px`;
-      }
-      if (width > this.MINIMUM_SIZE) {
-        this.element.style.width = `${width}px`;
-        this.element.style.left = `${this.originalX + deltaX}px`;
-      }
-    } else if (this.currentResizer.classList.contains('top-right')) {
-      const width = this.originalWidth + deltaX;
-      const height = this.originalHeight - deltaY;
-
-      if (width > this.MINIMUM_SIZE) {
-        this.element.style.width = `${width}px`;
-      }
-      if (height > this.MINIMUM_SIZE) {
-        this.element.style.height = `${height}px`;
-        this.element.style.top = `${this.originalY + deltaY}px`;
-      }
-    } else if (this.currentResizer.classList.contains('top-left')) {
-      const width = this.originalWidth - deltaX;
-      const height = this.originalHeight - deltaY;
-
-      if (width > this.MINIMUM_SIZE) {
-        this.element.style.width = `${width}px`;
-        this.element.style.left = `${this.originalX + deltaX}px`;
-      }
-      if (height > this.MINIMUM_SIZE) {
-        this.element.style.height = `${height}px`;
-        this.element.style.top = `${this.originalY + deltaY}px`;
-      }
-    }
-  };
-
-  /**
-   * On mouse up event the resizing stops and captures the state
-   * Which will help keep tracking of state for undo/redo purpose
-   */
-  private stopResize = (): void => {
-    window.removeEventListener('mousemove', this.resize);
-    window.removeEventListener('mouseup', this.stopResize);
-    this.currentResizer = null;
-
-    //capture each resized state
-    Canvas.historyManager.captureState();
-  };
-
-  private initializeEventListeners(): void {
-    this.element.addEventListener('dragstart', this.onDragStart.bind(this));
-    this.element.addEventListener('drop', this.onDrop.bind(this));
-    this.element.addEventListener('dragover', event => event.preventDefault());
-    this.element.addEventListener('mouseover', this.onMouseOver.bind(this));
-    this.element.addEventListener('mouseleave', this.onMouseLeave.bind(this));
-  }
-
-  private onDragStart(event: DragEvent): void {
-    if (event.target === this.element) {
-      event.stopPropagation();
-    }
-  }
-
-  private onDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const componentType = event.dataTransfer?.getData('component-type');
-    if (!componentType) return;
-
-    const component = Canvas.createComponent(componentType);
-    if (!component) return;
-
-    const containerClass = this.element.classList[2];
-    const uniqueClass = Canvas.generateUniqueClass(
-      componentType,
-      true,
-      containerClass
-    );
-    component.classList.add(uniqueClass);
-
-    const label = document.createElement('span');
-    label.className = 'component-label';
-    label.textContent = uniqueClass;
-    label.setAttribute('contenteditable', 'false');
-    component.id = uniqueClass;
-    label.style.display = 'none';
-    component.appendChild(label);
-    if (Canvas.layoutMode === 'absolute') {
-      component.style.position = 'absolute';
-      component.style.left = `${event.offsetX}px`;
-      component.style.top = `${event.offsetY}px`;
-      Canvas.addDraggableListeners(component);
-    } else if (Canvas.layoutMode === 'grid') {
-      this.element.classList.add('container-grid-active');
-    }
-    this.element.appendChild(component);
-
-    // Capture state for undo/redo
-    Canvas.historyManager.captureState();
-  }
-
-  private showLabel(event: MouseEvent, component: HTMLElement): void {
-    event.stopPropagation();
-    const label = component.querySelector('.component-label') as HTMLElement;
-    if (label) {
-      label.style.display = 'block';
-    }
-  }
-
-  private hideLabel(event: MouseEvent, component: HTMLElement): void {
-    event.stopPropagation();
-    const label = component.querySelector('.component-label') as HTMLElement;
-    if (label) {
-      label.style.display = 'none';
-    }
-  }
-
-  private onMouseOver(event: MouseEvent) {
-    event.stopPropagation();
-    const elements = document.querySelectorAll('.container-highlight');
-
-    // Loop through each element and remove the class
-    elements.forEach(element => {
-      element.classList.remove('container-highlight');
-    });
-    if (event.target === this.element) {
-      this.element.classList.add('container-highlight');
-    }
-  }
-
-  private onMouseLeave(event: MouseEvent): void {
-    if (event.target === this.element) {
-      this.element.classList.remove('container-highlight');
-    }
-  }
-
-  private addStyles(): void {
-    const style = document.createElement('style');
-    style.textContent = `
-      .resizer {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: white;
-        border: 2px solid #4286f4;
-        position: absolute;
-      }
-
-      .resizer.top-left {
-        left: -5px;
-        top: -5px;
-        cursor: nwse-resize;
-      }
-
-      .resizer.top-right {
-        right: -5px;
-        top: -5px;
-        cursor: nesw-resize;
-      }
-
-      .resizer.bottom-left {
-        left: -5px;
-        bottom: -5px;
-        cursor: nesw-resize;
-      }
-
-      .resizer.bottom-right {
-        right: -5px;
-        bottom: -5px;
-        cursor: nwse-resize;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
+  /* Returns the root DOM element for insertion into the canvas */
   public create(): HTMLElement {
     return this.element;
   }
 
-  private static restoreResizer(element: HTMLElement): void {
-    // Remove any existing resizers
-    const oldResizers = element.querySelector('.resizers');
-    if (oldResizers) {
-      oldResizers.remove();
-    }
-
-    // Create new resizers container
-    const resizersDiv = document.createElement('div');
-    resizersDiv.classList.add('resizers');
-
-    // Create temporary container instance to bind event listeners
-    const container = new ContainerComponent();
-    container.element = element;
-    container.resizers = resizersDiv;
-
-    // Add resize handles
-    container.addResizeHandles();
-
-    // Add new resizers to the element
-    element.appendChild(resizersDiv);
-  }
-
+  /* Re-attaches interactivity to a container loaded from saved state */
   public static restoreContainer(
     container: HTMLElement,
     editable?: boolean | null
   ): void {
-    const isGridMode = Canvas.layoutMode === 'grid';
-    // Restore resizer functionality
-    if (editable !== false && !isGridMode) {
-      ContainerComponent.restoreResizer(container);
-    } else {
-      const resizers = container.querySelectorAll('.resizers');
-      resizers.forEach(resizer => resizer.remove());
-    }
-
-    // Create a temporary instance of ContainerComponent to reuse its methods
-    const containerInstance = new ContainerComponent();
-    containerInstance.element = container;
-    // Reapply controls to child components inside the container
-    const containerChildren = container.querySelectorAll('.editable-component');
-    containerChildren.forEach((child: any) => {
-      // Add control buttons and draggable listeners
-      if (editable !== false) {
-        Canvas.controlsManager.addControlButtons(child);
-        if (isGridMode) {
-          child.classList.remove('component-resizer');
-          child.removeAttribute('draggable');
-          child.style.cursor = 'default';
-          child.style.position = '';
-          child.style.left = '';
-          child.style.top = '';
-        } else {
-          Canvas.addDraggableListeners(child);
-          child.style.position = 'absolute';
-          child.classList.add('component-resizer');
-        }
-
-        // Bind the showLabel and hideLabel methods
-        child.addEventListener('mouseenter', (event: MouseEvent) =>
-          containerInstance.showLabel(event, child)
-        );
-        child.addEventListener('mouseleave', (event: MouseEvent) =>
-          containerInstance.hideLabel(event, child)
-        );
-      } else {
-        const targetElements = child.querySelectorAll(
-          `[contenteditable]`
-        ) as HTMLElement[];
-
-        if (targetElements.length > 0) {
-          targetElements.forEach(element => {
-            element.removeAttribute('contenteditable');
-          });
-        }
-        child.classList.remove('editable-component');
-        child.classList.remove('component-resizer');
-        child.removeAttribute('draggable');
-        child.removeAttribute('contenteditable');
-      }
-
-      // If the child is an image component, restore the image upload feature
-      if (child.classList.contains('image-component')) {
-        const imageSrc = child.querySelector('img')?.getAttribute('src') || ''; // Get the saved image source
-        ImageComponent.restoreImageUpload(child, imageSrc, editable);
-      }
-
-      // If the child is itself a container, restore it recursively
-      if (child.classList.contains('container-component')) {
-        this.restoreContainer(child, editable);
-      }
-    });
+    restoreContainer(container, editable);
   }
 }
 
@@ -4769,6 +4449,409 @@ export class TwoColumnContainer extends MultiColumnContainer {
 FILE: src/components/VideoComponent.ts
 ================================================
 Error reading file with 'cp1252': 'charmap' codec can't decode byte 0x8f in position 1192: character maps to <undefined>
+
+
+================================================
+FILE: src/components/ContainerCore/ContainerDropHandler.ts
+================================================
+import { Canvas } from '../../canvas/Canvas';
+
+/* Handles a component being dropped from the sidebar into this container */
+export function handleContainerDrop(
+  element: HTMLElement,
+  event: DragEvent
+): void {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const componentType = event.dataTransfer?.getData('component-type');
+  if (!componentType) return;
+
+  const component = Canvas.createComponent(componentType);
+  if (!component) return;
+
+  /* Third class on the container element is its unique identifier */
+  const containerClass = element.classList[2];
+  const uniqueClass = Canvas.generateUniqueClass(
+    componentType,
+    true,
+    containerClass
+  );
+
+  component.classList.add(uniqueClass);
+
+  /* Hover label â€” hidden by default, shown on mouseenter */
+  const label = document.createElement('span');
+  label.className = 'component-label';
+  label.textContent = uniqueClass;
+  label.setAttribute('contenteditable', 'false');
+  component.id = uniqueClass;
+  label.style.display = 'none';
+  component.appendChild(label);
+
+  if (Canvas.layoutMode === 'absolute') {
+    /* Position dropped component exactly where the cursor landed */
+    component.style.position = 'absolute';
+    component.style.left = `${event.offsetX}px`;
+    component.style.top = `${event.offsetY}px`;
+    Canvas.addDraggableListeners(component);
+  } else if (Canvas.layoutMode === 'grid') {
+    /* Grid mode: activate the grid layout class on the parent */
+    element.classList.add('container-grid-active');
+  }
+
+  element.appendChild(component);
+
+  /* Capture state so the drop can be undone */
+  Canvas.historyManager.captureState();
+}
+
+
+
+================================================
+FILE: src/components/ContainerCore/ContainerEventListeners.ts
+================================================
+import { handleContainerDrop } from './ContainerDropHandler';
+
+/* Wires all DOM event listeners onto the container element */
+export function initContainerEventListeners(element: HTMLElement): void {
+  /* Stop drag bubbling when the container itself is the drag source */
+  element.addEventListener('dragstart', (event: DragEvent) => {
+    if (event.target === element) event.stopPropagation();
+  });
+
+  element.addEventListener('drop', (event: DragEvent) =>
+    handleContainerDrop(element, event)
+  );
+  element.addEventListener('dragover', (event: Event) =>
+    event.preventDefault()
+  );
+
+  /* Highlight the innermost container the cursor is directly over */
+  element.addEventListener('mouseover', (event: MouseEvent) => {
+    event.stopPropagation();
+
+    /* Clear highlight from any previously highlighted containers */
+    document.querySelectorAll('.container-highlight').forEach(el => {
+      el.classList.remove('container-highlight');
+    });
+
+    if (event.target === element) element.classList.add('container-highlight');
+  });
+
+  /* Remove highlight when cursor leaves */
+  element.addEventListener('mouseleave', (event: MouseEvent) => {
+    if (event.target === element)
+      element.classList.remove('container-highlight');
+  });
+}
+
+
+
+================================================
+FILE: src/components/ContainerCore/ContainerResizeHandler.ts
+================================================
+import { Canvas } from '../../canvas/Canvas';
+import { MINIMUM_SIZE, RESIZER_POSITIONS } from './ContainerTypes';
+
+/* Manages corner-handle resizing for a container element */
+export class ContainerResizeHandler {
+  private element: HTMLElement;
+  private resizersEl: HTMLElement;
+
+  /* Snapshot values captured when a resize gesture begins */
+  private originalWidth: number = 0;
+  private originalHeight: number = 0;
+  private originalX: number = 0;
+  private originalY: number = 0;
+  private originalMouseX: number = 0;
+  private originalMouseY: number = 0;
+
+  /* The corner handle currently being dragged */
+  private currentResizer: HTMLElement | null = null;
+
+  constructor(element: HTMLElement, resizersEl: HTMLElement) {
+    this.element = element;
+    this.resizersEl = resizersEl;
+  }
+
+  /* Appends four corner handles and binds mousedown on each */
+  public addResizeHandles(): void {
+    RESIZER_POSITIONS.forEach(position => {
+      const resizer = document.createElement('div');
+      resizer.classList.add('resizer', position.class);
+
+      /* Each handle starts a resize on mousedown */
+      resizer.addEventListener('mousedown', e => this.initResize(e, resizer));
+
+      this.resizersEl.appendChild(resizer);
+    });
+  }
+
+  /* Captures baseline measurements and registers global move/up listeners */
+  private initResize(e: MouseEvent, resizer: HTMLElement): void {
+    e.preventDefault();
+    this.currentResizer = resizer;
+
+    this.originalWidth = parseFloat(
+      getComputedStyle(this.element).getPropertyValue('width')
+    );
+    this.originalHeight = parseFloat(
+      getComputedStyle(this.element).getPropertyValue('height')
+    );
+    this.originalX = this.element.getBoundingClientRect().left;
+    this.originalY = this.element.getBoundingClientRect().top;
+    this.originalMouseX = e.pageX;
+    this.originalMouseY = e.pageY;
+
+    window.addEventListener('mousemove', this.resize);
+    window.addEventListener('mouseup', this.stopResize);
+  }
+
+  /* Recalculates dimensions based on which corner is being dragged */
+  private resize = (e: MouseEvent): void => {
+    if (!this.currentResizer) return;
+
+    const deltaX = e.pageX - this.originalMouseX;
+    const deltaY = e.pageY - this.originalMouseY;
+
+    if (this.currentResizer.classList.contains('bottom-right')) {
+      const width = this.originalWidth + deltaX;
+      const height = this.originalHeight + deltaY;
+
+      if (width > MINIMUM_SIZE) this.element.style.width = `${width}px`;
+      if (height > MINIMUM_SIZE) this.element.style.height = `${height}px`;
+    } else if (this.currentResizer.classList.contains('bottom-left')) {
+      const height = this.originalHeight + deltaY;
+      const width = this.originalWidth - deltaX;
+
+      if (height > MINIMUM_SIZE) this.element.style.height = `${height}px`;
+      if (width > MINIMUM_SIZE) {
+        this.element.style.width = `${width}px`;
+        this.element.style.left = `${this.originalX + deltaX}px`;
+      }
+    } else if (this.currentResizer.classList.contains('top-right')) {
+      const width = this.originalWidth + deltaX;
+      const height = this.originalHeight - deltaY;
+
+      if (width > MINIMUM_SIZE) this.element.style.width = `${width}px`;
+      if (height > MINIMUM_SIZE) {
+        this.element.style.height = `${height}px`;
+        this.element.style.top = `${this.originalY + deltaY}px`;
+      }
+    } else if (this.currentResizer.classList.contains('top-left')) {
+      const width = this.originalWidth - deltaX;
+      const height = this.originalHeight - deltaY;
+
+      if (width > MINIMUM_SIZE) {
+        this.element.style.width = `${width}px`;
+        this.element.style.left = `${this.originalX + deltaX}px`;
+      }
+      if (height > MINIMUM_SIZE) {
+        this.element.style.height = `${height}px`;
+        this.element.style.top = `${this.originalY + deltaY}px`;
+      }
+    }
+  };
+
+  /* Cleans up global listeners and snapshots state for undo/redo */
+  private stopResize = (): void => {
+    window.removeEventListener('mousemove', this.resize);
+    window.removeEventListener('mouseup', this.stopResize);
+    this.currentResizer = null;
+
+    /* Snapshot taken so undo/redo can roll back each resize step */
+    Canvas.historyManager.captureState();
+  };
+}
+
+
+
+================================================
+FILE: src/components/ContainerCore/ContainerRestorer.ts
+================================================
+import { Canvas } from '../../canvas/Canvas';
+import { ImageComponent } from '../ImageComponent';
+import { ContainerResizeHandler } from './ContainerResizeHandler';
+
+/* Shows the hover label on a component */
+function showLabel(event: MouseEvent, component: HTMLElement): void {
+  event.stopPropagation();
+  const label = component.querySelector('.component-label') as HTMLElement;
+  if (label) label.style.display = 'block';
+}
+
+/* Hides the hover label on a component */
+function hideLabel(event: MouseEvent, component: HTMLElement): void {
+  event.stopPropagation();
+  const label = component.querySelector('.component-label') as HTMLElement;
+  if (label) label.style.display = 'none';
+}
+
+/* Re-attaches resize handles to an existing container DOM element */
+export function restoreResizer(element: HTMLElement): void {
+  /* Remove stale resizers that may already be present */
+  element.querySelector('.resizers')?.remove();
+
+  const resizersDiv = document.createElement('div');
+  resizersDiv.classList.add('resizers');
+
+  /* Bind a fresh resize handler to this element and attach the handles */
+  const handler = new ContainerResizeHandler(element, resizersDiv);
+  handler.addResizeHandles();
+
+  element.appendChild(resizersDiv);
+}
+
+/* Recursively restores a container and all its editable child components */
+export function restoreContainer(
+  container: HTMLElement,
+  editable?: boolean | null
+): void {
+  const isGridMode = Canvas.layoutMode === 'grid';
+
+  /* Only add resize handles in absolute mode when editable */
+  if (editable !== false && !isGridMode) {
+    restoreResizer(container);
+  } else {
+    /* Strip any existing resizer handles (preview / export mode) */
+    container.querySelectorAll('.resizers').forEach(r => r.remove());
+  }
+
+  /* Re-wire controls and listeners on every editable child */
+  container.querySelectorAll('.editable-component').forEach((child: any) => {
+    if (editable !== false) {
+      Canvas.controlsManager.addControlButtons(child);
+
+      if (isGridMode) {
+        /* Grid mode: remove absolute-layout artefacts from child */
+        child.classList.remove('component-resizer');
+        child.removeAttribute('draggable');
+        child.style.cursor = 'default';
+        child.style.position = '';
+        child.style.left = '';
+        child.style.top = '';
+      } else {
+        /* Absolute mode: make children draggable and resizable */
+        Canvas.addDraggableListeners(child);
+        child.style.position = 'absolute';
+        child.classList.add('component-resizer');
+      }
+
+      /* Re-attach hover label listeners to each child */
+      child.addEventListener('mouseenter', (event: MouseEvent) =>
+        showLabel(event, child)
+      );
+      child.addEventListener('mouseleave', (event: MouseEvent) =>
+        hideLabel(event, child)
+      );
+    } else {
+      /* Non-editable (preview/export): strip all editing attributes */
+      (
+        child.querySelectorAll('[contenteditable]') as NodeListOf<HTMLElement>
+      ).forEach(el => el.removeAttribute('contenteditable'));
+
+      child.classList.remove('editable-component');
+      child.classList.remove('component-resizer');
+      child.removeAttribute('draggable');
+      child.removeAttribute('contenteditable');
+    }
+
+    /* Restore image-upload interactivity for image children */
+    if (child.classList.contains('image-component')) {
+      const imageSrc = child.querySelector('img')?.getAttribute('src') || '';
+      ImageComponent.restoreImageUpload(child, imageSrc, editable);
+    }
+
+    /* Recurse into nested containers */
+    if (child.classList.contains('container-component')) {
+      restoreContainer(child, editable);
+    }
+  });
+}
+
+
+
+================================================
+FILE: src/components/ContainerCore/ContainerStyles.ts
+================================================
+/* Injects resizer handle styles into document <head> */
+export function injectResizerStyles(): void {
+  const style = document.createElement('style');
+
+  style.textContent = `
+    .resizer {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #4286f4;
+      position: absolute;
+    }
+
+    .resizer.top-left {
+      left: -5px;
+      top: -5px;
+      cursor: nwse-resize;
+    }
+
+    .resizer.top-right {
+      right: -5px;
+      top: -5px;
+      cursor: nesw-resize;
+    }
+
+    .resizer.bottom-left {
+      left: -5px;
+      bottom: -5px;
+      cursor: nesw-resize;
+    }
+
+    .resizer.bottom-right {
+      right: -5px;
+      bottom: -5px;
+      cursor: nwse-resize;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+
+
+================================================
+FILE: src/components/ContainerCore/ContainerTypes.ts
+================================================
+/* Minimum pixel size a container can be resized to */
+export const MINIMUM_SIZE = 20;
+
+/* Describes a single resizer handle â€” its CSS class and cursor style */
+export interface ResizerPosition {
+  class: string;
+  cursor: string;
+}
+
+/* All four corner resizer handle definitions */
+export const RESIZER_POSITIONS: ResizerPosition[] = [
+  { class: 'top-left', cursor: 'nwse-resize' },
+  { class: 'top-right', cursor: 'nesw-resize' },
+  { class: 'bottom-left', cursor: 'nesw-resize' },
+  { class: 'bottom-right', cursor: 'nwse-resize' },
+];
+
+
+
+================================================
+FILE: src/components/ContainerCore/index.ts
+================================================
+export { MINIMUM_SIZE, RESIZER_POSITIONS } from './ContainerTypes';
+export type { ResizerPosition } from './ContainerTypes';
+export { injectResizerStyles } from './ContainerStyles';
+export { ContainerResizeHandler } from './ContainerResizeHandler';
+export { handleContainerDrop } from './ContainerDropHandler';
+export { initContainerEventListeners } from './ContainerEventListeners';
+export { restoreResizer, restoreContainer } from './ContainerRestorer';
+
 
 
 ================================================
@@ -11337,5 +11420,46 @@ FILE: .turbo/daemon/05e94503d7901506-turbo.log.2026-04-16
 2026-04-16T10:48:16.096073Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
 2026-04-16T10:48:16.275827Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
 2026-04-16T10:48:16.443322Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T10:58:32.981656Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T10:58:33.121699Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:15:09.703167Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:15:09.829171Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:18:28.730798Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:18:28.897871Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:18:29.071814Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:21:31.883766Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:21:32.056311Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:21:32.231952Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:22:11.918162Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-16T11:22:12.102481Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+
+
+
+================================================
+FILE: .turbo/daemon/05e94503d7901506-turbo.log.2026-04-17
+================================================
+2026-04-17T05:35:49.985923Z  WARN daemon_server:listen_socket{pid_path=AbsoluteSystemPath("C:\\Users\\parasb\\AppData\\Local\\Temp\\turbod\\05e94503d7901506\\turbod.pid") sock_path=AbsoluteSystemPath("C:\\Users\\parasb\\AppData\\Local\\Temp\\turbod\\05e94503d7901506\\turbod.sock") running=true}: pidlock: stale pid file at "C:\\Users\\parasb\\AppData\\Local\\Temp\\turbod\\05e94503d7901506\\turbod.pid"    
+2026-04-17T05:35:50.096109Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:35:50.217954Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:42:06.569979Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:42:06.688291Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:42:06.789637Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:50:22.217261Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:50:22.327025Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:54:05.483638Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:54:05.628624Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:54:05.721398Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:56:31.789327Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:56:31.922316Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T05:56:32.065715Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:06:51.351738Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:06:51.477563Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:06:51.584954Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:07:48.003051Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:07:48.089845Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:07:48.171088Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:11:51.798027Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:11:51.931520Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
+2026-04-17T06:11:52.048348Z  WARN daemon_server: turborepo_lib::commands::daemon: daemon already running
 
 
