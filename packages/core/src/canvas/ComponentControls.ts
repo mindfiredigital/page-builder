@@ -7,12 +7,25 @@ export class ComponentControlsManager {
       'https://res.cloudinary.com/dodvwsaqj/image/upload/v1737366522/delete-2-svgrepo-com_fwkzn7.svg',
   };
 
-  /* No longer takes Canvas as constructor arg — reads shared state directly */
   constructor(_canvas?: unknown) {}
 
+  /**
+   * Adds a controls div (with delete button) to the component.
+   *
+   * Image containers: we use appendChild (not prepend) and skip adding
+   * `position: relative` — both of which were the original fix that kept
+   * images rendering at their natural size. The delete bug was unrelated to
+   * this; it was caused by searching for `.delete-icon` on `element` instead
+   * of inside `controlsDiv` (fixed in createDeleteIcon below).
+   */
   public addControlButtons(element: HTMLElement): void {
-    if (!element.style.position || element.style.position === 'static') {
-      element.style.position = 'relative';
+    const isImageContainer = !!element.querySelector('img');
+
+    /* Only set position:relative on non-image wrappers */
+    if (!isImageContainer) {
+      if (!element.style.position || element.style.position === 'static') {
+        element.style.position = 'relative';
+      }
     }
 
     let controlsDiv = element.querySelector(
@@ -23,7 +36,6 @@ export class ComponentControlsManager {
       controlsDiv = document.createElement('div');
       controlsDiv.className = 'component-controls';
       controlsDiv.setAttribute('contenteditable', 'false');
-
       controlsDiv.style.position = 'absolute';
       controlsDiv.style.top = '0';
       controlsDiv.style.right = '0';
@@ -33,13 +45,29 @@ export class ComponentControlsManager {
       controlsDiv.style.padding = '2px';
       controlsDiv.style.pointerEvents = 'none';
 
-      element.prepend(controlsDiv);
+      /*
+       * Image containers: append (after the <img>) so the controls div
+       * does not shift the image in the DOM or break flex/grid sizing.
+       * Everything else: prepend so controls appear visually on top-right.
+       */
+      if (isImageContainer) {
+        element.appendChild(controlsDiv);
+      } else {
+        element.prepend(controlsDiv);
+      }
     }
 
     const deleteIcon = this.createDeleteIcon(element, controlsDiv);
     controlsDiv.appendChild(deleteIcon);
   }
 
+  /**
+   * Creates (or reuses) the delete icon inside `controlsDiv`.
+   *
+   * Bug fix vs. the original "before" version: we now search inside
+   * `controlsDiv` (not `element`) so we never accidentally grab an <img>
+   * inside the component itself when looking for `.delete-icon`.
+   */
   private createDeleteIcon(
     element: HTMLElement,
     controlsDiv: HTMLElement
@@ -67,15 +95,15 @@ export class ComponentControlsManager {
     return deleteIcon;
   }
 
+  /**
+   * Deletes the component, updates shared state, and captures undo history.
+   * Reads historyManager at call-time to avoid circular-import issues.
+   */
   private handleDelete(element: HTMLElement): void {
-    /* Read historyManager at call-time, not at import-time — avoids circular dep */
     const { historyManager, components } = CanvasSharedState;
-
     historyManager.captureState();
     element.remove();
-
     CanvasSharedState.components = components.filter(c => c !== element);
-
     historyManager.captureState();
     CanvasEventDispatcher.dispatchDesignChange();
   }

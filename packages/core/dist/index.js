@@ -2058,24 +2058,26 @@ class I {
     };
   }
   addControlButtons(e) {
-    (e.style.position && 'static' !== e.style.position) ||
-      (e.style.position = 'relative');
-    let t = e.querySelector('.component-controls');
+    const t = !!e.querySelector('img');
     t ||
-      ((t = document.createElement('div')),
-      (t.className = 'component-controls'),
-      t.setAttribute('contenteditable', 'false'),
-      (t.style.position = 'absolute'),
-      (t.style.top = '0'),
-      (t.style.right = '0'),
-      (t.style.zIndex = '100'),
-      (t.style.display = 'flex'),
-      (t.style.gap = '4px'),
-      (t.style.padding = '2px'),
-      (t.style.pointerEvents = 'none'),
-      e.prepend(t));
-    const A = this.createDeleteIcon(e, t);
-    t.appendChild(A);
+      (e.style.position && 'static' !== e.style.position) ||
+      (e.style.position = 'relative');
+    let A = e.querySelector('.component-controls');
+    A ||
+      ((A = document.createElement('div')),
+      (A.className = 'component-controls'),
+      A.setAttribute('contenteditable', 'false'),
+      (A.style.position = 'absolute'),
+      (A.style.top = '0'),
+      (A.style.right = '0'),
+      (A.style.zIndex = '100'),
+      (A.style.display = 'flex'),
+      (A.style.gap = '4px'),
+      (A.style.padding = '2px'),
+      (A.style.pointerEvents = 'none'),
+      t ? e.appendChild(A) : e.prepend(A));
+    const n = this.createDeleteIcon(e, A);
+    A.appendChild(n);
   }
   createDeleteIcon(e, t) {
     let A = t.querySelector('.delete-icon');
