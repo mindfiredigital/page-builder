@@ -22,6 +22,14 @@ export declare class CustomizationSidebar {
   private static switchToAttributeMode;
   private static switchToLayersMode;
   static showSidebar(componentId: string): void;
+  /**
+   * Greys out a control wrapper and marks all its inputs as disabled.
+   * A small ⊘ badge is appended to the label so the user knows why.
+   *
+   * @param controlId  The id of the input/select inside the wrapper
+   * @param reason     Tooltip text shown on hover
+   */
+  private static disableControlWrapper;
   private static populateCssControls;
   private static handleInputTrigger;
   private static ShoModal;

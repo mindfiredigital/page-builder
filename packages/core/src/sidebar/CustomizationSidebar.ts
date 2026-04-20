@@ -168,15 +168,80 @@ export class CustomizationSidebar {
     this.switchToCustomizeMode();
   }
 
+  /**
+   * Greys out a control wrapper and marks all its inputs as disabled.
+   * A small ⊘ badge is appended to the label so the user knows why.
+   *
+   * @param controlId  The id of the input/select inside the wrapper
+   * @param reason     Tooltip text shown on hover
+   */
+  private static disableControlWrapper(
+    controlId: string,
+    reason: string = 'Not supported for inline display'
+  ): void {
+    const el = document.getElementById(controlId);
+    if (!el) return;
+
+    // Walk up to the nearest .control-wrapper ancestor
+    const wrapper = el.closest('.control-wrapper') as HTMLElement | null;
+    if (!wrapper) return;
+
+    // Grey-out the whole row
+    wrapper.style.opacity = '0.45';
+    wrapper.style.pointerEvents = 'none';
+    wrapper.style.cursor = 'not-allowed';
+    wrapper.title = reason;
+
+    // Append a small ⊘ "disabled" badge next to the label text
+    const label = wrapper.querySelector('label');
+    if (label && !label.querySelector('.inline-disabled-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'inline-disabled-badge';
+      badge.title = reason;
+      badge.style.cssText = `
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 6px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: #94a3b8;
+        color: #ffffff;
+        font-size: 9px;
+        font-weight: 700;
+        cursor: not-allowed;
+        vertical-align: middle;
+        flex-shrink: 0;
+        line-height: 1;
+      `;
+      badge.textContent = '⊘';
+      label.appendChild(badge);
+    }
+
+    // Disable every input / select inside so keyboard interaction is blocked too
+    wrapper.querySelectorAll('input, select').forEach(input => {
+      (input as HTMLInputElement | HTMLSelectElement).disabled = true;
+      (input as HTMLElement).style.cursor = 'not-allowed';
+      (input as HTMLElement).style.backgroundColor = '#f1f5f9';
+      (input as HTMLElement).style.color = '#94a3b8';
+    });
+  }
+
   private static populateCssControls(component: HTMLElement) {
     this.controlsContainer.innerHTML = '';
     const styles = getComputedStyle(component);
     const isCanvas = component.id.toLowerCase() === 'canvas';
 
+    // Read the stored display intent (handles inline -> inline-block mapping)
+    const displayIntent = component.dataset.displayIntent;
+    const displayValue = displayIntent || styles.display || 'block';
+    const isInline = displayValue === 'inline';
+
     SidebarUtils.createSelectControl(
       'Display',
       'display',
-      styles.display || 'block',
+      displayValue,
       ['block', 'inline', 'inline-block', 'flex', 'grid', 'none'],
       this.controlsContainer
     );
@@ -211,15 +276,16 @@ export class CustomizationSidebar {
         this.controlsContainer
       );
     }
+
     if (isCanvas) {
       SidebarUtils.createPageSizeSelect(this.controlsContainer, component);
       SidebarUtils.createControl(
         'Width',
-        'width', // Use 'width' property for dynamic sizing
+        'width',
         'number',
         component.offsetWidth,
         this.controlsContainer,
-        { min: 300, max: 2000, unit: 'px' } // Increased max for custom large sizes
+        { min: 300, max: 2000, unit: 'px' }
       );
       SidebarUtils.createControl(
         'Min Height',
@@ -229,7 +295,6 @@ export class CustomizationSidebar {
         this.controlsContainer,
         { min: 0, max: 2000, unit: 'px' }
       );
-
       SidebarUtils.createControl(
         'Margin',
         'margin',
@@ -239,7 +304,10 @@ export class CustomizationSidebar {
         { min: 0, max: 100, unit: 'px' }
       );
     }
+
     if (!isCanvas) {
+      // ── Width ──────────────────────────────────────────────────────────────
+      // inline elements ignore explicit width — show control but disable it
       SidebarUtils.createControl(
         'Width',
         'width',
@@ -248,6 +316,15 @@ export class CustomizationSidebar {
         this.controlsContainer,
         { min: 0, max: 1000, unit: 'px' }
       );
+      if (isInline) {
+        this.disableControlWrapper(
+          'width',
+          'Width is not supported for inline display'
+        );
+      }
+
+      // ── Height ─────────────────────────────────────────────────────────────
+      // inline elements ignore explicit height — show control but disable it
       SidebarUtils.createControl(
         'Height',
         'height',
@@ -256,6 +333,15 @@ export class CustomizationSidebar {
         this.controlsContainer,
         { min: 0, max: 1000, unit: 'px' }
       );
+      if (isInline) {
+        this.disableControlWrapper(
+          'height',
+          'Height is not supported for inline display'
+        );
+      }
+
+      // ── Margin ─────────────────────────────────────────────────────────────
+      // inline elements ignore top/bottom margins — show control but disable it
       SidebarUtils.createControl(
         'Margin',
         'margin',
@@ -264,6 +350,15 @@ export class CustomizationSidebar {
         this.controlsContainer,
         { min: 0, max: 1000, unit: 'px' }
       );
+      if (isInline) {
+        this.disableControlWrapper(
+          'margin',
+          'Top/bottom margin is not supported for inline display'
+        );
+      }
+
+      // ── Padding ────────────────────────────────────────────────────────────
+      // inline elements ignore top/bottom padding — show control but disable it
       SidebarUtils.createControl(
         'Padding',
         'padding',
@@ -272,6 +367,12 @@ export class CustomizationSidebar {
         this.controlsContainer,
         { min: 0, max: 1000, unit: 'px' }
       );
+      if (isInline) {
+        this.disableControlWrapper(
+          'padding',
+          'Top/bottom padding is not supported for inline display'
+        );
+      }
     }
 
     SidebarUtils.createControl(
@@ -423,7 +524,6 @@ export class CustomizationSidebar {
 
       allInputs.forEach(input => {
         const inputEl = input as HTMLInputElement;
-        // Check the input type and get the correct value
         if (inputEl.type === 'checkbox') {
           inputValues[inputEl.id] = inputEl.checked ? 'true' : 'false';
         } else {
@@ -472,7 +572,6 @@ export class CustomizationSidebar {
       componentConfig = this.basicComponentsConfig?.find(
         comp => comp.name === 'text'
       );
-
       showModalButton = this.ShoModal(componentConfig?.attributes);
     } else if (component.classList.contains('header-component')) {
       componentConfig = this.basicComponentsConfig?.find(
@@ -582,7 +681,6 @@ export class CustomizationSidebar {
       Canvas.historyManager.captureState();
     }, 300);
 
-    // Attach listeners only if the element exists
     controls.width?.addEventListener('input', () => {
       const unit = (document.getElementById('width-unit') as HTMLSelectElement)
         .value;
@@ -682,8 +780,24 @@ export class CustomizationSidebar {
       captureStateDebounced();
     });
     controls.display?.addEventListener('change', () => {
-      component.style.display = controls.display.value;
+      const selectedValue = controls.display.value;
+
+      if (selectedValue === 'inline') {
+        // Apply inline-block to the DOM so the element renders correctly.
+        // Pure inline ignores width/height and vertical margin/padding
+        // which causes broken layouts in the builder.
+        // We store the user's intent via a data attribute so the dropdown
+        // continues to show "inline" after re-opening the sidebar.
+        component.style.display = 'inline-block';
+        component.dataset.displayIntent = 'inline';
+      } else {
+        component.style.display = selectedValue;
+        // Clear the intent flag for all non-inline values
+        delete component.dataset.displayIntent;
+      }
+
       captureStateDebounced();
+      // Re-populate controls so disabled states update correctly
       this.populateCssControls(component);
     });
     controls.flexDirection?.addEventListener('change', () => {
