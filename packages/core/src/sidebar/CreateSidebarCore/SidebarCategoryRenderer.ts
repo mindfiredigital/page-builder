@@ -1,9 +1,12 @@
 import { buildSidebarItem, buildCustomSidebarItem } from './SidebarItemBuilder';
 
+/** Union of all valid values that can be passed as a category's component list */
+type CategoryComponents = BasicComponent[] | string[] | CustomComponentConfig;
+
 /* Renders a single category block (Basic, Extra, or Custom) into the menu div */
 export function renderCategory(
   category: string,
-  components: any,
+  components: CategoryComponents,
   templatesMenu: HTMLElement
 ): void {
   /* Skip empty categories to avoid blank section headings */
@@ -25,7 +28,7 @@ export function renderCategory(
         component !== null &&
         'name' in component
       ) {
-        categoryMenu.appendChild(buildSidebarItem(component.name as string));
+        categoryMenu.appendChild(buildSidebarItem(component.name));
       }
     });
   } else if (Array.isArray(components)) {
@@ -35,9 +38,11 @@ export function renderCategory(
     });
   } else if (category === 'Custom' && typeof components === 'object') {
     /* Custom components are keyed objects with config values */
-    Object.entries(components).forEach(([keyName, config]) => {
-      categoryMenu.appendChild(buildCustomSidebarItem(keyName, config));
-    });
+    Object.entries(components as CustomComponentConfig).forEach(
+      ([keyName, config]) => {
+        categoryMenu.appendChild(buildCustomSidebarItem(keyName, config));
+      }
+    );
   }
 
   templatesMenu.appendChild(categoryMenu);

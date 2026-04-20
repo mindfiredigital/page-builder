@@ -46,8 +46,7 @@ export class CanvasInitializer {
     CanvasSharedState.historyManager = new HistoryManager(canvasElement);
     CanvasSharedState.jsonStorage = new JSONStorage();
     CanvasSharedState.controlsManager = new ComponentControlsManager(
-      /* Canvas class reference is passed in to avoid a circular import */
-      { getComponents: () => CanvasSharedState.components }
+      canvasElement
     );
     /* Grid drop-preview overlay */
     CanvasSharedState.gridManager = new GridManager();

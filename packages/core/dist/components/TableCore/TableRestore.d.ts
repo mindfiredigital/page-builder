@@ -1,6 +1,6 @@
 export declare function GetDefaultValuesOfInput(
   tableAttributeConfig: ComponentAttribute[]
-): Record<string, any>;
+): AttributeValues;
 export declare function Restore(
   container: HTMLElement,
   editable: boolean | null,

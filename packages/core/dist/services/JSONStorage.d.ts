@@ -1,5 +1,5 @@
 export declare class JSONStorage {
-  save(data: object): void;
-  load(): object | null;
+  save(data: PageBuilderDesign): void;
+  load(): PageBuilderDesign | null;
   remove(): void;
 }

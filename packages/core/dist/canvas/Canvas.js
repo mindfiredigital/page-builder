@@ -1,19 +1,3 @@
-/**
- * Canvas.ts — Public facade
- *
- * All logic has been extracted into focused modules under /CanvasCore/.
- * This file re-exports a unified Canvas class so that existing import sites
- * (e.g. `import { Canvas } from './Canvas.js'`) continue to work without change.
- *
- * Module map:
- *  CanvasSharedState     → mutable singleton (components[], canvasElement, etc.)
- *  CanvasInitializer     → init() bootstrap
- *  CanvasStateManager    → getState() / restoreState()
- *  CanvasEventDispatcher → dispatchDesignChange() + event wiring
- *  CanvasComponentFactory→ createComponent() / generateUniqueClass()
- *  CanvasDragHandler     → addDraggableListeners()
- *  CanvasDropHandler     → onDrop()
- */
 import { CanvasSharedState } from './CanvasCore/CanvasSharedState.js';
 import { CanvasInitializer } from './CanvasCore/CanvasInitializer.js';
 import { CanvasStateManager } from './CanvasCore/CanvasStateManager.js';
@@ -22,7 +6,7 @@ import { CanvasComponentFactory } from './CanvasCore/CanvasComponentFactory.js';
 import { CanvasDragHandler } from './CanvasCore/CanvasDragHandler.js';
 import { CanvasDropHandler } from './CanvasCore/CanvasDropHandler.js';
 export class Canvas {
-  /* ── Accessors for shared state (keep backward-compat public API) ────── */
+  /* ── Accessors for shared state ──────────────────────────────────────── */
   static get controlsManager() {
     return CanvasSharedState.controlsManager;
   }
@@ -66,7 +50,6 @@ export class Canvas {
     CanvasSharedState.canvasElement.innerHTML = '';
     CanvasSharedState.components = [];
     CanvasSharedState.historyManager.captureState();
-    /* Re-initialise drop preview after clearing (called twice intentionally — matches original) */
     CanvasSharedState.gridManager.initializeDropPreview(
       CanvasSharedState.canvasElement
     );

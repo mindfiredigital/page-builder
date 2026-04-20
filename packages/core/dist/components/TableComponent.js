@@ -1,4 +1,3 @@
-/* Main TableComponent class — composes all TableCore modules into the original public API */
 import { Canvas } from '../canvas/Canvas.js';
 import { ModalComponent } from './ModalManager.js';
 import {
@@ -16,7 +15,6 @@ export class TableComponent {
     this.modalComponent = null;
     this.modalComponent = new ModalComponent() || null;
   }
-  /* Builds and returns the full table DOM structure with optional edit controls */
   create(rowCount, columnCount, isPreview = false, tableAttributeConfig) {
     TableComponent.tableAttributeConfig = tableAttributeConfig || [];
     const container = document.createElement('div');
@@ -37,7 +35,6 @@ export class TableComponent {
       tableWrapper.appendChild(row);
     }
     container.appendChild(tableWrapper);
-    /* Only render add-row controls when not in preview mode */
     if (!isPreview) {
       const buttonContainer = document.createElement('div');
       buttonContainer.classList.add('table-btn-container');
@@ -50,7 +47,6 @@ export class TableComponent {
       multiRowContainer.style.display = 'flex';
       multiRowContainer.style.alignItems = 'center';
       multiRowContainer.style.gap = '5px';
-      /* Input that lets the user specify how many rows to add at once */
       const rowCountInput = document.createElement('input');
       rowCountInput.className = 'row-count-input';
       rowCountInput.type = 'number';
@@ -78,31 +74,24 @@ export class TableComponent {
     }
     return container;
   }
-  /* Delegates to the visibility module; exposed on the instance for external callers */
-  evaluateRowVisibility(inputValues, table) {
-    EvaluateRowVisibility(inputValues, table);
+  evaluateRowVisibility(values, table) {
+    EvaluateRowVisibility(values, table);
   }
-  /* Delegates to the value-updater module */
   seedFormulaValues(values) {
     SeedFormulaValues(values);
   }
-  /* Delegates to the value-updater module */
   updateInputValues(values) {
     UpdateInputValues(values);
   }
-  /* Delegates to the value-updater module */
   updateCellContent(cell, attribute) {
     UpdateCellContent(cell, attribute);
   }
-  /* Delegates to the row-manager module */
   addRows(tableWrapper, tableId, count = 1) {
     AddRows(tableWrapper, tableId, count);
   }
-  /* Allows an external caller to inject a modal component dependency */
   setModalComponent(modalComponent) {
     this.modalComponent = modalComponent;
   }
-  /* Static restore entry-point; passes the shared config into the restore module */
   static restore(container, editable) {
     Restore(container, editable, TableComponent.tableAttributeConfig);
   }

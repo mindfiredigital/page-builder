@@ -13,9 +13,9 @@ import {
   LinkComponent,
 } from '../../components/index.js';
 import { LandingPageTemplate } from '../../templates/LandingPageTemplate.js';
-/* Builds and registers all supported component types */
+/** Builds and registers all supported component types */
 export class CanvasComponentFactory {
-  /* Lazy factory map — each entry calls create() on demand */
+  /** Lazy factory map — each entry calls create() on demand */
   static get factoryMap() {
     const {
       headerAttributeConfig,
@@ -41,16 +41,16 @@ export class CanvasComponentFactory {
       link: () => new LinkComponent().create(),
     };
   }
-  /* Instantiates a component by type; returns null for unknown types */
+  /** Instantiates a component by type; returns null for unknown types */
   static createComponent(type, customSettings = null, props) {
     const { editable, layoutMode } = CanvasSharedState;
     let element = null;
-    /* Try built-in factory first, then fall back to custom web-component tag */
+    /** Try built-in factory first, then fall back to custom web-component tag */
     const factoryFn = CanvasComponentFactory.factoryMap[type];
     if (factoryFn) {
       element = factoryFn();
     } else {
-      /* Custom component — look up the registered tag name from the DOM */
+      /** Custom component — look up the registered tag name from the DOM */
       const tagNameElement = document.querySelector(
         `[data-component='${type}']`
       );
@@ -67,7 +67,7 @@ export class CanvasComponentFactory {
       }
     }
     if (element && editable !== false) {
-      /* Attach ResizeObserver to enforce printable-mode boundary constraints */
+      /** Attach ResizeObserver to enforce printable-mode boundary constraints */
       const resizeObserver = new ResizeObserver(() => {
         if (
           layoutMode === 'absolute' &&
@@ -85,7 +85,7 @@ export class CanvasComponentFactory {
           const elementTop = parseFloat(element.style.top) || 0;
           const elementWidth = element.offsetWidth;
           const maxCanvasWidth = CanvasSharedState.canvasElement.offsetWidth;
-          /* Clamp width to stay within right padding */
+          /** Clamp width to stay within right padding */
           if (elementLeft + elementWidth > maxCanvasWidth - paddingRight) {
             const maxAllowedWidth =
               maxCanvasWidth - paddingLeft - paddingRight - elementLeft;
@@ -99,11 +99,11 @@ export class CanvasComponentFactory {
       });
       resizeObserver.observe(element);
       element.classList.add('editable-component');
-      /* Resizer class only applies in non-grid absolute layouts */
+      /** Resizer class only applies in non-grid absolute layouts */
       if (type !== 'container' && layoutMode !== 'grid') {
         element.classList.add('component-resizer');
       }
-      /* Images are never directly editable — everything else gets contenteditable */
+      /** Images are never directly editable — everything else gets contenteditable */
       if (type === 'image') {
         element.setAttribute('contenteditable', 'false');
       } else {
@@ -118,7 +118,7 @@ export class CanvasComponentFactory {
       CanvasSharedState.controlsManager.addControlButtons(element);
     }
     if (element) {
-      /* Every component gets a unique id + visible label */
+      /** Every component gets a unique id + visible label */
       const uniqueClass = CanvasComponentFactory.generateUniqueClass(type);
       element.setAttribute('id', uniqueClass);
       const label = document.createElement('span');
@@ -129,17 +129,21 @@ export class CanvasComponentFactory {
     }
     return element;
   }
-  /* Generates a collision-free id like "button3" within the current components list */
+  /** Generates a collision-free id like "button3" within the current components list */
   static generateUniqueClass(
     type,
     isContainerComponent = false,
     containerClass = null
   ) {
+    var _a;
     if (isContainerComponent && containerClass) {
-      /* Scoped id generation for components nested inside a container */
-      let containerElement = CanvasSharedState.components.find(c =>
-        c.classList.contains(containerClass)
-      );
+      /** Scoped id generation for components nested inside a container */
+      let containerElement =
+        (_a = CanvasSharedState.components.find(c =>
+          c.classList.contains(containerClass)
+        )) !== null && _a !== void 0
+          ? _a
+          : null;
       if (!containerElement) {
         containerElement = document.querySelector(`.${containerClass}`);
         if (!containerElement) return `${containerClass}-${type}1`;
@@ -155,7 +159,7 @@ export class CanvasComponentFactory {
       });
       return `${containerClass}-${type}${maxNumber + 1}`;
     }
-    /* Top-level id: scan all components for the highest existing suffix number */
+    /** Top-level id: scan all components for the highest existing suffix number */
     const typePattern = new RegExp(`${type}(\\d+)`);
     let maxNumber = 0;
     CanvasSharedState.components.forEach(component => {

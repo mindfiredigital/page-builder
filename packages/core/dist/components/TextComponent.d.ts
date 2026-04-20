@@ -5,8 +5,8 @@ export declare class TextComponent {
   constructor(text?: string);
   create(textAttributeConfig?: ComponentAttribute[] | undefined): HTMLElement;
   setText(newText: string): void;
-  seedFormulaValues(values: Record<string, any>): void;
-  updateInputValues(values: Record<string, any>): void;
+  seedFormulaValues(values: AttributeValues): void;
+  updateInputValues(values: AttributeValues): void;
   updateTextContent(
     textElement: HTMLElement,
     attribute: ComponentAttribute

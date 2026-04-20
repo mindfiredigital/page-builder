@@ -84,7 +84,7 @@ class A {
             if (r) {
               const e = r.getAttribute('data-attr-key'),
                 A = t.find(t => t.key === e);
-              A && (s[A.key] = A.value);
+              A && void 0 !== A.value && (s[A.key] = A.value);
             }
             (n(), A(s));
           })(
@@ -238,8 +238,8 @@ class n {
         s = t.getAttribute('data-attribute-key');
       (r &&
         s &&
-        e.hasOwnProperty(s) &&
-        ((r.textContent = e[s]), (t.style.color = '#000000')),
+        Object.prototype.hasOwnProperty.call(e, s) &&
+        ((r.textContent = String(e[s])), (t.style.color = '#000000')),
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
@@ -252,7 +252,11 @@ class n {
         r = t.querySelector('.component-text-content'),
         s = t.getAttribute('data-attribute-key'),
         i = t.getAttribute('data-attribute-type');
-      (r && s && e.hasOwnProperty(s) && 'Input' === i && (r.textContent = e[s]),
+      (r &&
+        s &&
+        Object.prototype.hasOwnProperty.call(e, s) &&
+        'Input' === i &&
+        (r.textContent = String(e[s])),
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
@@ -265,16 +269,16 @@ class n {
     (e.setAttribute('data-attribute-key', t.key),
       e.setAttribute('data-attribute-type', t.type),
       'Formula' === t.type && r
-        ? ((r.textContent = `${t.title}`),
+        ? ((r.textContent = t.title),
           (e.style.fontSize = '10px'),
           (e.style.color = 'rgb(188 191 198)'),
           (e.style.fontWeight = '500'))
         : ('Constant' !== t.type && 'Input' !== t.type) ||
           !r ||
-          (r.textContent = `${t.value}`),
+          (r.textContent = String(t.value)),
       A && e.appendChild(A),
       n && e.appendChild(n),
-      null == P || P.dispatchDesignChange());
+      P.dispatchDesignChange());
   }
   static restore(e) {
     const t = e.closest('.text-component'),
@@ -296,11 +300,11 @@ class n {
             n = t.querySelector('.component-label');
           (!s.default_value || ('Formula' !== r && 'Input' !== r)
             ? 'Formula' === r &&
-              ((A.textContent = `${s.title}`),
+              ((A.textContent = s.title),
               (t.style.fontSize = '10px'),
               (t.style.color = 'rgb(188 191 198)'),
               (t.style.fontWeight = '500'))
-            : ((A.textContent = `${s.default_value}`),
+            : ((A.textContent = String(s.default_value)),
               (t.style.color = '#000000')),
             e && t.appendChild(e),
             n && t.appendChild(n));
@@ -545,8 +549,8 @@ class a {
         s = t.getAttribute('data-attribute-key');
       (r &&
         s &&
-        e.hasOwnProperty(s) &&
-        ((r.textContent = e[s]), (t.style.color = '#000000')),
+        Object.prototype.hasOwnProperty.call(e, s) &&
+        ((r.textContent = String(e[s])), (t.style.color = '#000000')),
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
@@ -559,7 +563,11 @@ class a {
         r = t.querySelector('.component-text-content'),
         s = t.getAttribute('data-attribute-key'),
         i = t.getAttribute('data-attribute-type');
-      (r && s && e.hasOwnProperty(s) && 'Input' === i && (r.textContent = e[s]),
+      (r &&
+        s &&
+        Object.prototype.hasOwnProperty.call(e, s) &&
+        'Input' === i &&
+        (r.textContent = String(e[s])),
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
@@ -572,15 +580,15 @@ class a {
     (e.setAttribute('data-attribute-key', t.key),
       e.setAttribute('data-attribute-type', t.type),
       'Formula' === t.type && r
-        ? ((r.textContent = `${t.title}`),
+        ? ((r.textContent = t.title),
           (e.style.color = 'rgb(188 191 198)'),
           (e.style.fontWeight = '500'))
         : ('Constant' !== t.type && 'Input' !== t.type) ||
           !r ||
-          (r.textContent = `${t.value}`),
+          (r.textContent = String(t.value)),
       A && e.appendChild(A),
       n && e.appendChild(n),
-      null == P || P.dispatchDesignChange());
+      P.dispatchDesignChange());
   }
   static restore(e) {
     const t = e.closest('.header-component'),
@@ -602,10 +610,10 @@ class a {
             s = t.querySelector('.component-label');
           (!r.default_value || ('Formula' !== n && 'Input' !== n)
             ? 'Formula' === n &&
-              ((A.textContent = `${r.title}`),
+              ((A.textContent = r.title),
               (t.style.color = 'rgb(188 191 198)'),
               (t.style.fontWeight = '500'))
-            : ((A.textContent = `${r.default_value}`),
+            : ((A.textContent = String(r.default_value)),
               (t.style.color = '#000000')),
             e && t.appendChild(e),
             s && t.appendChild(s));
@@ -762,50 +770,55 @@ function h(e, t) {
           e.appendChild(A));
       })(e),
     e.querySelectorAll('.editable-component').forEach(e => {
-      var n;
+      var n, r;
+      const i = e;
       if (
         (!1 !== t
-          ? (P.controlsManager.addControlButtons(e),
+          ? (P.controlsManager.addControlButtons(i),
             A
-              ? (e.classList.remove('component-resizer'),
-                e.removeAttribute('draggable'),
-                (e.style.cursor = 'default'),
-                (e.style.position = ''),
-                (e.style.left = ''),
-                (e.style.top = ''))
-              : (P.addDraggableListeners(e),
-                (e.style.position = 'absolute'),
-                e.classList.add('component-resizer')),
-            e.addEventListener('mouseenter', t =>
+              ? (i.classList.remove('component-resizer'),
+                i.removeAttribute('draggable'),
+                (i.style.cursor = 'default'),
+                (i.style.position = ''),
+                (i.style.left = ''),
+                (i.style.top = ''))
+              : (P.addDraggableListeners(i),
+                (i.style.position = 'absolute'),
+                i.classList.add('component-resizer')),
+            i.addEventListener('mouseenter', e =>
               (function (e, t) {
                 e.stopPropagation();
                 const A = t.querySelector('.component-label');
                 A && (A.style.display = 'block');
-              })(t, e)
+              })(e, i)
             ),
-            e.addEventListener('mouseleave', t =>
+            i.addEventListener('mouseleave', e =>
               (function (e, t) {
                 e.stopPropagation();
                 const A = t.querySelector('.component-label');
                 A && (A.style.display = 'none');
-              })(t, e)
+              })(e, i)
             ))
-          : (e
+          : (i
               .querySelectorAll('[contenteditable]')
               .forEach(e => e.removeAttribute('contenteditable')),
-            e.classList.remove('editable-component'),
-            e.classList.remove('component-resizer'),
-            e.removeAttribute('draggable'),
-            e.removeAttribute('contenteditable')),
-        e.classList.contains('image-component'))
+            i.classList.remove('editable-component'),
+            i.classList.remove('component-resizer'),
+            i.removeAttribute('draggable'),
+            i.removeAttribute('contenteditable')),
+        i.classList.contains('image-component'))
       ) {
-        const A =
-          (null === (n = e.querySelector('img')) || void 0 === n
-            ? void 0
-            : n.getAttribute('src')) || '';
-        s.restoreImageUpload(e, A, t);
+        const e =
+          null !==
+            (r =
+              null === (n = i.querySelector('img')) || void 0 === n
+                ? void 0
+                : n.getAttribute('src')) && void 0 !== r
+            ? r
+            : null;
+        s.restoreImageUpload(i, null != e ? e : '', t);
       }
-      e.classList.contains('container-component') && h(e, t);
+      i.classList.contains('container-component') && h(i, t);
     }));
 }
 class f {
@@ -902,19 +915,24 @@ class p {
   }
   static restoreColumn(e) {
     e.querySelectorAll('.editable-component').forEach(e => {
-      var t;
+      var t, A;
+      const n = e;
       if (
-        (P.controlsManager.addControlButtons(e),
-        P.addDraggableListeners(e),
-        e.classList.contains('image-component'))
+        (P.controlsManager.addControlButtons(n),
+        P.addDraggableListeners(n),
+        n.classList.contains('image-component'))
       ) {
-        const A =
-          (null === (t = e.querySelector('img')) || void 0 === t
-            ? void 0
-            : t.getAttribute('src')) || '';
-        s.restoreImageUpload(e, A, null);
+        const e =
+          null !==
+            (A =
+              null === (t = n.querySelector('img')) || void 0 === t
+                ? void 0
+                : t.getAttribute('src')) && void 0 !== A
+            ? A
+            : null;
+        s.restoreImageUpload(n, null != e ? e : '', null);
       }
-      e.classList.contains('container-component') && f.restoreContainer(e);
+      n.classList.contains('container-component') && f.restoreContainer(n);
     });
   }
 }
@@ -1058,53 +1076,52 @@ function b(e, t, A = 1) {
   P.historyManager.captureState();
 }
 function C(e, t) {
-  let A;
-  ((A = t
+  (t
     ? t.querySelectorAll('.table-row')
-    : document.querySelectorAll('.table-row')),
-    A.forEach(t => {
-      const A = t.getAttribute('data-visibility-rules');
-      if (A)
-        try {
-          const n = JSON.parse(A);
-          if (0 === n.length) return void (t.style.display = 'grid');
-          let r = !0;
-          (n.forEach(t => {
-            const A = e[t.inputKey];
-            if (A) {
-              const e = (function (e, t, A) {
-                const n = parseFloat(e),
-                  r = parseFloat(A),
-                  s = e.toLowerCase(),
-                  i = A.toLowerCase();
-                switch (t) {
-                  case 'equals':
-                    return s === i;
-                  case 'not_equals':
-                    return s !== i;
-                  case 'greater_than':
-                    return !isNaN(n) && !isNaN(r) && n > r;
-                  case 'less_than':
-                    return !isNaN(n) && !isNaN(r) && n < r;
-                  case 'contains':
-                    return s.includes(i);
-                  default:
-                    return !1;
-                }
-              })(A, t.operator, t.value);
-              e
-                ? 'hide' === t.action
-                  ? (r = !1)
-                  : 'show' === t.action && (r = !0)
-                : 'show' === t.action && (r = !1);
-            }
-          }),
-            (t.style.display = r ? 'grid' : 'none'));
-        } catch (e) {
-          console.error('Failed to parse or evaluate visibility rules:', e);
-        }
-      else t.style.display = 'grid';
-    }));
+    : document.querySelectorAll('.table-row')
+  ).forEach(t => {
+    const A = t.getAttribute('data-visibility-rules');
+    if (A)
+      try {
+        const n = JSON.parse(A);
+        if (0 === n.length) return void (t.style.display = 'grid');
+        let r = !0;
+        (n.forEach(t => {
+          const A = e[t.inputKey];
+          if (A) {
+            const e = (function (e, t, A) {
+              const n = parseFloat(e),
+                r = parseFloat(A),
+                s = e.toLowerCase(),
+                i = A.toLowerCase();
+              switch (t) {
+                case 'equals':
+                  return s === i;
+                case 'not_equals':
+                  return s !== i;
+                case 'greater_than':
+                  return !isNaN(n) && !isNaN(r) && n > r;
+                case 'less_than':
+                  return !isNaN(n) && !isNaN(r) && n < r;
+                case 'contains':
+                  return s.includes(i);
+                default:
+                  return !1;
+              }
+            })(String(A), t.operator, t.value);
+            e
+              ? 'hide' === t.action
+                ? (r = !1)
+                : 'show' === t.action && (r = !0)
+              : 'show' === t.action && (r = !1);
+          }
+        }),
+          (t.style.display = r ? 'grid' : 'none'));
+      } catch (e) {
+        console.error('Failed to parse or evaluate visibility rules:', e);
+      }
+    else t.style.display = 'grid';
+  });
 }
 class x {
   constructor() {
@@ -1197,8 +1214,8 @@ class x {
             r = t.querySelector('.table-cell-content');
           (r &&
             n &&
-            e.hasOwnProperty(n) &&
-            ((r.textContent = e[n]),
+            Object.prototype.hasOwnProperty.call(e, n) &&
+            ((r.textContent = String(e[n])),
             (t.style.color = '#000000'),
             (t.style.fontSize = '16px')),
             A && t.appendChild(A));
@@ -1216,9 +1233,9 @@ class x {
             r = t.querySelector('.table-cell-content');
           r &&
             A &&
-            e.hasOwnProperty(A) &&
+            Object.prototype.hasOwnProperty.call(e, A) &&
             'Input' === n &&
-            (r.textContent = e[A]);
+            (r.textContent = String(e[A]));
         });
       }),
         P.dispatchDesignChange());
@@ -1231,14 +1248,14 @@ class x {
       const A = e.querySelector('.cell-controls'),
         n = e.querySelector('.table-cell-content');
       ('Formula' === t.type && n
-        ? ((n.textContent = `${t.title}`),
+        ? ((n.textContent = t.title),
           (e.style.fontSize = '10px'),
           (e.style.color = 'rgb(188 191 198)'),
           (e.style.fontWeight = '500'))
         : (('Constant' === t.type && n) || ('Input' === t.type && n)) &&
-          (n.textContent = `${t.value}`),
+          (n.textContent = String(t.value)),
         A && e.appendChild(A),
-        null == P || P.dispatchDesignChange());
+        P.dispatchDesignChange());
     })(e, t);
   }
   addRows(e, t, A = 1) {
@@ -1272,11 +1289,11 @@ class x {
               const A = e.querySelector('.cell-controls');
               (!t.default_value || ('Formula' !== i && 'Input' !== i)
                 ? 'Formula' === i &&
-                  ((o.textContent = `${t.title}`),
+                  ((o.textContent = t.title),
                   (n.style.fontSize = '10px'),
                   (n.style.color = 'rgb(188 191 198)'),
                   (n.style.fontWeight = '500'))
-                : ((o.textContent = `${t.default_value}`),
+                : ((o.textContent = String(t.default_value)),
                   (n.style.fontSize = '14px'),
                   (n.style.color = '#000000')),
                 A && e.appendChild(A));
@@ -1310,7 +1327,7 @@ class x {
             const e = parseInt(a.value) || 1;
             b(n, s, Math.min(Math.max(e, 1), 20));
           }))
-        : !1 === t && o && (null == o || o.remove());
+        : !1 === t && o && o.remove();
       C(
         (function (e) {
           const t = {};
@@ -1716,33 +1733,38 @@ class Q {
     return o;
   }
   static generateUniqueClass(t, A = !1, n = null) {
+    var r;
     if (A && n) {
-      let A = e.components.find(e => e.classList.contains(n));
+      let A =
+        null !== (r = e.components.find(e => e.classList.contains(n))) &&
+        void 0 !== r
+          ? r
+          : null;
       if (!A && ((A = document.querySelector(`.${n}`)), !A))
         return `${n}-${t}1`;
-      const r = Array.from(A.children),
-        s = new RegExp(`${n}-${t}(\\d+)`);
-      let i = 0;
+      const s = Array.from(A.children),
+        i = new RegExp(`${n}-${t}(\\d+)`);
+      let o = 0;
       return (
-        r.forEach(e => {
+        s.forEach(e => {
           e.classList.forEach(e => {
-            const t = e.match(s);
-            t && (i = Math.max(i, parseInt(t[1])));
+            const t = e.match(i);
+            t && (o = Math.max(o, parseInt(t[1])));
           });
         }),
-        `${n}-${t}${i + 1}`
+        `${n}-${t}${o + 1}`
       );
     }
-    const r = new RegExp(`${t}(\\d+)`);
-    let s = 0;
+    const s = new RegExp(`${t}(\\d+)`);
+    let i = 0;
     return (
       e.components.forEach(e => {
         e.classList.forEach(e => {
-          const t = e.match(r);
-          t && (s = Math.max(s, parseInt(t[1])));
+          const t = e.match(s);
+          t && (i = Math.max(i, parseInt(t[1])));
         });
       }),
-      `${t}${s + 1}`
+      `${t}${i + 1}`
     );
   }
 }
@@ -1902,124 +1924,123 @@ class E {
     ((A.innerHTML = ''),
       (e.components = []),
       t.forEach(t => {
-        const o = t.dataAttributes['data-custom-settings'] || null,
-          l = Q.createComponent(t.type, o, t.content);
-        if (!l) return;
-        t.classes.includes('custom-component') || (l.innerHTML = t.content);
-        const c = l.querySelector('.component-controls');
+        var o;
+        const l = t.dataAttributes['data-custom-settings'] || null,
+          c = Q.createComponent(t.type, l, t.content);
+        if (!c) return;
+        t.classes.includes('custom-component') || (c.innerHTML = t.content);
+        const u = c.querySelector('.component-controls');
         if (
-          (c && !1 === r && c.remove(),
-          (l.className = ''),
-          t.classes.forEach(e => l.classList.add(e)),
-          l.classList.remove('selected'),
-          !1 === r && l.classList.remove('component-resizer'),
+          (u && !1 === r && u.remove(),
+          (c.className = ''),
+          t.classes.forEach(e => c.classList.add(e)),
+          c.classList.remove('selected'),
+          !1 === r && c.classList.remove('component-resizer'),
           'video' === t.type && t.videoSrc)
         ) {
-          const e = l.querySelector('video'),
-            A = l.querySelector('.upload-text');
-          ((e.src = t.videoSrc),
-            (e.style.display = 'block'),
-            (A.style.display = 'none'));
+          const e = c.querySelector('video'),
+            A = c.querySelector('.upload-text');
+          (e && ((e.src = t.videoSrc), (e.style.display = 'block')),
+            A && (A.style.display = 'none'));
         }
-        (t.inlineStyle && l.setAttribute('style', t.inlineStyle),
-          t.computedStyle &&
-            Object.keys(t.computedStyle).forEach(e => {
-              l.style.setProperty(e, t.computedStyle[e]);
-            }),
+        (t.inlineStyle && c.setAttribute('style', t.inlineStyle),
           t.dataAttributes &&
             Object.entries(t.dataAttributes).forEach(([e, t]) => {
-              l.setAttribute(e, t);
+              c.setAttribute(e, t);
             }),
-          !1 !== r && (i.addControlButtons(l), U.addDraggableListeners(l)),
-          l.classList.contains('container-component') &&
-            f.restoreContainer(l, r),
-          (l.classList.contains('twoCol-component') ||
-            l.classList.contains('threeCol-component')) &&
-            p.restoreColumn(l),
-          'image' === t.type && s.restoreImageUpload(l, t.imageSrc, r),
-          'table' === t.type && x.restore(l, r),
-          'link' === t.type && _.restore(l),
-          'header' === t.type && a.restore(l),
-          'text' === t.type && n.restore(l),
-          A.appendChild(l),
-          e.components.push(l));
+          !1 !== r && (i.addControlButtons(c), U.addDraggableListeners(c)),
+          c.classList.contains('container-component') &&
+            f.restoreContainer(c, r),
+          (c.classList.contains('twoCol-component') ||
+            c.classList.contains('threeCol-component')) &&
+            p.restoreColumn(c),
+          'image' === t.type &&
+            s.restoreImageUpload(
+              c,
+              null !== (o = t.imageSrc) && void 0 !== o ? o : '',
+              r
+            ),
+          'table' === t.type && x.restore(c, r),
+          'link' === t.type && _.restore(c),
+          'header' === t.type && a.restore(c),
+          'text' === t.type && n.restore(c),
+          A.appendChild(c),
+          e.components.push(c));
       }),
       o.initializeDropPreview(A));
   }
 }
 class L {
   static onDrop(A) {
-    var n, r;
+    var n, r, s;
     A.preventDefault();
-    const s = A.target,
-      { canvasElement: i, layoutMode: o, components: a, historyManager: l } = e;
+    const i = A.target,
+      { canvasElement: o, layoutMode: a, components: l, historyManager: c } = e;
     if (
-      s.classList.contains('container-component') ||
-      s.closest('.container-component')
+      i.classList.contains('container-component') ||
+      i.closest('.container-component')
     )
       return;
-    const c =
+    const u =
       null === (n = A.dataTransfer) || void 0 === n
         ? void 0
         : n.getData('component-type');
-    let u =
+    let d =
       null === (r = A.dataTransfer) || void 0 === r
         ? void 0
         : r.getData('custom-settings');
-    if (!c) return;
-    if (!u || '' === u.trim()) {
-      if (
-        document.querySelector(`[data-component="${c}"]`) &&
-        window.customComponents &&
-        window.customComponents[c]
-      ) {
-        const e = window.customComponents[c];
-        e.settings && (u = JSON.stringify(e.settings));
+    if (!u) return;
+    if (!d || '' === d.trim()) {
+      if (document.querySelector(`[data-component="${u}"]`)) {
+        const e = window.customComponents;
+        (null === (s = null == e ? void 0 : e[u]) || void 0 === s
+          ? void 0
+          : s.settings) && (d = JSON.stringify(e[u].settings));
       }
     }
-    const { gridX: d, gridY: h } = e.gridManager.mousePositionAtGridCorner(
+    const { gridX: h, gridY: f } = e.gridManager.mousePositionAtGridCorner(
       A,
-      i
+      o
     );
-    if ('absolute' === o && i.classList.contains('preview-printable')) {
-      const e = window.getComputedStyle(i),
+    if ('absolute' === a && o.classList.contains('preview-printable')) {
+      const e = window.getComputedStyle(o),
         t = parseFloat(e.paddingTop),
         A = parseFloat(e.paddingRight),
         n = parseFloat(e.paddingLeft),
         r = 100,
-        s = i.offsetWidth - A - r;
-      if (d < n || h < t || d > s)
+        s = o.offsetWidth - A - r;
+      if (h < n || f < t || h > s)
         return (
           console.warn('Component dropped into margin area. Drop prevented.'),
-          i.classList.add('container-highlight'),
-          void setTimeout(() => i.classList.remove('container-highlight'), 300)
+          o.classList.add('container-highlight'),
+          void setTimeout(() => o.classList.remove('container-highlight'), 300)
         );
     }
-    const f = Q.createComponent(c, u);
-    if (f && !1 !== e.editable) {
-      const e = Q.generateUniqueClass(c);
-      ((f.id = e),
-        f.classList.add(e),
-        'absolute' === o
-          ? ((f.style.position = 'absolute'),
-            ['container', 'twoCol', 'threeCol'].includes(c)
-              ? (f.style.top = `${A.offsetY}px`)
-              : ((f.style.left = `${d}px`), (f.style.top = `${h}px`)),
-            U.addDraggableListeners(f))
-          : 'grid' === o &&
-            ((f.style.position = ''),
-            f.hasAttribute('draggable') &&
-              (f.removeAttribute('draggable'), (f.style.cursor = 'default'))),
-        a.push(f),
-        i.appendChild(f),
-        l.captureState());
+    const p = Q.createComponent(u, d);
+    if (p && !1 !== e.editable) {
+      const e = Q.generateUniqueClass(u);
+      ((p.id = e),
+        p.classList.add(e),
+        'absolute' === a
+          ? ((p.style.position = 'absolute'),
+            ['container', 'twoCol', 'threeCol'].includes(u)
+              ? (p.style.top = `${A.offsetY}px`)
+              : ((p.style.left = `${h}px`), (p.style.top = `${f}px`)),
+            U.addDraggableListeners(p))
+          : 'grid' === a &&
+            ((p.style.position = ''),
+            p.hasAttribute('draggable') &&
+              (p.removeAttribute('draggable'), (p.style.cursor = 'default'))),
+        l.push(p),
+        o.appendChild(p),
+        c.captureState());
     }
     t.dispatchDesignChange();
   }
 }
 class S {
   constructor(e) {
-    ((this.undoStack = []), (this.redoStack = []), (this.canvas = e));
+    ((this.undoStack = []), (this.redoStack = []));
   }
   captureState() {
     const e = P.getState();
@@ -2057,7 +2078,12 @@ class I {
   }
   load() {
     const e = localStorage.getItem('pageLayout');
-    return e ? JSON.parse(e) : null;
+    if (!e) return null;
+    try {
+      return JSON.parse(e);
+    } catch (e) {
+      return null;
+    }
   }
   remove() {
     localStorage.removeItem('pageLayout');
@@ -2202,7 +2228,7 @@ class T {
       (e.lastCanvasWidth = i.offsetWidth),
       (e.historyManager = new S(i)),
       (e.jsonStorage = new I()),
-      (e.controlsManager = new k({ getComponents: () => e.components })),
+      (e.controlsManager = new k(i)),
       (e.gridManager = new N()),
       e.gridManager.initializeDropPreview(i));
     if ((new H(i, o).enable(), A)) E.restoreState(A);
@@ -2389,14 +2415,16 @@ function D(e, t, A, n) {
           n.addEventListener('click', t => {
             (t.stopPropagation(),
               (function (e, t) {
+                var A;
                 (document
                   .querySelectorAll('.layer-item.selected')
                   .forEach(e => {
                     e.classList.remove('selected');
                   }),
                   e.classList.add('selected'),
-                  void 0 !== window.CustomizationSidebar &&
-                    window.CustomizationSidebar.showSidebar(t.id));
+                  null === (A = window.CustomizationSidebar) ||
+                    void 0 === A ||
+                    A.showSidebar(t.id));
               })(n, e));
           }));
         const s = n.querySelector('.layer-visibility-btn');
@@ -2594,13 +2622,10 @@ function W(e, t, A, n) {
         const r = yield e.show(t);
         if (r) {
           const e = (function (e, t) {
-            for (const A of t)
-              if (
-                e.hasOwnProperty(A.key) &&
-                void 0 !== e[A.key] &&
-                '' !== e[A.key]
-              )
-                return A;
+            for (const A of t) {
+              const t = e[A.key];
+              if (void 0 !== t && '' !== t) return A;
+            }
             return null;
           })(r, t);
           e && n(A, e);
@@ -3159,7 +3184,7 @@ function te(e, t, A) {
   const C = (function (e, t) {
       let A = null;
       return (...n) => {
-        (A && clearTimeout(A), (A = setTimeout(() => e(...n), t)));
+        (null !== A && clearTimeout(A), (A = setTimeout(() => e(...n), t)));
       };
     })(() => {
       (P.dispatchDesignChange(), P.historyManager.captureState());

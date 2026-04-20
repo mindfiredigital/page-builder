@@ -44,7 +44,6 @@ export function Restore(container, editable, tableAttributeConfig) {
     const attributeKey = cellElement.getAttribute('data-attribute-key');
     const attributeType = cellElement.getAttribute('data-attribute-type');
     const textContentOfCell = cell.querySelector('.table-cell-content');
-    /* Remove stale selection state from content span */
     if (
       textContentOfCell === null || textContentOfCell === void 0
         ? void 0
@@ -62,13 +61,11 @@ export function Restore(container, editable, tableAttributeConfig) {
           attribute.default_value &&
           (attributeType === 'Formula' || attributeType === 'Input')
         ) {
-          /* Restore seeded default value with standard text styles */
-          textContentOfCell.textContent = `${attribute.default_value}`;
+          textContentOfCell.textContent = String(attribute.default_value);
           cellElement.style.fontSize = '14px';
           cellElement.style.color = '#000000';
         } else if (attributeType === 'Formula') {
-          /* Restore formula placeholder title with muted styling */
-          textContentOfCell.textContent = `${attribute.title}`;
+          textContentOfCell.textContent = attribute.title;
           cellElement.style.fontSize = '10px';
           cellElement.style.color = 'rgb(188 191 198)';
           cellElement.style.fontWeight = '500';
@@ -79,7 +76,6 @@ export function Restore(container, editable, tableAttributeConfig) {
       }
     }
     const controls = cellElement.querySelector('.cell-controls');
-    /* In read-only mode strip controls and remove content editability */
     if (editable === false) {
       controls === null || controls === void 0 ? void 0 : controls.remove();
       textContentOfCell === null || textContentOfCell === void 0
@@ -87,7 +83,6 @@ export function Restore(container, editable, tableAttributeConfig) {
         : textContentOfCell.removeAttribute('contenteditable');
       return;
     }
-    /* Re-bind add / delete listeners after deserialisation */
     if (controls) {
       const addButton = controls.querySelector('.add-cell-button');
       const deleteButton = controls.querySelector('.delete-cell-button');
@@ -105,7 +100,6 @@ export function Restore(container, editable, tableAttributeConfig) {
       }
     }
   });
-  /* Re-bind or remove the "Add Row" button depending on edit mode */
   const addMultipleRowsButton = container.querySelector(
     '.add-multiple-rows-button'
   );
@@ -118,12 +112,8 @@ export function Restore(container, editable, tableAttributeConfig) {
       AddRows(tableWrapper, tableId, Math.min(Math.max(count, 1), 20));
     });
   } else if (editable === false && btnContainer) {
-    /* Remove add-row controls entirely in read-only mode */
-    btnContainer === null || btnContainer === void 0
-      ? void 0
-      : btnContainer.remove();
+    btnContainer.remove();
   }
-  /* Apply default input values to evaluate initial row visibility */
   const defaultValues = GetDefaultValuesOfInput(tableAttributeConfig);
   EvaluateRowVisibility(defaultValues, container);
 }

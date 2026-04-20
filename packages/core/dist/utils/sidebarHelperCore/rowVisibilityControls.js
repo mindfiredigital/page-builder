@@ -1,8 +1,7 @@
 import { Canvas } from '../../canvas/Canvas.js';
-/* SVG icons used inside the rule builder UI */
 const ADD_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M5 12h14M12 5v14"/></svg>`;
 const DELETE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>`;
-/* Populates the functions panel with a visibility-rule builder for a table row */
+/** Populates the functions panel with a visibility-rule builder for a table row */
 export function populateRowVisibilityControls(row, inputs) {
   const functionsPanel = document.getElementById('functions-panel');
   functionsPanel.innerHTML = `
@@ -39,7 +38,7 @@ export function populateRowVisibilityControls(row, inputs) {
       </div>
     </div>
   `;
-  /* Populate the input-key dropdown from the passed Input-type attributes */
+  /** Populate the input-key dropdown from the passed Input-type attributes */
   const inputKeySelect = document.getElementById('rule-input-key-select');
   if (inputKeySelect && inputs) {
     inputs.forEach(attr => {
@@ -56,7 +55,7 @@ export function populateRowVisibilityControls(row, inputs) {
   const ruleValueInput = document.getElementById('rule-value-input');
   const ruleOperatorSelect = document.getElementById('rule-operator-select');
   const ruleActionSelect = document.getElementById('rule-action-select');
-  /* Re-renders the entire rule list from the row's data attribute */
+  /** Re-renders the entire rule list from the row's data attribute */
   const renderRules = () => {
     rulesList.innerHTML = '';
     const rules = JSON.parse(row.getAttribute('data-visibility-rules') || '[]');
@@ -72,7 +71,7 @@ export function populateRowVisibilityControls(row, inputs) {
         </span>
         <button class="delete-rule-btn">${DELETE_ICON}</button>
       `;
-      /* Each rule row gets its own scoped delete handler */
+      /** Each rule row gets its own scoped delete handler */
       ruleItem
         .querySelector('.delete-rule-btn')
         .addEventListener('click', () => {
@@ -83,7 +82,7 @@ export function populateRowVisibilityControls(row, inputs) {
       rulesList.appendChild(ruleItem);
     });
   };
-  /* Add rule on button click then refresh the list */
+  /** Add rule on button click then refresh the list */
   addRuleBtn.addEventListener('click', () => {
     addRule(row, {
       inputKey: inputKeySelect.value,
@@ -96,7 +95,7 @@ export function populateRowVisibilityControls(row, inputs) {
   });
   renderRules();
 }
-/* Appends a new rule object to the row's data-visibility-rules JSON attribute */
+/** Appends a new rule object to the row's data-visibility-rules JSON attribute */
 function addRule(row, rule) {
   try {
     const existingRules = JSON.parse(
@@ -108,7 +107,7 @@ function addRule(row, rule) {
     console.error('Failed to add rule:', e);
   }
 }
-/* Removes the rule at the given index from the row's data-visibility-rules */
+/** Removes the rule at the given index from the row's data-visibility-rules */
 function deleteRule(row, index) {
   try {
     const existingRules = JSON.parse(

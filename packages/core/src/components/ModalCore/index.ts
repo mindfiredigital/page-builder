@@ -5,4 +5,4 @@ export {
   filterAttributes,
   toggleFieldExpansion,
 } from './ModalFormRenderer';
-export { handleSave } from './ModalSaveHandler';
+export { handleSave, ModalResult } from './ModalSaveHandler';

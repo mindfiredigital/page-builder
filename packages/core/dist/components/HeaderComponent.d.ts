@@ -7,8 +7,8 @@ export declare class HeaderComponent {
     text?: string,
     headerAttributeConfig?: ComponentAttribute[] | undefined
   ): HTMLElement;
-  seedFormulaValues(values: Record<string, any>): void;
-  updateInputValues(values: Record<string, any>): void;
+  seedFormulaValues(values: AttributeValues): void;
+  updateInputValues(values: AttributeValues): void;
   updateHeaderContent(
     headerElement: HTMLElement,
     attribute: ComponentAttribute

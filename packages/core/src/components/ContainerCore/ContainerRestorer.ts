@@ -18,13 +18,11 @@ function hideLabel(event: MouseEvent, component: HTMLElement): void {
 
 /* Re-attaches resize handles to an existing container DOM element */
 export function restoreResizer(element: HTMLElement): void {
-  /* Remove stale resizers that may already be present */
   element.querySelector('.resizers')?.remove();
 
   const resizersDiv = document.createElement('div');
   resizersDiv.classList.add('resizers');
 
-  /* Bind a fresh resize handler to this element and attach the handles */
   const handler = new ContainerResizeHandler(element, resizersDiv);
   handler.addResizeHandles();
 
@@ -38,62 +36,58 @@ export function restoreContainer(
 ): void {
   const isGridMode = Canvas.layoutMode === 'grid';
 
-  /* Only add resize handles in absolute mode when editable */
   if (editable !== false && !isGridMode) {
     restoreResizer(container);
   } else {
-    /* Strip any existing resizer handles (preview / export mode) */
     container.querySelectorAll('.resizers').forEach(r => r.remove());
   }
 
-  /* Re-wire controls and listeners on every editable child */
-  container.querySelectorAll('.editable-component').forEach((child: any) => {
+  container.querySelectorAll('.editable-component').forEach(child => {
+    const childElement = child as HTMLElement;
+
     if (editable !== false) {
-      Canvas.controlsManager.addControlButtons(child);
+      Canvas.controlsManager.addControlButtons(childElement);
 
       if (isGridMode) {
-        /* Grid mode: remove absolute-layout artefacts from child */
-        child.classList.remove('component-resizer');
-        child.removeAttribute('draggable');
-        child.style.cursor = 'default';
-        child.style.position = '';
-        child.style.left = '';
-        child.style.top = '';
+        childElement.classList.remove('component-resizer');
+        childElement.removeAttribute('draggable');
+        childElement.style.cursor = 'default';
+        childElement.style.position = '';
+        childElement.style.left = '';
+        childElement.style.top = '';
       } else {
-        /* Absolute mode: make children draggable and resizable */
-        Canvas.addDraggableListeners(child);
-        child.style.position = 'absolute';
-        child.classList.add('component-resizer');
+        Canvas.addDraggableListeners(childElement);
+        childElement.style.position = 'absolute';
+        childElement.classList.add('component-resizer');
       }
 
-      /* Re-attach hover label listeners to each child */
-      child.addEventListener('mouseenter', (event: MouseEvent) =>
-        showLabel(event, child)
+      childElement.addEventListener('mouseenter', (event: MouseEvent) =>
+        showLabel(event, childElement)
       );
-      child.addEventListener('mouseleave', (event: MouseEvent) =>
-        hideLabel(event, child)
+      childElement.addEventListener('mouseleave', (event: MouseEvent) =>
+        hideLabel(event, childElement)
       );
     } else {
-      /* Non-editable (preview/export): strip all editing attributes */
       (
-        child.querySelectorAll('[contenteditable]') as NodeListOf<HTMLElement>
+        childElement.querySelectorAll(
+          '[contenteditable]'
+        ) as NodeListOf<HTMLElement>
       ).forEach(el => el.removeAttribute('contenteditable'));
 
-      child.classList.remove('editable-component');
-      child.classList.remove('component-resizer');
-      child.removeAttribute('draggable');
-      child.removeAttribute('contenteditable');
+      childElement.classList.remove('editable-component');
+      childElement.classList.remove('component-resizer');
+      childElement.removeAttribute('draggable');
+      childElement.removeAttribute('contenteditable');
     }
 
-    /* Restore image-upload interactivity for image children */
-    if (child.classList.contains('image-component')) {
-      const imageSrc = child.querySelector('img')?.getAttribute('src') || '';
-      ImageComponent.restoreImageUpload(child, imageSrc, editable);
+    if (childElement.classList.contains('image-component')) {
+      const imageSrc =
+        childElement.querySelector('img')?.getAttribute('src') ?? null;
+      ImageComponent.restoreImageUpload(childElement, imageSrc ?? '', editable);
     }
 
-    /* Recurse into nested containers */
-    if (child.classList.contains('container-component')) {
-      restoreContainer(child, editable);
+    if (childElement.classList.contains('container-component')) {
+      restoreContainer(childElement, editable);
     }
   });
 }

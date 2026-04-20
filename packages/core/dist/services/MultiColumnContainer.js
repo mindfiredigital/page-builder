@@ -1,31 +1,19 @@
 import { Canvas } from '../canvas/Canvas.js';
 import { ContainerComponent } from '../components/ContainerComponent.js';
 import { ImageComponent } from '../components/ImageComponent.js';
-/**
- * MultiColumnContainer is a reusable container class that dynamically creates a flexible number of columns based on the specified column count.
- * It handles the creation of the container element, dynamically creates columns, sets up drag-and-drop functionality,
- * and applies necessary styles for layout. It also manages the event handling for dropping components into columns.
- */
 export class MultiColumnContainer {
   constructor(columnCount, className = `${columnCount}Col-component`) {
     this.columnCount = columnCount;
     this.element = document.createElement('div');
     this.element.classList.add(className);
     this.element.setAttribute('draggable', 'true');
-    // Create columns dynamically based on columnCount
     for (let i = 1; i <= columnCount; i++) {
       const column = this.createColumn(`column-${i}`);
       this.element.appendChild(column);
     }
-    // Add styles
     this.addStyles(className);
-    // Add event listeners
     this.initializeEventListeners();
   }
-  /**
-   * Creates an individual column inside the container with a given class name.
-   * The column's width is dynamically adjusted based on the number of columns in the container.
-   */
   createColumn(className) {
     const column = document.createElement('div');
     column.classList.add('column', className);
@@ -35,20 +23,10 @@ export class MultiColumnContainer {
     column.id = `${this.columnCount}Col-component${parentId}-${className}`;
     return column;
   }
-  /**
-   * Initializes event listeners for the container element.
-   * It listens for dragover and drop events to handle the drag-and-drop functionality.
-   */
   initializeEventListeners() {
     this.element.addEventListener('dragover', event => event.preventDefault());
     this.element.addEventListener('drop', this.onDrop.bind(this));
   }
-  /**
-   * Handles the drop event when a component is dropped onto a column.
-   * It appends the component to the target column, generates unique IDs for the component and column,
-   * and updates the component and column with labels for easy identification.
-   * It also captures the state in the history manager for undo/redo functionality.
-   */
   onDrop(event) {
     var _a;
     event.preventDefault();
@@ -64,7 +42,6 @@ export class MultiColumnContainer {
     if (targetColumn && targetColumn.classList.contains('column')) {
       targetColumn.appendChild(component);
       const parentId = this.element.id;
-      // Determine the column-specific suffix dynamically
       const columnIndex = Array.from(
         targetColumn.parentElement.children
       ).indexOf(targetColumn);
@@ -97,11 +74,6 @@ export class MultiColumnContainer {
       Canvas.historyManager.captureState();
     }
   }
-  /**
-   * Adds the required styles for the container and its columns.
-   * It dynamically creates a style element and applies flexbox-based layout styles,
-   * ensuring that the columns are evenly distributed and visually styled with hover effects.
-   */
   addStyles(className) {
     const style = document.createElement('style');
     style.textContent = `
@@ -123,33 +95,32 @@ export class MultiColumnContainer {
     `;
     document.head.appendChild(style);
   }
-  /**
-   * Creates and returns the container element that holds the columns.
-   * This method is called to generate the full container after the columns have been created.
-   */
   create() {
     return this.element;
   }
-  /**
-   * Restores a column by reapplying necessary controls to the child components.
-   * This includes adding control buttons, making child components draggable,
-   * and restoring image uploads if the child is an image component.
-   */
   static restoreColumn(column) {
     const columnChildren = column.querySelectorAll('.editable-component');
     columnChildren.forEach(child => {
-      var _a;
-      Canvas.controlsManager.addControlButtons(child);
-      Canvas.addDraggableListeners(child);
-      if (child.classList.contains('image-component')) {
+      var _a, _b;
+      const childElement = child;
+      Canvas.controlsManager.addControlButtons(childElement);
+      Canvas.addDraggableListeners(childElement);
+      if (childElement.classList.contains('image-component')) {
         const imageSrc =
-          ((_a = child.querySelector('img')) === null || _a === void 0
-            ? void 0
-            : _a.getAttribute('src')) || '';
-        ImageComponent.restoreImageUpload(child, imageSrc, null);
+          (_b =
+            (_a = childElement.querySelector('img')) === null || _a === void 0
+              ? void 0
+              : _a.getAttribute('src')) !== null && _b !== void 0
+            ? _b
+            : null;
+        ImageComponent.restoreImageUpload(
+          childElement,
+          imageSrc !== null && imageSrc !== void 0 ? imageSrc : '',
+          null
+        );
       }
-      if (child.classList.contains('container-component')) {
-        ContainerComponent.restoreContainer(child);
+      if (childElement.classList.contains('container-component')) {
+        ContainerComponent.restoreContainer(childElement);
       }
     });
   }

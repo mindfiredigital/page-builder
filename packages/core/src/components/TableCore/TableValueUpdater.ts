@@ -3,7 +3,7 @@
 import { Canvas } from '../../canvas/Canvas';
 
 /* Writes resolved formula values into cells that carry a matching data-attribute-key */
-export function SeedFormulaValues(values: Record<string, any>): void {
+export function SeedFormulaValues(values: AttributeValues): void {
   const allTables = document.querySelectorAll('.table-component');
 
   allTables.forEach(table => {
@@ -14,13 +14,16 @@ export function SeedFormulaValues(values: Record<string, any>): void {
       const key = cell.getAttribute('data-attribute-key');
       const textContentCell = cell.querySelector('.table-cell-content');
 
-      if (textContentCell && key && values.hasOwnProperty(key)) {
-        textContentCell.textContent = values[key];
+      if (
+        textContentCell &&
+        key &&
+        Object.prototype.hasOwnProperty.call(values, key)
+      ) {
+        textContentCell.textContent = String(values[key]);
         (cell as HTMLElement).style.color = '#000000';
         (cell as HTMLElement).style.fontSize = '16px';
       }
 
-      /* Re-append controls so they remain the last child after content update */
       if (controlsElement) {
         cell.appendChild(controlsElement);
       }
@@ -31,7 +34,7 @@ export function SeedFormulaValues(values: Record<string, any>): void {
 }
 
 /* Pushes live input values into cells typed as "Input" */
-export function UpdateInputValues(values: Record<string, any>): void {
+export function UpdateInputValues(values: AttributeValues): void {
   const allTables = document.querySelectorAll('.table-component');
 
   allTables.forEach(table => {
@@ -42,14 +45,13 @@ export function UpdateInputValues(values: Record<string, any>): void {
       const type = cell.getAttribute('data-attribute-type');
       const textContentOfCell = cell.querySelector('.table-cell-content');
 
-      /* Only update cells that are bound to an Input attribute */
       if (
         textContentOfCell &&
         key &&
-        values.hasOwnProperty(key) &&
+        Object.prototype.hasOwnProperty.call(values, key) &&
         type === 'Input'
       ) {
-        textContentOfCell.textContent = values[key];
+        textContentOfCell.textContent = String(values[key]);
       }
     });
   });
@@ -69,21 +71,19 @@ export function UpdateCellContent(
   const textContentOfCell = cell.querySelector('.table-cell-content');
 
   if (attribute.type === 'Formula' && textContentOfCell) {
-    /* Formula cells show a muted placeholder title until a value is seeded */
-    textContentOfCell.textContent = `${attribute.title}`;
+    textContentOfCell.textContent = attribute.title;
     cell.style.fontSize = '10px';
     cell.style.color = 'rgb(188 191 198)';
     cell.style.fontWeight = '500';
   } else if (attribute.type === 'Constant' && textContentOfCell) {
-    textContentOfCell.textContent = `${attribute.value}`;
+    textContentOfCell.textContent = String(attribute.value);
   } else if (attribute.type === 'Input' && textContentOfCell) {
-    textContentOfCell.textContent = `${attribute.value}`;
+    textContentOfCell.textContent = String(attribute.value);
   }
 
-  /* Keep controls as the last child after updating content */
   if (controlsElement) {
     cell.appendChild(controlsElement);
   }
 
-  Canvas?.dispatchDesignChange();
+  Canvas.dispatchDesignChange();
 }

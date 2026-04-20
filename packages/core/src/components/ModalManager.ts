@@ -5,6 +5,7 @@ import {
   filterAttributes,
   handleSave,
 } from './ModalCore';
+import type { ModalResult } from './ModalCore';
 
 /**
  * A reusable modal component for displaying and managing configuration settings.
@@ -18,13 +19,11 @@ export class ModalComponent {
   private contentContainer: HTMLElement;
   private attributes: ComponentAttribute[] = [];
 
-  /* Stores the resolve function of the currently open promise */
-  private resolvePromise:
-    | ((result: Record<string, any> | null) => void)
-    | null = null;
+  /** Stores the resolve function of the currently open promise */
+  private resolvePromise: ((result: ModalResult | null) => void) | null = null;
 
   constructor() {
-    /* Re-use an existing modal DOM node if one was already created */
+    /** Re-use an existing modal DOM node if one was already created */
     const existingModal = document.getElementById('modal');
     if (existingModal) {
       this.modalElement = existingModal;
@@ -35,10 +34,10 @@ export class ModalComponent {
 
     this.contentContainer = this.modalElement.querySelector('#modal-content')!;
 
-    /* Start hidden */
+    /** Start hidden */
     this.hide();
 
-    /* Close button dismisses the modal and resolves with null */
+    /** Close button dismisses the modal and resolves with null */
     this.modalElement
       .querySelector('#close-modal-button')
       ?.addEventListener('click', () => {
@@ -46,14 +45,14 @@ export class ModalComponent {
         this.resolvePromise?.(null);
       });
 
-    /* Save button collects the selected field and resolves the promise */
+    /** Save button collects the selected field and resolves the promise */
     this.modalElement
       .querySelector('#save-button')
       ?.addEventListener('click', () => {
         handleSave(
           this.contentContainer,
           this.attributes,
-          (result: Record<string, any> | null) => {
+          (result: ModalResult | null) => {
             this.resolvePromise?.(result);
             this.resolvePromise = null;
           },
@@ -61,7 +60,7 @@ export class ModalComponent {
         );
       });
 
-    /* Live search filters the visible attribute fields */
+    /** Live search filters the visible attribute fields */
     this.modalElement
       .querySelector<HTMLInputElement>('#attribute-search')
       ?.addEventListener('input', event => {
@@ -75,12 +74,12 @@ export class ModalComponent {
    * Returns a Promise that resolves with the new values when saved,
    * or null if the modal is closed without saving.
    */
-  show(attributes: ComponentAttribute[]): Promise<Record<string, any> | null> {
-    /* Rebuild form with the fresh attribute list */
+  show(attributes: ComponentAttribute[]): Promise<ModalResult | null> {
+    /** Rebuild form with the fresh attribute list */
     renderForm(this.contentContainer, attributes);
     this.attributes = attributes;
 
-    /* Reset the search box each time the modal opens */
+    /** Reset the search box each time the modal opens */
     const searchInput =
       this.modalElement.querySelector<HTMLInputElement>('#attribute-search');
     if (searchInput) searchInput.value = '';
@@ -92,7 +91,7 @@ export class ModalComponent {
     });
   }
 
-  /* Hides the modal overlay */
+  /** Hides the modal overlay */
   hide(): void {
     this.modalElement.classList.add('modal-hidden');
   }

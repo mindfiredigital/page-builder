@@ -1,5 +1,4 @@
 declare global {
-  // Define a type for component configuration options
   interface ComponentConfig {
     type: string;
     id: string;
@@ -7,22 +6,19 @@ declare global {
     styles?: ComponentStyles;
   }
 
-  // Define a type for styles to apply on components
   interface ComponentStyles {
     color?: string;
     fontSize?: string;
     padding?: string;
     margin?: string;
-    [key: string]: any;
+    [key: string]: string | undefined;
   }
 
-  // Define an interface for components stored on the canvas
   interface CanvasComponent {
     element: HTMLElement;
     config: ComponentConfig;
   }
 
-  // Define types for drag and drop events
   interface DragEventHandlers {
     onDragStart: (event: DragEvent, componentId: string) => void;
     onDrop: (event: DragEvent) => void;
@@ -41,26 +37,14 @@ declare global {
     dataAttributes: { [key: string]: string };
     imageSrc?: string | null;
     videoSrc?: string | null;
-    props?: Record<string, any>;
+    props?: ComponentProps;
   }
 
-  // Define type for JSON data format for saving/loading
   interface LayoutData {
     components: ComponentConfig[];
   }
 
-  // Assuming your PageBuilderDesign type looks something like this:
-  interface PageBuilderDesign {
-    pages?: Array<{
-      id: string;
-      components: Array<{
-        type: string;
-        id: string;
-        props: Record<string, any>;
-      }>;
-    }>;
-    [key: string]: any;
-  }
+  type PageBuilderDesign = PageComponent[];
 
   export interface ComponentAttribute {
     id: string;
@@ -77,34 +61,71 @@ declare global {
   export interface BasicComponent {
     name: string;
     attributes?: ComponentAttribute[];
-    globalExecuteFunction?: Function;
+    globalExecuteFunction?: (...args: unknown[]) => unknown;
   }
-  // Define interface for Dynamic components
+
   interface DynamicComponents {
     Basic: BasicComponent[];
     Extra: string[];
     Custom: CustomComponentConfig;
   }
 
-  // New interface for custom component settings
   interface CustomComponentSetting {
     name: string;
     functionName: string;
   }
 
   interface CustomComponentConfig {
-    [key: string]: {
-      component: string;
-      svg?: string;
-      title?: string;
-      settingsComponent?: ReactComponentType<{ targetComponentId: string }>;
-      settingsComponentTagName?: string;
-      props?: Record<string, any>;
-    };
+    [key: string]: CustomComponentEntry;
   }
 
-  // Define a union type for different device preview modes
+  interface CustomComponentEntry {
+    component: string;
+    svg?: string;
+    title?: string;
+    settingsComponent?: import('react').ComponentType<{
+      targetComponentId: string;
+    }>;
+    settingsComponentTagName?: string;
+    props?: ComponentProps;
+    settings?: ComponentProps;
+  }
+
+  /** Generic bag of serialisable component props */
+  interface ComponentProps {
+    [key: string]:
+      | string
+      | number
+      | boolean
+      | null
+      | undefined
+      | ComponentProps
+      | ComponentPropsArray;
+  }
+
+  /** Needed because ComponentProps values can be arrays */
+  type ComponentPropsArray = Array<
+    string | number | boolean | null | undefined | ComponentProps
+  >;
+
   type DevicePreviewMode = 'desktop' | 'tablet' | 'mobile';
+
+  /**
+   * Shared attribute value map used by seedFormulaValues / updateInputValues
+   * across HeaderComponent, TextComponent, TableComponent, and TableValueUpdater.
+   * Matches the value union on ComponentAttribute.
+   */
+  type AttributeValues = Record<string, string | number | boolean>;
+
+  /** CustomizationSidebar is registered on window by the host application */
+  interface CustomizationSidebarAPI {
+    showSidebar: (componentId: string) => void;
+  }
+
+  interface Window {
+    CustomizationSidebar?: CustomizationSidebarAPI;
+    customComponents?: Record<string, CustomComponentEntry>;
+  }
 }
 
 export {};

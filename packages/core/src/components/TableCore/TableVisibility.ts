@@ -1,42 +1,48 @@
-/* Handles conditional row visibility based on dynamic input values and rules */
+/** Handles conditional row visibility based on dynamic input values and rules */
 
-/* Evaluates and applies show/hide visibility to all table rows matching the given rules */
+/** Shape of a single serialised visibility rule stored on a table row */
+interface VisibilityRule {
+  inputKey: string;
+  operator: string;
+  value: string;
+  action: 'show' | 'hide';
+}
+
+/** Evaluates and applies show/hide visibility to all table rows matching the given rules */
 export function EvaluateRowVisibility(
-  inputValues: Record<string, any>,
+  inputValues: AttributeValues,
   table?: HTMLElement
 ): void {
-  /* Select rows scoped to a specific table or globally across the document */
-  let allRows: NodeListOf<Element>;
-  if (table) {
-    allRows = table.querySelectorAll('.table-row');
-  } else {
-    allRows = document.querySelectorAll('.table-row');
-  }
+  /** Select rows scoped to a specific table or globally across the document */
+  const allRows: NodeListOf<Element> = table
+    ? table.querySelectorAll('.table-row')
+    : document.querySelectorAll('.table-row');
 
   allRows.forEach(row => {
     const rulesAttribute = row.getAttribute('data-visibility-rules');
 
-    /* Rows with no rules are always visible */
+    /** Rows with no rules are always visible */
     if (!rulesAttribute) {
       (row as HTMLElement).style.display = 'grid';
       return;
     }
 
     try {
-      const rules = JSON.parse(rulesAttribute);
+      const rules: VisibilityRule[] = JSON.parse(rulesAttribute);
 
-      /* Empty rules array means always visible */
+      /** Empty rules array means always visible */
       if (rules.length === 0) {
         (row as HTMLElement).style.display = 'grid';
         return;
       }
 
       let isVisible = true;
-      rules.forEach((rule: any) => {
+
+      rules.forEach(rule => {
         const inputValue = inputValues[rule.inputKey];
         if (inputValue) {
           const isConditionMet = EvaluateRule(
-            inputValue,
+            String(inputValue),
             rule.operator,
             rule.value
           );
@@ -48,7 +54,7 @@ export function EvaluateRowVisibility(
               isVisible = true;
             }
           } else {
-            /* When a "show" condition is NOT met the row should be hidden */
+            /** When a "show" condition is NOT met the row should be hidden */
             if (rule.action === 'show') {
               isVisible = false;
             }
@@ -63,12 +69,12 @@ export function EvaluateRowVisibility(
   });
 }
 
-/* Evaluates a single visibility rule against the current input value */
+/** Evaluates a single visibility rule against the current input value */
 export function EvaluateRule(
   inputValue: string,
   operator: string,
   ruleValue: string
-): boolean | string {
+): boolean {
   const numInputValue = parseFloat(inputValue);
   const numRuleValue = parseFloat(ruleValue);
 

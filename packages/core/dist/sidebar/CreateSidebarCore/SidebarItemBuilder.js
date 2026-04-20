@@ -7,15 +7,12 @@ export function buildSidebarItem(componentId) {
   iconElement.id = componentId;
   iconElement.setAttribute('draggable', 'true');
   iconElement.setAttribute('data-component', componentId);
-  /* Use the mapped title or fall back to a generic label */
   const customTitle =
     SIDEBAR_TITLES[componentId] || `Drag to add ${componentId}`;
   iconElement.setAttribute('title', customTitle);
   if (SIDEBAR_ICONS[componentId]) {
-    /* Inject the SVG and drag label together */
     iconElement.innerHTML = `${SIDEBAR_ICONS[componentId]}
       <div class="drag-text">${componentId}</div>`;
-    /* Add a shared class so icon styles apply uniformly */
     const svgElement = iconElement.querySelector('svg');
     if (svgElement) svgElement.classList.add('component-icon');
   } else {
@@ -36,7 +33,6 @@ export function buildCustomSidebarItem(keyName, config) {
     iconElement.setAttribute('title', `Drag to add ${keyName}`);
     const letterSpan = document.createElement('span');
     letterSpan.classList.add('custom-component-letter');
-    /* Show the first letter of the key as a fallback icon */
     letterSpan.textContent = keyName.charAt(0).toUpperCase();
     iconElement.appendChild(letterSpan);
   } else {
@@ -44,7 +40,6 @@ export function buildCustomSidebarItem(keyName, config) {
     const { component, svg, title, settingsComponent } = config;
     iconElement.setAttribute('data-tag-name', component);
     iconElement.setAttribute('title', title || `Drag to add ${keyName}`);
-    /* Persist custom settings so the canvas can read them on drop */
     if (settingsComponent) {
       iconElement.setAttribute(
         'data-custom-settings',
@@ -56,7 +51,6 @@ export function buildCustomSidebarItem(keyName, config) {
       const svgElement = iconElement.querySelector('svg');
       if (svgElement) svgElement.classList.add('component-icon');
     } else {
-      /* No SVG provided — fall back to first letter */
       const letterSpan = document.createElement('span');
       letterSpan.classList.add('custom-component-letter');
       letterSpan.textContent = keyName.charAt(0).toUpperCase();

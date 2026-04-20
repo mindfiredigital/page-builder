@@ -1,13 +1,19 @@
 export class JSONStorage {
-  save(data: object) {
+  save(data: PageBuilderDesign): void {
     localStorage.setItem('pageLayout', JSON.stringify(data));
   }
 
-  load(): object | null {
+  load(): PageBuilderDesign | null {
     const data = localStorage.getItem('pageLayout');
-    return data ? JSON.parse(data) : null;
+    if (!data) return null;
+    try {
+      return JSON.parse(data) as PageBuilderDesign;
+    } catch {
+      return null;
+    }
   }
-  remove() {
+
+  remove(): void {
     localStorage.removeItem('pageLayout');
   }
 }

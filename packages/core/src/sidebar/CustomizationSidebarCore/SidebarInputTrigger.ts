@@ -37,7 +37,11 @@ export async function handleInputTrigger(
         : inputEl.value;
   });
 
-  const result = await componentConfig.globalExecuteFunction(inputValues);
+  const result = (await componentConfig.globalExecuteFunction(inputValues)) as
+    | AttributeValues
+    | null
+    | undefined;
+
   const tableInstance = new TableComponent();
   const textInstance = new TextComponent();
   const headerInstance = new HeaderComponent();

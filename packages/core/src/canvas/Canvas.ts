@@ -26,7 +26,7 @@ import { CanvasDropHandler } from './CanvasCore/CanvasDropHandler';
 import type { LayoutMode } from './CanvasCore/CanvasTypes';
 
 export class Canvas {
-  /* ── Accessors for shared state (keep backward-compat public API) ────── */
+  /* ── Accessors for shared state ──────────────────────────────────────── */
 
   public static get controlsManager() {
     return CanvasSharedState.controlsManager;
@@ -87,7 +87,6 @@ export class Canvas {
     CanvasSharedState.components = [];
     CanvasSharedState.historyManager.captureState();
 
-    /* Re-initialise drop preview after clearing (called twice intentionally — matches original) */
     CanvasSharedState.gridManager.initializeDropPreview(
       CanvasSharedState.canvasElement
     );
@@ -104,7 +103,7 @@ export class Canvas {
     return CanvasStateManager.getState();
   }
 
-  static restoreState(state: any): void {
+  static restoreState(state: PageBuilderDesign): void {
     CanvasStateManager.restoreState(state);
   }
 

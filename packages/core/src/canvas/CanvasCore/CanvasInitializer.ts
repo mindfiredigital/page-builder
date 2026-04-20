@@ -63,8 +63,7 @@ export class CanvasInitializer {
     CanvasSharedState.historyManager = new HistoryManager(canvasElement);
     CanvasSharedState.jsonStorage = new JSONStorage();
     CanvasSharedState.controlsManager = new ComponentControlsManager(
-      /* Canvas class reference is passed in to avoid a circular import */
-      { getComponents: () => CanvasSharedState.components } as any
+      canvasElement
     );
 
     /* Grid drop-preview overlay */
@@ -94,7 +93,9 @@ export class CanvasInitializer {
     CanvasSharedState.tableAttributeConfig = find('table')?.attributes;
     CanvasSharedState.textAttributeConfig = find('text')?.attributes;
     CanvasSharedState.headerAttributeConfig = find('header')?.attributes;
-    CanvasSharedState.ImageAttributeConfig =
-      find('image')?.globalExecuteFunction;
+    CanvasSharedState.ImageAttributeConfig = find('image')
+      ?.globalExecuteFunction as
+      | ((base64String: string) => Promise<{ url: string }>)
+      | undefined;
   }
 }

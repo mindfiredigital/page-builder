@@ -3,5 +3,5 @@ export interface ComponentAttribute {
   key: string;
   title: string;
   type: string;
-  value?: any;
+  value?: string | number | boolean;
 }

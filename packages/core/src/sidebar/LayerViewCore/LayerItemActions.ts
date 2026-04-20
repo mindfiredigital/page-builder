@@ -12,9 +12,7 @@ export function selectLayer(
   layerItem.classList.add('selected');
 
   /* Delegate to CustomizationSidebar if it is available on the window */
-  if (typeof (window as any).CustomizationSidebar !== 'undefined') {
-    (window as any).CustomizationSidebar.showSidebar(element.id);
-  }
+  window.CustomizationSidebar?.showSidebar(element.id);
 }
 
 /* Toggles the DOM element's visibility and syncs the eye-button state */
@@ -25,7 +23,6 @@ export function toggleVisibility(
   const isHidden = element.style.display === 'none';
 
   if (isHidden) {
-    /* Restore to flow — clearing the inline style lets CSS take over */
     element.style.display = '';
     button.classList.remove('hidden');
   } else {
@@ -38,19 +35,17 @@ export function toggleVisibility(
 export function deleteComponent(
   element: HTMLElement,
   layerItem: HTMLElement,
-  refreshFn: () => void /* callback so the full layers view rebuilds */
+  refreshFn: () => void
 ): void {
   element.remove();
   layerItem.remove();
 
-  /* Keep Canvas component registry in sync after deletion */
   const updatedComponents = Canvas.getComponents().filter(c => c !== element);
   Canvas.setComponents(updatedComponents);
 
   Canvas.historyManager.captureState();
   Canvas.dispatchDesignChange();
 
-  /* Rebuild the layers panel to reflect the deletion */
   refreshFn();
 }
 

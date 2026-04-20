@@ -1,20 +1,20 @@
 import { Canvas } from '../../canvas/Canvas.js';
 /* Removes the active selection from all layer rows then selects the clicked one */
 export function selectLayer(layerItem, element) {
+  var _a;
   document.querySelectorAll('.layer-item.selected').forEach(item => {
     item.classList.remove('selected');
   });
   layerItem.classList.add('selected');
   /* Delegate to CustomizationSidebar if it is available on the window */
-  if (typeof window.CustomizationSidebar !== 'undefined') {
-    window.CustomizationSidebar.showSidebar(element.id);
-  }
+  (_a = window.CustomizationSidebar) === null || _a === void 0
+    ? void 0
+    : _a.showSidebar(element.id);
 }
 /* Toggles the DOM element's visibility and syncs the eye-button state */
 export function toggleVisibility(element, button) {
   const isHidden = element.style.display === 'none';
   if (isHidden) {
-    /* Restore to flow — clearing the inline style lets CSS take over */
     element.style.display = '';
     button.classList.remove('hidden');
   } else {
@@ -23,19 +23,13 @@ export function toggleVisibility(element, button) {
   }
 }
 /* Removes the component from the DOM, the Canvas component list, and captures state */
-export function deleteComponent(
-  element,
-  layerItem,
-  refreshFn /* callback so the full layers view rebuilds */
-) {
+export function deleteComponent(element, layerItem, refreshFn) {
   element.remove();
   layerItem.remove();
-  /* Keep Canvas component registry in sync after deletion */
   const updatedComponents = Canvas.getComponents().filter(c => c !== element);
   Canvas.setComponents(updatedComponents);
   Canvas.historyManager.captureState();
   Canvas.dispatchDesignChange();
-  /* Rebuild the layers panel to reflect the deletion */
   refreshFn();
 }
 /* Expands or collapses a nested children container */

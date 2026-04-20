@@ -9,12 +9,15 @@ export function SeedFormulaValues(values) {
       const controlsElement = cell.querySelector('.cell-controls');
       const key = cell.getAttribute('data-attribute-key');
       const textContentCell = cell.querySelector('.table-cell-content');
-      if (textContentCell && key && values.hasOwnProperty(key)) {
-        textContentCell.textContent = values[key];
+      if (
+        textContentCell &&
+        key &&
+        Object.prototype.hasOwnProperty.call(values, key)
+      ) {
+        textContentCell.textContent = String(values[key]);
         cell.style.color = '#000000';
         cell.style.fontSize = '16px';
       }
-      /* Re-append controls so they remain the last child after content update */
       if (controlsElement) {
         cell.appendChild(controlsElement);
       }
@@ -31,14 +34,13 @@ export function UpdateInputValues(values) {
       const key = cell.getAttribute('data-attribute-key');
       const type = cell.getAttribute('data-attribute-type');
       const textContentOfCell = cell.querySelector('.table-cell-content');
-      /* Only update cells that are bound to an Input attribute */
       if (
         textContentOfCell &&
         key &&
-        values.hasOwnProperty(key) &&
+        Object.prototype.hasOwnProperty.call(values, key) &&
         type === 'Input'
       ) {
-        textContentOfCell.textContent = values[key];
+        textContentOfCell.textContent = String(values[key]);
       }
     });
   });
@@ -51,19 +53,17 @@ export function UpdateCellContent(cell, attribute) {
   const controlsElement = cell.querySelector('.cell-controls');
   const textContentOfCell = cell.querySelector('.table-cell-content');
   if (attribute.type === 'Formula' && textContentOfCell) {
-    /* Formula cells show a muted placeholder title until a value is seeded */
-    textContentOfCell.textContent = `${attribute.title}`;
+    textContentOfCell.textContent = attribute.title;
     cell.style.fontSize = '10px';
     cell.style.color = 'rgb(188 191 198)';
     cell.style.fontWeight = '500';
   } else if (attribute.type === 'Constant' && textContentOfCell) {
-    textContentOfCell.textContent = `${attribute.value}`;
+    textContentOfCell.textContent = String(attribute.value);
   } else if (attribute.type === 'Input' && textContentOfCell) {
-    textContentOfCell.textContent = `${attribute.value}`;
+    textContentOfCell.textContent = String(attribute.value);
   }
-  /* Keep controls as the last child after updating content */
   if (controlsElement) {
     cell.appendChild(controlsElement);
   }
-  Canvas === null || Canvas === void 0 ? void 0 : Canvas.dispatchDesignChange();
+  Canvas.dispatchDesignChange();
 }

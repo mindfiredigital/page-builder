@@ -14,7 +14,6 @@ import {
 } from './TableCore';
 
 export class TableComponent {
-  /* Shared attribute config accessed by static restore and default-value helpers */
   static tableAttributeConfig: ComponentAttribute[];
 
   private modalComponent: ModalComponent | null = null;
@@ -23,7 +22,6 @@ export class TableComponent {
     this.modalComponent = new ModalComponent() || null;
   }
 
-  /* Builds and returns the full table DOM structure with optional edit controls */
   create(
     rowCount: number,
     columnCount: number,
@@ -54,7 +52,6 @@ export class TableComponent {
 
     container.appendChild(tableWrapper);
 
-    /* Only render add-row controls when not in preview mode */
     if (!isPreview) {
       const buttonContainer = document.createElement('div');
       buttonContainer.classList.add('table-btn-container');
@@ -69,7 +66,6 @@ export class TableComponent {
       multiRowContainer.style.alignItems = 'center';
       multiRowContainer.style.gap = '5px';
 
-      /* Input that lets the user specify how many rows to add at once */
       const rowCountInput = document.createElement('input');
       rowCountInput.className = 'row-count-input';
       rowCountInput.type = 'number';
@@ -102,40 +98,30 @@ export class TableComponent {
     return container;
   }
 
-  /* Delegates to the visibility module; exposed on the instance for external callers */
-  evaluateRowVisibility(
-    inputValues: Record<string, any>,
-    table?: HTMLElement
-  ): void {
-    EvaluateRowVisibility(inputValues, table);
+  evaluateRowVisibility(values: AttributeValues, table?: HTMLElement): void {
+    EvaluateRowVisibility(values, table);
   }
 
-  /* Delegates to the value-updater module */
-  seedFormulaValues(values: Record<string, any>): void {
+  seedFormulaValues(values: AttributeValues): void {
     SeedFormulaValues(values);
   }
 
-  /* Delegates to the value-updater module */
-  updateInputValues(values: Record<string, any>): void {
+  updateInputValues(values: AttributeValues): void {
     UpdateInputValues(values);
   }
 
-  /* Delegates to the value-updater module */
   updateCellContent(cell: HTMLElement, attribute: ComponentAttribute): void {
     UpdateCellContent(cell, attribute);
   }
 
-  /* Delegates to the row-manager module */
   addRows(tableWrapper: HTMLElement, tableId: string, count: number = 1): void {
     AddRows(tableWrapper, tableId, count);
   }
 
-  /* Allows an external caller to inject a modal component dependency */
   setModalComponent(modalComponent: ModalComponent): void {
     this.modalComponent = modalComponent;
   }
 
-  /* Static restore entry-point; passes the shared config into the restore module */
   static restore(container: HTMLElement, editable: boolean | null): void {
     Restore(container, editable, TableComponent.tableAttributeConfig);
   }

@@ -7,8 +7,8 @@ import { EvaluateRowVisibility } from './TableVisibility';
 /* Returns default values for all Input-typed attributes in the given config */
 export function GetDefaultValuesOfInput(
   tableAttributeConfig: ComponentAttribute[]
-): Record<string, any> {
-  const defaults: Record<string, any> = {};
+): AttributeValues {
+  const defaults: AttributeValues = {};
 
   tableAttributeConfig.forEach(attr => {
     if (
@@ -55,7 +55,6 @@ export function Restore(
     const attributeType = cellElement.getAttribute('data-attribute-type');
     const textContentOfCell = cell.querySelector('.table-cell-content');
 
-    /* Remove stale selection state from content span */
     if (textContentOfCell?.classList.contains('selected')) {
       textContentOfCell.classList.remove('selected');
     }
@@ -72,13 +71,11 @@ export function Restore(
           attribute.default_value &&
           (attributeType === 'Formula' || attributeType === 'Input')
         ) {
-          /* Restore seeded default value with standard text styles */
-          textContentOfCell.textContent = `${attribute.default_value}`;
+          textContentOfCell.textContent = String(attribute.default_value);
           cellElement.style.fontSize = '14px';
           cellElement.style.color = '#000000';
         } else if (attributeType === 'Formula') {
-          /* Restore formula placeholder title with muted styling */
-          textContentOfCell.textContent = `${attribute.title}`;
+          textContentOfCell.textContent = attribute.title;
           cellElement.style.fontSize = '10px';
           cellElement.style.color = 'rgb(188 191 198)';
           cellElement.style.fontWeight = '500';
@@ -92,14 +89,12 @@ export function Restore(
 
     const controls = cellElement.querySelector('.cell-controls');
 
-    /* In read-only mode strip controls and remove content editability */
     if (editable === false) {
       controls?.remove();
       textContentOfCell?.removeAttribute('contenteditable');
       return;
     }
 
-    /* Re-bind add / delete listeners after deserialisation */
     if (controls) {
       const addButton = controls.querySelector('.add-cell-button');
       const deleteButton = controls.querySelector('.delete-cell-button');
@@ -120,7 +115,6 @@ export function Restore(
     }
   });
 
-  /* Re-bind or remove the "Add Row" button depending on edit mode */
   const addMultipleRowsButton = container.querySelector(
     '.add-multiple-rows-button'
   ) as HTMLButtonElement;
@@ -140,11 +134,9 @@ export function Restore(
       );
     });
   } else if (editable === false && btnContainer) {
-    /* Remove add-row controls entirely in read-only mode */
-    btnContainer?.remove();
+    btnContainer.remove();
   }
 
-  /* Apply default input values to evaluate initial row visibility */
   const defaultValues = GetDefaultValuesOfInput(tableAttributeConfig);
   EvaluateRowVisibility(defaultValues, container);
 }

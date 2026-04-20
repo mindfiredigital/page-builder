@@ -15,9 +15,9 @@ export class ModalComponent {
   constructor() {
     var _a, _b, _c;
     this.attributes = [];
-    /* Stores the resolve function of the currently open promise */
+    /** Stores the resolve function of the currently open promise */
     this.resolvePromise = null;
-    /* Re-use an existing modal DOM node if one was already created */
+    /** Re-use an existing modal DOM node if one was already created */
     const existingModal = document.getElementById('modal');
     if (existingModal) {
       this.modalElement = existingModal;
@@ -26,9 +26,9 @@ export class ModalComponent {
       document.body.appendChild(this.modalElement);
     }
     this.contentContainer = this.modalElement.querySelector('#modal-content');
-    /* Start hidden */
+    /** Start hidden */
     this.hide();
-    /* Close button dismisses the modal and resolves with null */
+    /** Close button dismisses the modal and resolves with null */
     (_a = this.modalElement.querySelector('#close-modal-button')) === null ||
     _a === void 0
       ? void 0
@@ -39,7 +39,7 @@ export class ModalComponent {
             ? void 0
             : _a.call(this, null);
         });
-    /* Save button collects the selected field and resolves the promise */
+    /** Save button collects the selected field and resolves the promise */
     (_b = this.modalElement.querySelector('#save-button')) === null ||
     _b === void 0
       ? void 0
@@ -57,7 +57,7 @@ export class ModalComponent {
             () => this.hide()
           );
         });
-    /* Live search filters the visible attribute fields */
+    /** Live search filters the visible attribute fields */
     (_c = this.modalElement.querySelector('#attribute-search')) === null ||
     _c === void 0
       ? void 0
@@ -72,10 +72,10 @@ export class ModalComponent {
    * or null if the modal is closed without saving.
    */
   show(attributes) {
-    /* Rebuild form with the fresh attribute list */
+    /** Rebuild form with the fresh attribute list */
     renderForm(this.contentContainer, attributes);
     this.attributes = attributes;
-    /* Reset the search box each time the modal opens */
+    /** Reset the search box each time the modal opens */
     const searchInput = this.modalElement.querySelector('#attribute-search');
     if (searchInput) searchInput.value = '';
     this.modalElement.classList.remove('modal-hidden');
@@ -83,7 +83,7 @@ export class ModalComponent {
       this.resolvePromise = resolve;
     });
   }
-  /* Hides the modal overlay */
+  /** Hides the modal overlay */
   hide() {
     this.modalElement.classList.add('modal-hidden');
   }

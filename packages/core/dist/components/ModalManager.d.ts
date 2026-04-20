@@ -1,4 +1,5 @@
 import { ComponentAttribute } from './ModalCore';
+import type { ModalResult } from './ModalCore';
 /**
  * A reusable modal component for displaying and managing configuration settings.
  *
@@ -10,6 +11,7 @@ export declare class ModalComponent {
   private modalElement;
   private contentContainer;
   private attributes;
+  /** Stores the resolve function of the currently open promise */
   private resolvePromise;
   constructor();
   /**
@@ -17,6 +19,7 @@ export declare class ModalComponent {
    * Returns a Promise that resolves with the new values when saved,
    * or null if the modal is closed without saving.
    */
-  show(attributes: ComponentAttribute[]): Promise<Record<string, any> | null>;
+  show(attributes: ComponentAttribute[]): Promise<ModalResult | null>;
+  /** Hides the modal overlay */
   hide(): void;
 }

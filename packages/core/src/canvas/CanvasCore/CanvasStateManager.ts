@@ -12,15 +12,15 @@ import {
 } from '../../components/index';
 import { MultiColumnContainer } from '../../services/MultiColumnContainer';
 
-/* Serialises and deserialises the canvas DOM into/from PageBuilderDesign */
+/** Serialises and deserialises the canvas DOM into/from PageBuilderDesign */
 export class CanvasStateManager {
-  /* Capture a full snapshot of the canvas and every component on it */
+  /** Capture a full snapshot of the canvas and every component on it */
   static getState(): PageBuilderDesign {
     const canvasElement = CanvasSharedState.canvasElement;
     const computedStyles = window.getComputedStyle(canvasElement);
-    const canvasStyles: { [key: string]: string } = {};
+    const canvasStyles: Record<string, string> = {};
 
-    /* Only persist meaningful canvas-level CSS properties */
+    /** Only persist meaningful canvas-level CSS properties */
     [
       'background-color',
       'min-height',
@@ -40,7 +40,7 @@ export class CanvasStateManager {
       }
     });
 
-    const canvasState = {
+    const canvasState: PageComponent = {
       id: 'canvas',
       type: 'canvas',
       content: '',
@@ -54,29 +54,31 @@ export class CanvasStateManager {
       classes: Array.from(canvasElement.classList),
       dataAttributes: {},
       props: {},
-    } as PageComponent;
+    };
 
-    const componentStates = CanvasSharedState.components.map(
+    const componentStates: PageComponent[] = CanvasSharedState.components.map(
       (component: HTMLElement) => {
-        /* Strip numeric suffix and '-component' to recover the base type */
+        /** Strip numeric suffix and '-component' to recover the base type */
         const baseType = component.classList[0]
           .split(/\d/)[0]
           .replace('-component', '');
 
-        const imageElement = component.querySelector('img') as HTMLImageElement;
+        const imageElement = component.querySelector(
+          'img'
+        ) as HTMLImageElement | null;
         const imageSrc = imageElement ? imageElement.src : null;
 
         const videoElement = component.querySelector(
           'video'
-        ) as HTMLVideoElement;
+        ) as HTMLVideoElement | null;
         const videoSrc = videoElement ? videoElement.src : null;
 
-        const computedStyles = window.getComputedStyle(component);
-        const styles: { [key: string]: string } = {};
+        const computed = window.getComputedStyle(component);
+        const styles: Record<string, string> = {};
 
-        for (let i = 0; i < computedStyles.length; i++) {
-          const prop = computedStyles[i];
-          const value = computedStyles.getPropertyValue(prop);
+        for (let i = 0; i < computed.length; i++) {
+          const prop = computed[i];
+          const value = computed.getPropertyValue(prop);
 
           if (
             value &&
@@ -89,21 +91,21 @@ export class CanvasStateManager {
           }
         }
 
-        /* Collect all data-* attributes */
-        const dataAttributes: { [key: string]: string } = {};
+        /** Collect all data-* attributes */
+        const dataAttributes: Record<string, string> = {};
         Array.from(component.attributes)
           .filter(attr => attr.name.startsWith('data-'))
           .forEach(attr => {
             dataAttributes[attr.name] = attr.value;
           });
 
-        /* Custom components carry their props as a JSON data attribute */
-        let componentProps: Record<string, any> = {};
+        /** Custom components carry their props as a JSON data attribute */
+        let componentProps: ComponentProps = {};
         if (component.classList.contains('custom-component')) {
           const propsJson = component.getAttribute('data-component-props');
           if (propsJson) {
             try {
-              componentProps = JSON.parse(propsJson);
+              componentProps = JSON.parse(propsJson) as ComponentProps;
             } catch (e) {
               console.error('Error parsing data-component-props:', e);
             }
@@ -133,14 +135,14 @@ export class CanvasStateManager {
     return [canvasState, ...componentStates];
   }
 
-  /* Rehydrate the canvas DOM from a previously captured PageBuilderDesign */
-  static restoreState(state: any): void {
+  /** Rehydrate the canvas DOM from a previously captured PageBuilderDesign */
+  static restoreState(state: PageBuilderDesign): void {
     const { canvasElement, editable, controlsManager, gridManager } =
       CanvasSharedState;
 
-    /* Restore canvas-level styles and classes first */
+    /** Restore canvas-level styles and classes first */
     const canvasDataIndex = state.findIndex(
-      (data: any) => data.id === 'canvas' && data.type === 'canvas'
+      data => data.id === 'canvas' && data.type === 'canvas'
     );
 
     if (canvasDataIndex !== -1) {
@@ -155,14 +157,14 @@ export class CanvasStateManager {
         canvasElement.classList.add(cls)
       );
 
-      /* Remove the canvas descriptor so only component descriptors remain */
+      /** Remove the canvas descriptor so only component descriptors remain */
       state.splice(canvasDataIndex, 1);
     }
 
     canvasElement.innerHTML = '';
     CanvasSharedState.components = [];
 
-    state.forEach((componentData: any) => {
+    state.forEach(componentData => {
       const customSettings =
         componentData.dataAttributes['data-custom-settings'] || null;
       const component = CanvasComponentFactory.createComponent(
@@ -173,59 +175,54 @@ export class CanvasStateManager {
 
       if (!component) return;
 
-      /* Restore innerHTML unless this is a managed custom component */
+      /** Restore innerHTML unless this is a managed custom component */
       if (!componentData.classes.includes('custom-component')) {
         component.innerHTML = componentData.content;
       }
 
-      /* Strip editor-only controls when rendering in preview/non-editable mode */
+      /** Strip editor-only controls when rendering in preview/non-editable mode */
       const deleteButton = component.querySelector('.component-controls');
       if (deleteButton && editable === false) {
         deleteButton.remove();
       }
 
-      /* Re-apply persisted CSS classes */
+      /** Re-apply persisted CSS classes */
       component.className = '';
       componentData.classes.forEach((cls: string) =>
         component.classList.add(cls)
       );
 
-      /* Never restore 'selected' highlight state */
+      /** Never restore 'selected' highlight state */
       component.classList.remove('selected');
 
-      /* Remove resize handle in non-editable mode */
+      /** Remove resize handle in non-editable mode */
       if (editable === false) {
         component.classList.remove('component-resizer');
       }
 
-      /* Restore video source and hide the upload placeholder */
+      /** Restore video source and hide the upload placeholder */
       if (componentData.type === 'video' && componentData.videoSrc) {
         const videoElement = component.querySelector(
           'video'
-        ) as HTMLVideoElement;
+        ) as HTMLVideoElement | null;
         const uploadText = component.querySelector(
           '.upload-text'
-        ) as HTMLElement;
-        videoElement.src = componentData.videoSrc;
-        videoElement.style.display = 'block';
-        uploadText.style.display = 'none';
+        ) as HTMLElement | null;
+        if (videoElement) {
+          videoElement.src = componentData.videoSrc;
+          videoElement.style.display = 'block';
+        }
+        if (uploadText) uploadText.style.display = 'none';
       }
 
       if (componentData.inlineStyle) {
         component.setAttribute('style', componentData.inlineStyle);
       }
 
-      /* Restore any computed styles captured at save time */
-      if (componentData.computedStyle) {
-        Object.keys(componentData.computedStyle).forEach(prop => {
-          component.style.setProperty(prop, componentData.computedStyle[prop]);
-        });
-      }
-
-      /* Re-apply all data-* attributes */
+      /** Re-apply all data-* attributes */
       if (componentData.dataAttributes) {
         Object.entries(componentData.dataAttributes).forEach(([key, value]) => {
-          component.setAttribute(key, value as string);
+          component.setAttribute(key, value);
         });
       }
 
@@ -234,7 +231,7 @@ export class CanvasStateManager {
         CanvasDragHandler.addDraggableListeners(component);
       }
 
-      /* Component-specific post-restore hooks */
+      /** Component-specific post-restore hooks */
       if (component.classList.contains('container-component')) {
         ContainerComponent.restoreContainer(component, editable);
       }
@@ -249,7 +246,7 @@ export class CanvasStateManager {
       if (componentData.type === 'image') {
         ImageComponent.restoreImageUpload(
           component,
-          componentData.imageSrc,
+          componentData.imageSrc ?? '',
           editable
         );
       }
@@ -263,7 +260,7 @@ export class CanvasStateManager {
       CanvasSharedState.components.push(component);
     });
 
-    /* Re-initialise the grid drop-preview overlay after all components are placed */
+    /** Re-initialise the grid drop-preview overlay after all components are placed */
     gridManager.initializeDropPreview(canvasElement);
   }
 }

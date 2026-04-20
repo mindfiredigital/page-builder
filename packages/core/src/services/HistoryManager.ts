@@ -1,12 +1,11 @@
 import { Canvas } from '../canvas/Canvas';
 
 export class HistoryManager {
-  private undoStack: any[] = [];
-  private redoStack: any[] = [];
-  private canvas: Canvas;
+  private undoStack: PageBuilderDesign[] = [];
+  private redoStack: PageBuilderDesign[] = [];
 
-  constructor(canvas: Canvas) {
-    this.canvas = canvas;
+  constructor(_canvas: HTMLElement) {
+    /** canvas element kept for API compatibility but state is read via Canvas.getState() */
   }
 
   /**
@@ -14,22 +13,22 @@ export class HistoryManager {
    * Clears the redo stack when a new action is made.
    * Limits the undo stack size to a maximum of 20 entries.
    */
-  captureState() {
+  captureState(): void {
     const state = Canvas.getState();
 
     if (state.length > 0) {
       const lastState = this.undoStack[this.undoStack.length - 1];
 
-      // Only capture the state if it's different from the last state
+      /** Only capture the state if it's different from the last state */
       if (JSON.stringify(state) !== JSON.stringify(lastState)) {
         this.undoStack.push(state);
 
-        // Limit the undo stack size to a maximum of 20 entries
+        /** Limit the undo stack size to a maximum of 20 entries */
         if (this.undoStack.length > 20) {
           this.undoStack.shift();
         }
 
-        // Clear the redo stack as a new action is made
+        /** Clear the redo stack as a new action is made */
         this.redoStack = [];
       }
     } else {
@@ -42,18 +41,18 @@ export class HistoryManager {
    * Save the current state to the redo stack before undoing.
    * Restores the previous state if available.
    */
-  undo() {
+  undo(): void {
     if (this.undoStack.length > 1) {
-      const currentState = this.undoStack.pop();
+      const currentState = this.undoStack.pop()!;
       this.redoStack.push(currentState);
 
       const previousState = this.undoStack[this.undoStack.length - 1];
       Canvas.restoreState(previousState);
     } else if (this.undoStack.length === 1) {
-      const initialState = this.undoStack.pop();
+      const initialState = this.undoStack.pop()!;
       this.redoStack.push(initialState);
 
-      // Load existing layout from local storage and render, if any else empty the canvas
+      /** Load existing layout from local storage and render, if any else empty the canvas */
       const savedState = Canvas.jsonStorage.load();
       savedState ? Canvas.restoreState(savedState) : Canvas.restoreState([]);
     } else {
@@ -66,9 +65,9 @@ export class HistoryManager {
    * Save the current state to the undo stack before redoing.
    * Restores the next state if available.
    */
-  redo() {
+  redo(): void {
     if (this.redoStack.length > 0) {
-      const nextState = this.redoStack.pop();
+      const nextState = this.redoStack.pop()!;
       this.undoStack.push(nextState);
 
       Canvas.restoreState(nextState);

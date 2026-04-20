@@ -9,12 +9,9 @@ export declare class TableComponent {
     isPreview: boolean | undefined,
     tableAttributeConfig: ComponentAttribute[] | undefined | [] | null
   ): HTMLElement;
-  evaluateRowVisibility(
-    inputValues: Record<string, any>,
-    table?: HTMLElement
-  ): void;
-  seedFormulaValues(values: Record<string, any>): void;
-  updateInputValues(values: Record<string, any>): void;
+  evaluateRowVisibility(values: AttributeValues, table?: HTMLElement): void;
+  seedFormulaValues(values: AttributeValues): void;
+  updateInputValues(values: AttributeValues): void;
   updateCellContent(cell: HTMLElement, attribute: ComponentAttribute): void;
   addRows(tableWrapper: HTMLElement, tableId: string, count?: number): void;
   setModalComponent(modalComponent: ModalComponent): void;

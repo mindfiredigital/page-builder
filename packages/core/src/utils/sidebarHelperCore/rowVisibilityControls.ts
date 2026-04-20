@@ -1,10 +1,17 @@
 import { Canvas } from '../../canvas/Canvas';
 
-/* SVG icons used inside the rule builder UI */
 const ADD_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M5 12h14M12 5v14"/></svg>`;
 const DELETE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>`;
 
-/* Populates the functions panel with a visibility-rule builder for a table row */
+/** Shape of a single visibility rule stored in the row's data attribute */
+interface VisibilityRule {
+  inputKey: string;
+  operator: string;
+  value: string;
+  action: string;
+}
+
+/** Populates the functions panel with a visibility-rule builder for a table row */
 export function populateRowVisibilityControls(
   row: HTMLElement,
   inputs: ComponentAttribute[]
@@ -46,7 +53,7 @@ export function populateRowVisibilityControls(
     </div>
   `;
 
-  /* Populate the input-key dropdown from the passed Input-type attributes */
+  /** Populate the input-key dropdown from the passed Input-type attributes */
   const inputKeySelect = document.getElementById(
     'rule-input-key-select'
   ) as HTMLSelectElement;
@@ -73,12 +80,14 @@ export function populateRowVisibilityControls(
     'rule-action-select'
   ) as HTMLSelectElement;
 
-  /* Re-renders the entire rule list from the row's data attribute */
+  /** Re-renders the entire rule list from the row's data attribute */
   const renderRules = (): void => {
     rulesList.innerHTML = '';
-    const rules = JSON.parse(row.getAttribute('data-visibility-rules') || '[]');
+    const rules: VisibilityRule[] = JSON.parse(
+      row.getAttribute('data-visibility-rules') || '[]'
+    );
 
-    rules.forEach((rule: any, index: number) => {
+    rules.forEach((rule, index) => {
       const ruleItem = document.createElement('div');
       ruleItem.className = 'rule-item';
       ruleItem.innerHTML = `
@@ -91,7 +100,7 @@ export function populateRowVisibilityControls(
         <button class="delete-rule-btn">${DELETE_ICON}</button>
       `;
 
-      /* Each rule row gets its own scoped delete handler */
+      /** Each rule row gets its own scoped delete handler */
       (
         ruleItem.querySelector('.delete-rule-btn') as HTMLButtonElement
       ).addEventListener('click', () => {
@@ -104,7 +113,7 @@ export function populateRowVisibilityControls(
     });
   };
 
-  /* Add rule on button click then refresh the list */
+  /** Add rule on button click then refresh the list */
   addRuleBtn.addEventListener('click', () => {
     addRule(row, {
       inputKey: inputKeySelect.value,
@@ -119,10 +128,10 @@ export function populateRowVisibilityControls(
   renderRules();
 }
 
-/* Appends a new rule object to the row's data-visibility-rules JSON attribute */
-function addRule(row: HTMLElement, rule: any): void {
+/** Appends a new rule object to the row's data-visibility-rules JSON attribute */
+function addRule(row: HTMLElement, rule: VisibilityRule): void {
   try {
-    const existingRules = JSON.parse(
+    const existingRules: VisibilityRule[] = JSON.parse(
       row.getAttribute('data-visibility-rules') || '[]'
     );
     existingRules.push(rule);
@@ -132,10 +141,10 @@ function addRule(row: HTMLElement, rule: any): void {
   }
 }
 
-/* Removes the rule at the given index from the row's data-visibility-rules */
+/** Removes the rule at the given index from the row's data-visibility-rules */
 function deleteRule(row: HTMLElement, index: number): void {
   try {
-    const existingRules = JSON.parse(
+    const existingRules: VisibilityRule[] = JSON.parse(
       row.getAttribute('data-visibility-rules') || '[]'
     );
     existingRules.splice(index, 1);
