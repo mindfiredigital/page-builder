@@ -1,13 +1,5 @@
 /** Handles conditional row visibility based on dynamic input values and rules */
 
-/** Shape of a single serialised visibility rule stored on a table row */
-interface VisibilityRule {
-  inputKey: string;
-  operator: string;
-  value: string;
-  action: 'show' | 'hide';
-}
-
 /** Evaluates and applies show/hide visibility to all table rows matching the given rules */
 export function EvaluateRowVisibility(
   inputValues: AttributeValues,

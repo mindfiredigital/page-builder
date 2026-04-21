@@ -165,6 +165,14 @@ declare global {
 
   /** Values returned from the modal after the user selects a field */
   type ModalResult = Record<string, string | number | boolean>;
+
+  /** Shape of a single serialised visibility rule stored on a table row */
+  interface VisibilityRule {
+    inputKey: string;
+    operator: string;
+    value: string;
+    action: 'show' | 'hide';
+  }
 }
 
 export {};
