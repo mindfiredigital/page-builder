@@ -1,5 +1,3 @@
-import { ComponentAttribute } from './ModalTypes';
-
 /* Clears and rebuilds the form inside the modal content container */
 export function renderForm(
   contentContainer: HTMLElement,
