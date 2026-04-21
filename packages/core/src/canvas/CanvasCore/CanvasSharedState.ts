@@ -1,4 +1,3 @@
-import type { LayoutMode } from './CanvasTypes';
 import type { HistoryManager } from '../../services/HistoryManager';
 import type { JSONStorage } from '../../services/JSONStorage';
 import type { ComponentControlsManager } from '../ComponentControls';

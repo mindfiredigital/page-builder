@@ -23,8 +23,6 @@ import { CanvasComponentFactory } from './CanvasCore/CanvasComponentFactory';
 import { CanvasDragHandler } from './CanvasCore/CanvasDragHandler';
 import { CanvasDropHandler } from './CanvasCore/CanvasDropHandler';
 
-import type { LayoutMode } from './CanvasCore/CanvasTypes';
-
 export class Canvas {
   /* ── Accessors for shared state ──────────────────────────────────────── */
 

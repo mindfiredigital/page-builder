@@ -1,5 +1,6 @@
 import { Canvas } from '../../canvas/Canvas';
-import { MINIMUM_SIZE, RESIZER_POSITIONS } from './ContainerTypes';
+import { RESIZER_POSITIONS } from '../../constants';
+import { MINIMUM_SIZE } from '../../constants';
 
 /* Manages corner-handle resizing for a container element */
 export class ContainerResizeHandler {

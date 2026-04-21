@@ -126,6 +126,33 @@ declare global {
     CustomizationSidebar?: CustomizationSidebarAPI;
     customComponents?: Record<string, CustomComponentEntry>;
   }
+
+  /* Shared type declarations used across Canvas modules */
+
+  type LayoutMode = 'grid' | 'absolute';
+
+  interface CanvasState {
+    components: HTMLElement[];
+    canvasElement: HTMLElement;
+    sidebarElement: HTMLElement;
+    editable: boolean | null;
+    layoutMode: LayoutMode;
+    lastCanvasWidth: number | null;
+  }
+
+  /* Attribute config types for component factories */
+  interface ComponentFactoryConfig {
+    tableAttributeConfig?: ComponentAttribute[];
+    textAttributeConfig?: ComponentAttribute[];
+    headerAttributeConfig?: ComponentAttribute[];
+    ImageAttributeConfig?: Function;
+  }
+
+  /* Describes a single resizer handle — its CSS class and cursor style */
+  interface ResizerPosition {
+    class: string;
+    cursor: string;
+  }
 }
 
 export {};

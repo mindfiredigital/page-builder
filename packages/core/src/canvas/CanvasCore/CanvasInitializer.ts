@@ -9,7 +9,6 @@ import { ComponentControlsManager } from '../ComponentControls';
 import { GridManager } from '../GridManager';
 import { DragDropManager } from '../DragDropManager';
 import { DeleteElementHandler } from '../DeleteElement';
-import type { LayoutMode } from './CanvasTypes';
 
 /* Bootstraps every sub-system; called once at application startup */
 export class CanvasInitializer {
