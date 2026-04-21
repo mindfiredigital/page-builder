@@ -1,19 +1,6 @@
 import { svgs } from '../../icons/svgs';
 import LayersViewController from '../LayerViewController';
 
-/* Shared state injected from CustomizationSidebar.init() */
-export interface TabManagerState {
-  sidebarElement: HTMLElement;
-  componentNameHeader: HTMLElement;
-  controlsContainer: HTMLElement;
-  functionsPanel: HTMLDivElement;
-  layersView: HTMLDivElement;
-  editable: boolean | null;
-  showAttributeTab?: boolean;
-  onCustomizeTab: () => void;
-  onAttributeTab: () => void;
-}
-
 /* Creates the tab toggle bar and wires click handlers */
 export function buildTabToggle(state: TabManagerState): HTMLDivElement {
   const layersModeToggle = document.createElement('div');

@@ -4,7 +4,6 @@ export {
   switchToAttributeMode,
   switchToLayersMode,
 } from './SidebarTabManager';
-export type { TabManagerState } from './SidebarTabManager';
 export {
   populateCssControls,
   disableControlWrapper,

@@ -1,4 +1,3 @@
-import type { LayoutMode } from './CanvasTypes';
 export declare class CanvasInitializer {
   private static deleteElementHandler;
   static init(

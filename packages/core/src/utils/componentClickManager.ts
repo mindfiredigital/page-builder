@@ -1,5 +1,4 @@
 import { ModalComponent } from '../components/ModalManager';
-import type { ModalResult } from '../components/ModalCore';
 
 /**
  * Reusable function to handle clicks on various components.

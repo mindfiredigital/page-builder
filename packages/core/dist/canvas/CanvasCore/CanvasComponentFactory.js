@@ -11,7 +11,7 @@ import {
   ThreeColumnContainer,
   TableComponent,
   LinkComponent,
-} from '../../components/index.js';
+} from '../../components.js';
 import { LandingPageTemplate } from '../../templates/LandingPageTemplate.js';
 /** Builds and registers all supported component types */
 export class CanvasComponentFactory {

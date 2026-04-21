@@ -8,7 +8,7 @@ import {
   LinkComponent,
   HeaderComponent,
   TextComponent,
-} from '../../components/index.js';
+} from '../../components.js';
 import { MultiColumnContainer } from '../../services/MultiColumnContainer.js';
 /** Serialises and deserialises the canvas DOM into/from PageBuilderDesign */
 export class CanvasStateManager {

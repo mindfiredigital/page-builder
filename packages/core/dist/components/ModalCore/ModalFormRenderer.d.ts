@@ -1,4 +1,3 @@
-import { ComponentAttribute } from './ModalTypes';
 export declare function renderForm(
   contentContainer: HTMLElement,
   attributes: ComponentAttribute[]

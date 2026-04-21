@@ -1,4 +1,19 @@
-import type { LayoutMode } from './CanvasCore/CanvasTypes';
+/**
+ * Canvas.ts — Public facade
+ *
+ * All logic has been extracted into focused modules under /CanvasCore/.
+ * This file re-exports a unified Canvas class so that existing import sites
+ * (e.g. `import { Canvas } from './Canvas'`) continue to work without change.
+ *
+ * Module map:
+ *  CanvasSharedState     → mutable singleton (components[], canvasElement, etc.)
+ *  CanvasInitializer     → init() bootstrap
+ *  CanvasStateManager    → getState() / restoreState()
+ *  CanvasEventDispatcher → dispatchDesignChange() + event wiring
+ *  CanvasComponentFactory→ createComponent() / generateUniqueClass()
+ *  CanvasDragHandler     → addDraggableListeners()
+ *  CanvasDropHandler     → onDrop()
+ */
 export declare class Canvas {
   static get controlsManager(): import('./ComponentControls').ComponentControlsManager;
   static get historyManager(): import('../services/HistoryManager').HistoryManager;

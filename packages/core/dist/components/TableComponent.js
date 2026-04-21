@@ -1,3 +1,4 @@
+/* Main TableComponent class — composes all TableCore modules into the original public API */
 import { Canvas } from '../canvas/Canvas.js';
 import { ModalComponent } from './ModalManager.js';
 import {

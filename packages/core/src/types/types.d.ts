@@ -171,7 +171,7 @@ declare global {
     inputKey: string;
     operator: string;
     value: string;
-    action: 'show' | 'hide';
+    action: string;
   }
 
   interface NavButton {
@@ -188,6 +188,22 @@ declare global {
     prevViewBox: string | null;
     prevStyle: string;
     addedViewBox: boolean;
+  }
+
+  /** Union of all valid values that can be passed as a category's component list */
+  type CategoryComponents = BasicComponent[] | string[] | CustomComponentConfig;
+
+  /* Shared state injected from CustomizationSidebar.init() */
+  interface TabManagerState {
+    sidebarElement: HTMLElement;
+    componentNameHeader: HTMLElement;
+    controlsContainer: HTMLElement;
+    functionsPanel: HTMLDivElement;
+    layersView: HTMLDivElement;
+    editable: boolean | null;
+    showAttributeTab?: boolean;
+    onCustomizeTab: () => void;
+    onAttributeTab: () => void;
   }
 }
 

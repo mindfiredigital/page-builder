@@ -1,4 +1,3 @@
-export { MINIMUM_SIZE, RESIZER_POSITIONS } from './ContainerTypes.js';
 export { injectResizerStyles } from './ContainerStyles.js';
 export { ContainerResizeHandler } from './ContainerResizeHandler.js';
 export { handleContainerDrop } from './ContainerDropHandler.js';

@@ -1,8 +1,5 @@
 import { buildSidebarItem, buildCustomSidebarItem } from './SidebarItemBuilder';
 
-/** Union of all valid values that can be passed as a category's component list */
-type CategoryComponents = BasicComponent[] | string[] | CustomComponentConfig;
-
 /* Renders a single category block (Basic, Extra, or Custom) into the menu div */
 export function renderCategory(
   category: string,

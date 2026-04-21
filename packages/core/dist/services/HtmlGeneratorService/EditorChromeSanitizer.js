@@ -3,7 +3,7 @@ import {
   EDITOR_CLASSES_TO_REMOVE,
   EDITOR_NODES_SELECTOR,
   SVG_ACCESSIBILITY_SELECTOR,
-} from './Constants.js';
+} from './../../constants.js';
 /* ─── EditorChromeSanitizer ───────────────────────────────────────────────────
    Removes every trace of editor UI from a cloned canvas element before the
    clone's innerHTML is written into the exported HTML file. Operates only on

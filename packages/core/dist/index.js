@@ -5,7 +5,7 @@ class t {
   static dispatchDesignChange() {
     const { canvasElement: t, editable: A, jsonStorage: n } = e;
     if (t && !1 !== A) {
-      const e = E.getState(),
+      const e = T.getState(),
         A = new CustomEvent('design-change', {
           detail: e,
           bubbles: !0,
@@ -37,7 +37,7 @@ class t {
         t &&
           Promise.resolve()
             .then(function () {
-              return ne;
+              return ce;
             })
             .then(({ CustomizationSidebar: e }) => {
               e.showSidebar(t.id);
@@ -243,7 +243,7 @@ class n {
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
-      P.dispatchDesignChange());
+      z.dispatchDesignChange());
   }
   updateInputValues(e) {
     (document.querySelectorAll('.text-component').forEach(t => {
@@ -260,7 +260,7 @@ class n {
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
-      P.dispatchDesignChange());
+      z.dispatchDesignChange());
   }
   updateTextContent(e, t) {
     const A = e.querySelector('.component-controls'),
@@ -278,7 +278,7 @@ class n {
           (r.textContent = String(t.value)),
       A && e.appendChild(A),
       n && e.appendChild(n),
-      P.dispatchDesignChange());
+      z.dispatchDesignChange());
   }
   static restore(e) {
     const t = e.closest('.text-component'),
@@ -424,7 +424,7 @@ class s {
             ((r.style.display = 'block'),
               (A.style.display = 'none'),
               (t.style.backgroundColor = 'transparent'),
-              null == P || P.dispatchDesignChange());
+              null == z || z.dispatchDesignChange());
           }
         });
       }),
@@ -554,7 +554,7 @@ class a {
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
-      P.dispatchDesignChange());
+      z.dispatchDesignChange());
   }
   updateInputValues(e) {
     (document.querySelectorAll('.header-component').forEach(t => {
@@ -571,7 +571,7 @@ class a {
         A && t.appendChild(A),
         n && t.appendChild(n));
     }),
-      P.dispatchDesignChange());
+      z.dispatchDesignChange());
   }
   updateHeaderContent(e, t) {
     const A = e.querySelector('.component-controls'),
@@ -588,7 +588,7 @@ class a {
           (r.textContent = String(t.value)),
       A && e.appendChild(A),
       n && e.appendChild(n),
-      P.dispatchDesignChange());
+      z.dispatchDesignChange());
   }
   static restore(e) {
     const t = e.closest('.header-component'),
@@ -629,8 +629,82 @@ const l = 20,
     { class: 'top-right', cursor: 'nesw-resize' },
     { class: 'bottom-left', cursor: 'nesw-resize' },
     { class: 'bottom-right', cursor: 'nwse-resize' },
+  ],
+  u = [
+    'component-controls',
+    'delete-icon',
+    'component-label',
+    'column-label',
+    'resizers',
+    'resizer',
+    'upload-btn',
+    'component-resizer',
+    'drop-preview',
+    'edit-link-form',
+    'edit-link',
+  ],
+  d = [
+    '.component-controls',
+    '.delete-icon',
+    '.component-label',
+    '.column-label',
+    '.resizers',
+    '.resizer',
+    '.drop-preview',
+    '.upload-btn',
+    '.edit-link',
+    '.edit-link-form',
+    '.cell-controls',
+    '.add-row-button',
+    '.add-multiple-rows-button',
+    '.table-btn-container',
+    '.drop-preview.visible',
+    'input:not([type="radio"])',
+  ].join(', '),
+  h = ['contenteditable', 'draggable'],
+  f = [
+    'left',
+    'top',
+    'right',
+    'bottom',
+    'position',
+    'margin-left',
+    'margin-right',
+    'width',
+    'height',
+    'min-width',
+    'max-width',
+    'min-height',
+    'max-height',
+    'cursor',
+    'resize',
+    'inline-size',
+    'block-size',
+    'min-inline-size',
+    'min-block-size',
+    'max-inline-size',
+    'max-block-size',
+  ],
+  p = [
+    'component-controls',
+    'delete-icon',
+    'component-label',
+    'resizers',
+    'resizer',
+    'upload-btn',
+    'edit-link-form',
+    'edit-link',
+  ],
+  g = ['path', 'circle', 'rect', 'polygon'],
+  m = [
+    'fill',
+    'stroke',
+    'stroke-width',
+    'opacity',
+    'fill-opacity',
+    'stroke-opacity',
   ];
-class u {
+class w {
   constructor(e, t) {
     ((this.originalWidth = 0),
       (this.originalHeight = 0),
@@ -677,7 +751,7 @@ class u {
         (window.removeEventListener('mousemove', this.resize),
           window.removeEventListener('mouseup', this.stopResize),
           (this.currentResizer = null),
-          P.historyManager.captureState());
+          z.historyManager.captureState());
       }),
       (this.element = e),
       (this.resizersEl = t));
@@ -707,7 +781,7 @@ class u {
       window.addEventListener('mouseup', this.stopResize));
   }
 }
-function d(e) {
+function y(e) {
   (e.addEventListener('dragstart', t => {
     t.target === e && t.stopPropagation();
   }),
@@ -720,10 +794,10 @@ function d(e) {
             ? void 0
             : A.getData('component-type');
         if (!n) return;
-        const r = P.createComponent(n);
+        const r = z.createComponent(n);
         if (!r) return;
         const s = e.classList[2],
-          i = P.generateUniqueClass(n, !0, s);
+          i = z.generateUniqueClass(n, !0, s);
         r.classList.add(i);
         const o = document.createElement('span');
         ((o.className = 'component-label'),
@@ -732,15 +806,15 @@ function d(e) {
           (r.id = i),
           (o.style.display = 'none'),
           r.appendChild(o),
-          'absolute' === P.layoutMode
+          'absolute' === z.layoutMode
             ? ((r.style.position = 'absolute'),
               (r.style.left = `${t.offsetX}px`),
               (r.style.top = `${t.offsetY}px`),
-              P.addDraggableListeners(r))
-            : 'grid' === P.layoutMode &&
+              z.addDraggableListeners(r))
+            : 'grid' === z.layoutMode &&
               e.classList.add('container-grid-active'),
           e.appendChild(r),
-          P.historyManager.captureState());
+          z.historyManager.captureState());
       })(e, t)
     ),
     e.addEventListener('dragover', e => e.preventDefault()),
@@ -755,8 +829,8 @@ function d(e) {
       t.target === e && e.classList.remove('container-highlight');
     }));
 }
-function h(e, t) {
-  const A = 'grid' === P.layoutMode;
+function v(e, t) {
+  const A = 'grid' === z.layoutMode;
   (!1 === t || A
     ? e.querySelectorAll('.resizers').forEach(e => e.remove())
     : (function (e) {
@@ -766,7 +840,7 @@ function h(e, t) {
           t.remove();
         const A = document.createElement('div');
         (A.classList.add('resizers'),
-          new u(e, A).addResizeHandles(),
+          new w(e, A).addResizeHandles(),
           e.appendChild(A));
       })(e),
     e.querySelectorAll('.editable-component').forEach(e => {
@@ -774,7 +848,7 @@ function h(e, t) {
       const i = e;
       if (
         (!1 !== t
-          ? (P.controlsManager.addControlButtons(i),
+          ? (z.controlsManager.addControlButtons(i),
             A
               ? (i.classList.remove('component-resizer'),
                 i.removeAttribute('draggable'),
@@ -782,7 +856,7 @@ function h(e, t) {
                 (i.style.position = ''),
                 (i.style.left = ''),
                 (i.style.top = ''))
-              : (P.addDraggableListeners(i),
+              : (z.addDraggableListeners(i),
                 (i.style.position = 'absolute'),
                 i.classList.add('component-resizer')),
             i.addEventListener('mouseenter', e =>
@@ -818,10 +892,10 @@ function h(e, t) {
             : null;
         s.restoreImageUpload(i, null != e ? e : '', t);
       }
-      i.classList.contains('container-component') && h(i, t);
+      i.classList.contains('container-component') && v(i, t);
     }));
 }
-class f {
+class B {
   constructor() {
     if (
       ((this.element = document.createElement('div')),
@@ -829,9 +903,9 @@ class f {
       (this.resizers = document.createElement('div')),
       this.resizers.classList.add('resizers'),
       this.element.appendChild(this.resizers),
-      'absolute' === P.layoutMode)
+      'absolute' === z.layoutMode)
     ) {
-      new u(this.element, this.resizers).addResizeHandles();
+      new w(this.element, this.resizers).addResizeHandles();
     }
     (!(function () {
       const e = document.createElement('style');
@@ -839,16 +913,16 @@ class f {
         '\n    .resizer {\n      width: 10px;\n      height: 10px;\n      border-radius: 50%;\n      background: white;\n      border: 2px solid #4286f4;\n      position: absolute;\n    }\n\n    .resizer.top-left {\n      left: -5px;\n      top: -5px;\n      cursor: nwse-resize;\n    }\n\n    .resizer.top-right {\n      right: -5px;\n      top: -5px;\n      cursor: nesw-resize;\n    }\n\n    .resizer.bottom-left {\n      left: -5px;\n      bottom: -5px;\n      cursor: nesw-resize;\n    }\n\n    .resizer.bottom-right {\n      right: -5px;\n      bottom: -5px;\n      cursor: nwse-resize;\n    }\n  '),
         document.head.appendChild(e));
     })(),
-      d(this.element));
+      y(this.element));
   }
   create() {
     return this.element;
   }
   static restoreContainer(e, t) {
-    h(e, t);
+    v(e, t);
   }
 }
-class p {
+class b {
   constructor(e, t = `${e}Col-component`) {
     ((this.columnCount = e),
       (this.element = document.createElement('div')),
@@ -880,7 +954,7 @@ class p {
         ? void 0
         : t.getData('component-type');
     if (!A) return;
-    const n = P.createComponent(A);
+    const n = z.createComponent(A);
     if (!n) return;
     const r = e.target;
     if (r && r.classList.contains('column')) {
@@ -893,7 +967,7 @@ class p {
         (t.className = 'column-label'),
         r.appendChild(t)),
         (t.textContent = e));
-      const s = P.generateUniqueClass(A, !0, e);
+      const s = z.generateUniqueClass(A, !0, e);
       (n.classList.add(s), (n.id = s));
       let i = n.querySelector('.component-label');
       (i ||
@@ -902,7 +976,7 @@ class p {
         i.setAttribute('contenteditable', 'false'),
         n.appendChild(i)),
         (i.textContent = s),
-        P.historyManager.captureState());
+        z.historyManager.captureState());
     }
   }
   addStyles(e) {
@@ -918,8 +992,8 @@ class p {
       var t, A;
       const n = e;
       if (
-        (P.controlsManager.addControlButtons(n),
-        P.addDraggableListeners(n),
+        (z.controlsManager.addControlButtons(n),
+        z.addDraggableListeners(n),
         n.classList.contains('image-component'))
       ) {
         const e =
@@ -932,21 +1006,21 @@ class p {
             : null;
         s.restoreImageUpload(n, null != e ? e : '', null);
       }
-      n.classList.contains('container-component') && f.restoreContainer(n);
+      n.classList.contains('container-component') && B.restoreContainer(n);
     });
   }
 }
-class g extends p {
+class C extends b {
   constructor() {
     super(2, 'twoCol-component');
   }
 }
-class m extends p {
+class x extends b {
   constructor() {
     super(3, 'threeCol-component');
   }
 }
-function w(e, t) {
+function _(e, t) {
   const A = e.parentElement;
   if (!A) return;
   const n = Array.from(A.parentElement.children).indexOf(A),
@@ -956,10 +1030,10 @@ function w(e, t) {
     const t = e.id.match(/-C(\d+)$/);
     t && (s = Math.max(s, parseInt(t[1], 10)));
   });
-  const i = B(n, s + 1, t);
+  const i = Q(n, s + 1, t);
   (A.appendChild(i), (A.style.gridTemplateColumns = `repeat(${r + 1}, 1fr)`));
 }
-function y(e) {
+function j(e) {
   const t = e.parentElement;
   if (!t) return;
   const A = t.children.length;
@@ -968,7 +1042,7 @@ function y(e) {
     e && e.children.length > 1 && e.removeChild(t);
   } else t.style.gridTemplateColumns = `repeat(${A - 1}, 1fr)`;
 }
-function v(e, t, A) {
+function F(e, t, A) {
   const n = document.createElement('div');
   ((n.style.display = 'grid'),
     (n.style.gridTemplateColumns = `repeat(${t}, 1fr)`),
@@ -977,12 +1051,12 @@ function v(e, t, A) {
     (n.style.position = 'relative'),
     (n.style.cursor = 'pointer'));
   for (let r = 0; r < t; r++) {
-    const t = B(e, r, A);
+    const t = Q(e, r, A);
     n.appendChild(t);
   }
   return n;
 }
-function B(e, t, A) {
+function Q(e, t, A) {
   const n = document.createElement('div');
   ((n.className = 'table-cell'),
     (n.style.border = '1px solid #2F3132'),
@@ -1030,7 +1104,7 @@ function B(e, t, A) {
       i.style.backgroundColor = '#10b981';
     }),
     i.addEventListener('click', e => {
-      (e.stopPropagation(), w(n, A));
+      (e.stopPropagation(), _(n, A));
     }));
   const o = document.createElement('button');
   return (
@@ -1055,7 +1129,7 @@ function B(e, t, A) {
       o.style.backgroundColor = '#ef4444';
     }),
     o.addEventListener('click', e => {
-      (e.stopPropagation(), y(n));
+      (e.stopPropagation(), j(n));
     }),
     r.appendChild(i),
     r.appendChild(o),
@@ -1064,18 +1138,18 @@ function B(e, t, A) {
     n
   );
 }
-function b(e, t, A = 1) {
+function U(e, t, A = 1) {
   const n = e.children,
     r = n.length;
   let s = 1;
   r > 0 && (s = n[0].children.length);
   for (let n = 0; n < A; n++) {
-    const A = v(r + n, s, t);
+    const A = F(r + n, s, t);
     e.appendChild(A);
   }
-  P.historyManager.captureState();
+  z.historyManager.captureState();
 }
-function C(e, t) {
+function E(e, t) {
   (t
     ? t.querySelectorAll('.table-row')
     : document.querySelectorAll('.table-row')
@@ -1123,15 +1197,15 @@ function C(e, t) {
     else t.style.display = 'grid';
   });
 }
-class x {
+class L {
   constructor() {
     ((this.modalComponent = null), (this.modalComponent = new A() || null));
   }
   create(e, t, A = !1, n) {
-    x.tableAttributeConfig = n || [];
+    L.tableAttributeConfig = n || [];
     const r = document.createElement('div');
     r.classList.add('table-component');
-    const s = P.generateUniqueClass('table');
+    const s = z.generateUniqueClass('table');
     ((r.id = s),
       (r.style.minWidth = '250px'),
       (r.style.border = '1px solid #2F3132'),
@@ -1143,7 +1217,7 @@ class x {
       (i.style.flexDirection = 'column'),
       i.classList.add('table-wrapper'));
     for (let A = 0; A < e; A++) {
-      const e = v(A, t, s);
+      const e = F(A, t, s);
       i.appendChild(e);
     }
     if ((r.appendChild(i), !A)) {
@@ -1192,7 +1266,7 @@ class x {
         }),
         n.addEventListener('click', () => {
           const e = parseInt(A.value) || 1;
-          b(i, s, Math.min(Math.max(e, 1), 20));
+          U(i, s, Math.min(Math.max(e, 1), 20));
         }),
         t.appendChild(A),
         t.appendChild(n),
@@ -1203,7 +1277,7 @@ class x {
     return r;
   }
   evaluateRowVisibility(e, t) {
-    C(e, t);
+    E(e, t);
   }
   seedFormulaValues(e) {
     !(function (e) {
@@ -1221,7 +1295,7 @@ class x {
             A && t.appendChild(A));
         });
       }),
-        P.dispatchDesignChange());
+        z.dispatchDesignChange());
     })(e);
   }
   updateInputValues(e) {
@@ -1238,7 +1312,7 @@ class x {
             (r.textContent = String(e[A]));
         });
       }),
-        P.dispatchDesignChange());
+        z.dispatchDesignChange());
     })(e);
   }
   updateCellContent(e, t) {
@@ -1255,11 +1329,11 @@ class x {
         : (('Constant' === t.type && n) || ('Input' === t.type && n)) &&
           (n.textContent = String(t.value)),
         A && e.appendChild(A),
-        P.dispatchDesignChange());
+        z.dispatchDesignChange());
     })(e, t);
   }
   addRows(e, t, A = 1) {
-    b(e, t, A);
+    U(e, t, A);
   }
   setModalComponent(e) {
     this.modalComponent = e;
@@ -1310,11 +1384,11 @@ class x {
               t = a.querySelector('.delete-cell-button');
             (e &&
               e.addEventListener('click', e => {
-                (e.stopPropagation(), w(n, s));
+                (e.stopPropagation(), _(n, s));
               }),
               t &&
                 t.addEventListener('click', e => {
-                  (e.stopPropagation(), y(n));
+                  (e.stopPropagation(), j(n));
                 }));
           }
         }));
@@ -1325,10 +1399,10 @@ class x {
         ? ((a.value = '1'),
           i.addEventListener('click', () => {
             const e = parseInt(a.value) || 1;
-            b(n, s, Math.min(Math.max(e, 1), 20));
+            U(n, s, Math.min(Math.max(e, 1), 20));
           }))
         : !1 === t && o && o.remove();
-      C(
+      E(
         (function (e) {
           const t = {};
           return (
@@ -1343,10 +1417,10 @@ class x {
         })(A),
         e
       );
-    })(e, t, x.tableAttributeConfig);
+    })(e, t, L.tableAttributeConfig);
   }
 }
-class _ {
+class S {
   constructor() {
     ((this.link = null), (this.isEditing = !1));
   }
@@ -1450,7 +1524,7 @@ class _ {
       }));
   }
 }
-function j(e) {
+function I(e) {
   let t,
     A,
     n,
@@ -1518,9 +1592,9 @@ function j(e) {
       };
   }
 }
-class F {
+class k {
   create() {
-    const e = new f().create();
+    const e = new B().create();
     return (
       e.classList.add('container'),
       Object.assign(e.style, {
@@ -1530,10 +1604,10 @@ class F {
         padding: '20px',
         fontFamily: "'Roboto', sans-serif",
       }),
-      j(e),
+      I(e),
       e.appendChild(
         (function () {
-          const e = new f().create();
+          const e = new B().create();
           (e.classList.add('container'),
             Object.assign(e.style, {
               display: 'flex',
@@ -1542,18 +1616,18 @@ class F {
               marginBottom: '40px',
               width: '100%',
             }),
-            j(e));
+            I(e));
           const t = new n('MyBrand').create();
           Object.assign(t.style, {
             fontSize: '24px',
             fontWeight: 'bold',
             color: '#333',
           });
-          const A = new f().create();
+          const A = new B().create();
           return (
             A.classList.add('container'),
             Object.assign(A.style, { display: 'flex', gap: '20px' }),
-            j(A),
+            I(A),
             ['Home', 'Features', 'Contact'].forEach(e => {
               const t = new n(e).create();
               (Object.assign(t.style, {
@@ -1571,7 +1645,7 @@ class F {
       ),
       e.appendChild(
         (function () {
-          const e = new f().create();
+          const e = new B().create();
           (e.classList.add('container'),
             Object.assign(e.style, {
               textAlign: 'center',
@@ -1580,7 +1654,7 @@ class F {
               borderRadius: '10px',
               marginBottom: '40px',
             }),
-            j(e));
+            I(e));
           const t = new n('Welcome to My Landing Page').create();
           Object.assign(t.style, {
             textAlign: 'center',
@@ -1625,7 +1699,7 @@ class F {
       ),
       e.appendChild(
         (function () {
-          const e = new f().create();
+          const e = new B().create();
           (e.classList.add('container'),
             Object.assign(e.style, {
               textAlign: 'center',
@@ -1633,7 +1707,7 @@ class F {
               marginTop: '40px',
               borderTop: '1px solid #ddd',
             }),
-            j(e));
+            I(e));
           const t = new n('© 2025 MyBrand. All rights reserved.').create();
           return (
             Object.assign(t.style, { fontSize: '14px', color: '#999' }),
@@ -1646,7 +1720,7 @@ class F {
     );
   }
 }
-class Q {
+class N {
   static get factoryMap() {
     const {
       headerAttributeConfig: t,
@@ -1660,19 +1734,19 @@ class Q {
       header: () => new a().create(1, 'Header', t),
       image: () => new s().create(void 0, A),
       video: () => new i(() => c.captureState()).create(),
-      table: () => new x().create(2, 2, void 0, r),
+      table: () => new L().create(2, 2, void 0, r),
       text: () => new n().create(l),
-      container: () => new f().create(),
-      twoCol: () => new g().create(),
-      threeCol: () => new m().create(),
-      landingpage: () => new F().create(),
-      link: () => new _().create(),
+      container: () => new B().create(),
+      twoCol: () => new C().create(),
+      threeCol: () => new x().create(),
+      landingpage: () => new k().create(),
+      link: () => new S().create(),
     };
   }
   static createComponent(A, n = null, r) {
     const { editable: s, layoutMode: i } = e;
     let o = null;
-    const a = Q.factoryMap[A];
+    const a = N.factoryMap[A];
     if (a) o = a();
     else {
       const e = document.querySelector(`[data-component='${A}']`),
@@ -1722,7 +1796,7 @@ class Q {
         e.controlsManager.addControlButtons(o));
     }
     if (o) {
-      const e = Q.generateUniqueClass(A);
+      const e = N.generateUniqueClass(A);
       o.setAttribute('id', e);
       const t = document.createElement('span');
       ((t.className = 'component-label'),
@@ -1768,7 +1842,7 @@ class Q {
     );
   }
 }
-class U {
+class H {
   static addDraggableListeners(A) {
     (A.setAttribute('draggable', 'true'), (A.style.cursor = 'grab'));
     let n = 0,
@@ -1827,7 +1901,7 @@ class U {
       }));
   }
 }
-class E {
+class T {
   static getState() {
     const t = e.canvasElement,
       A = window.getComputedStyle(t),
@@ -1926,7 +2000,7 @@ class E {
       t.forEach(t => {
         var o;
         const l = t.dataAttributes['data-custom-settings'] || null,
-          c = Q.createComponent(t.type, l, t.content);
+          c = N.createComponent(t.type, l, t.content);
         if (!c) return;
         t.classes.includes('custom-component') || (c.innerHTML = t.content);
         const u = c.querySelector('.component-controls');
@@ -1948,20 +2022,20 @@ class E {
             Object.entries(t.dataAttributes).forEach(([e, t]) => {
               c.setAttribute(e, t);
             }),
-          !1 !== r && (i.addControlButtons(c), U.addDraggableListeners(c)),
+          !1 !== r && (i.addControlButtons(c), H.addDraggableListeners(c)),
           c.classList.contains('container-component') &&
-            f.restoreContainer(c, r),
+            B.restoreContainer(c, r),
           (c.classList.contains('twoCol-component') ||
             c.classList.contains('threeCol-component')) &&
-            p.restoreColumn(c),
+            b.restoreColumn(c),
           'image' === t.type &&
             s.restoreImageUpload(
               c,
               null !== (o = t.imageSrc) && void 0 !== o ? o : '',
               r
             ),
-          'table' === t.type && x.restore(c, r),
-          'link' === t.type && _.restore(c),
+          'table' === t.type && L.restore(c, r),
+          'link' === t.type && S.restore(c),
           'header' === t.type && a.restore(c),
           'text' === t.type && n.restore(c),
           A.appendChild(c),
@@ -1970,7 +2044,7 @@ class E {
       o.initializeDropPreview(A));
   }
 }
-class L {
+class P {
   static onDrop(A) {
     var n, r, s;
     A.preventDefault();
@@ -2016,9 +2090,9 @@ class L {
           void setTimeout(() => o.classList.remove('container-highlight'), 300)
         );
     }
-    const p = Q.createComponent(u, d);
+    const p = N.createComponent(u, d);
     if (p && !1 !== e.editable) {
-      const e = Q.generateUniqueClass(u);
+      const e = N.generateUniqueClass(u);
       ((p.id = e),
         p.classList.add(e),
         'absolute' === a
@@ -2026,7 +2100,7 @@ class L {
             ['container', 'twoCol', 'threeCol'].includes(u)
               ? (p.style.top = `${A.offsetY}px`)
               : ((p.style.left = `${h}px`), (p.style.top = `${f}px`)),
-            U.addDraggableListeners(p))
+            H.addDraggableListeners(p))
           : 'grid' === a &&
             ((p.style.position = ''),
             p.hasAttribute('draggable') &&
@@ -2038,12 +2112,12 @@ class L {
     t.dispatchDesignChange();
   }
 }
-class S {
+class O {
   constructor(e) {
     ((this.undoStack = []), (this.redoStack = []));
   }
   captureState() {
-    const e = P.getState();
+    const e = z.getState();
     if (e.length > 0) {
       const t = this.undoStack[this.undoStack.length - 1];
       JSON.stringify(e) !== JSON.stringify(t) &&
@@ -2057,22 +2131,22 @@ class S {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
       const t = this.undoStack[this.undoStack.length - 1];
-      P.restoreState(t);
+      z.restoreState(t);
     } else if (1 === this.undoStack.length) {
       const e = this.undoStack.pop();
       this.redoStack.push(e);
-      const t = P.jsonStorage.load();
-      t ? P.restoreState(t) : P.restoreState([]);
+      const t = z.jsonStorage.load();
+      t ? z.restoreState(t) : z.restoreState([]);
     } else console.warn('No more actions to undo.');
   }
   redo() {
     if (this.redoStack.length > 0) {
       const e = this.redoStack.pop();
-      (this.undoStack.push(e), P.restoreState(e));
+      (this.undoStack.push(e), z.restoreState(e));
     } else console.warn('No more actions to redo.');
   }
 }
-class I {
+class M {
   save(e) {
     localStorage.setItem('pageLayout', JSON.stringify(e));
   }
@@ -2089,7 +2163,7 @@ class I {
     localStorage.removeItem('pageLayout');
   }
 }
-class k {
+class D {
   constructor(e) {
     this.icons = {
       delete:
@@ -2145,7 +2219,7 @@ class k {
       t.dispatchDesignChange());
   }
 }
-class N {
+class R {
   constructor(e = 20) {
     this.cellSize = e;
   }
@@ -2184,7 +2258,7 @@ class N {
     return this.cellSize;
   }
 }
-class H {
+class K {
   constructor(e, t) {
     ((this.canvas = e), (this.sidebar = t));
   }
@@ -2205,11 +2279,11 @@ class H {
     });
   }
 }
-class T {
+class V {
   static init(A = null, n, r, s) {
     ((e.editable = n),
       (e.layoutMode = s),
-      T.applyComponentConfigs(r),
+      V.applyComponentConfigs(r),
       (e.canvasElement = document.getElementById('canvas')),
       (e.sidebarElement = document.getElementById('sidebar')));
     const { canvasElement: i, sidebarElement: o } = e;
@@ -2218,23 +2292,23 @@ class T {
         ? i.classList.add('preview-printable')
         : i.classList.remove('preview-printable')),
       t.attachTableDesignListener(),
-      t.attachDropListeners(L.onDrop.bind(L)),
+      t.attachDropListeners(P.onDrop.bind(P)),
       t.attachClickListeners(e => {
-        T.deleteElementHandler.selectElement(e);
+        V.deleteElementHandler.selectElement(e);
       }),
       i.classList.add('preview-desktop'),
       'grid' === s && i.classList.add('grid-layout-active'),
       (i.style.position = 'relative'),
       (e.lastCanvasWidth = i.offsetWidth),
-      (e.historyManager = new S(i)),
-      (e.jsonStorage = new I()),
-      (e.controlsManager = new k(i)),
-      (e.gridManager = new N()),
+      (e.historyManager = new O(i)),
+      (e.jsonStorage = new M()),
+      (e.controlsManager = new D(i)),
+      (e.gridManager = new R()),
       e.gridManager.initializeDropPreview(i));
-    if ((new H(i, o).enable(), A)) E.restoreState(A);
+    if ((new K(i, o).enable(), A)) T.restoreState(A);
     else {
       const t = e.jsonStorage.load();
-      t && E.restoreState(t);
+      t && T.restoreState(t);
     }
   }
   static applyComponentConfigs(t) {
@@ -2252,7 +2326,7 @@ class T {
           : s.globalExecuteFunction));
   }
 }
-T.deleteElementHandler = new (class {
+V.deleteElementHandler = new (class {
   constructor() {
     ((this.selectedElement = null),
       document.addEventListener('keydown', this.handleKeydown.bind(this)));
@@ -2271,7 +2345,7 @@ T.deleteElementHandler = new (class {
       this.selectedElement.classList.add('selected'));
   }
 })();
-class P {
+class z {
   static get controlsManager() {
     return e.controlsManager;
   }
@@ -2297,7 +2371,7 @@ class P {
     e.components = t;
   }
   static init(e = null, t, A, n) {
-    T.init(e, t, A, n);
+    V.init(e, t, A, n);
   }
   static dispatchDesignChange() {
     t.dispatchDesignChange();
@@ -2311,13 +2385,13 @@ class P {
       t.dispatchDesignChange());
   }
   static getState() {
-    return E.getState();
+    return T.getState();
   }
   static restoreState(e) {
-    E.restoreState(e);
+    T.restoreState(e);
   }
   static onDrop(e) {
-    L.onDrop(e);
+    P.onDrop(e);
   }
   static reorderComponent(A, n) {
     const { components: r } = e;
@@ -2331,16 +2405,16 @@ class P {
       t.dispatchDesignChange());
   }
   static createComponent(e, t = null, A) {
-    return Q.createComponent(e, t, A);
+    return N.createComponent(e, t, A);
   }
   static generateUniqueClass(e, t = !1, A = null) {
-    return Q.generateUniqueClass(e, t, A);
+    return N.generateUniqueClass(e, t, A);
   }
   static addDraggableListeners(e) {
-    U.addDraggableListeners(e);
+    H.addDraggableListeners(e);
   }
 }
-class O {
+class q {
   constructor(e) {
     this.canvas = e;
   }
@@ -2365,7 +2439,7 @@ class O {
       }
   }
 }
-function M(e) {
+function G(e) {
   return e.classList.contains('text-component')
     ? 'text'
     : e.classList.contains('button-component')
@@ -2376,7 +2450,7 @@ function M(e) {
           ? 'container'
           : 'component';
 }
-function D(e, t, A, n) {
+function W(e, t, A, n) {
   Array.from(e.children)
     .filter(
       e =>
@@ -2388,7 +2462,7 @@ function D(e, t, A, n) {
         const n = document.createElement('div');
         ((n.className = 'layer-item'),
           n.setAttribute('data-component-id', e.id),
-          n.setAttribute('data-type', M(e)));
+          n.setAttribute('data-type', G(e)));
         const r = Array.from(e.children).some(
           e =>
             e.classList.contains('editable-component') ||
@@ -2399,7 +2473,7 @@ function D(e, t, A, n) {
         ) {
           var t;
           if (e.id) return e.id;
-          const A = M(e),
+          const A = G(e),
             n =
               Array.from(
                 (null === (t = e.parentElement) || void 0 === t
@@ -2443,10 +2517,10 @@ function D(e, t, A, n) {
             (t.stopPropagation(),
               (function (e, t, A) {
                 (e.remove(), t.remove());
-                const n = P.getComponents().filter(t => t !== e);
-                (P.setComponents(n),
-                  P.historyManager.captureState(),
-                  P.dispatchDesignChange(),
+                const n = z.getComponents().filter(t => t !== e);
+                (z.setComponents(n),
+                  z.historyManager.captureState(),
+                  z.dispatchDesignChange(),
                   A());
               })(e, n, A));
           });
@@ -2476,12 +2550,12 @@ function D(e, t, A, n) {
                     e.classList.add('expanded'));
               })(i, s));
           }),
-          D(e, s, A + 1, n),
+          W(e, s, A + 1, n),
           t.appendChild(s));
       }
     });
 }
-class R {
+class X {
   static updateLayersView() {
     const e = document.getElementById('layers-view');
     if (!e) return;
@@ -2494,7 +2568,7 @@ class R {
     const A = document.createElement('div');
     ((A.className = 'layers-container'), e.appendChild(A));
     const n = document.getElementById('canvas');
-    n && D(n, A, 0, () => this.updateLayersView());
+    n && W(n, A, 0, () => this.updateLayersView());
     const r = document.getElementById('layers-search-input');
     r &&
       r.addEventListener('input', e => {
@@ -2516,7 +2590,7 @@ class R {
       });
   }
 }
-const K = {
+const Y = {
   desktop:
     '<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6C2 4.34315 3.34315 3 5 3H19C20.6569 3 22 4.34315 22 6V15C22 16.6569 20.6569 18 19 18H13V19H15C15.5523 19 16 19.4477 16 20C16 20.5523 15.5523 21 15 21H9C8.44772 21 8 20.5523 8 20C8 19.4477 8.44772 19 9 19H11V18H5C3.34315 18 2 16.6569 2 15V6ZM5 5C4.44772 5 4 5.44772 4 6V15C4 15.5523 4.44772 16 5 16H19C19.5523 16 20 15.5523 20 15V6C20 5.44772 19.5523 5 19 5H5Z" fill="#000000"/>\n                </svg>',
   tablet:
@@ -2563,10 +2637,10 @@ const K = {
   closePreviewBtn:
     '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>',
 };
-function V(e) {
+function J(e) {
   const t = document.createElement('div');
   ((t.className = 'layers-mode-toggle'),
-    (t.innerHTML = `\n    <button id="customize-tab"  title="Customize"  class="active">${K.settings}</button>\n    <button id="attribute-tab"  title="Attribute">${K.attribute}</button>\n    <button id="layers-tab"     title="Layers">${K.menu}</button>\n  `));
+    (t.innerHTML = `\n    <button id="customize-tab"  title="Customize"  class="active">${Y.settings}</button>\n    <button id="attribute-tab"  title="Attribute">${Y.attribute}</button>\n    <button id="layers-tab"     title="Layers">${Y.menu}</button>\n  `));
   const A = t.querySelector('#customize-tab'),
     n = t.querySelector('#attribute-tab'),
     r = t.querySelector('#layers-tab');
@@ -2581,18 +2655,18 @@ function V(e) {
         n.addEventListener('click', () => e.onAttributeTab()),
         r.addEventListener('click', () =>
           (function () {
-            z('layers-tab');
+            Z('layers-tab');
             const e = document.getElementById('layers-view'),
               t = document.getElementById('component-name');
             ((e.style.display = 'block'),
               (t.style.display = 'none'),
-              R.updateLayersView());
+              X.updateLayersView());
           })()
         )),
     t
   );
 }
-function z(e) {
+function Z(e) {
   var t;
   (['customize-tab', 'attribute-tab', 'layers-tab'].forEach(e => {
     var t;
@@ -2604,18 +2678,18 @@ function z(e) {
       void 0 === t ||
       t.classList.add('active'));
 }
-const q = {
+const $ = {
     A4_P: { width: 794, height: 1123 },
     A4_L: { width: 1123, height: 794 },
     LETTER_P: { width: 816, height: 1056 },
   },
-  G = [
+  ee = [
     { value: 'A4_P', label: 'A4 Portrait (794x1123 px)' },
     { value: 'A4_L', label: 'A4 Landscape (1123x794 px)' },
     { value: 'LETTER_P', label: 'Letter Portrait (816x1056 px)' },
     { value: 'CUSTOM', label: 'Custom Size' },
   ];
-function W(e, t, A, n) {
+function te(e, t, A, n) {
   return r(this, void 0, void 0, function* () {
     if (e && t && 0 !== t.length)
       try {
@@ -2636,7 +2710,7 @@ function W(e, t, A, n) {
     else console.warn('Modal component or attribute config not available');
   });
 }
-function X(e, t) {
+function Ae(e, t) {
   document.getElementById('functions-panel').innerHTML =
     '\n    <div id="visibility-rules-panel" class="rules-panel">\n      <h4 class="panel-title">Row Visibility Rules</h4>\n\n      <div id="rules-list" class="rules-list"></div>\n\n      <div class="rule-builder-form">\n        <h5 class="rule-builder-form-title">Add New Rule</h5>\n        <select id="rule-input-key-select" class="form-row select"></select>\n\n        <div class="form-row">\n          <select id="rule-operator-select">\n            <option value="equals">Equals</option>\n            <option value="not_equals">Not Equals</option>\n            <option value="greater_than">Greater Than</option>\n            <option value="less_than">Less Than</option>\n            <option value="contains">Contains</option>\n          </select>\n          <input type="text" id="rule-value-input" placeholder="Enter value">\n        </div>\n\n        <div class="form-row">\n          <select id="rule-action-select">\n            <option value="show">Show Row</option>\n            <option value="hide">Hide Row</option>\n          </select>\n          <button id="add-rule-btn" class="add-rule-btn">\n            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M5 12h14M12 5v14"/></svg>\n            <span>Add Rule</span>\n          </button>\n        </div>\n      </div>\n    </div>\n  ';
   const A = document.getElementById('rule-input-key-select');
@@ -2678,7 +2752,7 @@ function X(e, t) {
                   }
                 })(e, A),
                   a(),
-                  P.dispatchDesignChange());
+                  z.dispatchDesignChange());
               }),
             n.appendChild(r));
         }
@@ -2699,11 +2773,11 @@ function X(e, t) {
       action: o.value,
     }),
       a(),
-      P.dispatchDesignChange());
+      z.dispatchDesignChange());
   }),
     a());
 }
-class Y {
+class ne {
   static createPageSizeSelect(e, t) {
     !(function (e, t) {
       var A, n;
@@ -2728,7 +2802,7 @@ class Y {
             )
           : 0;
       let l = 'CUSTOM';
-      (G.forEach(e => {
+      (ee.forEach(e => {
         const t = document.createElement('option');
         if (
           ((t.value = e.value),
@@ -2736,7 +2810,7 @@ class Y {
           i.appendChild(t),
           'CUSTOM' !== e.value)
         ) {
-          const t = q[e.value];
+          const t = $[e.value];
           t &&
             Math.abs(t.width - o) < 5 &&
             Math.abs(t.height - a) < 5 &&
@@ -2911,7 +2985,7 @@ class Y {
                 (e.style.fontSize = ''),
                 (e.style.fontWeight = ''));
             }
-            (P.dispatchDesignChange(), P.historyManager.captureState(), d());
+            (z.dispatchDesignChange(), z.historyManager.captureState(), d());
           }
         }),
         c.addEventListener('click', () =>
@@ -2919,14 +2993,14 @@ class Y {
             const t = new A();
             if (e.classList.contains('text-component')) {
               const A = new n();
-              yield W(t, n.textAttributeConfig, e, A.updateTextContent);
+              yield te(t, n.textAttributeConfig, e, A.updateTextContent);
             } else if (e.classList.contains('header-component')) {
               const A = new a();
-              yield W(t, a.headerAttributeConfig, e, A.updateHeaderContent);
+              yield te(t, a.headerAttributeConfig, e, A.updateHeaderContent);
             } else if (o) {
-              const A = new x(),
+              const A = new L(),
                 n = e.closest('.table-cell');
-              yield W(t, x.tableAttributeConfig, n, A.updateCellContent);
+              yield te(t, L.tableAttributeConfig, n, A.updateCellContent);
             }
             d();
           })
@@ -2934,10 +3008,10 @@ class Y {
     })(e, t, s);
   }
   static populateRowVisibilityControls(e, t) {
-    X(e, t);
+    Ae(e, t);
   }
 }
-function J(e, t = 'Not supported for inline display') {
+function re(e, t = 'Not supported for inline display') {
   const A = document.getElementById(e);
   if (!A) return;
   const n = A.closest('.control-wrapper');
@@ -2963,13 +3037,13 @@ function J(e, t = 'Not supported for inline display') {
       (e.style.color = '#94a3b8'));
   });
 }
-function Z(e, t, A) {
+function se(e, t, A) {
   t.innerHTML = '';
   const n = getComputedStyle(e),
     r = 'canvas' === e.id.toLowerCase(),
     s = e.dataset.displayIntent || e.style.display || n.display || 'block',
     i = 'inline' === s;
-  (Y.createSelectControl(
+  (ne.createSelectControl(
     'Display',
     'display',
     s,
@@ -2977,21 +3051,21 @@ function Z(e, t, A) {
     t
   ),
     ('flex' !== n.display && 'flex' !== e.style.display) ||
-      (Y.createSelectControl(
+      (ne.createSelectControl(
         'Flex Direction',
         'flex-direction',
         n.flexDirection || 'row',
         ['row', 'row-reverse', 'column', 'column-reverse'],
         t
       ),
-      Y.createSelectControl(
+      ne.createSelectControl(
         'Align Items',
         'align-items',
         n.alignItems || 'stretch',
         ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'],
         t
       ),
-      Y.createSelectControl(
+      ne.createSelectControl(
         'Justify Content',
         'justify-content',
         n.justifyContent || 'flex-start',
@@ -3006,13 +3080,13 @@ function Z(e, t, A) {
         t
       )),
     r &&
-      (Y.createPageSizeSelect(t, e),
-      Y.createControl('Width', 'width', 'number', e.offsetWidth, t, {
+      (ne.createPageSizeSelect(t, e),
+      ne.createControl('Width', 'width', 'number', e.offsetWidth, t, {
         min: 300,
         max: 2e3,
         unit: 'px',
       }),
-      Y.createControl(
+      ne.createControl(
         'Min Height',
         'min-height',
         'number',
@@ -3020,7 +3094,7 @@ function Z(e, t, A) {
         t,
         { min: 0, max: 2e3, unit: 'px' }
       ),
-      Y.createControl(
+      ne.createControl(
         'Margin',
         'margin',
         'number',
@@ -3029,19 +3103,19 @@ function Z(e, t, A) {
         { min: 0, max: 100, unit: 'px' }
       )),
     r ||
-      (Y.createControl('Width', 'width', 'number', e.offsetWidth, t, {
+      (ne.createControl('Width', 'width', 'number', e.offsetWidth, t, {
         min: 0,
         max: 1e3,
         unit: 'px',
       }),
-      i && J('width', 'Width is not supported for inline display'),
-      Y.createControl('Height', 'height', 'number', e.offsetHeight, t, {
+      i && re('width', 'Width is not supported for inline display'),
+      ne.createControl('Height', 'height', 'number', e.offsetHeight, t, {
         min: 0,
         max: 1e3,
         unit: 'px',
       }),
-      i && J('height', 'Height is not supported for inline display'),
-      Y.createControl(
+      i && re('height', 'Height is not supported for inline display'),
+      ne.createControl(
         'Margin',
         'margin',
         'number',
@@ -3049,8 +3123,9 @@ function Z(e, t, A) {
         t,
         { min: 0, max: 1e3, unit: 'px' }
       ),
-      i && J('margin', 'Top/bottom margin is not supported for inline display'),
-      Y.createControl(
+      i &&
+        re('margin', 'Top/bottom margin is not supported for inline display'),
+      ne.createControl(
         'Padding',
         'padding',
         'number',
@@ -3059,22 +3134,25 @@ function Z(e, t, A) {
         { min: 0, max: 1e3, unit: 'px' }
       ),
       i &&
-        J('padding', 'Top/bottom padding is not supported for inline display')),
-    Y.createControl(
+        re(
+          'padding',
+          'Top/bottom padding is not supported for inline display'
+        )),
+    ne.createControl(
       'Background Color',
       'background-color',
       'color',
       n.backgroundColor,
       t
     ),
-    Y.createSelectControl(
+    ne.createSelectControl(
       'Text Alignment',
       'alignment',
       n.textAlign,
       ['left', 'center', 'right'],
       t
     ),
-    Y.createSelectControl(
+    ne.createSelectControl(
       'Font Family',
       'font-family',
       n.fontFamily,
@@ -3090,7 +3168,7 @@ function Z(e, t, A) {
       ],
       t
     ),
-    Y.createControl(
+    ne.createControl(
       'Font Size',
       'font-size',
       'number',
@@ -3098,7 +3176,7 @@ function Z(e, t, A) {
       t,
       { min: 0, max: 100, unit: 'px' }
     ),
-    Y.createSelectControl(
+    ne.createSelectControl(
       'Font Weight',
       'font-weight',
       n.fontWeight,
@@ -3119,14 +3197,14 @@ function Z(e, t, A) {
       ],
       t
     ),
-    Y.createControl(
+    ne.createControl(
       'Text Color',
       'text-color',
       'color',
       n.color || '#000000',
       t
     ),
-    Y.createControl(
+    ne.createControl(
       'Border Width',
       'border-width',
       'number',
@@ -3134,7 +3212,7 @@ function Z(e, t, A) {
       t,
       { min: 0, max: 20, unit: 'px' }
     ),
-    Y.createSelectControl(
+    ne.createSelectControl(
       'Border Style',
       'border-style',
       n.borderStyle || 'none',
@@ -3151,7 +3229,7 @@ function Z(e, t, A) {
       ],
       t
     ),
-    Y.createControl(
+    ne.createControl(
       'Border Color',
       'border-color',
       'color',
@@ -3161,15 +3239,15 @@ function Z(e, t, A) {
   const o = document.getElementById('background-color'),
     a = document.getElementById('text-color'),
     l = document.getElementById('border-color');
-  (o && (o.value = Y.rgbToHex(n.backgroundColor)),
-    a && (a.value = Y.rgbToHex(n.color)),
-    l && (l.value = Y.rgbToHex(n.borderColor)),
+  (o && (o.value = ne.rgbToHex(n.backgroundColor)),
+    a && (a.value = ne.rgbToHex(n.color)),
+    l && (l.value = ne.rgbToHex(n.borderColor)),
     A(e));
 }
-function $(e) {
+function ie(e) {
   return !!(e && e.length > 0);
 }
-function ee(e) {
+function oe(e) {
   const t = document.getElementById('notification');
   t &&
     ((t.innerHTML = e),
@@ -3179,7 +3257,7 @@ function ee(e) {
       (t.classList.remove('visible'), t.classList.add('hidden'));
     }, 2e3));
 }
-function te(e, t, A) {
+function ae(e, t, A) {
   var n, r, s, i, o, a, l, c, u, d, h, f, p, g, m, w, y, v, B, b;
   const C = (function (e, t) {
       let A = null;
@@ -3187,7 +3265,7 @@ function te(e, t, A) {
         (null !== A && clearTimeout(A), (A = setTimeout(() => e(...n), t)));
       };
     })(() => {
-      (P.dispatchDesignChange(), P.historyManager.captureState());
+      (z.dispatchDesignChange(), z.historyManager.captureState());
     }, 300),
     x = e => document.getElementById(e);
   (null === (n = x('width')) ||
@@ -3326,7 +3404,7 @@ function te(e, t, A) {
             (e.dataset.displayIntent = 'inline'))
           : ((e.style.display = n), delete e.dataset.displayIntent),
           C(),
-          requestAnimationFrame(() => Z(e, t, A)));
+          requestAnimationFrame(() => se(e, t, A)));
       }),
     null === (v = x('flex-direction')) ||
       void 0 === v ||
@@ -3344,7 +3422,7 @@ function te(e, t, A) {
         ((e.style.justifyContent = x('justify-content').value), C());
       }));
 }
-class Ae {
+class le {
   static init(e, t, A, n) {
     ((this.sidebarElement = document.getElementById('customization')),
       (this.controlsContainer = document.getElementById('controls')),
@@ -3354,12 +3432,12 @@ class Ae {
       (this.editable = t),
       (this.showAttributeTab = n),
       this.sidebarElement && this.controlsContainer
-        ? ((this.layersViewController = new R()),
+        ? ((this.layersViewController = new X()),
           (this.functionsPanel = document.createElement('div')),
           (this.functionsPanel.id = 'functions-panel'),
           (this.functionsPanel.className = 'dropdown-panel'),
           (this.functionsPanel.style.display = 'none'),
-          (this.layersModeToggle = V({
+          (this.layersModeToggle = J({
             sidebarElement: this.sidebarElement,
             componentNameHeader: this.componentNameHeader,
             controlsContainer: this.controlsContainer,
@@ -3388,7 +3466,7 @@ class Ae {
     ((e = this.controlsContainer),
       (t = this.functionsPanel),
       (A = this.componentNameHeader),
-      z('customize-tab'),
+      Z('customize-tab'),
       (document.getElementById('layers-view').style.display = 'none'),
       (e.style.display = 'block'),
       (t.style.display = 'none'),
@@ -3401,7 +3479,7 @@ class Ae {
     ((e = this.controlsContainer),
       (t = this.functionsPanel),
       (A = this.componentNameHeader),
-      z('attribute-tab'),
+      Z('attribute-tab'),
       (document.getElementById('layers-view').style.display = 'none'),
       (t.style.display = 'block'),
       (e.style.display = 'none'),
@@ -3426,8 +3504,8 @@ class Ae {
         : this.switchToAttributeModeLocal());
   }
   static populateCssControlsLocal(e) {
-    Z(e, this.controlsContainer, e =>
-      te(e, this.controlsContainer, e => this.populateCssControlsLocal(e))
+    se(e, this.controlsContainer, e =>
+      ae(e, this.controlsContainer, e => this.populateCssControlsLocal(e))
     );
   }
   static populateFunctionalityControlsLocal(e) {
@@ -3438,15 +3516,15 @@ class Ae {
       let c = !1;
       const u = null == A ? void 0 : A.find(e => 'table' === e.name);
       if (e.classList.contains('table-component'))
-        ((l = u), $(null == l ? void 0 : l.attributes));
+        ((l = u), ie(null == l ? void 0 : l.attributes));
       else if (e.classList.contains('text-component'))
         ((l = null == A ? void 0 : A.find(e => 'text' === e.name)),
-          (c = $(null == l ? void 0 : l.attributes)));
+          (c = ie(null == l ? void 0 : l.attributes)));
       else if (e.classList.contains('header-component'))
         ((l = null == A ? void 0 : A.find(e => 'header' === e.name)),
-          (c = $(null == l ? void 0 : l.attributes)));
+          (c = ie(null == l ? void 0 : l.attributes)));
       else if (e.classList.contains('table-cell-content'))
-        c = $(null == u ? void 0 : u.attributes);
+        c = ie(null == u ? void 0 : u.attributes);
       else {
         if (e.classList.contains('table-row')) {
           const t =
@@ -3458,7 +3536,7 @@ class Ae {
             t.length > 0 &&
             A &&
             !1 !== r &&
-            Y.populateRowVisibilityControls(e, t)
+            ne.populateRowVisibilityControls(e, t)
           );
         }
         if (e.classList.contains('custom-component')) {
@@ -3488,10 +3566,10 @@ class Ae {
       ((null == l ? void 0 : l.attributes) &&
         l.attributes.length > 0 &&
         l.attributes.forEach(e => {
-          'Input' === e.type && Y.createAttributeControls(e, t, s);
+          'Input' === e.type && ne.createAttributeControls(e, t, s);
         }),
         c
-          ? Y.populateModalButton(e, t, r)
+          ? ne.populateModalButton(e, t, r)
           : l ||
             (t.innerHTML = '<p>No specific settings for this component.</p>'));
     })(
@@ -3526,19 +3604,19 @@ class Ae {
                   : t.value;
             });
             const i = yield r.globalExecuteFunction(s),
-              o = new x(),
+              o = new L(),
               l = new n(),
               c = new a();
             (i &&
               (l.seedFormulaValues(i),
               o.seedFormulaValues(i),
               c.seedFormulaValues(i),
-              P.historyManager.captureState()),
+              z.historyManager.captureState()),
               l.updateInputValues(s),
               o.updateInputValues(s),
               c.updateInputValues(s),
               o.evaluateRowVisibility(s),
-              P.historyManager.captureState());
+              z.historyManager.captureState());
           });
         })(
           this.selectedComponent,
@@ -3551,25 +3629,25 @@ class Ae {
     return this.layersViewController;
   }
 }
-((Ae.selectedComponent = null),
-  (Ae.customComponentsConfig = null),
-  (Ae.basicComponentsConfig = null),
-  (Ae.showAttributeTab = void 0));
-var ne = Object.freeze({ __proto__: null, CustomizationSidebar: Ae });
-const re = {
-    button: K.button,
-    header: K.header,
-    image: K.image,
-    video: K.video,
-    text: K.text,
-    container: K.container,
-    twoCol: K.twocol,
-    threeCol: K.threecol,
-    table: K.table,
-    landingpage: K.landing,
-    link: K.hyperlink,
+((le.selectedComponent = null),
+  (le.customComponentsConfig = null),
+  (le.basicComponentsConfig = null),
+  (le.showAttributeTab = void 0));
+var ce = Object.freeze({ __proto__: null, CustomizationSidebar: le });
+const ue = {
+    button: Y.button,
+    header: Y.header,
+    image: Y.image,
+    video: Y.video,
+    text: Y.text,
+    container: Y.container,
+    twoCol: Y.twocol,
+    threeCol: Y.threecol,
+    table: Y.table,
+    landingpage: Y.landing,
+    link: Y.hyperlink,
   },
-  se = {
+  de = {
     button: 'Button',
     header: 'Header',
     image: 'Image',
@@ -3582,21 +3660,21 @@ const re = {
     landingpage: 'Landing Page Template',
     link: 'Link',
   };
-function ie(e) {
+function he(e) {
   const t = document.createElement('div');
   (t.classList.add('draggable'),
     (t.id = e),
     t.setAttribute('draggable', 'true'),
     t.setAttribute('data-component', e));
-  const A = se[e] || `Drag to add ${e}`;
-  if ((t.setAttribute('title', A), re[e])) {
-    t.innerHTML = `${re[e]}\n      <div class="drag-text">${e}</div>`;
+  const A = de[e] || `Drag to add ${e}`;
+  if ((t.setAttribute('title', A), ue[e])) {
+    t.innerHTML = `${ue[e]}\n      <div class="drag-text">${e}</div>`;
     const A = t.querySelector('svg');
     A && A.classList.add('component-icon');
   } else console.warn(`Icon not found for component: ${A}`);
   return t;
 }
-function oe(e, t, A) {
+function fe(e, t, A) {
   if (Array.isArray(t) && 0 === t.length) return;
   const n = document.createElement('div');
   n.classList.add('category');
@@ -3609,11 +3687,11 @@ function oe(e, t, A) {
           'object' == typeof e &&
             null !== e &&
             'name' in e &&
-            n.appendChild(ie(e.name));
+            n.appendChild(he(e.name));
         })
       : Array.isArray(t)
         ? t.forEach(e => {
-            n.appendChild(ie(e));
+            n.appendChild(he(e));
           })
         : 'Custom' === e &&
           'object' == typeof t &&
@@ -3664,7 +3742,7 @@ function oe(e, t, A) {
           }),
     A.appendChild(n));
 }
-const ae = {
+const pe = {
   Basic: [
     { name: 'button' },
     { name: 'header' },
@@ -3680,80 +3758,6 @@ const ae = {
   Extra: ['landingpage'],
   Custom: {},
 };
-const le = [
-    'component-controls',
-    'delete-icon',
-    'component-label',
-    'column-label',
-    'resizers',
-    'resizer',
-    'upload-btn',
-    'component-resizer',
-    'drop-preview',
-    'edit-link-form',
-    'edit-link',
-  ],
-  ce = [
-    '.component-controls',
-    '.delete-icon',
-    '.component-label',
-    '.column-label',
-    '.resizers',
-    '.resizer',
-    '.drop-preview',
-    '.upload-btn',
-    '.edit-link',
-    '.edit-link-form',
-    '.cell-controls',
-    '.add-row-button',
-    '.add-multiple-rows-button',
-    '.table-btn-container',
-    '.drop-preview.visible',
-    'input:not([type="radio"])',
-  ].join(', '),
-  ue = ['contenteditable', 'draggable'],
-  de = [
-    'left',
-    'top',
-    'right',
-    'bottom',
-    'position',
-    'margin-left',
-    'margin-right',
-    'width',
-    'height',
-    'min-width',
-    'max-width',
-    'min-height',
-    'max-height',
-    'cursor',
-    'resize',
-    'inline-size',
-    'block-size',
-    'min-inline-size',
-    'min-block-size',
-    'max-inline-size',
-    'max-block-size',
-  ],
-  he = [
-    'component-controls',
-    'delete-icon',
-    'component-label',
-    'resizers',
-    'resizer',
-    'upload-btn',
-    'edit-link-form',
-    'edit-link',
-  ],
-  fe = ['path', 'circle', 'rect', 'polygon'],
-  pe = [
-    'fill',
-    'stroke',
-    'stroke-width',
-    'opacity',
-    'fill-opacity',
-    'stroke-opacity',
-  ];
 class ge {
   constructor(e) {
     this.styleElement = e;
@@ -3779,7 +3783,7 @@ class ge {
     return (
       A.push(this.buildBaseCSS(t)),
       e.querySelectorAll('*').forEach((e, t) => {
-        if (he.some(t => e.classList.contains(t))) return;
+        if (p.some(t => e.classList.contains(t))) return;
         const r = window.getComputedStyle(e),
           s = [];
         if (this.isSVGElement(e))
@@ -3797,7 +3801,7 @@ class ge {
     this.styleElement.textContent = e;
   }
   buildBaseCSS(e) {
-    return 'grid' === P.layoutMode
+    return 'grid' === z.layoutMode
       ? `\n      body, html {\n        margin: 0; padding: 0; width: 100%; height: 100%;\n        box-sizing: border-box; display: flex; overflow: hidden;\n      }\n      #canvas {\n        position: relative; width: 100%; flex-grow: 1; min-width: 0;\n        background-color: ${e}; margin: 0; overflow: auto;\n        box-sizing: border-box;\n      }\n      #canvas.grid-layout-active { display: block; }\n      .container-grid-active { display: block; }\n      ::-webkit-scrollbar { width: 6px; height: 6px; }\n      ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }\n      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }\n      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }\n      .table-component { border-collapse: collapse; box-sizing: border-box; }\n      .editable-component { border: none !important; box-shadow: none !important; }\n      `
       : `\n      body, html {\n        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box; background-color: #f8fafc;\n      }\n      #canvas.home {\n        position: relative; display: block; width: 100%; min-height: 100vh;\n        background-color: ${e}; margin: 0; overflow: visible;\n      }\n      table { border-collapse: collapse; }\n      .editable-component { border: none !important; box-shadow: none !important; }\n      `;
   }
@@ -3805,8 +3809,8 @@ class ge {
     for (let A = 0; A < e.length; A++) {
       const n = e[A],
         r = e.getPropertyValue(n);
-      if ('grid' === P.layoutMode) {
-        if (de.includes(n)) continue;
+      if ('grid' === z.layoutMode) {
+        if (f.includes(n)) continue;
       } else if ('resize' === n) continue;
       r &&
         'initial' !== r &&
@@ -3826,13 +3830,13 @@ class ge {
   isSVGElement(e) {
     return (
       e instanceof SVGElement ||
-      (!!e.closest('svg') && fe.includes(e.tagName.toLowerCase()))
+      (!!e.closest('svg') && g.includes(e.tagName.toLowerCase()))
     );
   }
   handleSVGElement(e, t, A, n, r, s) {
-    if (fe.includes(e.tagName.toLowerCase()))
+    if (g.includes(e.tagName.toLowerCase()))
       return (
-        pe.forEach(e => {
+        m.forEach(e => {
           const n = A.getPropertyValue(e);
           n &&
             'none' !== n &&
@@ -4012,9 +4016,9 @@ class we {
         .forEach(e => e.remove()));
   }
   stripNodeRecursive(e) {
-    (ue.forEach(t => e.removeAttribute(t)),
-      le.forEach(t => e.classList.remove(t)),
-      e.querySelectorAll(ce).forEach(e => e.remove()),
+    (h.forEach(t => e.removeAttribute(t)),
+      u.forEach(t => e.classList.remove(t)),
+      e.querySelectorAll(d).forEach(e => e.remove()),
       Array.from(e.children).forEach(e => {
         this.stripNodeRecursive(e);
       }));
@@ -4023,7 +4027,7 @@ class we {
 class ye {
   build(e, t, A) {
     const n =
-      'grid' === P.layoutMode ? 'grid-layout-active' : 'preview-printable';
+      'grid' === z.layoutMode ? 'grid-layout-active' : 'preview-printable';
     return `<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>Page Builder</title>\n    <style>\n${this.buildInlineAlignmentRule()}\n    </style>\n    <style>\n${t}\n    </style>\n    <style>\n${A}\n    </style>\n  </head>\n  <body>\n    <div id="canvas" class="${n}">\n${e}\n    </div>\n  </body>\n</html>`;
   }
   buildInlineAlignmentRule() {
@@ -4071,10 +4075,10 @@ class Be {
     if (e.ctrlKey || e.metaKey)
       switch (e.key.toLowerCase()) {
         case 'z':
-          (e.preventDefault(), P.historyManager.undo());
+          (e.preventDefault(), z.historyManager.undo());
           break;
         case 'y':
-          (e.preventDefault(), P.historyManager.redo());
+          (e.preventDefault(), z.historyManager.redo());
       }
   }
 }
@@ -64765,17 +64769,17 @@ var ia,
       ))),
   aa = Se(oa);
 const la = {
-  desktop: K.desktop,
-  tablet: K.tablet,
-  mobile: K.mobile,
-  save: K.save,
-  export: K.code,
-  view: K.view,
-  undo: K.undo,
-  redo: K.redo,
-  reset: K.reset,
-  menu: K.customizationMenu,
-  sidebarMenu: K.sidebarMenu,
+  desktop: Y.desktop,
+  tablet: Y.tablet,
+  mobile: Y.mobile,
+  save: Y.save,
+  export: Y.code,
+  view: Y.view,
+  undo: Y.undo,
+  redo: Y.redo,
+  reset: Y.reset,
+  menu: Y.customizationMenu,
+  sidebarMenu: Y.sidebarMenu,
 };
 function ca(e) {
   const t = document.createElement('button');
@@ -64842,7 +64846,7 @@ function ua(e, t = 'Page Builder', A) {
       );
     })(
       (function (e) {
-        const t = 'grid' === P.layoutMode;
+        const t = 'grid' === z.layoutMode;
         return (
           e
             ? [
@@ -64959,7 +64963,7 @@ function da(e, t = 'grid') {
       (function (e) {
         const t = document.createElement('button');
         ((t.id = 'close-modal-btn'),
-          (t.innerHTML = K.closePreviewBtn),
+          (t.innerHTML = Y.closePreviewBtn),
           (t.style.cssText =
             '\n    position: absolute; top: 0; left: 0;\n    font-size: 20px; border: none; background: none;\n    font: bold; color: black; cursor: pointer;\n  '));
         const A = () => {
@@ -64981,9 +64985,9 @@ function da(e, t = 'grid') {
         '\n    gap: 10px; display: flex; justify-content: center; align-items: center;\n    box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n    border-bottom: 1px solid #e2e8f0; width: 100%;\n    background-color: #ffffff; padding: 4px 0;\n  ';
       let A = null;
       [
-        { icon: K.mobile, title: 'Mobile', width: '375px', height: '100%' },
-        { icon: K.tablet, title: 'Tablet', width: '768px', height: '100%' },
-        { icon: K.desktop, title: 'Desktop', width: '100%', height: '100%' },
+        { icon: Y.mobile, title: 'Mobile', width: '375px', height: '100%' },
+        { icon: Y.tablet, title: 'Tablet', width: '768px', height: '100%' },
+        { icon: Y.desktop, title: 'Desktop', width: '100%', height: '100%' },
       ].forEach(n => {
         const r = document.createElement('button');
         ((r.style.cssText =
@@ -65054,8 +65058,8 @@ function ha(e) {
         'Are you sure you want to reset the layout?',
         () => {
           (e.remove(),
-            P.clearCanvas(),
-            ee('The saved layout has been successfully reset.'));
+            z.clearCanvas(),
+            oe('The saved layout has been successfully reset.'));
         },
         () => {
           console.log('Layout reset canceled.');
@@ -65074,10 +65078,10 @@ class fa {
   ) {
     ((this.dynamicComponents = e),
       (this.initialDesign = t),
-      (this.canvas = new P()),
-      (this.sidebar = new O(this.canvas)),
+      (this.canvas = new z()),
+      (this.sidebar = new q(this.canvas)),
       (this.htmlGenerator = new ve(this.canvas)),
-      (this.jsonStorage = new I()),
+      (this.jsonStorage = new M()),
       (this.previewPanel = new be()),
       (this.editable = A),
       (this.brandTitle = n),
@@ -65090,18 +65094,18 @@ class fa {
   }
   initializeEventListeners() {
     var e, t, A, n;
-    ((this.canvas = new P()),
-      (this.sidebar = new O(this.canvas)),
+    ((this.canvas = new z()),
+      (this.sidebar = new q(this.canvas)),
       (this.htmlGenerator = new ve(this.canvas)),
-      (this.jsonStorage = new I()),
+      (this.jsonStorage = new M()),
       (this.previewPanel = new be()),
       this.setupInitialComponents(),
       (function (e) {
         const t = document.getElementById('save-btn');
         t &&
           t.addEventListener('click', () => {
-            const t = P.getState();
-            (e.save(t), ee('Saving progress...'));
+            const t = z.getState();
+            (e.save(t), oe('Saving progress...'));
           });
       })(this.jsonStorage),
       ha(this.jsonStorage),
@@ -65135,7 +65139,7 @@ class fa {
           e.addEventListener('click', () =>
             r(this, void 0, void 0, function* () {
               var e;
-              (ee('Generating PDF for download...'),
+              (oe('Generating PDF for download...'),
                 null === (e = document.activeElement) ||
                   void 0 === e ||
                   e.blur(),
@@ -65149,8 +65153,8 @@ class fa {
               const t = document.createElement('div');
               try {
                 const e = aa();
-                if (!e) return void ee('html2pdf library not loaded');
-                const A = new ve(new P()),
+                if (!e) return void oe('html2pdf library not loaded');
+                const A = new ve(new z()),
                   n = A.generateHTML();
                 let r = A.generateCSS();
                 const s = document.getElementById('canvas');
@@ -65206,10 +65210,10 @@ class fa {
                   })
                   .from(f)
                   .save(),
-                  ee('PDF downloaded successfully!'));
+                  oe('PDF downloaded successfully!'));
               } catch (e) {
                 (console.error('PDF generation error:', e),
-                  ee('Error generating PDF. Check console for details.'));
+                  oe('Error generating PDF. Check console for details.'));
               } finally {
                 document.body.contains(t) && document.body.removeChild(t);
               }
@@ -65245,12 +65249,12 @@ class fa {
         (null === (e = document.getElementById('undo-btn')) ||
           void 0 === e ||
           e.addEventListener('click', () => {
-            P.historyManager.undo();
+            z.historyManager.undo();
           }),
           null === (t = document.getElementById('redo-btn')) ||
             void 0 === t ||
             t.addEventListener('click', () => {
-              P.historyManager.redo();
+              z.historyManager.redo();
             }));
       })());
   }
@@ -65260,18 +65264,18 @@ class fa {
         (0 === e.Basic.length &&
           0 === e.Extra.length &&
           0 === Object.keys(e.Custom).length)) &&
-        (e = ae);
+        (e = pe);
       const A = document.getElementById('sidebar');
       if (!A) return void console.error('Sidebar element not found');
       (A.classList.add('visible'), !1 === t && (A.style.display = 'none'));
       const n = document.createElement('div');
       (n.classList.add('menu'),
         Object.entries(e).forEach(([e, t]) => {
-          oe(e, t, n);
+          fe(e, t, n);
         }),
         A.appendChild(n));
     })(this.dynamicComponents, this.editable),
-      P.init(
+      z.init(
         this.initialDesign,
         this.editable,
         this.dynamicComponents.Basic,
@@ -65279,7 +65283,7 @@ class fa {
       ),
       this.sidebar.init(),
       Be.init(),
-      Ae.init(
+      le.init(
         this.dynamicComponents.Custom,
         this.editable,
         this.dynamicComponents.Basic,
@@ -65302,7 +65306,7 @@ class fa {
     const e = document.getElementById('export-html-btn');
     e &&
       e.addEventListener('click', () => {
-        const e = new ve(new P()),
+        const e = new ve(new z()),
           t = e.generateHTML(),
           A = e.generateCSS(),
           n = (function (e) {
