@@ -4,7 +4,7 @@ import {
   CSS_PROPERTIES_TO_EXCLUDE,
   SVG_CHILD_TAGS,
   SVG_STYLE_PROPERTIES,
-} from './Constants';
+} from '../../constants';
 
 /* ─── StyleCollector ──────────────────────────────────────────────────────────
    Responsible for two tasks:

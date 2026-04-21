@@ -1,5 +1,3 @@
-import { SVGRecord } from './Types';
-
 /* ─── SvgStamper ──────────────────────────────────────────────────────────────
    Handles the two-phase SVG dimension workflow:
      1. Stamp  — reads each SVG's live bounding rect and writes explicit width,
