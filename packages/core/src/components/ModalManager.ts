@@ -1,11 +1,9 @@
 import {
-  ComponentAttribute,
   createModalElement,
   renderForm,
   filterAttributes,
   handleSave,
 } from './ModalCore';
-import type { ModalResult } from './ModalCore';
 
 /**
  * A reusable modal component for displaying and managing configuration settings.
