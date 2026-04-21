@@ -173,6 +173,13 @@ declare global {
     value: string;
     action: 'show' | 'hide';
   }
+
+  interface NavButton {
+    id: string;
+    icon: string;
+    title: string;
+    isPreview?: boolean;
+  }
 }
 
 export {};

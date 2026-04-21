@@ -1,4 +1,3 @@
-import { NavButton } from './NavbarButtons';
 import {
   wireSidebarMenuToggle,
   wireMenuButtonToggle,

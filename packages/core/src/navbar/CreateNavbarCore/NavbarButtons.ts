@@ -16,13 +16,6 @@ const icons = {
   sidebarMenu: svgs.sidebarMenu,
 };
 
-export interface NavButton {
-  id: string;
-  icon: string;
-  title: string;
-  isPreview?: boolean;
-}
-
 /* Returns the left-side button list filtered by layout mode and editable state */
 export function getLeftButtons(editable: boolean | null): NavButton[] {
   const isGridMode = Canvas.layoutMode === 'grid';
