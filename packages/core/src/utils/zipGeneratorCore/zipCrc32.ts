@@ -11,5 +11,7 @@ export function crc32(data: Uint8Array): number {
     }
   }
 
-  return crc ^ 0xffffffff;
+  // >>> 0 forces the result to an unsigned 32-bit integer,
+  // preventing negative return values from the XOR operation.
+  return (crc ^ 0xffffffff) >>> 0;
 }

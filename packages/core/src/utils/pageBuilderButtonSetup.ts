@@ -12,7 +12,7 @@ export function setupSaveButton(jsonStorage: JSONStorage): void {
 
   saveButton.addEventListener('click', () => {
     const layoutJSON = Canvas.getState();
-    jsonStorage.save(layoutJSON);
+    jsonStorage?.save?.(layoutJSON);
     showNotification('Saving progress...');
   });
 }
