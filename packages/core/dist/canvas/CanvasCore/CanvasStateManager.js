@@ -163,14 +163,24 @@ export class CanvasStateManager {
         component.classList.remove('component-resizer');
       }
       /** Restore video source and hide the upload placeholder */
-      if (componentData.type === 'video' && componentData.videoSrc) {
-        const videoElement = component.querySelector('video');
-        const uploadText = component.querySelector('.upload-text');
-        if (videoElement) {
-          videoElement.src = componentData.videoSrc;
-          videoElement.style.display = 'block';
+      if (componentData.type === 'video') {
+        const pencilButton = component.querySelector('.pencil-button');
+        if (editable === false) {
+          pencilButton === null || pencilButton === void 0
+            ? void 0
+            : pencilButton.remove();
+        } else if (componentData.videoSrc && pencilButton) {
+          pencilButton.style.display = 'none';
         }
-        if (uploadText) uploadText.style.display = 'none';
+        if (componentData.videoSrc) {
+          const videoElement = component.querySelector('video');
+          const uploadText = component.querySelector('.upload-text');
+          if (videoElement) {
+            videoElement.src = componentData.videoSrc;
+            videoElement.style.display = 'block';
+          }
+          if (uploadText) uploadText.style.display = 'none';
+        }
       }
       if (componentData.inlineStyle) {
         component.setAttribute('style', componentData.inlineStyle);

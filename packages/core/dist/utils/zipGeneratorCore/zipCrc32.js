@@ -8,5 +8,7 @@ export function crc32(data) {
       crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
     }
   }
-  return crc ^ 0xffffffff;
+  // >>> 0 forces the result to an unsigned 32-bit integer,
+  // preventing negative return values from the XOR operation.
+  return (crc ^ 0xffffffff) >>> 0;
 }

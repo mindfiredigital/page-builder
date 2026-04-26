@@ -201,18 +201,28 @@ export class CanvasStateManager {
       }
 
       /** Restore video source and hide the upload placeholder */
-      if (componentData.type === 'video' && componentData.videoSrc) {
-        const videoElement = component.querySelector(
-          'video'
-        ) as HTMLVideoElement | null;
-        const uploadText = component.querySelector(
-          '.upload-text'
+      if (componentData.type === 'video') {
+        const pencilButton = component.querySelector(
+          '.pencil-button'
         ) as HTMLElement | null;
-        if (videoElement) {
-          videoElement.src = componentData.videoSrc;
-          videoElement.style.display = 'block';
+        if (editable === false) {
+          pencilButton?.remove();
+        } else if (componentData.videoSrc && pencilButton) {
+          pencilButton.style.display = 'none';
         }
-        if (uploadText) uploadText.style.display = 'none';
+        if (componentData.videoSrc) {
+          const videoElement = component.querySelector(
+            'video'
+          ) as HTMLVideoElement | null;
+          const uploadText = component.querySelector(
+            '.upload-text'
+          ) as HTMLElement | null;
+          if (videoElement) {
+            videoElement.src = componentData.videoSrc;
+            videoElement.style.display = 'block';
+          }
+          if (uploadText) uploadText.style.display = 'none';
+        }
       }
 
       if (componentData.inlineStyle) {

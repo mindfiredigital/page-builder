@@ -6,8 +6,14 @@ export function setupSaveButton(jsonStorage) {
   const saveButton = document.getElementById('save-btn');
   if (!saveButton) return;
   saveButton.addEventListener('click', () => {
+    var _a;
     const layoutJSON = Canvas.getState();
-    jsonStorage.save(layoutJSON);
+    (_a =
+      jsonStorage === null || jsonStorage === void 0
+        ? void 0
+        : jsonStorage.save) === null || _a === void 0
+      ? void 0
+      : _a.call(jsonStorage, layoutJSON);
     showNotification('Saving progress...');
   });
 }
