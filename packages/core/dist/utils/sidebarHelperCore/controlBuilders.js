@@ -58,7 +58,9 @@ export function createControl(
   const unitSelect = wrapper.querySelector(`#${id}-unit`);
   if (input) {
     Object.keys(attributes).forEach(key => {
-      input.setAttribute(key, attributes[key].toString());
+      if (key !== 'unit' && key !== 'parentRef') {
+        input.setAttribute(key, attributes[key].toString());
+      }
     });
   }
   /* Keep the color picker and the hex text field in sync */
@@ -78,11 +80,17 @@ export function createControl(
   /* When the unit selector changes, convert the existing value to the new unit */
   if (unitSelect) {
     unitSelect.dataset.prevUnit = attributes.unit || 'px';
+    if (attributes.parentRef !== undefined) {
+      unitSelect.dataset.parentRef = String(attributes.parentRef);
+    }
     unitSelect.addEventListener('change', () => {
       const newUnit = unitSelect.value;
       const oldUnit = unitSelect.dataset.prevUnit || 'px';
+      const parentRef = unitSelect.dataset.parentRef
+        ? parseFloat(unitSelect.dataset.parentRef)
+        : undefined;
       const currentValue = parseFloat(input.value) || 0;
-      const converted = convertUnit(currentValue, oldUnit, newUnit);
+      const converted = convertUnit(currentValue, oldUnit, newUnit, parentRef);
       input.value = String(converted);
       unitSelect.dataset.prevUnit = newUnit;
       /* Notify listeners (e.g. SidebarControlListeners) so the style is applied */
@@ -90,11 +98,13 @@ export function createControl(
     });
   }
 }
-function convertUnit(value, from, to) {
+function convertUnit(value, from, to, parentRef) {
   if (from === to) return value;
   const BASE_FONT_SIZE = 16;
   const viewportH = window.innerHeight;
-  const viewportW = window.innerWidth;
+  /* % is relative to the parent element's dimension, fall back to viewport if unknown */
+  const percentRef =
+    parentRef !== null && parentRef !== void 0 ? parentRef : window.innerWidth;
   /* Step 1: normalise to px */
   let px;
   switch (from) {
@@ -105,7 +115,7 @@ function convertUnit(value, from, to) {
       px = (value / 100) * viewportH;
       break;
     case '%':
-      px = (value / 100) * viewportW;
+      px = (value / 100) * percentRef;
       break;
     default:
       px = value; /* px */
@@ -117,7 +127,7 @@ function convertUnit(value, from, to) {
     case 'vh':
       return parseFloat(((px / viewportH) * 100).toFixed(4));
     case '%':
-      return parseFloat(((px / viewportW) * 100).toFixed(4));
+      return parseFloat(((px / percentRef) * 100).toFixed(4));
     default:
       return Math.round(px); /* px */
   }

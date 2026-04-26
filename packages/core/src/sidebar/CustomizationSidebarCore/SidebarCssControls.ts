@@ -1,5 +1,17 @@
 import { SidebarUtils } from '../../utils/customizationSidebarHelper';
 
+/* Parses an inline CSS value like "64rem" or "4.3165vh" into its number + unit parts */
+function parseStyleValue(
+  cssVal: string,
+  fallbackPx: number
+): { value: number; unit: string } {
+  if (cssVal) {
+    const match = cssVal.match(/^(-?[\d.]+)(px|rem|vh|%)$/);
+    if (match) return { value: parseFloat(match[1]), unit: match[2] };
+  }
+  return { value: fallbackPx, unit: 'px' };
+}
+
 /* Greys out a control wrapper and disables its inputs */
 export function disableControlWrapper(
   controlId: string,
@@ -128,14 +140,22 @@ export function populateCssControls(
   }
 
   if (!isCanvas) {
+    const parentEl = component.parentElement;
+    const parentW = parentEl?.offsetWidth ?? window.innerWidth;
+    const parentH = parentEl?.offsetHeight ?? window.innerHeight;
+
     /* Width — disabled for inline elements */
+    const wStyle = parseStyleValue(
+      component.style.width,
+      component.offsetWidth
+    );
     SidebarUtils.createControl(
       'Width',
       'width',
       'number',
-      component.offsetWidth,
+      wStyle.value,
       controlsContainer,
-      { min: 0, max: 1000, unit: 'px' }
+      { min: 0, max: 1000, unit: wStyle.unit, parentRef: parentW }
     );
     if (isInline)
       disableControlWrapper(
@@ -144,13 +164,17 @@ export function populateCssControls(
       );
 
     /* Height — disabled for inline elements */
+    const hStyle = parseStyleValue(
+      component.style.height,
+      component.offsetHeight
+    );
     SidebarUtils.createControl(
       'Height',
       'height',
       'number',
-      component.offsetHeight,
+      hStyle.value,
       controlsContainer,
-      { min: 0, max: 1000, unit: 'px' }
+      { min: 0, max: 1000, unit: hStyle.unit, parentRef: parentH }
     );
     if (isInline)
       disableControlWrapper(
@@ -159,13 +183,17 @@ export function populateCssControls(
       );
 
     /* Margin — disabled for inline elements (top/bottom ignored by browser) */
+    const mStyle = parseStyleValue(
+      component.style.margin,
+      parseInt(styles.margin) || 0
+    );
     SidebarUtils.createControl(
       'Margin',
       'margin',
       'number',
-      parseInt(styles.margin) || 0,
+      mStyle.value,
       controlsContainer,
-      { min: 0, max: 1000, unit: 'px' }
+      { min: 0, max: 1000, unit: mStyle.unit, parentRef: parentW }
     );
     if (isInline)
       disableControlWrapper(
@@ -174,13 +202,17 @@ export function populateCssControls(
       );
 
     /* Padding — disabled for inline elements */
+    const pStyle = parseStyleValue(
+      component.style.padding,
+      parseInt(styles.padding) || 0
+    );
     SidebarUtils.createControl(
       'Padding',
       'padding',
       'number',
-      parseInt(styles.padding) || 0,
+      pStyle.value,
       controlsContainer,
-      { min: 0, max: 1000, unit: 'px' }
+      { min: 0, max: 1000, unit: pStyle.unit, parentRef: parentW }
     );
     if (isInline)
       disableControlWrapper(
