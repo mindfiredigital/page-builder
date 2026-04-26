@@ -88,13 +88,55 @@ export function createControl(
 
   controlsContainer.appendChild(wrapper);
 
-  /* When the unit selector changes, append the new unit to the current value */
+  /* When the unit selector changes, convert the existing value to the new unit */
   if (unitSelect) {
+    unitSelect.dataset.prevUnit = (attributes.unit as string) || 'px';
     unitSelect.addEventListener('change', () => {
-      const unit = unitSelect.value;
-      const currentValue = parseInt(input.value);
-      input.value = `${currentValue}${unit}`;
+      const newUnit = unitSelect.value;
+      const oldUnit = unitSelect.dataset.prevUnit || 'px';
+      const currentValue = parseFloat(input.value) || 0;
+      const converted = convertUnit(currentValue, oldUnit, newUnit);
+      input.value = String(converted);
+      unitSelect.dataset.prevUnit = newUnit;
+      /* Notify listeners (e.g. SidebarControlListeners) so the style is applied */
+      input.dispatchEvent(new Event('input', { bubbles: true }));
     });
+  }
+}
+
+function convertUnit(value: number, from: string, to: string): number {
+  if (from === to) return value;
+
+  const BASE_FONT_SIZE = 16;
+  const viewportH = window.innerHeight;
+  const viewportW = window.innerWidth;
+
+  /* Step 1: normalise to px */
+  let px: number;
+  switch (from) {
+    case 'rem':
+      px = value * BASE_FONT_SIZE;
+      break;
+    case 'vh':
+      px = (value / 100) * viewportH;
+      break;
+    case '%':
+      px = (value / 100) * viewportW;
+      break;
+    default:
+      px = value; /* px */
+  }
+
+  /* Step 2: convert px → target unit */
+  switch (to) {
+    case 'rem':
+      return parseFloat((px / BASE_FONT_SIZE).toFixed(4));
+    case 'vh':
+      return parseFloat(((px / viewportH) * 100).toFixed(4));
+    case '%':
+      return parseFloat(((px / viewportW) * 100).toFixed(4));
+    default:
+      return Math.round(px); /* px */
   }
 }
 
