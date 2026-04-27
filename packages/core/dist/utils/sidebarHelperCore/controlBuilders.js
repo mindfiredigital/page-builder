@@ -92,6 +92,14 @@ export function createControl(
       const currentValue = parseFloat(input.value) || 0;
       const converted = convertUnit(currentValue, oldUnit, newUnit, parentRef);
       input.value = String(converted);
+      /* If the converted px value exceeds the input's max, expand max so
+               spinner arrows (+/-) still work correctly after switching back to px */
+      if (input.max !== '' && !isNaN(parseFloat(input.max))) {
+        const currentMax = parseFloat(input.max);
+        if (converted > currentMax) {
+          input.max = String(Math.ceil(converted) + 1000);
+        }
+      }
       unitSelect.dataset.prevUnit = newUnit;
       /* Notify listeners (e.g. SidebarControlListeners) so the style is applied */
       input.dispatchEvent(new Event('input', { bubbles: true }));

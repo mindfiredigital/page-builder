@@ -2118,7 +2118,8 @@ class P {
     const p = N.createComponent(u, d);
     if (p && !1 !== e.editable) {
       const e = N.generateUniqueClass(u);
-      ((p.id = e),
+      if (
+        ((p.id = e),
         p.classList.add(e),
         'absolute' === a
           ? ((p.style.position = 'absolute'),
@@ -2132,7 +2133,12 @@ class P {
               (p.removeAttribute('draggable'), (p.style.cursor = 'default'))),
         l.push(p),
         o.appendChild(p),
-        c.captureState());
+        !p.style.width)
+      ) {
+        'block' === window.getComputedStyle(p).display &&
+          (p.style.width = 'grid' === a ? '100%' : `${o.offsetWidth}px`);
+      }
+      c.captureState();
     }
     t.dispatchDesignChange();
   }
@@ -2779,8 +2785,12 @@ function te(e, t, A, n, r, s = {}) {
                 return Math.round(o);
             }
           })(parseFloat(o.value) || 0, t, e, A);
-        ((o.value = String(n)),
-          (a.dataset.prevUnit = e),
+        if (
+          ((o.value = String(n)), '' !== o.max && !isNaN(parseFloat(o.max)))
+        ) {
+          n > parseFloat(o.max) && (o.max = String(Math.ceil(n) + 1e3));
+        }
+        ((a.dataset.prevUnit = e),
           o.dispatchEvent(new Event('input', { bubbles: !0 })));
       })));
 }
@@ -3107,39 +3117,39 @@ function ie(e, t = 'Not supported for inline display') {
   });
 }
 function oe(e, t, A) {
-  var n, r;
+  var n;
   t.innerHTML = '';
-  const s = getComputedStyle(e),
-    i = 'canvas' === e.id.toLowerCase(),
-    o = e.dataset.displayIntent || e.style.display || s.display || 'block',
-    a = 'inline' === o;
+  const r = getComputedStyle(e),
+    s = 'canvas' === e.id.toLowerCase(),
+    i = e.dataset.displayIntent || e.style.display || r.display || 'block',
+    o = 'inline' === i;
   if (
     (re.createSelectControl(
       'Display',
       'display',
-      o,
+      i,
       ['block', 'inline', 'inline-block', 'flex', 'grid', 'none'],
       t
     ),
-    ('flex' !== s.display && 'flex' !== e.style.display) ||
+    ('flex' !== r.display && 'flex' !== e.style.display) ||
       (re.createSelectControl(
         'Flex Direction',
         'flex-direction',
-        s.flexDirection || 'row',
+        r.flexDirection || 'row',
         ['row', 'row-reverse', 'column', 'column-reverse'],
         t
       ),
       re.createSelectControl(
         'Align Items',
         'align-items',
-        s.alignItems || 'stretch',
+        r.alignItems || 'stretch',
         ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'],
         t
       ),
       re.createSelectControl(
         'Justify Content',
         'justify-content',
-        s.justifyContent || 'flex-start',
+        r.justifyContent || 'flex-start',
         [
           'flex-start',
           'flex-end',
@@ -3150,7 +3160,7 @@ function oe(e, t, A) {
         ],
         t
       )),
-    i &&
+    s &&
       (re.createPageSizeSelect(t, e),
       re.createControl('Width', 'width', 'number', e.offsetWidth, t, {
         min: 300,
@@ -3161,7 +3171,7 @@ function oe(e, t, A) {
         'Min Height',
         'min-height',
         'number',
-        parseInt(s.minHeight) || 100,
+        parseInt(r.minHeight) || 100,
         t,
         { min: 0, max: 2e3, unit: 'px' }
       ),
@@ -3169,54 +3179,55 @@ function oe(e, t, A) {
         'Margin',
         'margin',
         'number',
-        parseInt(s.margin) || 0,
+        parseInt(r.margin) || 0,
         t,
         { min: 0, max: 100, unit: 'px' }
       )),
-    !i)
+    !s)
   ) {
     const A = e.parentElement,
+      s = (function (e) {
+        if (!e) return window.innerWidth;
+        const t = parseFloat(e.style.width);
+        return !isNaN(t) && t > 0 && e.style.width.endsWith('px')
+          ? t
+          : e.offsetWidth;
+      })(A),
       i =
-        null !== (n = null == A ? void 0 : A.offsetWidth) && void 0 !== n
+        null !== (n = null == A ? void 0 : A.offsetHeight) && void 0 !== n
           ? n
-          : window.innerWidth,
-      o =
-        null !== (r = null == A ? void 0 : A.offsetHeight) && void 0 !== r
-          ? r
           : window.innerHeight,
-      l = se(e.style.width, e.offsetWidth);
-    (re.createControl('Width', 'width', 'number', l.value, t, {
+      a = se(e.style.width, e.offsetWidth);
+    (re.createControl('Width', 'width', 'number', a.value, t, {
       min: 0,
-      max: 1e3,
+      unit: a.unit,
+      parentRef: s,
+    }),
+      o && ie('width', 'Width is not supported for inline display'));
+    const l = se(e.style.height, e.offsetHeight);
+    (re.createControl('Height', 'height', 'number', l.value, t, {
+      min: 0,
       unit: l.unit,
       parentRef: i,
     }),
-      a && ie('width', 'Width is not supported for inline display'));
-    const c = se(e.style.height, e.offsetHeight);
-    (re.createControl('Height', 'height', 'number', c.value, t, {
+      o && ie('height', 'Height is not supported for inline display'));
+    const c = se(e.style.margin, parseInt(r.margin) || 0);
+    (re.createControl('Margin', 'margin', 'number', c.value, t, {
       min: 0,
       max: 1e3,
       unit: c.unit,
-      parentRef: o,
+      parentRef: s,
     }),
-      a && ie('height', 'Height is not supported for inline display'));
-    const u = se(e.style.margin, parseInt(s.margin) || 0);
-    (re.createControl('Margin', 'margin', 'number', u.value, t, {
+      o &&
+        ie('margin', 'Top/bottom margin is not supported for inline display'));
+    const u = se(e.style.padding, parseInt(r.padding) || 0);
+    (re.createControl('Padding', 'padding', 'number', u.value, t, {
       min: 0,
       max: 1e3,
       unit: u.unit,
-      parentRef: i,
+      parentRef: s,
     }),
-      a &&
-        ie('margin', 'Top/bottom margin is not supported for inline display'));
-    const d = se(e.style.padding, parseInt(s.padding) || 0);
-    (re.createControl('Padding', 'padding', 'number', d.value, t, {
-      min: 0,
-      max: 1e3,
-      unit: d.unit,
-      parentRef: i,
-    }),
-      a &&
+      o &&
         ie(
           'padding',
           'Top/bottom padding is not supported for inline display'
@@ -3226,20 +3237,20 @@ function oe(e, t, A) {
     'Background Color',
     'background-color',
     'color',
-    s.backgroundColor,
+    r.backgroundColor,
     t
   ),
     re.createSelectControl(
       'Text Alignment',
       'alignment',
-      s.textAlign,
+      r.textAlign,
       ['left', 'center', 'right'],
       t
     ),
     re.createSelectControl(
       'Font Family',
       'font-family',
-      s.fontFamily,
+      r.fontFamily,
       [
         'Arial',
         'Verdana',
@@ -3256,14 +3267,14 @@ function oe(e, t, A) {
       'Font Size',
       'font-size',
       'number',
-      parseInt(s.fontSize) || 16,
+      parseInt(r.fontSize) || 16,
       t,
       { min: 0, max: 100, unit: 'px' }
     ),
     re.createSelectControl(
       'Font Weight',
       'font-weight',
-      s.fontWeight,
+      r.fontWeight,
       [
         'normal',
         'bold',
@@ -3285,21 +3296,21 @@ function oe(e, t, A) {
       'Text Color',
       'text-color',
       'color',
-      s.color || '#000000',
+      r.color || '#000000',
       t
     ),
     re.createControl(
       'Border Width',
       'border-width',
       'number',
-      parseInt(s.borderWidth) || 0,
+      parseInt(r.borderWidth) || 0,
       t,
       { min: 0, max: 20, unit: 'px' }
     ),
     re.createSelectControl(
       'Border Style',
       'border-style',
-      s.borderStyle || 'none',
+      r.borderStyle || 'none',
       [
         'none',
         'solid',
@@ -3317,15 +3328,15 @@ function oe(e, t, A) {
       'Border Color',
       'border-color',
       'color',
-      s.borderColor || '#000000',
+      r.borderColor || '#000000',
       t
     ));
-  const l = document.getElementById('background-color'),
-    c = document.getElementById('text-color'),
-    u = document.getElementById('border-color');
-  (l && (l.value = re.rgbToHex(s.backgroundColor)),
-    c && (c.value = re.rgbToHex(s.color)),
-    u && (u.value = re.rgbToHex(s.borderColor)),
+  const a = document.getElementById('background-color'),
+    l = document.getElementById('text-color'),
+    c = document.getElementById('border-color');
+  (a && (a.value = re.rgbToHex(r.backgroundColor)),
+    l && (l.value = re.rgbToHex(r.color)),
+    c && (c.value = re.rgbToHex(r.borderColor)),
     A(e));
 }
 function ae(e) {
@@ -3539,6 +3550,12 @@ class ue {
           this.sidebarElement.appendChild(this.controlsContainer),
           this.sidebarElement.appendChild(this.functionsPanel),
           (this.controlsContainer.style.display = 'block'),
+          document.addEventListener('canvas-layout-changed', () => {
+            requestAnimationFrame(() => {
+              this.selectedComponent &&
+                this.populateCssControlsLocal(this.selectedComponent);
+            });
+          }),
           (this.layersView = document.createElement('div')),
           (this.layersView.id = 'layers-view'),
           (this.layersView.className = 'layers-view hidden'),
@@ -64865,7 +64882,10 @@ const ua = {
   menu: Y.customizationMenu,
   sidebarMenu: Y.sidebarMenu,
 };
-function da(e) {
+function da() {
+  document.dispatchEvent(new CustomEvent('canvas-layout-changed'));
+}
+function ha(e) {
   const t = document.createElement('button');
   ((t.id = e.id),
     (t.className = 'preview-btn'),
@@ -64892,7 +64912,8 @@ function da(e) {
                 : ((t.style.display = 'block'),
                   t.classList.add('visible'),
                   (e.style.backgroundColor = '#e2e8f0'),
-                  (e.style.borderColor = '#cbd5e1')));
+                  (e.style.borderColor = '#cbd5e1')),
+              da());
           }));
       })(t),
     'menu-btn' === e.id &&
@@ -64910,13 +64931,14 @@ function da(e) {
               : ((t.style.display = 'block'),
                 t.classList.add('visible'),
                 (e.style.backgroundColor = '#e2e8f0'),
-                (e.style.borderColor = '#cbd5e1')));
+                (e.style.borderColor = '#cbd5e1')),
+            da());
         };
       })(t),
     t
   );
 }
-function ha(e, t = 'Page Builder', A) {
+function fa(e, t = 'Page Builder', A) {
   const n = document.createElement('nav');
   n.id = 'preview-navbar';
   const r = document.createElement('div');
@@ -64925,7 +64947,7 @@ function ha(e, t = 'Page Builder', A) {
       const t = document.createElement('div');
       return (
         t.classList.add('left-buttons'),
-        e.forEach(e => t.appendChild(da(e))),
+        e.forEach(e => t.appendChild(ha(e))),
         t
       );
     })(
@@ -64998,7 +65020,7 @@ function ha(e, t = 'Page Builder', A) {
       const t = document.createElement('div');
       return (
         t.classList.add('right-buttons'),
-        e.forEach(e => t.appendChild(da(e))),
+        e.forEach(e => t.appendChild(ha(e))),
         t
       );
     })(
@@ -65025,7 +65047,7 @@ function ha(e, t = 'Page Builder', A) {
     );
   return (n.appendChild(s), n.appendChild(r), n.appendChild(i), n);
 }
-function fa(e, t = 'grid') {
+function pa(e, t = 'grid') {
   const A = 'absolute' === t,
     n = document.createElement('div');
   ((n.id = 'preview-modal'),
@@ -65119,7 +65141,7 @@ function fa(e, t = 'grid') {
   }
   return n;
 }
-function pa(e) {
+function ga(e) {
   const t = document.getElementById('reset-btn');
   t &&
     t.addEventListener('click', () => {
@@ -65151,7 +65173,7 @@ function pa(e) {
       );
     });
 }
-class ga {
+class ma {
   constructor(
     e = { Basic: [], Extra: [], Custom: {} },
     t = null,
@@ -65174,7 +65196,7 @@ class ga {
       this.initializeEventListeners());
   }
   static resetHeaderFlag() {
-    ga.headerInitialized = !1;
+    ma.headerInitialized = !1;
   }
   initializeEventListeners() {
     var e, t, A, n;
@@ -65196,7 +65218,7 @@ class ga {
               le('Saving progress...'));
           });
       })(this.jsonStorage),
-      pa(this.jsonStorage),
+      ga(this.jsonStorage),
       (function () {
         const e = document.getElementById('export-btn');
         if (!e) return;
@@ -65312,7 +65334,7 @@ class ga {
         const A = document.getElementById('view-btn');
         A &&
           A.addEventListener('click', () => {
-            const A = fa(e.generateHTML(), t);
+            const A = pa(e.generateHTML(), t);
             document.body.appendChild(A);
           });
       })(this.htmlGenerator, this.layoutMode),
@@ -65383,12 +65405,12 @@ class ga {
           if (n && n.parentNode) {
             const r = document.createElement('header');
             ((r.id = 'page-builder-header'),
-              r.appendChild(ha(e, t, A)),
+              r.appendChild(fa(e, t, A)),
               n.parentNode.insertBefore(r, n));
           } else console.error('Error: #app not found in the DOM');
         }
       })(this.editable, this.brandTitle, this.showAttributeTab),
-      (ga.headerInitialized = !0));
+      (ma.headerInitialized = !0));
   }
   setupExportHTMLButton() {
     const e = document.getElementById('export-html-btn');
@@ -65423,6 +65445,6 @@ class ga {
       });
   }
 }
-((ga.headerInitialized = !1), (ga.initialCanvasWidth = null));
-const ma = new ga();
-((exports.PageBuilder = ga), (exports.PageBuilderCore = ma));
+((ma.headerInitialized = !1), (ma.initialCanvasWidth = null));
+const wa = new ma();
+((exports.PageBuilder = ma), (exports.PageBuilderCore = wa));

@@ -1,3 +1,8 @@
+/* Notifies other modules (e.g. CustomizationSidebar) that the canvas changed size */
+function dispatchLayoutChanged(): void {
+  document.dispatchEvent(new CustomEvent('canvas-layout-changed'));
+}
+
 /* Wires the sidebar-menu toggle button — shows/hides the left component sidebar */
 export function wireSidebarMenuToggle(button: HTMLButtonElement): void {
   button.style.backgroundColor = '#e2e8f0';
@@ -22,6 +27,7 @@ export function wireSidebarMenuToggle(button: HTMLButtonElement): void {
         button.style.backgroundColor = '#e2e8f0';
         button.style.borderColor = '#cbd5e1';
       }
+      dispatchLayoutChanged();
     }
   };
 }
@@ -47,6 +53,7 @@ export function wireMenuButtonToggle(button: HTMLButtonElement): void {
         button.style.backgroundColor = '#e2e8f0';
         button.style.borderColor = '#cbd5e1';
       }
+      dispatchLayoutChanged();
     }
   };
 }

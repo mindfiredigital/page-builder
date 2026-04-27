@@ -108,6 +108,17 @@ export class CanvasDropHandler {
       }
       components.push(component);
       canvasElement.appendChild(component);
+      /* Set a stable initial width so the sidebar always shows a consistent
+               value regardless of whether sidebars are open or closed.
+               Without this, block elements show offsetWidth (which fluctuates with
+               canvas size) instead of an explicit percentage. */
+      if (!component.style.width) {
+        const computedDisplay = window.getComputedStyle(component).display;
+        if (computedDisplay === 'block') {
+          component.style.width =
+            layoutMode === 'grid' ? '100%' : `${canvasElement.offsetWidth}px`;
+        }
+      }
       historyManager.captureState();
     }
     CanvasEventDispatcher.dispatchDesignChange();

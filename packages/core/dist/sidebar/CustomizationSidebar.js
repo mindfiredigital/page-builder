@@ -51,6 +51,16 @@ export class CustomizationSidebar {
     this.sidebarElement.appendChild(this.controlsContainer);
     this.sidebarElement.appendChild(this.functionsPanel);
     this.controlsContainer.style.display = 'block';
+    /* When either sidebar is toggled the canvas width changes; refresh the
+           controls panel so the displayed values (e.g. offsetWidth fallback) stay
+           in sync with the actual component dimensions. */
+    document.addEventListener('canvas-layout-changed', () => {
+      requestAnimationFrame(() => {
+        if (this.selectedComponent) {
+          this.populateCssControlsLocal(this.selectedComponent);
+        }
+      });
+    });
     this.layersView = document.createElement('div');
     this.layersView.id = 'layers-view';
     this.layersView.className = 'layers-view hidden';

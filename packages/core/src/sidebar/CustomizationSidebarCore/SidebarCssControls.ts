@@ -12,6 +12,27 @@ function parseStyleValue(
   return { value: fallbackPx, unit: 'px' };
 }
 
+/*
+ * Returns the reliable pixel width of an element to use as the % reference.
+ *
+ * Problem: the canvas has `width: 100%` in CSS, so its offsetWidth shrinks
+ * when sidebars are open and expands when they close (preview). If we used
+ * offsetWidth for the % reference, converting "1113px → %" with sidebars open
+ * would produce a different visual result in preview (no sidebars, wider canvas).
+ *
+ * Fix: prefer the element's own inline pixel width (the user-configured value)
+ * which is sidebar-independent. Fall back to offsetWidth only when no inline
+ * pixel width has been set.
+ */
+function getReliableWidth(el: HTMLElement | null): number {
+  if (!el) return window.innerWidth;
+  const inlineW = parseFloat(el.style.width);
+  if (!isNaN(inlineW) && inlineW > 0 && el.style.width.endsWith('px')) {
+    return inlineW;
+  }
+  return el.offsetWidth;
+}
+
 /* Greys out a control wrapper and disables its inputs */
 export function disableControlWrapper(
   controlId: string,
@@ -141,7 +162,7 @@ export function populateCssControls(
 
   if (!isCanvas) {
     const parentEl = component.parentElement;
-    const parentW = parentEl?.offsetWidth ?? window.innerWidth;
+    const parentW = getReliableWidth(parentEl);
     const parentH = parentEl?.offsetHeight ?? window.innerHeight;
 
     /* Width — disabled for inline elements */
@@ -155,7 +176,7 @@ export function populateCssControls(
       'number',
       wStyle.value,
       controlsContainer,
-      { min: 0, max: 1000, unit: wStyle.unit, parentRef: parentW }
+      { min: 0, unit: wStyle.unit, parentRef: parentW }
     );
     if (isInline)
       disableControlWrapper(
@@ -174,7 +195,7 @@ export function populateCssControls(
       'number',
       hStyle.value,
       controlsContainer,
-      { min: 0, max: 1000, unit: hStyle.unit, parentRef: parentH }
+      { min: 0, unit: hStyle.unit, parentRef: parentH }
     );
     if (isInline)
       disableControlWrapper(
