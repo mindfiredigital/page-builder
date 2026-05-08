@@ -3,7 +3,7 @@ import {
   HtmlShellBuilder,
   StyleCollector,
   SvgStamper,
-} from './HtmlGeneratorService.js';
+} from './HtmlGeneratorService/index.js';
 /* ─── HtmlGenerator ───────────────────────────────────────────────────────────
    Orchestrator for the full HTML export pipeline. Delegates each phase to a
    focused collaborator class and sequences them in the correct order:

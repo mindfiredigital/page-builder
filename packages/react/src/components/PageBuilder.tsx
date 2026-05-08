@@ -114,12 +114,59 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
 
           customElements.define(settingsTagName, ReactSettingsElement);
         }
+
+        /* Register the Customize-tab panel component (shown under Default/Custom toggle) */
+        const customizeTagName = `react-customize-component-${key.toLowerCase()}`;
+        if (
+          componentConfig.customizeComponent &&
+          !customElements.get(customizeTagName)
+        ) {
+          const CustomizeCtor = componentConfig.customizeComponent;
+          class ReactCustomizeElement extends HTMLElement {
+            connectedCallback() {
+              this._mount();
+            }
+            static get observedAttributes() {
+              return ['data-settings'];
+            }
+            attributeChangedCallback(
+              name: string,
+              oldValue: string,
+              newValue: string
+            ) {
+              if (name === 'data-settings' && newValue !== oldValue) {
+                this._mount();
+              }
+            }
+            _mount() {
+              this.innerHTML = '';
+              const mountPoint = document.createElement('div');
+              this.appendChild(mountPoint);
+              const settingsData = this.getAttribute('data-settings');
+              const parsedSettings = settingsData
+                ? JSON.parse(settingsData)
+                : {};
+              try {
+                ReactDOM.createRoot(mountPoint).render(
+                  React.createElement(CustomizeCtor, parsedSettings)
+                );
+              } catch (error) {
+                console.error(`Error rendering customize component for ${key}:`, error);
+              }
+            }
+          }
+          customElements.define(customizeTagName, ReactCustomizeElement);
+        }
+
         modifiedConfig.Custom[key] = {
           component: tagName,
           svg: componentConfig.svg,
           title: componentConfig.title,
           settingsComponent: settingsTagName,
           settingsComponentTagName: settingsTagName,
+          customizeComponentTagName: componentConfig.customizeComponent
+            ? customizeTagName
+            : undefined,
         };
       });
     }

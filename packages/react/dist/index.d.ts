@@ -40,6 +40,7 @@ interface CustomComponentConfig {
   svg?: string;
   title?: string;
   settingsComponent?: React.ComponentType<any> | string;
+  customizeComponent?: React.ComponentType<{ targetComponentId: string }>;
 }
 
 interface PageBuilderReactProps {
@@ -56,7 +57,9 @@ interface PageBuilderReactProps {
 declare const PageBuilderReact: React$1.FC<PageBuilderReactProps>;
 
 export {
+  BasicComponent,
   ComponentAttribute,
+  CustomComponentConfig,
   DynamicComponents,
   PageBuilderDesign,
   PageBuilderReact,

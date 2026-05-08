@@ -36,9 +36,9 @@ import {
   renderForm,
   filterAttributes,
   toggleFieldExpansion,
-} from '../../components/ModalCore.js';
-import { handleSave } from '../../components/ModalCore.js';
-import { createModalElement } from '../../components/ModalCore.js';
+} from '../../components/ModalCore/index.js';
+import { handleSave } from '../../components/ModalCore/index.js';
+import { createModalElement } from '../../components/ModalCore/index.js';
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────

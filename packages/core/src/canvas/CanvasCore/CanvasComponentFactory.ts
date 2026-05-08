@@ -12,7 +12,7 @@ import {
   ThreeColumnContainer,
   TableComponent,
   LinkComponent,
-} from '../../components';
+} from '../../components/index';
 import { LandingPageTemplate } from '../../templates/LandingPageTemplate';
 
 /** Builds and registers all supported component types */

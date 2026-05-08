@@ -614,6 +614,46 @@ html {
 }
 
 
+/* Default / Custom mode toggle inside Customize tab */
+.customize-mode-toggle {
+  display: flex;
+  margin: 10px 12px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+}
+
+.customize-mode-toggle .mode-btn {
+  flex: 1;
+  padding: 6px 10px;
+  background-color: transparent;
+  color: #64748b;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.customize-mode-toggle .mode-btn:first-child {
+  border-right: 1px solid #e2e8f0;
+}
+
+.customize-mode-toggle .mode-btn:hover:not(.active) {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.customize-mode-toggle .mode-btn.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.custom-settings-panel {
+  padding: 8px 4px;
+}
+
 /* Layers mode toggle styling */
 .layers-mode-toggle {
   display: flex;

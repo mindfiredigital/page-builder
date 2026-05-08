@@ -3,7 +3,7 @@ import {
   renderForm,
   filterAttributes,
   handleSave,
-} from './ModalCore.js';
+} from './ModalCore/index.js';
 /**
  * A reusable modal component for displaying and managing configuration settings.
  *

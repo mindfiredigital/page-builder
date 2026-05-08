@@ -48,6 +48,7 @@ export interface CustomComponentConfig {
   svg?: string;
   title?: string;
   settingsComponent?: React.ComponentType<any> | string;
+  customizeComponent?: React.ComponentType<{ targetComponentId: string }>;
 }
 
 export interface PageBuilderReactProps {

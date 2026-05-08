@@ -8,7 +8,8 @@ export function addControlListeners(
   controlsContainer: HTMLElement,
   addListenersFn: (
     component: HTMLElement
-  ) => void /* recursive ref for re-populate */
+  ) => void /* recursive ref for re-populate */,
+  customizeComponentTagName?: string
 ): void {
   /* Single debounced handler shared by all controls to batch history captures */
   const captureStateDebounced = debounce(() => {
@@ -150,7 +151,12 @@ export function addControlListeners(
     captureStateDebounced();
     /* Defer re-populate so the inline style is committed before being read back */
     requestAnimationFrame(() =>
-      populateCssControls(component, controlsContainer, addListenersFn)
+      populateCssControls(
+        component,
+        controlsContainer,
+        addListenersFn,
+        customizeComponentTagName
+      )
     );
   });
 

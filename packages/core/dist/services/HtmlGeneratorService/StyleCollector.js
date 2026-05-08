@@ -4,7 +4,7 @@ import {
   CSS_PROPERTIES_TO_EXCLUDE,
   SVG_CHILD_TAGS,
   SVG_STYLE_PROPERTIES,
-} from '../../constants.js';
+} from '../../constants/index.js';
 /* ─── StyleCollector ──────────────────────────────────────────────────────────
    Responsible for two tasks:
      1. Harvesting all <style> sheets already present in <head> so they can be

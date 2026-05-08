@@ -69,12 +69,54 @@ export function disableControlWrapper(
 export function populateCssControls(
   component,
   controlsContainer,
-  addListenersFn
+  addListenersFn,
+  customizeComponentTagName
 ) {
   var _a;
   controlsContainer.innerHTML = '';
   const styles = getComputedStyle(component);
   const isCanvas = component.id.toLowerCase() === 'canvas';
+  /* ── Default / Custom toggle (only when a customizeComponent is configured) ── */
+  let cssContainer = controlsContainer;
+  if (customizeComponentTagName) {
+    const modeToggle = document.createElement('div');
+    modeToggle.className = 'customize-mode-toggle';
+    const defaultBtn = document.createElement('button');
+    defaultBtn.className = 'mode-btn active';
+    defaultBtn.textContent = 'Default';
+    const customBtn = document.createElement('button');
+    customBtn.className = 'mode-btn';
+    customBtn.textContent = 'Custom';
+    modeToggle.appendChild(defaultBtn);
+    modeToggle.appendChild(customBtn);
+    controlsContainer.appendChild(modeToggle);
+    const defaultPanel = document.createElement('div');
+    defaultPanel.className = 'default-css-panel';
+    controlsContainer.appendChild(defaultPanel);
+    cssContainer = defaultPanel;
+    const customPanel = document.createElement('div');
+    customPanel.className = 'custom-settings-panel';
+    customPanel.style.display = 'none';
+    const customEl = document.createElement(customizeComponentTagName);
+    customEl.setAttribute(
+      'data-settings',
+      JSON.stringify({ targetComponentId: component.id })
+    );
+    customPanel.appendChild(customEl);
+    controlsContainer.appendChild(customPanel);
+    defaultBtn.addEventListener('click', () => {
+      defaultBtn.classList.add('active');
+      customBtn.classList.remove('active');
+      defaultPanel.style.display = 'block';
+      customPanel.style.display = 'none';
+    });
+    customBtn.addEventListener('click', () => {
+      customBtn.classList.add('active');
+      defaultBtn.classList.remove('active');
+      customPanel.style.display = 'block';
+      defaultPanel.style.display = 'none';
+    });
+  }
   /* Prefer inline style over computed — avoids browser-resolved values losing "inline" */
   const displayIntent = component.dataset.displayIntent;
   const displayValue =
@@ -85,7 +127,7 @@ export function populateCssControls(
     'display',
     displayValue,
     ['block', 'inline', 'inline-block', 'flex', 'grid', 'none'],
-    controlsContainer
+    cssContainer
   );
   /* Show flex sub-controls only when the current display is flex */
   if (styles.display === 'flex' || component.style.display === 'flex') {
@@ -94,14 +136,14 @@ export function populateCssControls(
       'flex-direction',
       styles.flexDirection || 'row',
       ['row', 'row-reverse', 'column', 'column-reverse'],
-      controlsContainer
+      cssContainer
     );
     SidebarUtils.createSelectControl(
       'Align Items',
       'align-items',
       styles.alignItems || 'stretch',
       ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'],
-      controlsContainer
+      cssContainer
     );
     SidebarUtils.createSelectControl(
       'Justify Content',
@@ -115,17 +157,17 @@ export function populateCssControls(
         'space-around',
         'space-evenly',
       ],
-      controlsContainer
+      cssContainer
     );
   }
   if (isCanvas) {
-    SidebarUtils.createPageSizeSelect(controlsContainer, component);
+    SidebarUtils.createPageSizeSelect(cssContainer, component);
     SidebarUtils.createControl(
       'Width',
       'width',
       'number',
       component.offsetWidth,
-      controlsContainer,
+      cssContainer,
       { min: 300, max: 2000, unit: 'px' }
     );
     SidebarUtils.createControl(
@@ -133,7 +175,7 @@ export function populateCssControls(
       'min-height',
       'number',
       parseInt(styles.minHeight) || 100,
-      controlsContainer,
+      cssContainer,
       { min: 0, max: 2000, unit: 'px' }
     );
     SidebarUtils.createControl(
@@ -141,7 +183,7 @@ export function populateCssControls(
       'margin',
       'number',
       parseInt(styles.margin) || 0,
-      controlsContainer,
+      cssContainer,
       { min: 0, max: 100, unit: 'px' }
     );
   }
@@ -165,7 +207,7 @@ export function populateCssControls(
       'width',
       'number',
       wStyle.value,
-      controlsContainer,
+      cssContainer,
       { min: 0, unit: wStyle.unit, parentRef: parentW }
     );
     if (isInline)
@@ -183,7 +225,7 @@ export function populateCssControls(
       'height',
       'number',
       hStyle.value,
-      controlsContainer,
+      cssContainer,
       { min: 0, unit: hStyle.unit, parentRef: parentH }
     );
     if (isInline)
@@ -201,7 +243,7 @@ export function populateCssControls(
       'margin',
       'number',
       mStyle.value,
-      controlsContainer,
+      cssContainer,
       { min: 0, max: 1000, unit: mStyle.unit, parentRef: parentW }
     );
     if (isInline)
@@ -219,7 +261,7 @@ export function populateCssControls(
       'padding',
       'number',
       pStyle.value,
-      controlsContainer,
+      cssContainer,
       { min: 0, max: 1000, unit: pStyle.unit, parentRef: parentW }
     );
     if (isInline)
@@ -233,14 +275,14 @@ export function populateCssControls(
     'background-color',
     'color',
     styles.backgroundColor,
-    controlsContainer
+    cssContainer
   );
   SidebarUtils.createSelectControl(
     'Text Alignment',
     'alignment',
     styles.textAlign,
     ['left', 'center', 'right'],
-    controlsContainer
+    cssContainer
   );
   SidebarUtils.createSelectControl(
     'Font Family',
@@ -256,14 +298,14 @@ export function populateCssControls(
       'sans-serif',
       'serif',
     ],
-    controlsContainer
+    cssContainer
   );
   SidebarUtils.createControl(
     'Font Size',
     'font-size',
     'number',
     parseInt(styles.fontSize) || 16,
-    controlsContainer,
+    cssContainer,
     { min: 0, max: 100, unit: 'px' }
   );
   SidebarUtils.createSelectControl(
@@ -285,21 +327,21 @@ export function populateCssControls(
       '800',
       '900',
     ],
-    controlsContainer
+    cssContainer
   );
   SidebarUtils.createControl(
     'Text Color',
     'text-color',
     'color',
     styles.color || '#000000',
-    controlsContainer
+    cssContainer
   );
   SidebarUtils.createControl(
     'Border Width',
     'border-width',
     'number',
     parseInt(styles.borderWidth) || 0,
-    controlsContainer,
+    cssContainer,
     { min: 0, max: 20, unit: 'px' }
   );
   SidebarUtils.createSelectControl(
@@ -317,14 +359,14 @@ export function populateCssControls(
       'inset',
       'outset',
     ],
-    controlsContainer
+    cssContainer
   );
   SidebarUtils.createControl(
     'Border Color',
     'border-color',
     'color',
     styles.borderColor || '#000000',
-    controlsContainer
+    cssContainer
   );
   /* Sync hex color pickers to the computed RGB values */
   const bgColorInput = document.getElementById('background-color');

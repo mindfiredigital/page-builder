@@ -5,7 +5,8 @@ import { populateCssControls } from './SidebarCssControls.js';
 export function addControlListeners(
   component,
   controlsContainer,
-  addListenersFn /* recursive ref for re-populate */
+  addListenersFn /* recursive ref for re-populate */,
+  customizeComponentTagName
 ) {
   var _a,
     _b,
@@ -201,7 +202,12 @@ export function addControlListeners(
         captureStateDebounced();
         /* Defer re-populate so the inline style is committed before being read back */
         requestAnimationFrame(() =>
-          populateCssControls(component, controlsContainer, addListenersFn)
+          populateCssControls(
+            component,
+            controlsContainer,
+            addListenersFn,
+            customizeComponentTagName
+          )
         );
       });
   /* ── Flex sub-controls ───────────────────────────────────────────────────── */

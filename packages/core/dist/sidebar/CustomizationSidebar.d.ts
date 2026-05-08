@@ -21,6 +21,7 @@ export declare class CustomizationSidebar {
   private static switchToCustomizeModeLocal;
   private static switchToAttributeModeLocal;
   static showSidebar(componentId: string): void;
+  private static getCustomizeTagForComponent;
   private static populateCssControlsLocal;
   private static populateFunctionalityControlsLocal;
   static getLayersViewController(): LayersViewController;

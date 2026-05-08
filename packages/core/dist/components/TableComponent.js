@@ -10,7 +10,7 @@ import {
   UpdateInputValues,
   UpdateCellContent,
   Restore,
-} from './TableCore.js';
+} from './TableCore/index.js';
 export class TableComponent {
   constructor() {
     this.modalComponent = null;

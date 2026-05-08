@@ -6,7 +6,7 @@ import {
   createAttributeControls,
   populateModalButton,
   populateRowVisibilityControls,
-} from './sidebarHelperCore.js';
+} from './sidebarHelperCore/index.js';
 /*
  * SidebarUtils — public API used by CustomizationSidebar and other consumers.
  * All logic lives in ./sidebarHelperCore/; this class is a thin delegation layer

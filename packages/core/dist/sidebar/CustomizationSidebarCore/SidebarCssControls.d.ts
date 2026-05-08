@@ -5,5 +5,6 @@ export declare function disableControlWrapper(
 export declare function populateCssControls(
   component: HTMLElement,
   controlsContainer: HTMLElement,
-  addListenersFn: (component: HTMLElement) => void
+  addListenersFn: (component: HTMLElement) => void,
+  customizeComponentTagName?: string
 ): void;

@@ -4,7 +4,7 @@ import {
   ContainerResizeHandler,
   initContainerEventListeners,
   restoreContainer,
-} from './ContainerCore.js';
+} from './ContainerCore/index.js';
 export class ContainerComponent {
   constructor() {
     this.element = document.createElement('div');

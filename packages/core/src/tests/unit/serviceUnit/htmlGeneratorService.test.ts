@@ -3,7 +3,7 @@ import {
   HtmlShellBuilder,
   StyleCollector,
   SvgStamper,
-} from '../../../services/HtmlGeneratorService';
+} from '../../../services/HtmlGeneratorService/index';
 import { Canvas } from '../../../canvas/Canvas';
 
 import { HTMLGenerator } from '../../../services/HTMLGenerator';

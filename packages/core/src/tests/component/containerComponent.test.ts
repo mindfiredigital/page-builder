@@ -21,14 +21,14 @@ jest.mock('../../components/ImageComponent', () => ({
 }));
 
 import { ContainerComponent } from '../../components/ContainerComponent';
-import { ContainerResizeHandler } from '../../components/ContainerCore';
-import { injectResizerStyles } from '../../components/ContainerCore';
-import { initContainerEventListeners } from '../../components/ContainerCore';
+import { ContainerResizeHandler } from '../../components/ContainerCore/index';
+import { injectResizerStyles } from '../../components/ContainerCore/index';
+import { initContainerEventListeners } from '../../components/ContainerCore/index';
 import {
   restoreContainer,
   restoreResizer,
-} from '../../components/ContainerCore';
-import { handleContainerDrop } from '../../components/ContainerCore';
+} from '../../components/ContainerCore/index';
+import { handleContainerDrop } from '../../components/ContainerCore/index';
 import { Canvas } from '../../canvas/Canvas';
 import { ImageComponent } from '../../components/ImageComponent';
 

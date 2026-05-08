@@ -1,10 +1,10 @@
 import { ContainerComponent } from '../components/index.js';
-import { enableDragAndResize } from './LandingPageTemplateCore.js';
+import { enableDragAndResize } from './LandingPageTemplateCore/index.js';
 import {
   createHeaderSection,
   createHeroSection,
   createFooterSection,
-} from './LandingPageTemplateCore.js';
+} from './LandingPageTemplateCore/index.js';
 export class LandingPageTemplate {
   /* Builds and returns the complete landing page element */
   create() {

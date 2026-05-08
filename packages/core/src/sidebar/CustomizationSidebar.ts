@@ -140,12 +140,39 @@ export class CustomizationSidebar {
     this.switchToCustomizeModeLocal();
   }
 
+  /* Resolves the customizeComponentTagName for a custom component.
+     Only custom components (user-supplied via customComponents config) can
+     have a customize panel — built-in components never show this toggle. */
+  private static getCustomizeTagForComponent(
+    component: HTMLElement
+  ): string | undefined {
+    if (!component.classList.contains('custom-component')) return undefined;
+    if (!this.customComponentsConfig) return undefined;
+
+    const componentType = Array.from(component.classList)
+      .find(cls => cls.endsWith('-component') && cls !== 'custom-component')
+      ?.replace('-component', '');
+
+    if (!componentType) return undefined;
+
+    return this.customComponentsConfig[componentType]
+      ?.customizeComponentTagName;
+  }
+
   /* Thin wrapper so addControlListeners can trigger a re-populate via the module */
   private static populateCssControlsLocal(component: HTMLElement): void {
-    populateCssControls(component, this.controlsContainer, c =>
-      addControlListeners(c, this.controlsContainer, cc =>
-        this.populateCssControlsLocal(cc)
-      )
+    const customizeTag = this.getCustomizeTagForComponent(component);
+    populateCssControls(
+      component,
+      this.controlsContainer,
+      c =>
+        addControlListeners(
+          c,
+          this.controlsContainer,
+          cc => this.populateCssControlsLocal(cc),
+          customizeTag
+        ),
+      customizeTag
     );
   }
 
@@ -159,7 +186,7 @@ export class CustomizationSidebar {
       this.basicComponentsConfig,
       this.customComponentsConfig,
       this.editable,
-      event =>
+      _event =>
         handleInputTrigger(
           this.selectedComponent,
           this.basicComponentsConfig,

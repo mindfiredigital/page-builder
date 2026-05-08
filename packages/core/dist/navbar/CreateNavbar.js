@@ -3,7 +3,7 @@ import {
   getRightButtons,
   buildLeftContainer,
   buildRightContainer,
-} from './CreateNavbarCore.js';
+} from './CreateNavbarCore/index.js';
 /* Builds and returns the full navbar element */
 export function createNavbar(
   editable,

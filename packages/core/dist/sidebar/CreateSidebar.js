@@ -1,4 +1,4 @@
-import { renderCategory } from './CreateSidebarCore.js';
+import { renderCategory } from './CreateSidebarCore/index.js';
 /* Default component set used when no custom config is provided */
 const DEFAULT_DYNAMIC_COMPONENTS = {
   Basic: [

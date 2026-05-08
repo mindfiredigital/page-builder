@@ -18,14 +18,14 @@ jest.mock('../../components/ImageComponent', () => ({
   },
 }));
 import { ContainerComponent } from '../../components/ContainerComponent.js';
-import { ContainerResizeHandler } from '../../components/ContainerCore.js';
-import { injectResizerStyles } from '../../components/ContainerCore.js';
-import { initContainerEventListeners } from '../../components/ContainerCore.js';
+import { ContainerResizeHandler } from '../../components/ContainerCore/index.js';
+import { injectResizerStyles } from '../../components/ContainerCore/index.js';
+import { initContainerEventListeners } from '../../components/ContainerCore/index.js';
 import {
   restoreContainer,
   restoreResizer,
-} from '../../components/ContainerCore.js';
-import { handleContainerDrop } from '../../components/ContainerCore.js';
+} from '../../components/ContainerCore/index.js';
+import { handleContainerDrop } from '../../components/ContainerCore/index.js';
 import { Canvas } from '../../canvas/Canvas.js';
 import { ImageComponent } from '../../components/ImageComponent.js';
 // ── Typed aliases for the mocked functions (resolved after import) ────────────

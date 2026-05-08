@@ -7,7 +7,7 @@ import {
   handleInputTrigger,
   populateFunctionalityControls,
   addControlListeners,
-} from './CustomizationSidebarCore.js';
+} from './CustomizationSidebarCore/index.js';
 export class CustomizationSidebar {
   static init(
     customComponentsConfig,
@@ -110,12 +110,39 @@ export class CustomizationSidebar {
     }
     this.switchToCustomizeModeLocal();
   }
+  /* Resolves the customizeComponentTagName for a custom component.
+       Only custom components (user-supplied via customComponents config) can
+       have a customize panel — built-in components never show this toggle. */
+  static getCustomizeTagForComponent(component) {
+    var _a, _b;
+    if (!component.classList.contains('custom-component')) return undefined;
+    if (!this.customComponentsConfig) return undefined;
+    const componentType =
+      (_a = Array.from(component.classList).find(
+        cls => cls.endsWith('-component') && cls !== 'custom-component'
+      )) === null || _a === void 0
+        ? void 0
+        : _a.replace('-component', '');
+    if (!componentType) return undefined;
+    return (_b = this.customComponentsConfig[componentType]) === null ||
+      _b === void 0
+      ? void 0
+      : _b.customizeComponentTagName;
+  }
   /* Thin wrapper so addControlListeners can trigger a re-populate via the module */
   static populateCssControlsLocal(component) {
-    populateCssControls(component, this.controlsContainer, c =>
-      addControlListeners(c, this.controlsContainer, cc =>
-        this.populateCssControlsLocal(cc)
-      )
+    const customizeTag = this.getCustomizeTagForComponent(component);
+    populateCssControls(
+      component,
+      this.controlsContainer,
+      c =>
+        addControlListeners(
+          c,
+          this.controlsContainer,
+          cc => this.populateCssControlsLocal(cc),
+          customizeTag
+        ),
+      customizeTag
     );
   }
   /* Thin wrapper that passes all required state into the module function */
@@ -126,7 +153,7 @@ export class CustomizationSidebar {
       this.basicComponentsConfig,
       this.customComponentsConfig,
       this.editable,
-      event =>
+      _event =>
         handleInputTrigger(
           this.selectedComponent,
           this.basicComponentsConfig,

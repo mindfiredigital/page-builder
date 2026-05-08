@@ -87,6 +87,7 @@ declare global {
       targetComponentId: string;
     }>;
     settingsComponentTagName?: string;
+    customizeComponentTagName?: string;
     props?: ComponentProps;
     settings?: ComponentProps;
   }

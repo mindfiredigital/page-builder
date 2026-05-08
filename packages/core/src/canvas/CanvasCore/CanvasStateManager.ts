@@ -9,7 +9,7 @@ import {
   LinkComponent,
   HeaderComponent,
   TextComponent,
-} from '../../components';
+} from '../../components/index';
 import { MultiColumnContainer } from '../../services/MultiColumnContainer';
 
 /** Serialises and deserialises the canvas DOM into/from PageBuilderDesign */

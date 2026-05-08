@@ -3,7 +3,7 @@ import {
   HtmlShellBuilder,
   StyleCollector,
   SvgStamper,
-} from '../../../services/HtmlGeneratorService.js';
+} from '../../../services/HtmlGeneratorService/index.js';
 import { Canvas } from '../../../canvas/Canvas.js';
 import { HTMLGenerator } from '../../../services/HTMLGenerator.js';
 describe('HTML Export Pipeline - Integrated Unit Tests', () => {

@@ -1,5 +1,6 @@
 export declare function addControlListeners(
   component: HTMLElement,
   controlsContainer: HTMLElement,
-  addListenersFn: (component: HTMLElement) => void
+  addListenersFn: (component: HTMLElement) => void,
+  customizeComponentTagName?: string
 ): void;

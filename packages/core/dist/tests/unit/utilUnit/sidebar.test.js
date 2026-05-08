@@ -53,7 +53,7 @@ import {
   createAttributeControls,
   populateModalButton,
   populateRowVisibilityControls,
-} from '../../../utils/sidebarHelperCore.js';
+} from '../../../utils/sidebarHelperCore/index.js';
 import { SidebarUtils } from '../../../utils/customizationSidebarHelper.js';
 // ---------------------------------------------------------------------------
 // Mocks

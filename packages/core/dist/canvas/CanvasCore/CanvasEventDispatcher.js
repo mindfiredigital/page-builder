@@ -43,14 +43,26 @@ export class CanvasEventDispatcher {
         onSelectElement(target);
       }
     });
-    /* Show customisation sidebar for the clicked component */
+    /* Show customisation sidebar for the clicked component.
+           Walk up from the raw click target to the nearest editable component
+           so that clicks on child elements (e.g. <video> player, <img> after
+           upload) correctly resolve to the component container's id. */
     canvasElement.addEventListener('click', event => {
-      const component = event.target;
-      if (component) {
-        /* Lazy import avoids circular dep at module load time */
+      let target = event.target;
+      while (
+        target &&
+        target !== canvasElement &&
+        !target.classList.contains('editable-component')
+      ) {
+        target = target.parentElement;
+      }
+      if (!target) return;
+      const componentId =
+        target === canvasElement ? canvasElement.id : target.id;
+      if (componentId) {
         import('../../sidebar/CustomizationSidebar').then(
           ({ CustomizationSidebar }) => {
-            CustomizationSidebar.showSidebar(component.id);
+            CustomizationSidebar.showSidebar(componentId);
           }
         );
       }

@@ -1,21 +1,24 @@
 import { TableComponent } from '../../components/TableComponent.js';
-import { CreateTableRow, CreateTableCell } from '../../components/TableCore.js';
+import {
+  CreateTableRow,
+  CreateTableCell,
+} from '../../components/TableCore/index.js';
 import {
   SeedFormulaValues,
   UpdateInputValues,
   UpdateCellContent,
-} from '../../components/TableCore.js';
+} from '../../components/TableCore/index.js';
 import {
   EvaluateRowVisibility,
   EvaluateRule,
-} from '../../components/TableCore.js';
-import { AddRows } from '../../components/TableCore.js';
-import { AddCellToRow, DeleteCell } from '../../components/TableCore.js';
-import { StyleButton } from '../../components/TableCore.js';
+} from '../../components/TableCore/index.js';
+import { AddRows } from '../../components/TableCore/index.js';
+import { AddCellToRow, DeleteCell } from '../../components/TableCore/index.js';
+import { StyleButton } from '../../components/TableCore/index.js';
 import {
   GetDefaultValuesOfInput,
   Restore,
-} from '../../components/TableCore.js';
+} from '../../components/TableCore/index.js';
 // ── Mocks ────────────────────────────────────────────────────────────────────
 jest.mock('../../canvas/Canvas', () => ({
   Canvas: {
