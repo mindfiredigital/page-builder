@@ -49,6 +49,8 @@ export interface CustomComponentConfig {
   title?: string;
   settingsComponent?: React.ComponentType<any> | string;
   customizeComponent?: React.ComponentType<{ targetComponentId: string }>;
+  defaultWidth?: string;
+  defaultHeight?: string;
 }
 
 export interface PageBuilderReactProps {

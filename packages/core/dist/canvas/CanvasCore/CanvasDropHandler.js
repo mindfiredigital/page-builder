@@ -120,6 +120,12 @@ export class CanvasDropHandler {
         }
       }
       historyManager.captureState();
+      /* Auto-switch the sidebar to the newly dropped component */
+      import('../../sidebar/CustomizationSidebar').then(
+        ({ CustomizationSidebar }) => {
+          CustomizationSidebar.showSidebar(component.id);
+        }
+      );
     }
     CanvasEventDispatcher.dispatchDesignChange();
   }

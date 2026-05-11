@@ -15,12 +15,6 @@ interface ImageSettingsProps {
   targetComponentId: string;
 }
 
-/** Finds the <img> element inside the page-builder canvas component */
-function getImgEl(componentId: string): HTMLImageElement | null {
-  const container = document.getElementById(componentId);
-  return container ? container.querySelector('img') : null;
-}
-
 const ImageSettings = React.forwardRef<HTMLDivElement, ImageSettingsProps>(
   ({ targetComponentId }, ref) => {
     const altText = useImageStore(state => state.getAltText(targetComponentId));
@@ -32,39 +26,6 @@ const ImageSettings = React.forwardRef<HTMLDivElement, ImageSettingsProps>(
     const setAltText = useImageStore(state => state.setAltText);
     const setObjectFit = useImageStore(state => state.setObjectFit);
     const setCaption = useImageStore(state => state.setCaption);
-
-    const handleAltText = (text: string) => {
-      setAltText(targetComponentId, text);
-      const el = getImgEl(targetComponentId);
-      if (el) el.alt = text;
-    };
-
-    const handleObjectFit = (fit: string) => {
-      setObjectFit(targetComponentId, fit);
-      const el = getImgEl(targetComponentId);
-      if (el) el.style.objectFit = fit;
-    };
-
-    const handleCaption = (text: string) => {
-      setCaption(targetComponentId, text);
-      const container = document.getElementById(targetComponentId);
-      if (!container) return;
-      let captionEl = container.querySelector(
-        '.image-caption'
-      ) as HTMLElement | null;
-      if (text) {
-        if (!captionEl) {
-          captionEl = document.createElement('div');
-          captionEl.className = 'image-caption';
-          captionEl.style.cssText =
-            'font-size:11px;color:#64748b;text-align:center;padding:2px 4px;';
-          container.appendChild(captionEl);
-        }
-        captionEl.textContent = text;
-      } else if (captionEl) {
-        captionEl.remove();
-      }
-    };
 
     return (
       <Box
@@ -84,7 +45,7 @@ const ImageSettings = React.forwardRef<HTMLDivElement, ImageSettingsProps>(
           size="small"
           label="Alt Text"
           value={altText}
-          onChange={e => handleAltText(e.target.value)}
+          onChange={e => setAltText(targetComponentId, e.target.value)}
           inputProps={{ style: { fontSize: '12px' } }}
           InputLabelProps={{ style: { fontSize: '12px' } }}
           fullWidth
@@ -95,7 +56,7 @@ const ImageSettings = React.forwardRef<HTMLDivElement, ImageSettingsProps>(
           <Select
             value={objectFit}
             label="Object Fit"
-            onChange={e => handleObjectFit(e.target.value)}
+            onChange={e => setObjectFit(targetComponentId, e.target.value)}
             sx={{ fontSize: '12px' }}
           >
             {['contain', 'cover', 'fill', 'none', 'scale-down'].map(f => (
@@ -110,7 +71,7 @@ const ImageSettings = React.forwardRef<HTMLDivElement, ImageSettingsProps>(
           size="small"
           label="Caption"
           value={caption}
-          onChange={e => handleCaption(e.target.value)}
+          onChange={e => setCaption(targetComponentId, e.target.value)}
           inputProps={{ style: { fontSize: '12px' } }}
           InputLabelProps={{ style: { fontSize: '12px' } }}
           fullWidth

@@ -42,19 +42,50 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
             connectedCallback() {
+              /* Guard against double-mount on reconnect */
+              if ((this as any)._pbMounted) return;
+              (this as any)._pbMounted = true;
+
+              /* Block display prevents inline ghost-space around the element */
+              this.style.display = 'block';
+
+              /* Apply initial size only if the component config requests it.
+                 Other custom components keep their natural/content-driven size. */
+              if (!this.style.width && componentConfig.defaultWidth)
+                this.style.width = componentConfig.defaultWidth;
+              if (!this.style.height && componentConfig.defaultHeight)
+                this.style.height = componentConfig.defaultHeight;
+
               const mountPoint = document.createElement('div');
+              mountPoint.style.cssText =
+                'width:100%;height:100%;display:block;margin:0;padding:0;';
               this.appendChild(mountPoint);
               const componentId = this.id;
 
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                const root = ReactDOM.createRoot(mountPoint);
+                root.render(
                   React.createElement(componentConfig.component, {
                     componentId: componentId,
                   })
                 );
+                (this as any)._pbRoot = root;
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
               }
+            }
+
+            disconnectedCallback() {
+              /* Notify stores/components that this instance is gone so they
+                 can purge stale per-ID data before the ID is reused. */
+              document.dispatchEvent(
+                new CustomEvent('pb:component-removed', {
+                  detail: { componentId: this.id },
+                })
+              );
+              /* Unmount React asynchronously to let the event settle first */
+              const root = (this as any)._pbRoot;
+              if (root) setTimeout(() => root.unmount(), 0);
             }
           }
 

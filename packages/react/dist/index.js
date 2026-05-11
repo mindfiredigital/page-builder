@@ -78,11 +78,21 @@ var PageBuilderReact = ({
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
             connectedCallback() {
+              if (this._pbMounted) return;
+              this._pbMounted = true;
+              this.style.display = 'block';
+              if (!this.style.width && componentConfig.defaultWidth)
+                this.style.width = componentConfig.defaultWidth;
+              if (!this.style.height && componentConfig.defaultHeight)
+                this.style.height = componentConfig.defaultHeight;
               const mountPoint = document.createElement('div');
+              mountPoint.style.cssText =
+                'width:100%;height:100%;display:block;margin:0;padding:0;';
               this.appendChild(mountPoint);
               const componentId = this.id;
               try {
-                import_client.default.createRoot(mountPoint).render(
+                const root = import_client.default.createRoot(mountPoint);
+                root.render(
                   import_react.default.createElement(
                     componentConfig.component,
                     {
@@ -90,9 +100,19 @@ var PageBuilderReact = ({
                     }
                   )
                 );
+                this._pbRoot = root;
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
               }
+            }
+            disconnectedCallback() {
+              document.dispatchEvent(
+                new CustomEvent('pb:component-removed', {
+                  detail: { componentId: this.id },
+                })
+              );
+              const root = this._pbRoot;
+              if (root) setTimeout(() => root.unmount(), 0);
             }
           }
           customElements.define(tagName, ReactComponentElement);

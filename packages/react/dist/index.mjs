@@ -31,18 +31,39 @@ var PageBuilderReact = ({
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
             connectedCallback() {
+              if (this._pbMounted)
+                return;
+              this._pbMounted = true;
+              this.style.display = "block";
+              if (!this.style.width && componentConfig.defaultWidth)
+                this.style.width = componentConfig.defaultWidth;
+              if (!this.style.height && componentConfig.defaultHeight)
+                this.style.height = componentConfig.defaultHeight;
               const mountPoint = document.createElement("div");
+              mountPoint.style.cssText = "width:100%;height:100%;display:block;margin:0;padding:0;";
               this.appendChild(mountPoint);
               const componentId = this.id;
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                const root = ReactDOM.createRoot(mountPoint);
+                root.render(
                   React.createElement(componentConfig.component, {
                     componentId
                   })
                 );
+                this._pbRoot = root;
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
               }
+            }
+            disconnectedCallback() {
+              document.dispatchEvent(
+                new CustomEvent("pb:component-removed", {
+                  detail: { componentId: this.id }
+                })
+              );
+              const root = this._pbRoot;
+              if (root)
+                setTimeout(() => root.unmount(), 0);
             }
           }
           customElements.define(tagName, ReactComponentElement);

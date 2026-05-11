@@ -40,7 +40,7 @@ const CustomVideo = React.forwardRef<HTMLDivElement, CustomVideoProps>(
         ref={ref}
         style={{
           width: '100%',
-          minHeight: '200px',
+          height: '100%',
           backgroundColor: '#0f172a',
           display: 'flex',
           alignItems: 'center',
@@ -48,6 +48,7 @@ const CustomVideo = React.forwardRef<HTMLDivElement, CustomVideoProps>(
           borderRadius: '6px',
           overflow: 'hidden',
           position: 'relative',
+          boxSizing: 'border-box',
         }}
       >
         {videoSrc ? (

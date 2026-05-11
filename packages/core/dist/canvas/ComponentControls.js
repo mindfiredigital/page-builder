@@ -87,5 +87,11 @@ export class ComponentControlsManager {
     CanvasSharedState.components = components.filter(c => c !== element);
     historyManager.captureState();
     CanvasEventDispatcher.dispatchDesignChange();
+    /* Reset sidebar to canvas settings after deletion */
+    import('../sidebar/CustomizationSidebar').then(
+      ({ CustomizationSidebar }) => {
+        CustomizationSidebar.showSidebar(CanvasSharedState.canvasElement.id);
+      }
+    );
   }
 }

@@ -10,19 +10,10 @@ const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
     const id = componentId || 'default';
     const [imageSrc, setImageSrc] = React.useState<string | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
-    const imgRef = React.useRef<HTMLImageElement>(null);
 
     const objectFit = useImageStore(state => state.getObjectFit(id));
     const altText = useImageStore(state => state.getAltText(id));
     const caption = useImageStore(state => state.getCaption(id));
-
-    /* Apply store settings to the live <img> element whenever they change */
-    React.useEffect(() => {
-      const el = imgRef.current;
-      if (!el) return;
-      el.style.objectFit = objectFit;
-      el.alt = altText;
-    }, [objectFit, altText]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -37,7 +28,7 @@ const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
         ref={ref}
         style={{
           width: '100%',
-          minHeight: '200px',
+          height: '100%',
           backgroundColor: '#f1f5f9',
           display: 'flex',
           flexDirection: 'column',
@@ -47,12 +38,22 @@ const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
           overflow: 'hidden',
           border: '2px dashed #cbd5e1',
           position: 'relative',
+          boxSizing: 'border-box',
         }}
       >
         {imageSrc ? (
           <>
+            {/*
+              Keep width/height 100% fixed so object-fit has a defined box to
+              work within. object-fit controls how the image *content* is scaled
+              inside that box — not the box dimensions itself.
+                contain  → scale down/up to fit, letterboxed
+                cover    → scale to fill, crops edges
+                fill     → stretch to fill (no aspect ratio)
+                none     → natural size, centered (crops if larger than box)
+                scale-down → smaller of contain vs none
+            */}
             <img
-              ref={imgRef}
               src={imageSrc}
               alt={altText}
               style={{
@@ -65,11 +66,14 @@ const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
             {caption && (
               <div
                 style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                   padding: '4px 8px',
                   fontSize: '11px',
                   color: '#64748b',
                   backgroundColor: 'rgba(255,255,255,0.85)',
-                  width: '100%',
                   textAlign: 'center',
                 }}
               >

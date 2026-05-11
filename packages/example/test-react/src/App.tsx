@@ -77,6 +77,8 @@ const App = () => {
       </svg>`,
       title: 'Custom Video',
       customizeComponent: VideoSettings,
+      defaultWidth: '300px',
+      defaultHeight: '300px',
     },
     CustomImage: {
       component: CustomImage,
@@ -85,6 +87,8 @@ const App = () => {
       </svg>`,
       title: 'Custom Image',
       customizeComponent: ImageSettings,
+      defaultWidth: '300px',
+      defaultHeight: '300px',
     },
     ColorPicker: {
       component: ColorPicker,
