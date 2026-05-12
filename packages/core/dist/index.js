@@ -1982,33 +1982,33 @@ class k {
     return (e.classList.add('rt-popover-separator'), e);
   }
   getBlockSpecificTunes(e, t) {
-    var n, A;
-    const r = k.TUNE_ICONS;
+    var n, A, r;
+    const i = k.TUNE_ICONS;
     switch (t) {
       case 'text': {
         const t = e.dataset.align || 'left';
         return [
           {
             label: 'Align Left',
-            icon: r.alignLeft,
+            icon: i.alignLeft,
             active: 'left' === t,
             action: () => this.applyAlignment(e, 'left'),
           },
           {
             label: 'Align Center',
-            icon: r.alignCenter,
+            icon: i.alignCenter,
             active: 'center' === t,
             action: () => this.applyAlignment(e, 'center'),
           },
           {
             label: 'Align Right',
-            icon: r.alignRight,
+            icon: i.alignRight,
             active: 'right' === t,
             action: () => this.applyAlignment(e, 'right'),
           },
           {
             label: 'Convert to',
-            icon: r.convertTo,
+            icon: i.convertTo,
             submenu: [
               {
                 label: 'Heading',
@@ -2051,7 +2051,7 @@ class k {
           })),
           {
             label: 'Convert to',
-            icon: r.convertTo,
+            icon: i.convertTo,
             submenu: [
               {
                 label: 'Text',
@@ -2077,29 +2077,50 @@ class k {
           },
         ];
       }
+      case 'code': {
+        const t = e.querySelector('.rt-code-block'),
+          n =
+            null !== (A = null == t ? void 0 : t.dataset.theme) && void 0 !== A
+              ? A
+              : 'light';
+        return [
+          {
+            label: 'Light mode',
+            icon: i.sun,
+            active: 'light' === n,
+            action: () => this.toggleCodeTheme(e, 'light'),
+          },
+          {
+            label: 'Dark mode',
+            icon: i.moon,
+            active: 'dark' === n,
+            action: () => this.toggleCodeTheme(e, 'dark'),
+          },
+        ];
+      }
       case 'list': {
         const t = e.querySelector('.rt-list-block'),
           n =
-            null !== (A = null == t ? void 0 : t.dataset.listStyle) &&
-            void 0 !== A
-              ? A
+            null !== (r = null == t ? void 0 : t.dataset.listStyle) &&
+            void 0 !== r
+              ? r
               : 'unordered';
         return [
           {
             label: 'Unordered',
-            icon: r.unordered,
+            icon: i.unordered,
             active: 'unordered' === n,
             action: () => this.toggleListStyle(e, 'unordered'),
           },
           {
             label: 'Ordered',
-            icon: r.ordered,
+            icon: i.ordered,
             active: 'ordered' === n,
             action: () => this.toggleListStyle(e, 'ordered'),
           },
           {
             label: 'Convert to',
-            icon: r.convertTo,
+            icon: i.convertTo,
             submenu: [
               {
                 label: 'Text',
@@ -2191,6 +2212,10 @@ class k {
           : '',
       s = this.createHeadingContent(t);
     (i && (s.textContent = i), null == r || r.replaceWith(s));
+  }
+  toggleCodeTheme(e, t) {
+    const n = e.querySelector('.rt-code-block');
+    n && (n.dataset.theme = t);
   }
   toggleListStyle(e, t) {
     const n = e.querySelector('.rt-list-block');
@@ -2375,6 +2400,8 @@ function I(e) {
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><line x1="4" y1="6" x2="4.01" y2="6"/><line x1="4" y1="12" x2="4.01" y2="12"/><line x1="4" y1="18" x2="4.01" y2="18"/></svg>',
     ordered:
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><polyline points="3 8 3 3 5 3"/><line x1="3" y1="8" x2="5" y2="8"/><path d="M5 13H3l2 3H3"/></svg>',
+    sun: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+    moon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
   }));
 class N {
   create() {

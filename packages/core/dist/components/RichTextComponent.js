@@ -429,7 +429,7 @@ export class RichTextComponent {
   }
   // ── Block-specific tunes ────────────────────────────────────
   getBlockSpecificTunes(block, blockType) {
-    var _a, _b;
+    var _a, _b, _c;
     const icons = RichTextComponent.TUNE_ICONS;
     switch (blockType) {
       case 'text': {
@@ -528,14 +528,38 @@ export class RichTextComponent {
           },
         ];
       }
+      case 'code': {
+        const codeWrapper = block.querySelector('.rt-code-block');
+        const currentTheme =
+          (_b =
+            codeWrapper === null || codeWrapper === void 0
+              ? void 0
+              : codeWrapper.dataset.theme) !== null && _b !== void 0
+            ? _b
+            : 'light';
+        return [
+          {
+            label: 'Light mode',
+            icon: icons.sun,
+            active: currentTheme === 'light',
+            action: () => this.toggleCodeTheme(block, 'light'),
+          },
+          {
+            label: 'Dark mode',
+            icon: icons.moon,
+            active: currentTheme === 'dark',
+            action: () => this.toggleCodeTheme(block, 'dark'),
+          },
+        ];
+      }
       case 'list': {
         const listEl = block.querySelector('.rt-list-block');
         const currentStyle =
-          (_b =
+          (_c =
             listEl === null || listEl === void 0
               ? void 0
-              : listEl.dataset.listStyle) !== null && _b !== void 0
-            ? _b
+              : listEl.dataset.listStyle) !== null && _c !== void 0
+            ? _c
             : 'unordered';
         return [
           {
@@ -658,6 +682,10 @@ export class RichTextComponent {
       ? void 0
       : oldHeading.replaceWith(newHeading);
   }
+  toggleCodeTheme(block, theme) {
+    const wrapper = block.querySelector('.rt-code-block');
+    if (wrapper) wrapper.dataset.theme = theme;
+  }
   toggleListStyle(block, style) {
     const oldList = block.querySelector('.rt-list-block');
     if (!oldList) return;
@@ -770,4 +798,6 @@ RichTextComponent.TUNE_ICONS = {
   convertTo: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
   unordered: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><line x1="4" y1="6" x2="4.01" y2="6"/><line x1="4" y1="12" x2="4.01" y2="12"/><line x1="4" y1="18" x2="4.01" y2="18"/></svg>`,
   ordered: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><polyline points="3 8 3 3 5 3"/><line x1="3" y1="8" x2="5" y2="8"/><path d="M5 13H3l2 3H3"/></svg>`,
+  sun: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+  moon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
 };
