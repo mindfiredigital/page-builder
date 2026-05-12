@@ -2542,31 +2542,51 @@ h6.rt-heading-block { font-size: 0.9em; }
 .rt-warning-block {
   flex: 1;
   display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+}
+
+.rt-warning-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #f59e0b;
+}
+
+.rt-warning-fields {
+  flex: 1;
+  display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .rt-warning-title {
-  padding: 8px 10px;
-  border: 1px solid #e2e8f0;
+  padding: 6px 10px;
+  border: 1px solid #fde68a;
   border-radius: 4px;
   font-size: 14px;
   font-weight: 600;
   outline: none;
   width: 100%;
   box-sizing: border-box;
+  background: transparent;
 }
 
 .rt-warning-message {
-  padding: 8px 10px;
-  border: 1px solid #e2e8f0;
+  padding: 6px 10px;
+  border: 1px solid #fde68a;
   border-radius: 4px;
   font-size: 14px;
   resize: vertical;
   outline: none;
-  min-height: 72px;
+  min-height: 64px;
   width: 100%;
   box-sizing: border-box;
+  background: transparent;
 }
 
 /* Checklist block */
@@ -2600,6 +2620,11 @@ h6.rt-heading-block { font-size: 0.9em; }
   line-height: 1.6;
   color: #334155;
   min-height: 24px;
+}
+
+.rt-checklist-checkbox:checked ~ .rt-checklist-text {
+  text-decoration: line-through;
+  color: #94a3b8;
 }
 
 /* ── Add-block popover ──────────────────────────────────────── */

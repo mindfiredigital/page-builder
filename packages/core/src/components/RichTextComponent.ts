@@ -303,6 +303,13 @@ export class RichTextComponent {
     wrapper.classList.add('rt-block-content', 'rt-warning-block');
     wrapper.setAttribute('contenteditable', 'false');
 
+    const icon = document.createElement('div');
+    icon.classList.add('rt-warning-icon');
+    icon.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+    const fields = document.createElement('div');
+    fields.classList.add('rt-warning-fields');
+
     const title = document.createElement('input');
     title.type = 'text';
     title.classList.add('rt-warning-title');
@@ -312,8 +319,10 @@ export class RichTextComponent {
     message.classList.add('rt-warning-message');
     message.placeholder = 'Message';
 
-    wrapper.appendChild(title);
-    wrapper.appendChild(message);
+    fields.appendChild(title);
+    fields.appendChild(message);
+    wrapper.appendChild(icon);
+    wrapper.appendChild(fields);
     return wrapper;
   }
 
@@ -451,6 +460,9 @@ export class RichTextComponent {
     ordered: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><polyline points="3 8 3 3 5 3"/><line x1="3" y1="8" x2="5" y2="8"/><path d="M5 13H3l2 3H3"/></svg>`,
     sun: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
     moon: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+    imgBorder: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/></svg>`,
+    imgStretch: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>`,
+    imgBackground: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M2 8h20M8 2v6"/></svg>`,
   };
 
   private toggleTunePopover(block: HTMLElement, anchor: HTMLElement): void {
@@ -738,6 +750,29 @@ export class RichTextComponent {
           },
         ];
       }
+      case 'image': {
+        const imageBlock = block.querySelector<HTMLElement>('.rt-image-block');
+        return [
+          {
+            label: 'With border',
+            icon: icons.imgBorder,
+            active: imageBlock?.dataset.border === 'true',
+            action: () => this.toggleImageOption(block, 'border'),
+          },
+          {
+            label: 'Stretch image',
+            icon: icons.imgStretch,
+            active: imageBlock?.dataset.stretch === 'true',
+            action: () => this.toggleImageOption(block, 'stretch'),
+          },
+          {
+            label: 'With background',
+            icon: icons.imgBackground,
+            active: imageBlock?.dataset.background === 'true',
+            action: () => this.toggleImageOption(block, 'background'),
+          },
+        ];
+      }
       case 'delimiter': {
         return [
           {
@@ -816,6 +851,9 @@ export class RichTextComponent {
           },
         ];
       }
+      case 'checklist':
+      case 'rawhtml':
+      case 'warning':
       default:
         return [];
     }
@@ -876,6 +914,29 @@ export class RichTextComponent {
     const newHeading = this.createHeadingContent(level);
     if (preservedText) newHeading.textContent = preservedText;
     oldHeading?.replaceWith(newHeading);
+  }
+
+  private toggleImageOption(
+    block: HTMLElement,
+    option: 'border' | 'stretch' | 'background'
+  ): void {
+    const imageBlock = block.querySelector<HTMLElement>('.rt-image-block');
+    if (!imageBlock) return;
+    const isOn = imageBlock.dataset[option] === 'true';
+    imageBlock.dataset[option] = isOn ? 'false' : 'true';
+    const img = imageBlock.querySelector<HTMLElement>('.rt-image-preview');
+    switch (option) {
+      case 'border':
+        if (img) img.style.border = isOn ? '' : '3px solid #e2e8f0';
+        break;
+      case 'stretch':
+        if (img) img.style.width = isOn ? '' : '100%';
+        break;
+      case 'background':
+        imageBlock.style.backgroundColor = isOn ? '' : '#f1f5f9';
+        imageBlock.style.padding = isOn ? '' : '12px';
+        break;
+    }
   }
 
   private toggleCodeTheme(block: HTMLElement, theme: 'light' | 'dark'): void {

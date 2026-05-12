@@ -35,6 +35,7 @@ export declare class RichTextComponent {
   private applyAlignment;
   private convertBlock;
   private changeHeadingLevel;
+  private toggleImageOption;
   private toggleCodeTheme;
   private toggleListStyle;
   private moveBlockUp;
