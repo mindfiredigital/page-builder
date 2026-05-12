@@ -4,6 +4,15 @@ interface BlockTypeDef {
   icon: string;
 }
 
+interface TuneItem {
+  label: string;
+  icon: string;
+  action?: () => void;
+  danger?: boolean;
+  active?: boolean;
+  submenu?: TuneItem[];
+}
+
 export class RichTextComponent {
   private static blockCounter = 0;
   private root: HTMLElement | null = null;
@@ -434,6 +443,10 @@ export class RichTextComponent {
     moveUp: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>`,
     delete: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
     moveDown: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>`,
+    alignLeft: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`,
+    alignCenter: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="12" x2="6" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`,
+    alignRight: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="7" y2="18"/></svg>`,
+    convertTo: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
   };
 
   private toggleTunePopover(block: HTMLElement, anchor: HTMLElement): void {
@@ -465,7 +478,7 @@ export class RichTextComponent {
     );
   }
 
-  buildTunePopover(block: HTMLElement): HTMLElement {
+  private buildTunePopover(block: HTMLElement): HTMLElement {
     const popover = document.createElement('div');
     popover.classList.add('rt-add-popover');
 
@@ -479,53 +492,199 @@ export class RichTextComponent {
     const list = document.createElement('div');
     list.classList.add('rt-popover-list');
 
-    const defaultTunes = [
+    const blockType = block.dataset.blockType || 'text';
+    const specific = this.getBlockSpecificTunes(block, blockType);
+    const defaults = this.getDefaultTunes(block);
+
+    const render = (query: string) => {
+      list.innerHTML = '';
+      const q = query.toLowerCase();
+
+      const visibleSpecific = specific.filter(t =>
+        t.label.toLowerCase().includes(q)
+      );
+      const visibleDefaults = defaults.filter(t =>
+        t.label.toLowerCase().includes(q)
+      );
+
+      visibleSpecific.forEach(t => list.appendChild(this.buildTuneItem(t)));
+      if (visibleSpecific.length > 0 && visibleDefaults.length > 0) {
+        list.appendChild(this.buildSeparator());
+      }
+      visibleDefaults.forEach(t => list.appendChild(this.buildTuneItem(t)));
+    };
+
+    render('');
+    filterInput.addEventListener('input', () => render(filterInput.value));
+
+    popover.appendChild(filterInput);
+    popover.appendChild(list);
+    return popover;
+  }
+
+  private buildTuneItem(item: TuneItem): HTMLElement {
+    if (item.submenu) {
+      return this.buildSubmenuItem(item);
+    }
+    const el = document.createElement('div');
+    el.classList.add('rt-popover-item');
+    if (item.danger) el.classList.add('rt-popover-item--danger');
+    if (item.active) el.classList.add('rt-popover-item--active');
+    el.setAttribute('contenteditable', 'false');
+    el.innerHTML = `<span class="rt-popover-icon">${item.icon}</span><span class="rt-popover-label">${item.label}</span>`;
+    if (item.action) {
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        item.action!();
+        this.hidePopover();
+      });
+    }
+    return el;
+  }
+
+  private buildSubmenuItem(item: TuneItem): HTMLElement {
+    const el = document.createElement('div');
+    el.classList.add('rt-popover-item', 'rt-popover-item--submenu');
+    el.setAttribute('contenteditable', 'false');
+    el.innerHTML = `<span class="rt-popover-icon">${item.icon}</span><span class="rt-popover-label">${item.label}</span><span class="rt-popover-arrow">›</span>`;
+
+    const submenu = document.createElement('div');
+    submenu.classList.add('rt-convert-submenu');
+    (item.submenu ?? []).forEach(sub => {
+      const subEl = document.createElement('div');
+      subEl.classList.add('rt-popover-item');
+      subEl.setAttribute('contenteditable', 'false');
+      subEl.innerHTML = `<span class="rt-popover-icon">${sub.icon}</span><span class="rt-popover-label">${sub.label}</span>`;
+      subEl.addEventListener('mousedown', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        sub.action?.();
+        this.hidePopover();
+      });
+      submenu.appendChild(subEl);
+    });
+
+    el.appendChild(submenu);
+    return el;
+  }
+
+  private buildSeparator(): HTMLElement {
+    const hr = document.createElement('hr');
+    hr.classList.add('rt-popover-separator');
+    return hr;
+  }
+
+  // ── Block-specific tunes ────────────────────────────────────
+
+  private getBlockSpecificTunes(
+    block: HTMLElement,
+    blockType: string
+  ): TuneItem[] {
+    const icons = RichTextComponent.TUNE_ICONS;
+
+    switch (blockType) {
+      case 'text': {
+        const currentAlign = block.dataset.align || 'left';
+        return [
+          {
+            label: 'Align Left',
+            icon: icons.alignLeft,
+            active: currentAlign === 'left',
+            action: () => this.applyAlignment(block, 'left'),
+          },
+          {
+            label: 'Align Center',
+            icon: icons.alignCenter,
+            active: currentAlign === 'center',
+            action: () => this.applyAlignment(block, 'center'),
+          },
+          {
+            label: 'Align Right',
+            icon: icons.alignRight,
+            active: currentAlign === 'right',
+            action: () => this.applyAlignment(block, 'right'),
+          },
+          {
+            label: 'Convert to',
+            icon: icons.convertTo,
+            submenu: [
+              {
+                label: 'Heading',
+                icon: RichTextComponent.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(block, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: RichTextComponent.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(block, 'list'),
+              },
+              {
+                label: 'Quote',
+                icon: RichTextComponent.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(block, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: RichTextComponent.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(block, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
+      default:
+        return [];
+    }
+  }
+
+  private getDefaultTunes(block: HTMLElement): TuneItem[] {
+    const icons = RichTextComponent.TUNE_ICONS;
+    return [
       {
         label: 'Move up',
-        icon: RichTextComponent.TUNE_ICONS.moveUp,
-        danger: false,
+        icon: icons.moveUp,
         action: () => this.moveBlockUp(block),
       },
       {
         label: 'Delete',
-        icon: RichTextComponent.TUNE_ICONS.delete,
+        icon: icons.delete,
         danger: true,
         action: () => this.deleteBlock(block),
       },
       {
         label: 'Move down',
-        icon: RichTextComponent.TUNE_ICONS.moveDown,
-        danger: false,
+        icon: icons.moveDown,
         action: () => this.moveBlockDown(block),
       },
     ];
+  }
 
-    const renderTunes = (query: string) => {
-      list.innerHTML = '';
-      defaultTunes
-        .filter(t => t.label.toLowerCase().includes(query.toLowerCase()))
-        .forEach(t => {
-          const item = document.createElement('div');
-          item.classList.add('rt-popover-item');
-          if (t.danger) item.classList.add('rt-popover-item--danger');
-          item.setAttribute('contenteditable', 'false');
-          item.innerHTML = `<span class="rt-popover-icon">${t.icon}</span><span class="rt-popover-label">${t.label}</span>`;
-          item.addEventListener('mousedown', e => {
-            e.preventDefault();
-            e.stopPropagation();
-            t.action();
-            this.hidePopover();
-          });
-          list.appendChild(item);
-        });
-    };
+  // ── Block actions ───────────────────────────────────────────
 
-    renderTunes('');
-    filterInput.addEventListener('input', () => renderTunes(filterInput.value));
+  private applyAlignment(block: HTMLElement, align: string): void {
+    const content = block.querySelector<HTMLElement>('.rt-block-content');
+    if (content) content.style.textAlign = align;
+    block.dataset.align = align;
+  }
 
-    popover.appendChild(filterInput);
-    popover.appendChild(list);
-    return popover;
+  private convertBlock(block: HTMLElement, toType: string): void {
+    const oldContent = block.querySelector<HTMLElement>('.rt-block-content');
+    const preservedText = oldContent?.textContent?.trim() ?? '';
+
+    const newContent = this.createBlockContent(toType);
+    oldContent?.replaceWith(newContent);
+    block.dataset.blockType = toType;
+    delete block.dataset.align;
+
+    if (preservedText) {
+      const editable =
+        newContent.querySelector<HTMLElement>('[contenteditable="true"]') ??
+        (newContent.getAttribute('contenteditable') === 'true'
+          ? newContent
+          : null);
+      if (editable) editable.textContent = preservedText;
+    }
   }
 
   private moveBlockUp(block: HTMLElement): void {
@@ -533,9 +692,7 @@ export class RichTextComponent {
       el.classList.contains('rt-block')
     ) as HTMLElement[];
     const idx = siblings.indexOf(block);
-    if (idx > 0) {
-      siblings[idx - 1].insertAdjacentElement('beforebegin', block);
-    }
+    if (idx > 0) siblings[idx - 1].insertAdjacentElement('beforebegin', block);
   }
 
   private moveBlockDown(block: HTMLElement): void {
@@ -543,15 +700,13 @@ export class RichTextComponent {
       el.classList.contains('rt-block')
     ) as HTMLElement[];
     const idx = siblings.indexOf(block);
-    if (idx < siblings.length - 1) {
+    if (idx < siblings.length - 1)
       siblings[idx + 1].insertAdjacentElement('afterend', block);
-    }
   }
 
   private deleteBlock(block: HTMLElement): void {
     block.remove();
-    const remaining = this.root!.querySelectorAll('.rt-block');
-    if (remaining.length === 0) {
+    if (this.root!.querySelectorAll('.rt-block').length === 0) {
       this.root!.prepend(this.createBlock('text'));
     }
   }

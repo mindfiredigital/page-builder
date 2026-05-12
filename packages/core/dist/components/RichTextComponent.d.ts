@@ -26,7 +26,14 @@ export declare class RichTextComponent {
   private insertBlock;
   private static readonly TUNE_ICONS;
   private toggleTunePopover;
-  buildTunePopover(block: HTMLElement): HTMLElement;
+  private buildTunePopover;
+  private buildTuneItem;
+  private buildSubmenuItem;
+  private buildSeparator;
+  private getBlockSpecificTunes;
+  private getDefaultTunes;
+  private applyAlignment;
+  private convertBlock;
   private moveBlockUp;
   private moveBlockDown;
   private deleteBlock;

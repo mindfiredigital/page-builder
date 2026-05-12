@@ -2671,3 +2671,53 @@ h6.rt-heading-block { font-size: 0.9em; }
 .rt-popover-item--danger:hover {
   background: #fff1f2;
 }
+
+.rt-popover-item--active {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.rt-popover-item--active .rt-popover-icon {
+  color: #3b82f6;
+}
+
+.rt-popover-item--active:hover {
+  background: #dbeafe;
+}
+
+/* Convert-to submenu */
+.rt-popover-item--submenu {
+  position: relative;
+}
+
+.rt-popover-arrow {
+  margin-left: auto;
+  color: #94a3b8;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.rt-convert-submenu {
+  display: none;
+  position: absolute;
+  left: calc(100% + 4px);
+  top: -6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  width: 180px;
+  padding: 6px;
+  z-index: 10001;
+}
+
+.rt-popover-item--submenu:hover .rt-convert-submenu {
+  display: block;
+}
+
+/* Separator between specific tunes and default tunes */
+.rt-popover-separator {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 4px 0;
+}
