@@ -738,6 +738,49 @@ export class RichTextComponent {
           },
         ];
       }
+      case 'quote': {
+        const currentAlign = block.dataset.align ?? 'left';
+        return [
+          {
+            label: 'Align Left',
+            icon: icons.alignLeft,
+            active: currentAlign === 'left',
+            action: () => this.applyAlignment(block, 'left'),
+          },
+          {
+            label: 'Align Center',
+            icon: icons.alignCenter,
+            active: currentAlign === 'center',
+            action: () => this.applyAlignment(block, 'center'),
+          },
+          {
+            label: 'Convert to',
+            icon: icons.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: RichTextComponent.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(block, 'text'),
+              },
+              {
+                label: 'Heading',
+                icon: RichTextComponent.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(block, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: RichTextComponent.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(block, 'list'),
+              },
+              {
+                label: 'Checklist',
+                icon: RichTextComponent.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(block, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
       default:
         return [];
     }

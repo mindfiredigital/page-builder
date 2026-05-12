@@ -429,7 +429,7 @@ export class RichTextComponent {
   }
   // ── Block-specific tunes ────────────────────────────────────
   getBlockSpecificTunes(block, blockType) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     const icons = RichTextComponent.TUNE_ICONS;
     switch (blockType) {
       case 'text': {
@@ -592,6 +592,50 @@ export class RichTextComponent {
                 label: 'Quote',
                 icon: RichTextComponent.BLOCK_TYPES[5].icon,
                 action: () => this.convertBlock(block, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: RichTextComponent.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(block, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
+      case 'quote': {
+        const currentAlign =
+          (_d = block.dataset.align) !== null && _d !== void 0 ? _d : 'left';
+        return [
+          {
+            label: 'Align Left',
+            icon: icons.alignLeft,
+            active: currentAlign === 'left',
+            action: () => this.applyAlignment(block, 'left'),
+          },
+          {
+            label: 'Align Center',
+            icon: icons.alignCenter,
+            active: currentAlign === 'center',
+            action: () => this.applyAlignment(block, 'center'),
+          },
+          {
+            label: 'Convert to',
+            icon: icons.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: RichTextComponent.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(block, 'text'),
+              },
+              {
+                label: 'Heading',
+                icon: RichTextComponent.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(block, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: RichTextComponent.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(block, 'list'),
               },
               {
                 label: 'Checklist',

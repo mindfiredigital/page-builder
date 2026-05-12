@@ -1982,33 +1982,33 @@ class k {
     return (e.classList.add('rt-popover-separator'), e);
   }
   getBlockSpecificTunes(e, t) {
-    var n, A, r;
-    const i = k.TUNE_ICONS;
+    var n, A, r, i;
+    const s = k.TUNE_ICONS;
     switch (t) {
       case 'text': {
         const t = e.dataset.align || 'left';
         return [
           {
             label: 'Align Left',
-            icon: i.alignLeft,
+            icon: s.alignLeft,
             active: 'left' === t,
             action: () => this.applyAlignment(e, 'left'),
           },
           {
             label: 'Align Center',
-            icon: i.alignCenter,
+            icon: s.alignCenter,
             active: 'center' === t,
             action: () => this.applyAlignment(e, 'center'),
           },
           {
             label: 'Align Right',
-            icon: i.alignRight,
+            icon: s.alignRight,
             active: 'right' === t,
             action: () => this.applyAlignment(e, 'right'),
           },
           {
             label: 'Convert to',
-            icon: i.convertTo,
+            icon: s.convertTo,
             submenu: [
               {
                 label: 'Heading',
@@ -2051,7 +2051,7 @@ class k {
           })),
           {
             label: 'Convert to',
-            icon: i.convertTo,
+            icon: s.convertTo,
             submenu: [
               {
                 label: 'Text',
@@ -2086,13 +2086,13 @@ class k {
         return [
           {
             label: 'Light mode',
-            icon: i.sun,
+            icon: s.sun,
             active: 'light' === n,
             action: () => this.toggleCodeTheme(e, 'light'),
           },
           {
             label: 'Dark mode',
-            icon: i.moon,
+            icon: s.moon,
             active: 'dark' === n,
             action: () => this.toggleCodeTheme(e, 'dark'),
           },
@@ -2108,19 +2108,19 @@ class k {
         return [
           {
             label: 'Unordered',
-            icon: i.unordered,
+            icon: s.unordered,
             active: 'unordered' === n,
             action: () => this.toggleListStyle(e, 'unordered'),
           },
           {
             label: 'Ordered',
-            icon: i.ordered,
+            icon: s.ordered,
             active: 'ordered' === n,
             action: () => this.toggleListStyle(e, 'ordered'),
           },
           {
             label: 'Convert to',
-            icon: i.convertTo,
+            icon: s.convertTo,
             submenu: [
               {
                 label: 'Text',
@@ -2136,6 +2136,49 @@ class k {
                 label: 'Quote',
                 icon: k.BLOCK_TYPES[5].icon,
                 action: () => this.convertBlock(e, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: k.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(e, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
+      case 'quote': {
+        const t = null !== (i = e.dataset.align) && void 0 !== i ? i : 'left';
+        return [
+          {
+            label: 'Align Left',
+            icon: s.alignLeft,
+            active: 'left' === t,
+            action: () => this.applyAlignment(e, 'left'),
+          },
+          {
+            label: 'Align Center',
+            icon: s.alignCenter,
+            active: 'center' === t,
+            action: () => this.applyAlignment(e, 'center'),
+          },
+          {
+            label: 'Convert to',
+            icon: s.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: k.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(e, 'text'),
+              },
+              {
+                label: 'Heading',
+                icon: k.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(e, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: k.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(e, 'list'),
               },
               {
                 label: 'Checklist',
