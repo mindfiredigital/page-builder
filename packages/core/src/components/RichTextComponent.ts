@@ -115,6 +115,10 @@ export class RichTextComponent {
     tuneBtn.setAttribute('contenteditable', 'false');
     tuneBtn.setAttribute('title', 'Click to tune');
     tuneBtn.textContent = '⠿';
+    tuneBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      this.toggleTunePopover(block, tuneBtn);
+    });
 
     controls.appendChild(addBtn);
     controls.appendChild(tuneBtn);
@@ -384,7 +388,11 @@ export class RichTextComponent {
   }
 
   private toggleAddPopover(block: HTMLElement, anchor: HTMLElement): void {
-    if (this.activePopover && this.activeBlock === block) {
+    if (
+      this.activePopover &&
+      this.activeBlock === block &&
+      this.activePopover.dataset.popoverType === 'add'
+    ) {
       this.hidePopover();
       return;
     }
@@ -392,6 +400,7 @@ export class RichTextComponent {
     this.activeBlock = block;
 
     const popover = this.buildAddPopover();
+    popover.dataset.popoverType = 'add';
     this.activePopover = popover;
 
     const rootRect = this.root!.getBoundingClientRect();
@@ -417,6 +426,134 @@ export class RichTextComponent {
 
   private insertBlock(type: string, afterBlock: HTMLElement): void {
     afterBlock.insertAdjacentElement('afterend', this.createBlock(type));
+  }
+
+  // ── Tune popover ────────────────────────────────────────────
+
+  private static readonly TUNE_ICONS = {
+    moveUp: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>`,
+    delete: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+    moveDown: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>`,
+  };
+
+  private toggleTunePopover(block: HTMLElement, anchor: HTMLElement): void {
+    if (
+      this.activePopover &&
+      this.activeBlock === block &&
+      this.activePopover.dataset.popoverType === 'tune'
+    ) {
+      this.hidePopover();
+      return;
+    }
+    this.hidePopover();
+    this.activeBlock = block;
+
+    const popover = this.buildTunePopover(block);
+    popover.dataset.popoverType = 'tune';
+    this.activePopover = popover;
+
+    const rootRect = this.root!.getBoundingClientRect();
+    const anchorRect = anchor.getBoundingClientRect();
+    popover.style.top = `${anchorRect.bottom - rootRect.top + 4}px`;
+    popover.style.left = `${anchorRect.left - rootRect.left}px`;
+
+    this.root!.appendChild(popover);
+    setTimeout(
+      () =>
+        popover.querySelector<HTMLInputElement>('.rt-popover-filter')?.focus(),
+      0
+    );
+  }
+
+  buildTunePopover(block: HTMLElement): HTMLElement {
+    const popover = document.createElement('div');
+    popover.classList.add('rt-add-popover');
+
+    const filterInput = document.createElement('input');
+    filterInput.type = 'text';
+    filterInput.classList.add('rt-popover-filter');
+    filterInput.placeholder = 'Filter';
+    filterInput.setAttribute('contenteditable', 'false');
+    filterInput.addEventListener('click', e => e.stopPropagation());
+
+    const list = document.createElement('div');
+    list.classList.add('rt-popover-list');
+
+    const defaultTunes = [
+      {
+        label: 'Move up',
+        icon: RichTextComponent.TUNE_ICONS.moveUp,
+        danger: false,
+        action: () => this.moveBlockUp(block),
+      },
+      {
+        label: 'Delete',
+        icon: RichTextComponent.TUNE_ICONS.delete,
+        danger: true,
+        action: () => this.deleteBlock(block),
+      },
+      {
+        label: 'Move down',
+        icon: RichTextComponent.TUNE_ICONS.moveDown,
+        danger: false,
+        action: () => this.moveBlockDown(block),
+      },
+    ];
+
+    const renderTunes = (query: string) => {
+      list.innerHTML = '';
+      defaultTunes
+        .filter(t => t.label.toLowerCase().includes(query.toLowerCase()))
+        .forEach(t => {
+          const item = document.createElement('div');
+          item.classList.add('rt-popover-item');
+          if (t.danger) item.classList.add('rt-popover-item--danger');
+          item.setAttribute('contenteditable', 'false');
+          item.innerHTML = `<span class="rt-popover-icon">${t.icon}</span><span class="rt-popover-label">${t.label}</span>`;
+          item.addEventListener('mousedown', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            t.action();
+            this.hidePopover();
+          });
+          list.appendChild(item);
+        });
+    };
+
+    renderTunes('');
+    filterInput.addEventListener('input', () => renderTunes(filterInput.value));
+
+    popover.appendChild(filterInput);
+    popover.appendChild(list);
+    return popover;
+  }
+
+  private moveBlockUp(block: HTMLElement): void {
+    const siblings = Array.from(this.root!.children).filter(el =>
+      el.classList.contains('rt-block')
+    ) as HTMLElement[];
+    const idx = siblings.indexOf(block);
+    if (idx > 0) {
+      siblings[idx - 1].insertAdjacentElement('beforebegin', block);
+    }
+  }
+
+  private moveBlockDown(block: HTMLElement): void {
+    const siblings = Array.from(this.root!.children).filter(el =>
+      el.classList.contains('rt-block')
+    ) as HTMLElement[];
+    const idx = siblings.indexOf(block);
+    if (idx < siblings.length - 1) {
+      siblings[idx + 1].insertAdjacentElement('afterend', block);
+    }
+  }
+
+  private deleteBlock(block: HTMLElement): void {
+    block.remove();
+    const remaining = this.root!.querySelectorAll('.rt-block');
+    if (remaining.length === 0) {
+      this.root!.prepend(this.createBlock('text'));
+    }
   }
 
   static restore(_container: HTMLElement): void {

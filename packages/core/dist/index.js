@@ -1591,6 +1591,9 @@ class I {
       r.setAttribute('contenteditable', 'false'),
       r.setAttribute('title', 'Click to tune'),
       (r.textContent = '⠿'),
+      r.addEventListener('click', e => {
+        (e.stopPropagation(), this.toggleTunePopover(t, r));
+      }),
       n.appendChild(A),
       n.appendChild(r),
       t.appendChild(n),
@@ -1843,11 +1846,15 @@ class I {
     );
   }
   toggleAddPopover(e, t) {
-    if (this.activePopover && this.activeBlock === e)
+    if (
+      this.activePopover &&
+      this.activeBlock === e &&
+      'add' === this.activePopover.dataset.popoverType
+    )
       return void this.hidePopover();
     (this.hidePopover(), (this.activeBlock = e));
     const n = this.buildAddPopover();
-    this.activePopover = n;
+    ((n.dataset.popoverType = 'add'), (this.activePopover = n));
     const A = this.root.getBoundingClientRect(),
       r = t.getBoundingClientRect();
     ((n.style.top = r.bottom - A.top + 4 + 'px'),
@@ -1869,6 +1876,106 @@ class I {
   }
   insertBlock(e, t) {
     t.insertAdjacentElement('afterend', this.createBlock(e));
+  }
+  toggleTunePopover(e, t) {
+    if (
+      this.activePopover &&
+      this.activeBlock === e &&
+      'tune' === this.activePopover.dataset.popoverType
+    )
+      return void this.hidePopover();
+    (this.hidePopover(), (this.activeBlock = e));
+    const n = this.buildTunePopover(e);
+    ((n.dataset.popoverType = 'tune'), (this.activePopover = n));
+    const A = this.root.getBoundingClientRect(),
+      r = t.getBoundingClientRect();
+    ((n.style.top = r.bottom - A.top + 4 + 'px'),
+      (n.style.left = r.left - A.left + 'px'),
+      this.root.appendChild(n),
+      setTimeout(() => {
+        var e;
+        return null === (e = n.querySelector('.rt-popover-filter')) ||
+          void 0 === e
+          ? void 0
+          : e.focus();
+      }, 0));
+  }
+  buildTunePopover(e) {
+    const t = document.createElement('div');
+    t.classList.add('rt-add-popover');
+    const n = document.createElement('input');
+    ((n.type = 'text'),
+      n.classList.add('rt-popover-filter'),
+      (n.placeholder = 'Filter'),
+      n.setAttribute('contenteditable', 'false'),
+      n.addEventListener('click', e => e.stopPropagation()));
+    const A = document.createElement('div');
+    A.classList.add('rt-popover-list');
+    const r = [
+        {
+          label: 'Move up',
+          icon: I.TUNE_ICONS.moveUp,
+          danger: !1,
+          action: () => this.moveBlockUp(e),
+        },
+        {
+          label: 'Delete',
+          icon: I.TUNE_ICONS.delete,
+          danger: !0,
+          action: () => this.deleteBlock(e),
+        },
+        {
+          label: 'Move down',
+          icon: I.TUNE_ICONS.moveDown,
+          danger: !1,
+          action: () => this.moveBlockDown(e),
+        },
+      ],
+      s = e => {
+        ((A.innerHTML = ''),
+          r
+            .filter(t => t.label.toLowerCase().includes(e.toLowerCase()))
+            .forEach(e => {
+              const t = document.createElement('div');
+              (t.classList.add('rt-popover-item'),
+                e.danger && t.classList.add('rt-popover-item--danger'),
+                t.setAttribute('contenteditable', 'false'),
+                (t.innerHTML = `<span class="rt-popover-icon">${e.icon}</span><span class="rt-popover-label">${e.label}</span>`),
+                t.addEventListener('mousedown', t => {
+                  (t.preventDefault(),
+                    t.stopPropagation(),
+                    e.action(),
+                    this.hidePopover());
+                }),
+                A.appendChild(t));
+            }));
+      };
+    return (
+      s(''),
+      n.addEventListener('input', () => s(n.value)),
+      t.appendChild(n),
+      t.appendChild(A),
+      t
+    );
+  }
+  moveBlockUp(e) {
+    const t = Array.from(this.root.children).filter(e =>
+        e.classList.contains('rt-block')
+      ),
+      n = t.indexOf(e);
+    n > 0 && t[n - 1].insertAdjacentElement('beforebegin', e);
+  }
+  moveBlockDown(e) {
+    const t = Array.from(this.root.children).filter(e =>
+        e.classList.contains('rt-block')
+      ),
+      n = t.indexOf(e);
+    n < t.length - 1 && t[n + 1].insertAdjacentElement('afterend', e);
+  }
+  deleteBlock(e) {
+    e.remove();
+    0 === this.root.querySelectorAll('.rt-block').length &&
+      this.root.prepend(this.createBlock('text'));
   }
   static restore(e) {}
 }
@@ -1992,7 +2099,15 @@ function k(e) {
       label: 'Checklist',
       icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
     },
-  ]));
+  ]),
+  (I.TUNE_ICONS = {
+    moveUp:
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>',
+    delete:
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    moveDown:
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>',
+  }));
 class N {
   create() {
     const e = new B().create();
@@ -51145,15 +51260,16 @@ var la,
                           }
                         return { data: a, reverseChain: l.reverse().join(' ') };
                       };
-                    })(M.API) /**
+                    })(M.API),
+                    (/**
                      * @license
                      * jsPDF fileloading PlugIn
                      * Copyright (c) 2018 Aras Abbasi (aras.abbasi@gmail.com)
                      *
                      * Licensed under the MIT License.
                      * http://opensource.org/licenses/mit-license
-                     */,
-                    ((Je = M.API).loadFile = function (e, t, n) {
+                     */
+                    (Je = M.API).loadFile = function (e, t, n) {
                       return (function (e, t, n) {
                         ((t = !1 !== t),
                           (n = 'function' == typeof n ? n : function () {}));
