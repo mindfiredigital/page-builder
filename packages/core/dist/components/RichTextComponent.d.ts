@@ -3,6 +3,8 @@ export declare class RichTextComponent {
   private root;
   private activePopover;
   private activeBlock;
+  private activeSubmenu;
+  private submenuHideTimer;
   private boundCloseHandler;
   private static readonly BLOCK_TYPES;
   private generateBlockId;
@@ -29,11 +31,17 @@ export declare class RichTextComponent {
   private buildTunePopover;
   private buildTuneItem;
   private buildSubmenuItem;
+  private showSubmenu;
+  private hideSubmenuNow;
+  private scheduleHideSubmenu;
+  private cancelHideSubmenu;
   private buildSeparator;
   private getBlockSpecificTunes;
   private getDefaultTunes;
   private applyAlignment;
   private convertBlock;
+  private extractBlockText;
+  private injectTextIntoBlock;
   private changeHeadingLevel;
   private toggleImageOption;
   private toggleCodeTheme;

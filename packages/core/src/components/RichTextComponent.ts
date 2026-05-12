@@ -18,6 +18,8 @@ export class RichTextComponent {
   private root: HTMLElement | null = null;
   private activePopover: HTMLElement | null = null;
   private activeBlock: HTMLElement | null = null;
+  private activeSubmenu: HTMLElement | null = null;
+  private submenuHideTimer: ReturnType<typeof setTimeout> | null = null;
   private boundCloseHandler!: (e: MouseEvent) => void;
 
   private static readonly BLOCK_TYPES: BlockTypeDef[] = [
@@ -435,6 +437,8 @@ export class RichTextComponent {
   }
 
   private hidePopover(): void {
+    this.cancelHideSubmenu();
+    this.hideSubmenuNow();
     if (this.activePopover) {
       this.activePopover.remove();
       this.activePopover = null;
@@ -565,24 +569,71 @@ export class RichTextComponent {
     el.setAttribute('contenteditable', 'false');
     el.innerHTML = `<span class="rt-popover-icon">${item.icon}</span><span class="rt-popover-label">${item.label}</span><span class="rt-popover-arrow">›</span>`;
 
-    const submenu = document.createElement('div');
-    submenu.classList.add('rt-convert-submenu');
-    (item.submenu ?? []).forEach(sub => {
-      const subEl = document.createElement('div');
-      subEl.classList.add('rt-popover-item');
-      subEl.setAttribute('contenteditable', 'false');
-      subEl.innerHTML = `<span class="rt-popover-icon">${sub.icon}</span><span class="rt-popover-label">${sub.label}</span>`;
-      subEl.addEventListener('mousedown', e => {
-        e.preventDefault();
-        e.stopPropagation();
-        sub.action?.();
-        this.hidePopover();
-      });
-      submenu.appendChild(subEl);
+    el.addEventListener('mouseenter', () => {
+      this.cancelHideSubmenu();
+      this.showSubmenu(item.submenu ?? [], el);
     });
-
-    el.appendChild(submenu);
+    el.addEventListener('mouseleave', () => this.scheduleHideSubmenu());
     return el;
+  }
+
+  // ── Floating convert-to submenu ─────────────────────────────
+
+  private showSubmenu(items: TuneItem[], anchor: HTMLElement): void {
+    this.cancelHideSubmenu();
+    this.hideSubmenuNow();
+
+    const panel = document.createElement('div');
+    panel.classList.add('rt-add-popover');
+
+    const filterInput = document.createElement('input');
+    filterInput.type = 'text';
+    filterInput.classList.add('rt-popover-filter');
+    filterInput.placeholder = 'Filter';
+    filterInput.setAttribute('contenteditable', 'false');
+    filterInput.addEventListener('click', e => e.stopPropagation());
+
+    const list = document.createElement('div');
+    list.classList.add('rt-popover-list');
+
+    const render = (q: string) => {
+      list.innerHTML = '';
+      items
+        .filter(it => it.label.toLowerCase().includes(q.toLowerCase()))
+        .forEach(it => list.appendChild(this.buildTuneItem(it)));
+    };
+    render('');
+    filterInput.addEventListener('input', () => render(filterInput.value));
+
+    panel.appendChild(filterInput);
+    panel.appendChild(list);
+
+    panel.addEventListener('mouseenter', () => this.cancelHideSubmenu());
+    panel.addEventListener('mouseleave', () => this.scheduleHideSubmenu());
+
+    this.activeSubmenu = panel;
+    this.root!.appendChild(panel);
+
+    const rootRect = this.root!.getBoundingClientRect();
+    const anchorRect = anchor.getBoundingClientRect();
+    panel.style.top = `${anchorRect.top - rootRect.top}px`;
+    panel.style.left = `${anchorRect.right - rootRect.left + 4}px`;
+  }
+
+  private hideSubmenuNow(): void {
+    this.activeSubmenu?.remove();
+    this.activeSubmenu = null;
+  }
+
+  private scheduleHideSubmenu(): void {
+    this.submenuHideTimer = setTimeout(() => this.hideSubmenuNow(), 120);
+  }
+
+  private cancelHideSubmenu(): void {
+    if (this.submenuHideTimer !== null) {
+      clearTimeout(this.submenuHideTimer);
+      this.submenuHideTimer = null;
+    }
   }
 
   private buildSeparator(): HTMLElement {
@@ -891,7 +942,8 @@ export class RichTextComponent {
 
   private convertBlock(block: HTMLElement, toType: string): void {
     const oldContent = block.querySelector<HTMLElement>('.rt-block-content');
-    const preservedText = oldContent?.textContent?.trim() ?? '';
+    const fromType = block.dataset.blockType ?? 'text';
+    const preservedText = this.extractBlockText(oldContent, fromType);
 
     const newContent = this.createBlockContent(toType);
     oldContent?.replaceWith(newContent);
@@ -899,12 +951,91 @@ export class RichTextComponent {
     delete block.dataset.align;
 
     if (preservedText) {
-      const editable =
-        newContent.querySelector<HTMLElement>('[contenteditable="true"]') ??
-        (newContent.getAttribute('contenteditable') === 'true'
-          ? newContent
-          : null);
-      if (editable) editable.textContent = preservedText;
+      this.injectTextIntoBlock(newContent, toType, preservedText);
+    }
+  }
+
+  private extractBlockText(
+    content: HTMLElement | null,
+    fromType: string
+  ): string {
+    if (!content) return '';
+    switch (fromType) {
+      case 'list':
+        return Array.from(content.querySelectorAll('li'))
+          .map(li => li.textContent?.trim() ?? '')
+          .filter(Boolean)
+          .join('\n');
+      case 'quote':
+        return (
+          content.querySelector('.rt-quote-text')?.textContent?.trim() ?? ''
+        );
+      case 'checklist':
+        return Array.from(content.querySelectorAll('.rt-checklist-text'))
+          .map(el => el.textContent?.trim() ?? '')
+          .filter(Boolean)
+          .join('\n');
+      case 'warning': {
+        const t =
+          (content.querySelector('.rt-warning-title') as HTMLInputElement)
+            ?.value ?? '';
+        const m =
+          (content.querySelector('.rt-warning-message') as HTMLTextAreaElement)
+            ?.value ?? '';
+        return [t, m].filter(Boolean).join('\n');
+      }
+      default:
+        return content.textContent?.trim() ?? '';
+    }
+  }
+
+  private injectTextIntoBlock(
+    content: HTMLElement,
+    toType: string,
+    text: string
+  ): void {
+    const lines = text.split('\n').filter(l => l.trim());
+    const firstLine = lines[0] ?? text;
+
+    switch (toType) {
+      case 'heading':
+        // Heading is a single-line element — use only the first line
+        content.textContent = firstLine;
+        break;
+      case 'list': {
+        // One <li> per line of the source text
+        content.innerHTML = '';
+        (lines.length ? lines : [text]).forEach(line => {
+          const li = document.createElement('li');
+          li.setAttribute('contenteditable', 'true');
+          li.textContent = line;
+          content.appendChild(li);
+        });
+        break;
+      }
+      case 'quote': {
+        const quoteText = content.querySelector<HTMLElement>('.rt-quote-text');
+        if (quoteText) quoteText.textContent = firstLine;
+        break;
+      }
+      case 'checklist': {
+        // One checklist item per line
+        content.innerHTML = '';
+        (lines.length ? lines : [text]).forEach(line => {
+          const item = this.createChecklistItem();
+          const span = item.querySelector<HTMLElement>('.rt-checklist-text');
+          if (span) span.textContent = line;
+          content.appendChild(item);
+        });
+        break;
+      }
+      default: {
+        // text block and fallback — put all text into the first contenteditable
+        const editable =
+          content.querySelector<HTMLElement>('[contenteditable="true"]') ??
+          (content.getAttribute('contenteditable') === 'true' ? content : null);
+        if (editable) editable.textContent = text;
+      }
     }
   }
 

@@ -2318,7 +2318,7 @@ html {
   padding-top: 3px;
 }
 
-.rt-block:hover .rt-block-controls {
+.rich-text-component.editable-component .rt-block:hover .rt-block-controls {
   opacity: 1;
 }
 
@@ -2710,7 +2710,7 @@ h6.rt-heading-block { font-size: 0.9em; }
   background: #dbeafe;
 }
 
-/* Convert-to submenu */
+/* Convert-to submenu trigger item */
 .rt-popover-item--submenu {
   position: relative;
 }
@@ -2722,22 +2722,9 @@ h6.rt-heading-block { font-size: 0.9em; }
   line-height: 1;
 }
 
-.rt-convert-submenu {
-  display: none;
-  position: absolute;
-  left: calc(100% + 4px);
-  top: -6px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  width: 180px;
-  padding: 6px;
-  z-index: 10001;
-}
-
-.rt-popover-item--submenu:hover .rt-convert-submenu {
-  display: block;
+/* Hide all popovers (add-block + tune + floating submenu) in preview/non-editable mode */
+.rich-text-component:not(.editable-component) .rt-add-popover {
+  display: none !important;
 }
 
 /* Separator between specific tunes and default tunes */

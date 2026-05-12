@@ -3,6 +3,8 @@ export class RichTextComponent {
     this.root = null;
     this.activePopover = null;
     this.activeBlock = null;
+    this.activeSubmenu = null;
+    this.submenuHideTimer = null;
   }
   generateBlockId() {
     return `rt-block-${Date.now()}-${++RichTextComponent.blockCounter}`;
@@ -313,6 +315,8 @@ export class RichTextComponent {
     }, 0);
   }
   hidePopover() {
+    this.cancelHideSubmenu();
+    this.hideSubmenuNow();
     if (this.activePopover) {
       this.activePopover.remove();
       this.activePopover = null;
@@ -405,29 +409,67 @@ export class RichTextComponent {
     return el;
   }
   buildSubmenuItem(item) {
-    var _a;
     const el = document.createElement('div');
     el.classList.add('rt-popover-item', 'rt-popover-item--submenu');
     el.setAttribute('contenteditable', 'false');
     el.innerHTML = `<span class="rt-popover-icon">${item.icon}</span><span class="rt-popover-label">${item.label}</span><span class="rt-popover-arrow">›</span>`;
-    const submenu = document.createElement('div');
-    submenu.classList.add('rt-convert-submenu');
-    ((_a = item.submenu) !== null && _a !== void 0 ? _a : []).forEach(sub => {
-      const subEl = document.createElement('div');
-      subEl.classList.add('rt-popover-item');
-      subEl.setAttribute('contenteditable', 'false');
-      subEl.innerHTML = `<span class="rt-popover-icon">${sub.icon}</span><span class="rt-popover-label">${sub.label}</span>`;
-      subEl.addEventListener('mousedown', e => {
-        var _a;
-        e.preventDefault();
-        e.stopPropagation();
-        (_a = sub.action) === null || _a === void 0 ? void 0 : _a.call(sub);
-        this.hidePopover();
-      });
-      submenu.appendChild(subEl);
+    el.addEventListener('mouseenter', () => {
+      var _a;
+      this.cancelHideSubmenu();
+      this.showSubmenu(
+        (_a = item.submenu) !== null && _a !== void 0 ? _a : [],
+        el
+      );
     });
-    el.appendChild(submenu);
+    el.addEventListener('mouseleave', () => this.scheduleHideSubmenu());
     return el;
+  }
+  // ── Floating convert-to submenu ─────────────────────────────
+  showSubmenu(items, anchor) {
+    this.cancelHideSubmenu();
+    this.hideSubmenuNow();
+    const panel = document.createElement('div');
+    panel.classList.add('rt-add-popover');
+    const filterInput = document.createElement('input');
+    filterInput.type = 'text';
+    filterInput.classList.add('rt-popover-filter');
+    filterInput.placeholder = 'Filter';
+    filterInput.setAttribute('contenteditable', 'false');
+    filterInput.addEventListener('click', e => e.stopPropagation());
+    const list = document.createElement('div');
+    list.classList.add('rt-popover-list');
+    const render = q => {
+      list.innerHTML = '';
+      items
+        .filter(it => it.label.toLowerCase().includes(q.toLowerCase()))
+        .forEach(it => list.appendChild(this.buildTuneItem(it)));
+    };
+    render('');
+    filterInput.addEventListener('input', () => render(filterInput.value));
+    panel.appendChild(filterInput);
+    panel.appendChild(list);
+    panel.addEventListener('mouseenter', () => this.cancelHideSubmenu());
+    panel.addEventListener('mouseleave', () => this.scheduleHideSubmenu());
+    this.activeSubmenu = panel;
+    this.root.appendChild(panel);
+    const rootRect = this.root.getBoundingClientRect();
+    const anchorRect = anchor.getBoundingClientRect();
+    panel.style.top = `${anchorRect.top - rootRect.top}px`;
+    panel.style.left = `${anchorRect.right - rootRect.left + 4}px`;
+  }
+  hideSubmenuNow() {
+    var _a;
+    (_a = this.activeSubmenu) === null || _a === void 0 ? void 0 : _a.remove();
+    this.activeSubmenu = null;
+  }
+  scheduleHideSubmenu() {
+    this.submenuHideTimer = setTimeout(() => this.hideSubmenuNow(), 120);
+  }
+  cancelHideSubmenu() {
+    if (this.submenuHideTimer !== null) {
+      clearTimeout(this.submenuHideTimer);
+      this.submenuHideTimer = null;
+    }
   }
   buildSeparator() {
     const hr = document.createElement('hr');
@@ -755,18 +797,11 @@ export class RichTextComponent {
     block.dataset.align = align;
   }
   convertBlock(block, toType) {
-    var _a, _b, _c;
+    var _a;
     const oldContent = block.querySelector('.rt-block-content');
-    const preservedText =
-      (_b =
-        (_a =
-          oldContent === null || oldContent === void 0
-            ? void 0
-            : oldContent.textContent) === null || _a === void 0
-          ? void 0
-          : _a.trim()) !== null && _b !== void 0
-        ? _b
-        : '';
+    const fromType =
+      (_a = block.dataset.blockType) !== null && _a !== void 0 ? _a : 'text';
+    const preservedText = this.extractBlockText(oldContent, fromType);
     const newContent = this.createBlockContent(toType);
     oldContent === null || oldContent === void 0
       ? void 0
@@ -774,14 +809,125 @@ export class RichTextComponent {
     block.dataset.blockType = toType;
     delete block.dataset.align;
     if (preservedText) {
-      const editable =
-        (_c = newContent.querySelector('[contenteditable="true"]')) !== null &&
-        _c !== void 0
+      this.injectTextIntoBlock(newContent, toType, preservedText);
+    }
+  }
+  extractBlockText(content, fromType) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    if (!content) return '';
+    switch (fromType) {
+      case 'list':
+        return Array.from(content.querySelectorAll('li'))
+          .map(li => {
+            var _a, _b;
+            return (_b =
+              (_a = li.textContent) === null || _a === void 0
+                ? void 0
+                : _a.trim()) !== null && _b !== void 0
+              ? _b
+              : '';
+          })
+          .filter(Boolean)
+          .join('\n');
+      case 'quote':
+        return (_c =
+          (_b =
+            (_a = content.querySelector('.rt-quote-text')) === null ||
+            _a === void 0
+              ? void 0
+              : _a.textContent) === null || _b === void 0
+            ? void 0
+            : _b.trim()) !== null && _c !== void 0
           ? _c
-          : newContent.getAttribute('contenteditable') === 'true'
-            ? newContent
-            : null;
-      if (editable) editable.textContent = preservedText;
+          : '';
+      case 'checklist':
+        return Array.from(content.querySelectorAll('.rt-checklist-text'))
+          .map(el => {
+            var _a, _b;
+            return (_b =
+              (_a = el.textContent) === null || _a === void 0
+                ? void 0
+                : _a.trim()) !== null && _b !== void 0
+              ? _b
+              : '';
+          })
+          .filter(Boolean)
+          .join('\n');
+      case 'warning': {
+        const t =
+          (_e =
+            (_d = content.querySelector('.rt-warning-title')) === null ||
+            _d === void 0
+              ? void 0
+              : _d.value) !== null && _e !== void 0
+            ? _e
+            : '';
+        const m =
+          (_g =
+            (_f = content.querySelector('.rt-warning-message')) === null ||
+            _f === void 0
+              ? void 0
+              : _f.value) !== null && _g !== void 0
+            ? _g
+            : '';
+        return [t, m].filter(Boolean).join('\n');
+      }
+      default:
+        return (_j =
+          (_h = content.textContent) === null || _h === void 0
+            ? void 0
+            : _h.trim()) !== null && _j !== void 0
+          ? _j
+          : '';
+    }
+  }
+  injectTextIntoBlock(content, toType, text) {
+    var _a, _b;
+    const lines = text.split('\n').filter(l => l.trim());
+    const firstLine = (_a = lines[0]) !== null && _a !== void 0 ? _a : text;
+    switch (toType) {
+      case 'heading':
+        // Heading is a single-line element — use only the first line
+        content.textContent = firstLine;
+        break;
+      case 'list': {
+        // One <li> per line of the source text
+        content.innerHTML = '';
+        (lines.length ? lines : [text]).forEach(line => {
+          const li = document.createElement('li');
+          li.setAttribute('contenteditable', 'true');
+          li.textContent = line;
+          content.appendChild(li);
+        });
+        break;
+      }
+      case 'quote': {
+        const quoteText = content.querySelector('.rt-quote-text');
+        if (quoteText) quoteText.textContent = firstLine;
+        break;
+      }
+      case 'checklist': {
+        // One checklist item per line
+        content.innerHTML = '';
+        (lines.length ? lines : [text]).forEach(line => {
+          const item = this.createChecklistItem();
+          const span = item.querySelector('.rt-checklist-text');
+          if (span) span.textContent = line;
+          content.appendChild(item);
+        });
+        break;
+      }
+      default: {
+        // text block and fallback — put all text into the first contenteditable
+        const editable =
+          (_b = content.querySelector('[contenteditable="true"]')) !== null &&
+          _b !== void 0
+            ? _b
+            : content.getAttribute('contenteditable') === 'true'
+              ? content
+              : null;
+        if (editable) editable.textContent = text;
+      }
     }
   }
   changeHeadingLevel(block, level) {
