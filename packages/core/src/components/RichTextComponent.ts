@@ -738,6 +738,41 @@ export class RichTextComponent {
           },
         ];
       }
+      case 'delimiter': {
+        return [
+          {
+            label: 'Convert to',
+            icon: icons.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: RichTextComponent.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(block, 'text'),
+              },
+              {
+                label: 'Heading',
+                icon: RichTextComponent.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(block, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: RichTextComponent.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(block, 'list'),
+              },
+              {
+                label: 'Quote',
+                icon: RichTextComponent.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(block, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: RichTextComponent.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(block, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
       case 'quote': {
         const currentAlign = block.dataset.align ?? 'left';
         return [

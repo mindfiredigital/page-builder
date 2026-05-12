@@ -2146,6 +2146,40 @@ class k {
           },
         ];
       }
+      case 'delimiter':
+        return [
+          {
+            label: 'Convert to',
+            icon: s.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: k.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(e, 'text'),
+              },
+              {
+                label: 'Heading',
+                icon: k.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(e, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: k.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(e, 'list'),
+              },
+              {
+                label: 'Quote',
+                icon: k.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(e, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: k.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(e, 'checklist'),
+              },
+            ],
+          },
+        ];
       case 'quote': {
         const t = null !== (i = e.dataset.align) && void 0 !== i ? i : 'left';
         return [
