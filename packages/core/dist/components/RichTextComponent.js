@@ -429,7 +429,7 @@ export class RichTextComponent {
   }
   // ── Block-specific tunes ────────────────────────────────────
   getBlockSpecificTunes(block, blockType) {
-    var _a;
+    var _a, _b;
     const icons = RichTextComponent.TUNE_ICONS;
     switch (blockType) {
       case 'text': {
@@ -528,6 +528,56 @@ export class RichTextComponent {
           },
         ];
       }
+      case 'list': {
+        const listEl = block.querySelector('.rt-list-block');
+        const currentStyle =
+          (_b =
+            listEl === null || listEl === void 0
+              ? void 0
+              : listEl.dataset.listStyle) !== null && _b !== void 0
+            ? _b
+            : 'unordered';
+        return [
+          {
+            label: 'Unordered',
+            icon: icons.unordered,
+            active: currentStyle === 'unordered',
+            action: () => this.toggleListStyle(block, 'unordered'),
+          },
+          {
+            label: 'Ordered',
+            icon: icons.ordered,
+            active: currentStyle === 'ordered',
+            action: () => this.toggleListStyle(block, 'ordered'),
+          },
+          {
+            label: 'Convert to',
+            icon: icons.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: RichTextComponent.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(block, 'text'),
+              },
+              {
+                label: 'Heading',
+                icon: RichTextComponent.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(block, 'heading'),
+              },
+              {
+                label: 'Quote',
+                icon: RichTextComponent.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(block, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: RichTextComponent.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(block, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
       default:
         return [];
     }
@@ -607,6 +657,29 @@ export class RichTextComponent {
     oldHeading === null || oldHeading === void 0
       ? void 0
       : oldHeading.replaceWith(newHeading);
+  }
+  toggleListStyle(block, style) {
+    const oldList = block.querySelector('.rt-list-block');
+    if (!oldList) return;
+    const texts = Array.from(oldList.querySelectorAll('li')).map(li => {
+      var _a, _b;
+      return (_b =
+        (_a = li.textContent) === null || _a === void 0
+          ? void 0
+          : _a.trim()) !== null && _b !== void 0
+        ? _b
+        : '';
+    });
+    const newList = this.createListContent(style);
+    // createListContent seeds one empty li — replace all with preserved text
+    newList.innerHTML = '';
+    (texts.length ? texts : ['']).forEach(text => {
+      const li = document.createElement('li');
+      li.setAttribute('contenteditable', 'true');
+      li.textContent = text;
+      newList.appendChild(li);
+    });
+    oldList.replaceWith(newList);
   }
   moveBlockUp(block) {
     const siblings = Array.from(this.root.children).filter(el =>
@@ -695,4 +768,6 @@ RichTextComponent.TUNE_ICONS = {
   alignCenter: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="18" y1="12" x2="6" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`,
   alignRight: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="7" y2="18"/></svg>`,
   convertTo: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+  unordered: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><line x1="4" y1="6" x2="4.01" y2="6"/><line x1="4" y1="12" x2="4.01" y2="12"/><line x1="4" y1="18" x2="4.01" y2="18"/></svg>`,
+  ordered: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><polyline points="3 8 3 3 5 3"/><line x1="3" y1="8" x2="5" y2="8"/><path d="M5 13H3l2 3H3"/></svg>`,
 };
