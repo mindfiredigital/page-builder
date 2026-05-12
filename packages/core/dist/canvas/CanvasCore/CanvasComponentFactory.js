@@ -11,6 +11,7 @@ import {
   ThreeColumnContainer,
   TableComponent,
   LinkComponent,
+  RichTextComponent,
 } from '../../components/index.js';
 import { LandingPageTemplate } from '../../templates/LandingPageTemplate.js';
 /** Builds and registers all supported component types */
@@ -39,6 +40,7 @@ export class CanvasComponentFactory {
       threeCol: () => new ThreeColumnContainer().create(),
       landingpage: () => new LandingPageTemplate().create(),
       link: () => new LinkComponent().create(),
+      richtext: () => new RichTextComponent().create(),
     };
   }
   /** Instantiates a component by type; returns null for unknown types */
@@ -103,8 +105,8 @@ export class CanvasComponentFactory {
       if (type !== 'container' && layoutMode !== 'grid') {
         element.classList.add('component-resizer');
       }
-      /** Images are never directly editable — everything else gets contenteditable */
-      if (type === 'image') {
+      /** Images and richtext manage their own internal editing — skip outer contenteditable */
+      if (type === 'image' || type === 'richtext') {
         element.setAttribute('contenteditable', 'false');
       } else {
         if (type !== 'header' && type !== 'text' && type !== 'table') {

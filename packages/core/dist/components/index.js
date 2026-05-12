@@ -8,3 +8,4 @@ export { TwoColumnContainer } from './TwoColumnContainer.js';
 export { ThreeColumnContainer } from './ThreeColumnContainer.js';
 export { TableComponent } from './TableComponent.js';
 export { LinkComponent } from './LinkComponent.js';
+export { RichTextComponent } from './RichTextComponent.js';

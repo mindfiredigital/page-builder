@@ -2287,3 +2287,76 @@ html {
   border-color: #3b82f6;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
 }
+
+/* ============================================================
+   Rich Text Editor Component
+   ============================================================ */
+.rich-text-component {
+  width: 100%;
+  padding: 8px 0;
+  box-sizing: border-box;
+  min-height: 60px;
+}
+
+.rt-block {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding: 2px 0;
+  min-height: 32px;
+}
+
+.rt-block-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+  margin-right: 4px;
+  padding-top: 3px;
+}
+
+.rt-block:hover .rt-block-controls {
+  opacity: 1;
+}
+
+.rt-add-btn,
+.rt-tune-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #94a3b8;
+  font-size: 16px;
+  padding: 0;
+  line-height: 1;
+}
+
+.rt-add-btn:hover,
+.rt-tune-btn:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.rt-block-content {
+  flex: 1;
+  outline: none;
+  min-height: 24px;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #334155;
+  word-break: break-word;
+  padding: 2px 4px;
+}
+
+.rt-block-content:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+}

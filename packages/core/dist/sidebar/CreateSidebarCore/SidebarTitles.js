@@ -11,4 +11,5 @@ export const SIDEBAR_TITLES = {
   table: 'Table',
   landingpage: 'Landing Page Template',
   link: 'Link',
+  richtext: 'Rich Text',
 };

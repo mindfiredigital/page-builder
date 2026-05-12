@@ -12,6 +12,7 @@ import {
   ThreeColumnContainer,
   TableComponent,
   LinkComponent,
+  RichTextComponent,
 } from '../../components/index';
 import { LandingPageTemplate } from '../../templates/LandingPageTemplate';
 
@@ -42,6 +43,7 @@ export class CanvasComponentFactory {
       threeCol: () => new ThreeColumnContainer().create(),
       landingpage: () => new LandingPageTemplate().create(),
       link: () => new LinkComponent().create(),
+      richtext: () => new RichTextComponent().create(),
     };
   }
 
@@ -118,8 +120,8 @@ export class CanvasComponentFactory {
         element.classList.add('component-resizer');
       }
 
-      /** Images are never directly editable — everything else gets contenteditable */
-      if (type === 'image') {
+      /** Images and richtext manage their own internal editing — skip outer contenteditable */
+      if (type === 'image' || type === 'richtext') {
         element.setAttribute('contenteditable', 'false');
       } else {
         if (type !== 'header' && type !== 'text' && type !== 'table') {
