@@ -1982,57 +1982,104 @@ class k {
     return (e.classList.add('rt-popover-separator'), e);
   }
   getBlockSpecificTunes(e, t) {
-    const n = k.TUNE_ICONS;
-    if ('text' === t) {
-      const t = e.dataset.align || 'left';
-      return [
-        {
-          label: 'Align Left',
-          icon: n.alignLeft,
-          active: 'left' === t,
-          action: () => this.applyAlignment(e, 'left'),
-        },
-        {
-          label: 'Align Center',
-          icon: n.alignCenter,
-          active: 'center' === t,
-          action: () => this.applyAlignment(e, 'center'),
-        },
-        {
-          label: 'Align Right',
-          icon: n.alignRight,
-          active: 'right' === t,
-          action: () => this.applyAlignment(e, 'right'),
-        },
-        {
-          label: 'Convert to',
-          icon: n.convertTo,
-          submenu: [
-            {
-              label: 'Heading',
-              icon: k.BLOCK_TYPES[1].icon,
-              action: () => this.convertBlock(e, 'heading'),
-            },
-            {
-              label: 'List',
-              icon: k.BLOCK_TYPES[3].icon,
-              action: () => this.convertBlock(e, 'list'),
-            },
-            {
-              label: 'Quote',
-              icon: k.BLOCK_TYPES[5].icon,
-              action: () => this.convertBlock(e, 'quote'),
-            },
-            {
-              label: 'Checklist',
-              icon: k.BLOCK_TYPES[9].icon,
-              action: () => this.convertBlock(e, 'checklist'),
-            },
-          ],
-        },
-      ];
+    var n;
+    const A = k.TUNE_ICONS;
+    switch (t) {
+      case 'text': {
+        const t = e.dataset.align || 'left';
+        return [
+          {
+            label: 'Align Left',
+            icon: A.alignLeft,
+            active: 'left' === t,
+            action: () => this.applyAlignment(e, 'left'),
+          },
+          {
+            label: 'Align Center',
+            icon: A.alignCenter,
+            active: 'center' === t,
+            action: () => this.applyAlignment(e, 'center'),
+          },
+          {
+            label: 'Align Right',
+            icon: A.alignRight,
+            active: 'right' === t,
+            action: () => this.applyAlignment(e, 'right'),
+          },
+          {
+            label: 'Convert to',
+            icon: A.convertTo,
+            submenu: [
+              {
+                label: 'Heading',
+                icon: k.BLOCK_TYPES[1].icon,
+                action: () => this.convertBlock(e, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: k.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(e, 'list'),
+              },
+              {
+                label: 'Quote',
+                icon: k.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(e, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: k.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(e, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
+      case 'heading': {
+        const t = e.querySelector('.rt-heading-block'),
+          r = parseInt(
+            null !== (n = null == t ? void 0 : t.dataset.level) && void 0 !== n
+              ? n
+              : '2',
+            10
+          );
+        return [
+          ...[1, 2, 3, 4, 5, 6].map(t => ({
+            label: `Heading ${t}`,
+            icon: `<span style="font-weight:700;font-size:12px;line-height:1">H${t}</span>`,
+            active: r === t,
+            action: () => this.changeHeadingLevel(e, t),
+          })),
+          {
+            label: 'Convert to',
+            icon: A.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: k.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(e, 'text'),
+              },
+              {
+                label: 'List',
+                icon: k.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(e, 'list'),
+              },
+              {
+                label: 'Quote',
+                icon: k.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(e, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: k.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(e, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
+      default:
+        return [];
     }
-    return [];
   }
   getDefaultTunes(e) {
     const t = k.TUNE_ICONS;
@@ -2082,6 +2129,20 @@ class k {
             : null;
       e && (e.textContent = i);
     }
+  }
+  changeHeadingLevel(e, t) {
+    var n, A;
+    const r = e.querySelector('.rt-heading-block'),
+      s =
+        null !==
+          (A =
+            null === (n = null == r ? void 0 : r.textContent) || void 0 === n
+              ? void 0
+              : n.trim()) && void 0 !== A
+          ? A
+          : '',
+      i = this.createHeadingContent(t);
+    (s && (i.textContent = s), null == r || r.replaceWith(i));
   }
   moveBlockUp(e) {
     const t = Array.from(this.root.children).filter(e =>

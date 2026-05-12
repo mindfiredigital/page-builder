@@ -34,6 +34,7 @@ export declare class RichTextComponent {
   private getDefaultTunes;
   private applyAlignment;
   private convertBlock;
+  private changeHeadingLevel;
   private moveBlockUp;
   private moveBlockDown;
   private deleteBlock;

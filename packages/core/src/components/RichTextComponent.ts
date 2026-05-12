@@ -633,6 +633,45 @@ export class RichTextComponent {
           },
         ];
       }
+      case 'heading': {
+        const headingEl = block.querySelector<HTMLElement>('.rt-heading-block');
+        const currentLevel = parseInt(headingEl?.dataset.level ?? '2', 10);
+        const levelItems: TuneItem[] = [1, 2, 3, 4, 5, 6].map(level => ({
+          label: `Heading ${level}`,
+          icon: `<span style="font-weight:700;font-size:12px;line-height:1">H${level}</span>`,
+          active: currentLevel === level,
+          action: () => this.changeHeadingLevel(block, level),
+        }));
+        return [
+          ...levelItems,
+          {
+            label: 'Convert to',
+            icon: icons.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: RichTextComponent.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(block, 'text'),
+              },
+              {
+                label: 'List',
+                icon: RichTextComponent.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(block, 'list'),
+              },
+              {
+                label: 'Quote',
+                icon: RichTextComponent.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(block, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: RichTextComponent.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(block, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
       default:
         return [];
     }
@@ -685,6 +724,14 @@ export class RichTextComponent {
           : null);
       if (editable) editable.textContent = preservedText;
     }
+  }
+
+  private changeHeadingLevel(block: HTMLElement, level: number): void {
+    const oldHeading = block.querySelector<HTMLElement>('.rt-heading-block');
+    const preservedText = oldHeading?.textContent?.trim() ?? '';
+    const newHeading = this.createHeadingContent(level);
+    if (preservedText) newHeading.textContent = preservedText;
+    oldHeading?.replaceWith(newHeading);
   }
 
   private moveBlockUp(block: HTMLElement): void {

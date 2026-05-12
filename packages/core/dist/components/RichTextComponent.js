@@ -429,6 +429,7 @@ export class RichTextComponent {
   }
   // ── Block-specific tunes ────────────────────────────────────
   getBlockSpecificTunes(block, blockType) {
+    var _a;
     const icons = RichTextComponent.TUNE_ICONS;
     switch (blockType) {
       case 'text': {
@@ -460,6 +461,53 @@ export class RichTextComponent {
                 label: 'Heading',
                 icon: RichTextComponent.BLOCK_TYPES[1].icon,
                 action: () => this.convertBlock(block, 'heading'),
+              },
+              {
+                label: 'List',
+                icon: RichTextComponent.BLOCK_TYPES[3].icon,
+                action: () => this.convertBlock(block, 'list'),
+              },
+              {
+                label: 'Quote',
+                icon: RichTextComponent.BLOCK_TYPES[5].icon,
+                action: () => this.convertBlock(block, 'quote'),
+              },
+              {
+                label: 'Checklist',
+                icon: RichTextComponent.BLOCK_TYPES[9].icon,
+                action: () => this.convertBlock(block, 'checklist'),
+              },
+            ],
+          },
+        ];
+      }
+      case 'heading': {
+        const headingEl = block.querySelector('.rt-heading-block');
+        const currentLevel = parseInt(
+          (_a =
+            headingEl === null || headingEl === void 0
+              ? void 0
+              : headingEl.dataset.level) !== null && _a !== void 0
+            ? _a
+            : '2',
+          10
+        );
+        const levelItems = [1, 2, 3, 4, 5, 6].map(level => ({
+          label: `Heading ${level}`,
+          icon: `<span style="font-weight:700;font-size:12px;line-height:1">H${level}</span>`,
+          active: currentLevel === level,
+          action: () => this.changeHeadingLevel(block, level),
+        }));
+        return [
+          ...levelItems,
+          {
+            label: 'Convert to',
+            icon: icons.convertTo,
+            submenu: [
+              {
+                label: 'Text',
+                icon: RichTextComponent.BLOCK_TYPES[0].icon,
+                action: () => this.convertBlock(block, 'text'),
               },
               {
                 label: 'List',
@@ -540,6 +588,25 @@ export class RichTextComponent {
             : null;
       if (editable) editable.textContent = preservedText;
     }
+  }
+  changeHeadingLevel(block, level) {
+    var _a, _b;
+    const oldHeading = block.querySelector('.rt-heading-block');
+    const preservedText =
+      (_b =
+        (_a =
+          oldHeading === null || oldHeading === void 0
+            ? void 0
+            : oldHeading.textContent) === null || _a === void 0
+          ? void 0
+          : _a.trim()) !== null && _b !== void 0
+        ? _b
+        : '';
+    const newHeading = this.createHeadingContent(level);
+    if (preservedText) newHeading.textContent = preservedText;
+    oldHeading === null || oldHeading === void 0
+      ? void 0
+      : oldHeading.replaceWith(newHeading);
   }
   moveBlockUp(block) {
     const siblings = Array.from(this.root.children).filter(el =>
