@@ -35,7 +35,11 @@ export const EDITOR_NODES_SELECTOR = [
   '.add-multiple-rows-button',
   '.table-btn-container',
   '.drop-preview.visible',
-  'input:not([type="radio"])',
+  'input:not([type="radio"]):not(.rt-checklist-checkbox)',
+  // Rich text editor chrome — controls, popovers, file pickers
+  '.rt-block-controls',
+  '.rt-add-popover',
+  'input[type="file"]',
 ].join(', ');
 /* ─── SvgAccessibilitySelector ────────────────────────────────────────────────
    Targets SVG <title> and <desc> nodes added for editor accessibility that

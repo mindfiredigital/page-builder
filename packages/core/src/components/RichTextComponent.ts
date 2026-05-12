@@ -312,14 +312,15 @@ export class RichTextComponent {
     const fields = document.createElement('div');
     fields.classList.add('rt-warning-fields');
 
-    const title = document.createElement('input');
-    title.type = 'text';
+    const title = document.createElement('div');
     title.classList.add('rt-warning-title');
-    title.placeholder = 'Title';
+    title.setAttribute('contenteditable', 'true');
+    title.dataset.placeholder = 'Title';
 
-    const message = document.createElement('textarea');
+    const message = document.createElement('div');
     message.classList.add('rt-warning-message');
-    message.placeholder = 'Message';
+    message.setAttribute('contenteditable', 'true');
+    message.dataset.placeholder = 'Message';
 
     fields.appendChild(title);
     fields.appendChild(message);

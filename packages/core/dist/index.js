@@ -680,7 +680,10 @@ const l = 20,
     '.add-multiple-rows-button',
     '.table-btn-container',
     '.drop-preview.visible',
-    'input:not([type="radio"])',
+    'input:not([type="radio"]):not(.rt-checklist-checkbox)',
+    '.rt-block-controls',
+    '.rt-add-popover',
+    'input[type="file"]',
   ].join(', '),
   h = ['contenteditable', 'draggable'],
   f = [
@@ -1768,14 +1771,15 @@ class k {
         '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'));
     const n = document.createElement('div');
     n.classList.add('rt-warning-fields');
-    const A = document.createElement('input');
-    ((A.type = 'text'),
-      A.classList.add('rt-warning-title'),
-      (A.placeholder = 'Title'));
-    const r = document.createElement('textarea');
+    const A = document.createElement('div');
+    (A.classList.add('rt-warning-title'),
+      A.setAttribute('contenteditable', 'true'),
+      (A.dataset.placeholder = 'Title'));
+    const r = document.createElement('div');
     return (
       r.classList.add('rt-warning-message'),
-      (r.placeholder = 'Message'),
+      r.setAttribute('contenteditable', 'true'),
+      (r.dataset.placeholder = 'Message'),
       n.appendChild(A),
       n.appendChild(r),
       e.appendChild(t),

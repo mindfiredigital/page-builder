@@ -2574,6 +2574,12 @@ h6.rt-heading-block { font-size: 0.9em; }
   width: 100%;
   box-sizing: border-box;
   background: transparent;
+  min-height: 32px;
+}
+
+.rt-warning-title:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
 }
 
 .rt-warning-message {
@@ -2581,12 +2587,17 @@ h6.rt-heading-block { font-size: 0.9em; }
   border: 1px solid #fde68a;
   border-radius: 4px;
   font-size: 14px;
-  resize: vertical;
   outline: none;
   min-height: 64px;
   width: 100%;
   box-sizing: border-box;
   background: transparent;
+  line-height: 1.5;
+}
+
+.rt-warning-message:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
 }
 
 /* Checklist block */
@@ -2722,10 +2733,6 @@ h6.rt-heading-block { font-size: 0.9em; }
   line-height: 1;
 }
 
-/* Hide all popovers (add-block + tune + floating submenu) in preview/non-editable mode */
-.rich-text-component:not(.editable-component) .rt-add-popover {
-  display: none !important;
-}
 
 /* Separator between specific tunes and default tunes */
 .rt-popover-separator {
