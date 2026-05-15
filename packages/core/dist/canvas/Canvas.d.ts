@@ -1,39 +1,38 @@
-import { HistoryManager } from '../services/HistoryManager';
-import { JSONStorage } from '../services/JSONStorage';
-import { ComponentControlsManager } from './ComponentControls';
+/**
+ * Canvas.ts — Public facade
+ *
+ * All logic has been extracted into focused modules under /CanvasCore/.
+ * This file re-exports a unified Canvas class so that existing import sites
+ * (e.g. `import { Canvas } from './Canvas'`) continue to work without change.
+ *
+ * Module map:
+ *  CanvasSharedState     → mutable singleton (components[], canvasElement, etc.)
+ *  CanvasInitializer     → init() bootstrap
+ *  CanvasStateManager    → getState() / restoreState()
+ *  CanvasEventDispatcher → dispatchDesignChange() + event wiring
+ *  CanvasComponentFactory→ createComponent() / generateUniqueClass()
+ *  CanvasDragHandler     → addDraggableListeners()
+ *  CanvasDropHandler     → onDrop()
+ */
 export declare class Canvas {
-  private static components;
-  private static canvasElement;
-  private static sidebarElement;
-  static controlsManager: ComponentControlsManager;
-  private static gridManager;
-  private static editable;
-  static layoutMode: 'grid' | 'absolute';
-  static historyManager: HistoryManager;
-  static jsonStorage: JSONStorage;
-  static lastCanvasWidth: number | null;
-  private static tableAttributeConfig;
-  private static textAttributeConfig;
-  private static headerAttributeConfig;
-  private static ImageAttributeConfig;
+  static get controlsManager(): import('./ComponentControls').ComponentControlsManager;
+  static get historyManager(): import('../services/HistoryManager').HistoryManager;
+  static get jsonStorage(): import('../services/JSONStorage').JSONStorage;
+  static get layoutMode(): LayoutMode;
+  static get lastCanvasWidth(): number | null;
+  static set lastCanvasWidth(v: number | null);
   static getComponents(): HTMLElement[];
   static setComponents(components: HTMLElement[]): void;
-  private static componentFactory;
-  private static deleteElementHandler;
   static init(
     initialData: (PageBuilderDesign | null) | undefined,
     editable: boolean | null,
     basicComponentsConfig: BasicComponent[],
-    layouMode: 'absolute' | 'grid'
+    layoutMode: LayoutMode
   ): void;
-  /**
-   * Dispatches a custom event indicating that the canvas design has changed.
-   * The event detail contains the current design state.
-   */
   static dispatchDesignChange(): void;
   static clearCanvas(): void;
   static getState(): PageBuilderDesign;
-  static restoreState(state: any): void;
+  static restoreState(state: PageBuilderDesign): void;
   static onDrop(event: DragEvent): void;
   static reorderComponent(fromIndex: number, toIndex: number): void;
   static createComponent(

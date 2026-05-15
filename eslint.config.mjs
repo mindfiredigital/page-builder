@@ -5,7 +5,7 @@ export default [
   {
     ignores: [
       "**/node_modules/**",
-      "**/test/**",
+      "**/tests/**",
       "**/dist/**",
       "**/*.d.ts",
       "**/documentation/**",

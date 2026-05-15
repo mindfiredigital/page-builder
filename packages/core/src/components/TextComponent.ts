@@ -20,6 +20,7 @@ export class TextComponent {
     textSpan.contentEditable = 'true';
     textSpan.classList.add('component-text-content');
     element.appendChild(textSpan);
+
     textSpan.addEventListener('click', (event: MouseEvent) => {
       event.stopPropagation();
       const parentHeader = textSpan.closest('.text-component');
@@ -35,16 +36,21 @@ export class TextComponent {
     this.text = newText;
   }
 
-  seedFormulaValues(values: Record<string, any>) {
+  seedFormulaValues(values: AttributeValues): void {
     const allTexts = document.querySelectorAll('.text-component');
+
     allTexts.forEach(text => {
       const controlsElement = text.querySelector('.component-controls');
       const labelElement = text.querySelector('.component-label');
       const textSpan = text.querySelector('.component-text-content');
 
       const key = text.getAttribute('data-attribute-key');
-      if (textSpan && key && values.hasOwnProperty(key)) {
-        textSpan.textContent = values[key];
+      if (
+        textSpan &&
+        key &&
+        Object.prototype.hasOwnProperty.call(values, key)
+      ) {
+        textSpan.textContent = String(values[key]);
         (text as HTMLElement).style.color = '#000000';
       }
       if (controlsElement) {
@@ -56,7 +62,8 @@ export class TextComponent {
     });
     Canvas.dispatchDesignChange();
   }
-  updateInputValues(values: Record<string, any>) {
+
+  updateInputValues(values: AttributeValues): void {
     const allTexts = document.querySelectorAll('.text-component');
 
     allTexts.forEach(text => {
@@ -67,8 +74,13 @@ export class TextComponent {
       const key = text.getAttribute('data-attribute-key');
       const type = text.getAttribute('data-attribute-type');
 
-      if (textSpan && key && values.hasOwnProperty(key) && type === 'Input') {
-        textSpan.textContent = values[key];
+      if (
+        textSpan &&
+        key &&
+        Object.prototype.hasOwnProperty.call(values, key) &&
+        type === 'Input'
+      ) {
+        textSpan.textContent = String(values[key]);
       }
       if (controlsElement) {
         text.appendChild(controlsElement);
@@ -93,7 +105,7 @@ export class TextComponent {
     textElement.setAttribute('data-attribute-type', attribute.type);
 
     if (attribute.type === 'Formula' && textSpan) {
-      textSpan.textContent = `${attribute.title}`;
+      textSpan.textContent = attribute.title;
       textElement.style.fontSize = '10px';
       textElement.style.color = 'rgb(188 191 198)';
       textElement.style.fontWeight = '500';
@@ -101,7 +113,7 @@ export class TextComponent {
       (attribute.type === 'Constant' || attribute.type === 'Input') &&
       textSpan
     ) {
-      textSpan.textContent = `${attribute.value}`;
+      textSpan.textContent = String(attribute.value);
     }
     if (controlsElement) {
       textElement.appendChild(controlsElement);
@@ -109,7 +121,7 @@ export class TextComponent {
     if (labelElement) {
       textElement.appendChild(labelElement);
     }
-    Canvas?.dispatchDesignChange();
+    Canvas.dispatchDesignChange();
   }
 
   static restore(container: HTMLElement): void {
@@ -119,6 +131,7 @@ export class TextComponent {
     const textSpan = closestTextComponent.querySelector(
       '.component-text-content'
     ) as HTMLElement;
+
     textSpan.addEventListener('click', (event: MouseEvent) => {
       event.stopPropagation();
       const parentHeader = textSpan.closest('.text-component');
@@ -133,6 +146,7 @@ export class TextComponent {
       const attributeType = closestTextComponent.getAttribute(
         'data-attribute-type'
       );
+
       if (attributeKey) {
         const attribute = TextComponent.textAttributeConfig.find(
           attr => attr.key === attributeKey
@@ -148,10 +162,10 @@ export class TextComponent {
             attribute.default_value &&
             (attributeType === 'Formula' || attributeType === 'Input')
           ) {
-            textSpan.textContent = `${attribute.default_value}`;
+            textSpan.textContent = String(attribute.default_value);
             closestTextComponent.style.color = '#000000';
           } else if (attributeType === 'Formula') {
-            textSpan.textContent = `${attribute.title}`;
+            textSpan.textContent = attribute.title;
             closestTextComponent.style.fontSize = '10px';
             closestTextComponent.style.color = 'rgb(188 191 198)';
             closestTextComponent.style.fontWeight = '500';

@@ -35,15 +35,12 @@ export async function handleComponentClick(
  * Finds the selected attribute from the modal's result.
  */
 function findSelectedAttribute(
-  result: Record<string, any>,
+  result: ModalResult,
   config: ComponentAttribute[]
 ): ComponentAttribute | null {
   for (const attr of config) {
-    if (
-      result.hasOwnProperty(attr.key) &&
-      result[attr.key] !== undefined &&
-      result[attr.key] !== ''
-    ) {
+    const value = result[attr.key];
+    if (value !== undefined && value !== '') {
       return attr;
     }
   }

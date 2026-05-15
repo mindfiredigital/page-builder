@@ -8,7 +8,6 @@ export class HeaderComponent {
     HeaderComponent.headerAttributeConfig = headerAttributeConfig || [];
     const element = document.createElement(`h${level}`);
     element.classList.add('header-component');
-    // Create a new span for the editable text content
     const textSpan = document.createElement('span');
     textSpan.innerText = text;
     textSpan.contentEditable = 'true';
@@ -30,8 +29,12 @@ export class HeaderComponent {
       const labelElement = header.querySelector('.component-label');
       const headerText = header.querySelector('.component-text-content');
       const key = header.getAttribute('data-attribute-key');
-      if (headerText && key && values.hasOwnProperty(key)) {
-        headerText.textContent = values[key];
+      if (
+        headerText &&
+        key &&
+        Object.prototype.hasOwnProperty.call(values, key)
+      ) {
+        headerText.textContent = String(values[key]);
         header.style.color = '#000000';
       }
       if (controlsElement) {
@@ -51,8 +54,13 @@ export class HeaderComponent {
       const headerText = header.querySelector('.component-text-content');
       const key = header.getAttribute('data-attribute-key');
       const type = header.getAttribute('data-attribute-type');
-      if (headerText && key && values.hasOwnProperty(key) && type === 'Input') {
-        headerText.textContent = values[key];
+      if (
+        headerText &&
+        key &&
+        Object.prototype.hasOwnProperty.call(values, key) &&
+        type === 'Input'
+      ) {
+        headerText.textContent = String(values[key]);
       }
       if (controlsElement) {
         header.appendChild(controlsElement);
@@ -70,14 +78,14 @@ export class HeaderComponent {
     headerElement.setAttribute('data-attribute-key', attribute.key);
     headerElement.setAttribute('data-attribute-type', attribute.type);
     if (attribute.type === 'Formula' && headerText) {
-      headerText.textContent = `${attribute.title}`;
+      headerText.textContent = attribute.title;
       headerElement.style.color = 'rgb(188 191 198)';
       headerElement.style.fontWeight = '500';
     } else if (
       (attribute.type === 'Constant' || attribute.type === 'Input') &&
       headerText
     ) {
-      headerText.textContent = `${attribute.value}`;
+      headerText.textContent = String(attribute.value);
     }
     if (controlsElement) {
       headerElement.appendChild(controlsElement);
@@ -85,9 +93,7 @@ export class HeaderComponent {
     if (labelElement) {
       headerElement.appendChild(labelElement);
     }
-    Canvas === null || Canvas === void 0
-      ? void 0
-      : Canvas.dispatchDesignChange();
+    Canvas.dispatchDesignChange();
   }
   static restore(container) {
     const closestHeader = container.closest('.header-component');
@@ -115,10 +121,10 @@ export class HeaderComponent {
             attribute.default_value &&
             (attributeType === 'Formula' || attributeType === 'Input')
           ) {
-            headerText.textContent = `${attribute.default_value}`;
+            headerText.textContent = String(attribute.default_value);
             closestHeader.style.color = '#000000';
           } else if (attributeType === 'Formula') {
-            headerText.textContent = `${attribute.title}`;
+            headerText.textContent = attribute.title;
             closestHeader.style.color = 'rgb(188 191 198)';
             closestHeader.style.fontWeight = '500';
           }

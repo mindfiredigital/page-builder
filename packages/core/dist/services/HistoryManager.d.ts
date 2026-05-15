@@ -1,9 +1,7 @@
-import { Canvas } from '../canvas/Canvas';
 export declare class HistoryManager {
   private undoStack;
   private redoStack;
-  private canvas;
-  constructor(canvas: Canvas);
+  constructor(_canvas: HTMLElement);
   /**
    * Capture the current state of the canvas with getState method.
    * Clears the redo stack when a new action is made.

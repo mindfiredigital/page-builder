@@ -66,11 +66,8 @@ export function handleComponentClick(
  */
 function findSelectedAttribute(result, config) {
   for (const attr of config) {
-    if (
-      result.hasOwnProperty(attr.key) &&
-      result[attr.key] !== undefined &&
-      result[attr.key] !== ''
-    ) {
+    const value = result[attr.key];
+    if (value !== undefined && value !== '') {
       return attr;
     }
   }

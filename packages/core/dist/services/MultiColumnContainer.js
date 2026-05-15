@@ -12,14 +12,11 @@ export class MultiColumnContainer {
     this.element = document.createElement('div');
     this.element.classList.add(className);
     this.element.setAttribute('draggable', 'true');
-    // Create columns dynamically based on columnCount
     for (let i = 1; i <= columnCount; i++) {
       const column = this.createColumn(`column-${i}`);
       this.element.appendChild(column);
     }
-    // Add styles
     this.addStyles(className);
-    // Add event listeners
     this.initializeEventListeners();
   }
   /**
@@ -64,7 +61,6 @@ export class MultiColumnContainer {
     if (targetColumn && targetColumn.classList.contains('column')) {
       targetColumn.appendChild(component);
       const parentId = this.element.id;
-      // Determine the column-specific suffix dynamically
       const columnIndex = Array.from(
         targetColumn.parentElement.children
       ).indexOf(targetColumn);
@@ -138,18 +134,26 @@ export class MultiColumnContainer {
   static restoreColumn(column) {
     const columnChildren = column.querySelectorAll('.editable-component');
     columnChildren.forEach(child => {
-      var _a;
-      Canvas.controlsManager.addControlButtons(child);
-      Canvas.addDraggableListeners(child);
-      if (child.classList.contains('image-component')) {
+      var _a, _b;
+      const childElement = child;
+      Canvas.controlsManager.addControlButtons(childElement);
+      Canvas.addDraggableListeners(childElement);
+      if (childElement.classList.contains('image-component')) {
         const imageSrc =
-          ((_a = child.querySelector('img')) === null || _a === void 0
-            ? void 0
-            : _a.getAttribute('src')) || '';
-        ImageComponent.restoreImageUpload(child, imageSrc, null);
+          (_b =
+            (_a = childElement.querySelector('img')) === null || _a === void 0
+              ? void 0
+              : _a.getAttribute('src')) !== null && _b !== void 0
+            ? _b
+            : null;
+        ImageComponent.restoreImageUpload(
+          childElement,
+          imageSrc !== null && imageSrc !== void 0 ? imageSrc : '',
+          null
+        );
       }
-      if (child.classList.contains('container-component')) {
-        ContainerComponent.restoreContainer(child);
+      if (childElement.classList.contains('container-component')) {
+        ContainerComponent.restoreContainer(childElement);
       }
     });
   }

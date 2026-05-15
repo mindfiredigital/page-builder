@@ -1,0 +1,59 @@
+import { CanvasSharedState } from './CanvasSharedState.js';
+import { CanvasStateManager } from './CanvasStateManager.js';
+/* Handles all custom event dispatching originating from the canvas */
+export class CanvasEventDispatcher {
+  /* Fires 'design-change' with the current state and persists to JSONStorage */
+  static dispatchDesignChange() {
+    const { canvasElement, editable, jsonStorage } = CanvasSharedState;
+    if (canvasElement && editable !== false) {
+      const currentDesign = CanvasStateManager.getState();
+      /* Bubble the design change up through the shadow DOM if needed */
+      const event = new CustomEvent('design-change', {
+        detail: currentDesign,
+        bubbles: true,
+        composed: true,
+      });
+      canvasElement.dispatchEvent(event);
+      jsonStorage.save(currentDesign);
+    }
+  }
+  /* Attach the global table-design-change listener on the window */
+  static attachTableDesignListener() {
+    window.addEventListener('table-design-change', () => {
+      CanvasEventDispatcher.dispatchDesignChange();
+    });
+  }
+  /* Attach drop + dragover listeners to the canvas element */
+  static attachDropListeners(onDrop) {
+    const { canvasElement } = CanvasSharedState;
+    canvasElement.addEventListener('drop', onDrop);
+    canvasElement.addEventListener('dragover', event => event.preventDefault());
+  }
+  /* Attach click-to-select and click-to-show-sidebar listeners */
+  static attachClickListeners(onSelectElement) {
+    const { canvasElement } = CanvasSharedState;
+    /* Deselect previously selected component on any canvas click */
+    canvasElement.addEventListener('click', event => {
+      const selected = document.querySelector('.editable-component.selected');
+      if (selected) {
+        selected.classList.remove('selected');
+      }
+      const target = event.target;
+      if (target !== canvasElement) {
+        onSelectElement(target);
+      }
+    });
+    /* Show customisation sidebar for the clicked component */
+    canvasElement.addEventListener('click', event => {
+      const component = event.target;
+      if (component) {
+        /* Lazy import avoids circular dep at module load time */
+        import('../../sidebar/CustomizationSidebar').then(
+          ({ CustomizationSidebar }) => {
+            CustomizationSidebar.showSidebar(component.id);
+          }
+        );
+      }
+    });
+  }
+}

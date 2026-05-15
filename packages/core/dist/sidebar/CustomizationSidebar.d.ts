@@ -18,22 +18,10 @@ export declare class CustomizationSidebar {
     BasicComponent: BasicComponent[],
     showAttributeTab?: boolean
   ): void;
-  private static switchToCustomizeMode;
-  private static switchToAttributeMode;
-  private static switchToLayersMode;
+  private static switchToCustomizeModeLocal;
+  private static switchToAttributeModeLocal;
   static showSidebar(componentId: string): void;
-  /**
-   * Greys out a control wrapper and marks all its inputs as disabled.
-   * A small ⊘ badge is appended to the label so the user knows why.
-   *
-   * @param controlId  The id of the input/select inside the wrapper
-   * @param reason     Tooltip text shown on hover
-   */
-  private static disableControlWrapper;
-  private static populateCssControls;
-  private static handleInputTrigger;
-  private static ShoModal;
-  private static populateFunctionalityControls;
-  private static addListeners;
+  private static populateCssControlsLocal;
+  private static populateFunctionalityControlsLocal;
   static getLayersViewController(): LayersViewController;
 }

@@ -1,18 +1,13 @@
 import { Canvas } from '../canvas/Canvas';
 export declare class HTMLGenerator {
-  private canvas;
+  private readonly canvas;
   private readonly styleElement;
+  private readonly styleCollector;
+  private readonly svgStamper;
+  private readonly sanitizer;
+  private readonly shellBuilder;
   constructor(canvas: Canvas);
   generateHTML(): string;
-  private collectHeadStyles;
-  private stampSVGDimensions;
-  private restoreSVGStamps;
-  private stripEditorChrome;
-  private stripNodeRecursive;
-  private buildHTMLShell;
   generateCSS(): string;
-  private handleSVGElement;
-  private generateSVGSpecificSelector;
-  private generateUniqueSelector;
   applyCSS(css: string): void;
 }

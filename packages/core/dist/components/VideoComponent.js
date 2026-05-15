@@ -5,6 +5,10 @@ export class VideoComponent {
   create(src = null) {
     const container = document.createElement('div');
     container.classList.add('video-component');
+    container.style.width = '300px';
+    container.style.height = '300px';
+    container.style.position = 'relative';
+    container.style.overflow = 'hidden';
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'video/*';
@@ -27,6 +31,17 @@ export class VideoComponent {
     const pencilButton = document.createElement('button');
     pencilButton.innerHTML = '🖊️';
     pencilButton.classList.add('pencil-button');
+    pencilButton.classList.add('upload-btn');
+    pencilButton.style.position = 'absolute';
+    pencilButton.style.left = '50%';
+    pencilButton.style.top = '50%';
+    pencilButton.style.transform = 'translate(-50%, -50%)';
+    pencilButton.style.padding = '8px';
+    pencilButton.style.background = 'transparent';
+    pencilButton.style.border = 'none';
+    pencilButton.style.cursor = 'pointer';
+    pencilButton.style.fontSize = '24px';
+    pencilButton.style.display = src ? 'none' : 'block';
     pencilButton.addEventListener('click', () => fileInput.click());
     container.appendChild(uploadText);
     container.appendChild(fileInput);
@@ -42,9 +57,11 @@ export class VideoComponent {
       reader.onload = () => {
         const videoElement = container.querySelector('video');
         const uploadText = container.querySelector('.upload-text');
+        const pencilButton = container.querySelector('.pencil-button');
         videoElement.src = reader.result;
         videoElement.style.display = 'block';
         uploadText.style.display = 'none';
+        if (pencilButton) pencilButton.style.display = 'none';
       };
       reader.readAsDataURL(file);
     } else {

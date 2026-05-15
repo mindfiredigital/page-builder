@@ -1,9 +1,9 @@
 import { Canvas } from '../canvas/Canvas.js';
 export class HistoryManager {
-  constructor(canvas) {
+  constructor(_canvas) {
     this.undoStack = [];
     this.redoStack = [];
-    this.canvas = canvas;
+    /** canvas element kept for API compatibility but state is read via Canvas.getState() */
   }
   /**
    * Capture the current state of the canvas with getState method.
@@ -14,14 +14,14 @@ export class HistoryManager {
     const state = Canvas.getState();
     if (state.length > 0) {
       const lastState = this.undoStack[this.undoStack.length - 1];
-      // Only capture the state if it's different from the last state
+      /** Only capture the state if it's different from the last state */
       if (JSON.stringify(state) !== JSON.stringify(lastState)) {
         this.undoStack.push(state);
-        // Limit the undo stack size to a maximum of 20 entries
+        /** Limit the undo stack size to a maximum of 20 entries */
         if (this.undoStack.length > 20) {
           this.undoStack.shift();
         }
-        // Clear the redo stack as a new action is made
+        /** Clear the redo stack as a new action is made */
         this.redoStack = [];
       }
     } else {
@@ -42,7 +42,7 @@ export class HistoryManager {
     } else if (this.undoStack.length === 1) {
       const initialState = this.undoStack.pop();
       this.redoStack.push(initialState);
-      // Load existing layout from local storage and render, if any else empty the canvas
+      /** Load existing layout from local storage and render, if any else empty the canvas */
       const savedState = Canvas.jsonStorage.load();
       savedState ? Canvas.restoreState(savedState) : Canvas.restoreState([]);
     } else {
