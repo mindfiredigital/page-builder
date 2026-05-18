@@ -343,7 +343,9 @@ export class StyleCollector {
       const parent = currentElement.parentElement;
       if (parent) {
         const siblings = Array.from(parent.children).filter(
-          c => c.tagName === currentElement!.tagName
+          c =>
+            c.tagName === currentElement!.tagName &&
+            !CSS_CLASSES_TO_EXCLUDE.some(cls => c.classList.contains(cls))
         );
         if (siblings.length > 1)
           selector += `:nth-of-type(${siblings.indexOf(currentElement) + 1})`;

@@ -206,6 +206,48 @@ declare global {
     onCustomizeTab: () => void;
     onAttributeTab: () => void;
   }
+
+  // ── Rich Text Editor ────────────────────────────────────────
+
+  interface BlockTypeDef {
+    type: string;
+    label: string;
+    icon: string;
+  }
+
+  interface TuneItem {
+    label: string;
+    icon: string;
+    action?: () => void;
+    danger?: boolean;
+    active?: boolean;
+    submenu?: TuneItem[];
+  }
+
+  interface TuneItemCallbacks {
+    hidePopover: () => void;
+    showSubmenu: (items: TuneItem[], anchor: HTMLElement) => void;
+    scheduleHideSubmenu: () => void;
+    cancelHideSubmenu: () => void;
+  }
+
+  interface TuneActions {
+    applyAlignment: (block: HTMLElement, align: string) => void;
+    convertBlock: (block: HTMLElement, toType: string) => void;
+    changeHeadingLevel: (block: HTMLElement, level: number) => void;
+    toggleListStyle: (
+      block: HTMLElement,
+      style: 'unordered' | 'ordered'
+    ) => void;
+    toggleCodeTheme: (block: HTMLElement, theme: 'light' | 'dark') => void;
+    toggleImageOption: (
+      block: HTMLElement,
+      option: 'border' | 'stretch' | 'background'
+    ) => void;
+    moveBlockUp: (block: HTMLElement) => void;
+    deleteBlock: (block: HTMLElement) => void;
+    moveBlockDown: (block: HTMLElement) => void;
+  }
 }
 
 export {};

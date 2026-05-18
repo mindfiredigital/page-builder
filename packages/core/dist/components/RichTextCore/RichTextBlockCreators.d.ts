@@ -1,0 +1,14 @@
+export declare function createTextContent(): HTMLElement;
+export declare function createHeadingContent(level: number): HTMLElement;
+export declare function createImageContent(): HTMLElement;
+export declare function createListContent(
+  style: 'unordered' | 'ordered'
+): HTMLElement;
+export declare function createCodeContent(): HTMLElement;
+export declare function createQuoteContent(): HTMLElement;
+export declare function createDelimiterContent(): HTMLElement;
+export declare function createRawHtmlContent(): HTMLElement;
+export declare function createWarningContent(): HTMLElement;
+export declare function createChecklistItem(): HTMLElement;
+export declare function createChecklistContent(): HTMLElement;
+export declare function createBlockContent(type: string): HTMLElement;
