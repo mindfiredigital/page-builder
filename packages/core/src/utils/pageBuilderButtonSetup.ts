@@ -47,7 +47,14 @@ export function setupViewButton(
 
   viewButton.addEventListener('click', () => {
     const html = htmlGenerator.generateHTML();
-    const fullScreenModal = createFullScreenPreviewModal(html, layoutMode);
+    const canvasEl =
+      layoutMode === 'grid' ? document.getElementById('canvas') : null;
+    const canvasRect = canvasEl?.getBoundingClientRect() ?? null;
+    const fullScreenModal = createFullScreenPreviewModal(
+      html,
+      layoutMode,
+      canvasRect
+    );
     document.body.appendChild(fullScreenModal);
   });
 }

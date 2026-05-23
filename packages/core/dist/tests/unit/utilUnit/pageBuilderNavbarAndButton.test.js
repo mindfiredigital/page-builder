@@ -239,7 +239,8 @@ describe('setupViewButton', () => {
     document.getElementById('view-btn').click();
     expect(createFullScreenPreviewModal).toHaveBeenCalledWith(
       '<html/>',
-      'absolute'
+      'absolute',
+      null
     );
   });
   it('appends the returned modal element to document.body', () => {
@@ -256,7 +257,7 @@ describe('setupViewButton', () => {
     const generator = { generateHTML: jest.fn().mockReturnValue('') };
     setupViewButton(generator, 'grid');
     document.getElementById('view-btn').click();
-    expect(createFullScreenPreviewModal).toHaveBeenCalledWith('', 'grid');
+    expect(createFullScreenPreviewModal).toHaveBeenCalledWith('', 'grid', null);
   });
 });
 // ===========================================================================

@@ -66237,25 +66237,34 @@ function xa(e, t = 'Page Builder', n) {
     );
   return (A.appendChild(i), A.appendChild(r), A.appendChild(o), A);
 }
-function _a(e, t = 'grid') {
-  const n = 'absolute' === t,
-    A = document.createElement('div');
-  ((A.id = 'preview-modal'),
-    (A.style.cssText =
+function _a(e, t = 'grid', n = null) {
+  const A = 'absolute' === t,
+    r = !A && null !== n && n.width > 0,
+    i = document.createElement('div');
+  ((i.id = 'preview-modal'),
+    (i.style.cssText =
       '\n    position: fixed; top: 0; left: 0;\n    width: 100vw; height: 100vh; z-index: 10000;\n    display: flex; flex-direction: column;\n    align-items: center; justify-content: flex-start;\n    background-color: #f8fafc;\n  '));
-  const r = document.createElement('div');
-  r.style.cssText =
-    '\n    flex: 1; width: 100%; display: flex;\n    align-items: flex-start; justify-content: center;\n    overflow: auto; box-sizing: border-box;\n  ';
-  const i = document.createElement('iframe');
+  const o = document.createElement('div'),
+    s = document.createElement('iframe');
   if (
-    ((i.id = 'preview-iframe'),
-    (i.style.cssText = n
-      ? 'width:869px; min-height:1123px; border:none; background:#fff;\n       box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px; flex-shrink:0;'
-      : 'width:100%; height:100%; border:none; background:#fff;\n       box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px;'),
-    (i.srcdoc = e),
-    r.appendChild(i),
-    A.appendChild(r),
-    A.appendChild(
+    ((s.id = 'preview-iframe'),
+    A
+      ? ((o.style.cssText =
+          '\n      flex: 1; width: 100%; display: flex;\n      align-items: flex-start; justify-content: center;\n      overflow: auto; box-sizing: border-box;\n    '),
+        (s.style.cssText =
+          'width:869px; min-height:1123px; border:none; background:#fff;\n       box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px; flex-shrink:0;'))
+      : r
+        ? ((o.style.cssText =
+            '\n      flex: 1; width: 100%; display: flex;\n      align-items: stretch; justify-content: flex-start;\n      overflow: auto; box-sizing: border-box;\n    '),
+          (s.style.cssText = `\n      width: ${n.width}px;\n      flex-shrink: 0;\n      border: none;\n      background: #fff;\n      box-shadow: 0 2px 12px rgba(0,0,0,0.10);\n      margin-left: ${n.left}px;\n    `))
+        : ((o.style.cssText =
+            '\n      flex: 1; width: 100%; display: flex;\n      align-items: flex-start; justify-content: center;\n      overflow: auto; box-sizing: border-box;\n    '),
+          (s.style.cssText =
+            'width:100%; height:100%; border:none; background:#fff;\n       box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px;')),
+    (s.srcdoc = e),
+    o.appendChild(s),
+    i.appendChild(o),
+    i.appendChild(
       (function (e) {
         const t = document.createElement('button');
         ((t.id = 'close-modal-btn'),
@@ -66271,9 +66280,9 @@ function _a(e, t = 'grid') {
           'Escape' === e.key && n();
         };
         return (document.addEventListener('keydown', A), t);
-      })(A)
+      })(i)
     ),
-    !n)
+    !A && !r)
   ) {
     const e = (function (e) {
       const t = document.createElement('div');
@@ -66326,10 +66335,10 @@ function _a(e, t = 'grid') {
         (A.style.backgroundColor = '#e2e8f0'),
         (A.style.borderColor = '#cbd5e1'));
       return t;
-    })(i);
-    A.insertBefore(e, r);
+    })(s);
+    i.insertBefore(e, o);
   }
-  return A;
+  return i;
 }
 function ja(e) {
   const t = document.getElementById('reset-btn');
@@ -66524,8 +66533,16 @@ class Fa {
         const n = document.getElementById('view-btn');
         n &&
           n.addEventListener('click', () => {
-            const n = _a(e.generateHTML(), t);
-            document.body.appendChild(n);
+            var n;
+            const A = e.generateHTML(),
+              r = 'grid' === t ? document.getElementById('canvas') : null,
+              i =
+                null !== (n = null == r ? void 0 : r.getBoundingClientRect()) &&
+                void 0 !== n
+                  ? n
+                  : null,
+              o = _a(A, t, i);
+            document.body.appendChild(o);
           });
       })(this.htmlGenerator, this.layoutMode),
       (e = this.previewPanel),

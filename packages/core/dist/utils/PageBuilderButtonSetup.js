@@ -40,8 +40,22 @@ export function setupViewButton(htmlGenerator, layoutMode) {
   const viewButton = document.getElementById('view-btn');
   if (!viewButton) return;
   viewButton.addEventListener('click', () => {
+    var _a;
     const html = htmlGenerator.generateHTML();
-    const fullScreenModal = createFullScreenPreviewModal(html, layoutMode);
+    const canvasEl =
+      layoutMode === 'grid' ? document.getElementById('canvas') : null;
+    const canvasRect =
+      (_a =
+        canvasEl === null || canvasEl === void 0
+          ? void 0
+          : canvasEl.getBoundingClientRect()) !== null && _a !== void 0
+        ? _a
+        : null;
+    const fullScreenModal = createFullScreenPreviewModal(
+      html,
+      layoutMode,
+      canvasRect
+    );
     document.body.appendChild(fullScreenModal);
   });
 }

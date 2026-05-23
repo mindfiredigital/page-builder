@@ -3,9 +3,12 @@ import { svgs } from '../icons/svgs';
 /* Builds and returns the full-screen preview modal with an iframe */
 export function createFullScreenPreviewModal(
   html: string,
-  layoutMode: 'absolute' | 'grid' = 'grid'
+  layoutMode: 'absolute' | 'grid' = 'grid',
+  canvasRect: DOMRect | null = null
 ): HTMLElement {
   const isAbsolute = layoutMode === 'absolute';
+  const useCanvasLayout =
+    !isAbsolute && canvasRect !== null && canvasRect.width > 0;
 
   const fullScreenModal = document.createElement('div');
   fullScreenModal.id = 'preview-modal';
@@ -18,21 +21,43 @@ export function createFullScreenPreviewModal(
   `;
 
   const paperWrapper = document.createElement('div');
-  paperWrapper.style.cssText = `
-    flex: 1; width: 100%; display: flex;
-    align-items: flex-start; justify-content: center;
-    overflow: auto; box-sizing: border-box;
-  `;
-
   const iframe = document.createElement('iframe');
   iframe.id = 'preview-iframe';
 
-  /* Absolute (A4) mode uses fixed dimensions; grid mode fills the viewport */
-  iframe.style.cssText = isAbsolute
-    ? `width:869px; min-height:1123px; border:none; background:#fff;
-       box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px; flex-shrink:0;`
-    : `width:100%; height:100%; border:none; background:#fff;
+  if (isAbsolute) {
+    /* A4 paper: fixed dimensions, centred, grey sides show naturally */
+    paperWrapper.style.cssText = `
+      flex: 1; width: 100%; display: flex;
+      align-items: flex-start; justify-content: center;
+      overflow: auto; box-sizing: border-box;
+    `;
+    iframe.style.cssText = `width:869px; min-height:1123px; border:none; background:#fff;
+       box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px; flex-shrink:0;`;
+  } else if (useCanvasLayout) {
+    /* Grid mode: mirror the canvas position so grey areas match the sidebar widths */
+    paperWrapper.style.cssText = `
+      flex: 1; width: 100%; display: flex;
+      align-items: stretch; justify-content: flex-start;
+      overflow: auto; box-sizing: border-box;
+    `;
+    iframe.style.cssText = `
+      width: ${canvasRect!.width}px;
+      flex-shrink: 0;
+      border: none;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      margin-left: ${canvasRect!.left}px;
+    `;
+  } else {
+    /* Grid mode fallback (no canvas rect available): fill full viewport */
+    paperWrapper.style.cssText = `
+      flex: 1; width: 100%; display: flex;
+      align-items: flex-start; justify-content: center;
+      overflow: auto; box-sizing: border-box;
+    `;
+    iframe.style.cssText = `width:100%; height:100%; border:none; background:#fff;
        box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px;`;
+  }
 
   iframe.srcdoc = html;
   paperWrapper.appendChild(iframe);
@@ -40,8 +65,8 @@ export function createFullScreenPreviewModal(
 
   fullScreenModal.appendChild(createPreviewCloseButton(fullScreenModal));
 
-  /* Responsiveness toggle is only meaningful in grid mode */
-  if (!isAbsolute) {
+  /* Responsiveness toggle only shown in grid fallback mode */
+  if (!isAbsolute && !useCanvasLayout) {
     const responsivenessContainer = createResponsivenessControls(iframe);
     fullScreenModal.insertBefore(responsivenessContainer, paperWrapper);
   }
