@@ -891,46 +891,61 @@ function B(e) {
   }),
     e.addEventListener('drop', t =>
       (function (e, t) {
-        var n;
+        var n, A;
         (t.preventDefault(), t.stopPropagation());
-        const A =
+        const r =
           null === (n = t.dataTransfer) || void 0 === n
             ? void 0
             : n.getData('component-type');
-        if (!A) return;
-        const r = te.createComponent(A);
         if (!r) return;
-        const i = e.classList[2],
-          o = te.generateUniqueClass(A, !0, i);
-        r.classList.add(o);
-        const s = document.createElement('span');
-        ((s.className = 'component-label'),
-          (s.textContent = o),
-          s.setAttribute('contenteditable', 'false'),
-          (r.id = o),
-          (s.style.display = 'none'),
-          r.appendChild(s),
-          'absolute' === te.layoutMode
-            ? ((r.style.position = 'absolute'),
-              (r.style.left = `${t.offsetX}px`),
-              (r.style.top = `${t.offsetY}px`),
-              te.addDraggableListeners(r))
-            : 'grid' === te.layoutMode &&
-              e.classList.add('container-grid-active'),
-          e.appendChild(r),
+        const i = te.createComponent(r);
+        if (!i) return;
+        const o = e.classList[2],
+          s = te.generateUniqueClass(r, !0, o);
+        (i.classList.add(s), (i.id = s));
+        const a = i.querySelector('.component-label');
+        if (
+          (a && (a.textContent = s),
+          i.classList.contains('container-component'))
+        ) {
+          const t = parseInt(
+            null !== (A = e.getAttribute('data-depth')) && void 0 !== A
+              ? A
+              : '0'
+          );
+          i.setAttribute('data-depth', String(t + 1));
+        }
+        ('absolute' === te.layoutMode
+          ? ((i.style.position = 'absolute'),
+            (i.style.left = `${t.offsetX}px`),
+            (i.style.top = `${t.offsetY}px`),
+            te.addDraggableListeners(i))
+          : 'grid' === te.layoutMode &&
+            (e.classList.add('container-grid-active'),
+            !i.style.width &&
+              i.classList.contains('container-component') &&
+              (i.style.width = '50%')),
+          e.appendChild(i),
           te.historyManager.captureState());
       })(e, t)
     ),
     e.addEventListener('dragover', e => e.preventDefault()),
     e.addEventListener('mouseover', t => {
       (t.stopPropagation(),
-        document.querySelectorAll('.container-highlight').forEach(e => {
-          e.classList.remove('container-highlight');
+        document.querySelectorAll('.container-highlight').forEach(t => {
+          t !== e &&
+            (t.classList.remove('container-highlight'),
+            t.classList.remove('label-visible'));
         }),
-        t.target === e && e.classList.add('container-highlight'));
+        t.target === e
+          ? (e.classList.add('container-highlight'),
+            e.classList.add('label-visible'))
+          : (e.classList.remove('container-highlight'),
+            e.classList.remove('label-visible')));
     }),
-    e.addEventListener('mouseleave', t => {
-      t.target === e && e.classList.remove('container-highlight');
+    e.addEventListener('mouseleave', () => {
+      (e.classList.remove('container-highlight'),
+        e.classList.remove('label-visible'));
     }));
 }
 function b(e, t) {
@@ -963,20 +978,22 @@ function b(e, t) {
               : (te.addDraggableListeners(o),
                 (o.style.position = 'absolute'),
                 o.classList.add('component-resizer')),
-            o.addEventListener('mouseenter', e =>
-              (function (e, t) {
-                e.stopPropagation();
-                const n = t.querySelector('.component-label');
-                n && (n.style.display = 'block');
-              })(e, o)
-            ),
-            o.addEventListener('mouseleave', e =>
-              (function (e, t) {
-                e.stopPropagation();
-                const n = t.querySelector('.component-label');
-                n && (n.style.display = 'none');
-              })(e, o)
-            ))
+            o.classList.contains('container-component')
+              ? B(o)
+              : (o.addEventListener('mouseenter', e =>
+                  (function (e, t) {
+                    e.stopPropagation();
+                    const n = t.querySelector('.component-label');
+                    n && (n.style.display = 'block');
+                  })(e, o)
+                ),
+                o.addEventListener('mouseleave', e =>
+                  (function (e, t) {
+                    e.stopPropagation();
+                    const n = t.querySelector('.component-label');
+                    n && (n.style.display = 'none');
+                  })(e, o)
+                )))
           : (o
               .querySelectorAll('[contenteditable]')
               .forEach(e => e.removeAttribute('contenteditable')),
@@ -3233,6 +3250,8 @@ class W {
             ((p.style.position = ''),
             p.hasAttribute('draggable') &&
               (p.removeAttribute('draggable'), (p.style.cursor = 'default'))),
+        ['container', 'twoCol', 'threeCol'].includes(u) &&
+          p.setAttribute('data-depth', '0'),
         l.push(p),
         s.appendChild(p),
         !p.style.width)
@@ -51864,16 +51883,15 @@ var wa,
                           }
                         return { data: a, reverseChain: l.reverse().join(' ') };
                       };
-                    })(M.API),
-                    (/**
+                    })(M.API) /**
                      * @license
                      * jsPDF fileloading PlugIn
                      * Copyright (c) 2018 Aras Abbasi (aras.abbasi@gmail.com)
                      *
                      * Licensed under the MIT License.
                      * http://opensource.org/licenses/mit-license
-                     */
-                    (Je = M.API).loadFile = function (e, t, n) {
+                     */,
+                    ((Je = M.API).loadFile = function (e, t, n) {
                       return (function (e, t, n) {
                         ((t = !1 !== t),
                           (n = 'function' == typeof n ? n : function () {}));

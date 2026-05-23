@@ -379,19 +379,71 @@ html {
   min-width: 100px;
 }
 
-.container-component:hover {
+/* Depth-based default borders — each nesting level gets a distinct colour */
+.container-component[data-depth="0"] { border: 1px dashed #334155; }
+.container-component[data-depth="1"] { border: 1px dashed #3b82f6; }
+.container-component[data-depth="2"] { border: 1px dashed #10b981; }
+.container-component[data-depth="3"] { border: 1px dashed #f97316; }
+
+/*
+ * Hover colours: ALL ancestor containers show their depth colour when the
+ * cursor is somewhere inside them (CSS :hover applies to all ancestors).
+ * Only the INNERMOST container's label is shown (controlled by JS via
+ * the .label-visible class — see below).
+ */
+.container-component[data-depth="0"]:hover,
+.container-component[data-depth="0"].container-highlight {
+  border-color: #0f172a !important;
+  border-style: solid !important;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.2) !important;
+}
+.container-component[data-depth="1"]:hover,
+.container-component[data-depth="1"].container-highlight {
+  border-color: #2563eb !important;
+  border-style: solid !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+.container-component[data-depth="2"]:hover,
+.container-component[data-depth="2"].container-highlight {
+  border-color: #059669 !important;
+  border-style: solid !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+}
+.container-component[data-depth="3"]:hover,
+.container-component[data-depth="3"].container-highlight {
+  border-color: #ea580c !important;
+  border-style: solid !important;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2) !important;
+}
+
+/* Fallback for containers that don't yet have a data-depth attribute */
+.container-component:not([data-depth]):hover {
   border-color: #3b82f6;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+.container-highlight:not([data-depth]) {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
 }
 
 .container-component.container-grid-active {
   display: block;
 }
 
-.container-highlight {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
-}
+/* Depth-based label badge colours match the container border */
+.container-component[data-depth="0"] > .component-label { background-color: #334155; }
+.container-component[data-depth="1"] > .component-label { background-color: #3b82f6; }
+.container-component[data-depth="2"] > .component-label { background-color: #10b981; }
+.container-component[data-depth="3"] > .component-label { background-color: #f97316; }
+
+/*
+ * Container labels are managed entirely by JS via the .label-visible class
+ * (added/removed in initContainerEventListeners on mouseover/leave).
+ * Override the generic CSS :hover rule so only the innermost hovered
+ * container shows its name — not every ancestor that is also :hover.
+ */
+.container-component > .component-label { display: none; }
+.container-component.label-visible > .component-label:first-of-type { display: block; }
 
 /* Draggable Icons */
 .component-icon {
@@ -2274,7 +2326,9 @@ html {
   display: block !important;
 }
 
-.editable-component:hover>.component-label:first-of-type {
+/* Containers use JS-controlled .label-visible — exclude them here to prevent
+   every ancestor container showing its label when cursor enters a child. */
+.editable-component:not(.container-component):hover>.component-label:first-of-type {
   display: block !important;
 }
 

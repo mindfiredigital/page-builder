@@ -112,6 +112,11 @@ export class CanvasDropHandler {
         }
       }
 
+      /* Mark top-level containers with depth=0 for depth-based colour theming */
+      if (['container', 'twoCol', 'threeCol'].includes(componentType)) {
+        component.setAttribute('data-depth', '0');
+      }
+
       components.push(component);
       canvasElement.appendChild(component);
 

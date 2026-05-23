@@ -106,6 +106,10 @@ export class CanvasDropHandler {
           component.style.cursor = 'default';
         }
       }
+      /* Mark top-level containers with depth=0 for depth-based colour theming */
+      if (['container', 'twoCol', 'threeCol'].includes(componentType)) {
+        component.setAttribute('data-depth', '0');
+      }
       components.push(component);
       canvasElement.appendChild(component);
       /* Set a stable initial width so the sidebar always shows a consistent

@@ -1,15 +1,16 @@
 import { Canvas } from '../../canvas/Canvas';
 import { ImageComponent } from '../ImageComponent';
 import { ContainerResizeHandler } from './ContainerResizeHandler';
+import { initContainerEventListeners } from './ContainerEventListeners';
 
-/* Shows the hover label on a component */
+/* Shows the hover label on a non-container component */
 function showLabel(event: MouseEvent, component: HTMLElement): void {
   event.stopPropagation();
   const label = component.querySelector('.component-label') as HTMLElement;
   if (label) label.style.display = 'block';
 }
 
-/* Hides the hover label on a component */
+/* Hides the hover label on a non-container component */
 function hideLabel(event: MouseEvent, component: HTMLElement): void {
   event.stopPropagation();
   const label = component.querySelector('.component-label') as HTMLElement;
@@ -61,12 +62,22 @@ export function restoreContainer(
         childElement.classList.add('component-resizer');
       }
 
-      childElement.addEventListener('mouseenter', (event: MouseEvent) =>
-        showLabel(event, childElement)
-      );
-      childElement.addEventListener('mouseleave', (event: MouseEvent) =>
-        hideLabel(event, childElement)
-      );
+      if (childElement.classList.contains('container-component')) {
+        /*
+         * Nested containers use mouseover/mouseleave managed by
+         * initContainerEventListeners — not inline-style mouseenter/leave.
+         * Re-wiring here ensures restored nested containers respond correctly.
+         */
+        initContainerEventListeners(childElement);
+      } else {
+        /* Non-container children: direct inline-style label show/hide */
+        childElement.addEventListener('mouseenter', (event: MouseEvent) =>
+          showLabel(event, childElement)
+        );
+        childElement.addEventListener('mouseleave', (event: MouseEvent) =>
+          hideLabel(event, childElement)
+        );
+      }
     } else {
       (
         childElement.querySelectorAll(
