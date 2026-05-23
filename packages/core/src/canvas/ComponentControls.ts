@@ -10,7 +10,7 @@ export class ComponentControlsManager {
   constructor(_canvas?: unknown) {}
 
   /**
-   * Adds a controls div (with delete button) to the component.
+   * Adds a controls div (with drag handle in grid mode, delete button) to the component.
    *
    * Image containers: we use appendChild (not prepend) and skip adding
    * `position: relative` — both of which were the original fix that kept
@@ -57,8 +57,60 @@ export class ComponentControlsManager {
       }
     }
 
+    /*
+     * In grid mode add a drag handle so every component — including
+     * containers whose children cover the entire surface — can be grabbed
+     * and reordered without needing to hit empty border space.
+     */
+    if (
+      CanvasSharedState.layoutMode === 'grid' &&
+      !controlsDiv.querySelector('.drag-handle')
+    ) {
+      const dragHandle = this.createDragHandle(element);
+      controlsDiv.prepend(dragHandle);
+    }
+
     const deleteIcon = this.createDeleteIcon(element, controlsDiv);
     controlsDiv.appendChild(deleteIcon);
+  }
+
+  /**
+   * Creates a drag handle that sets 'dragged-component-id' on the data
+   * transfer so the canvas drop handler knows to reorder rather than create.
+   */
+  private createDragHandle(element: HTMLElement): HTMLElement {
+    const handle = document.createElement('div');
+    handle.className = 'drag-handle';
+    handle.setAttribute('draggable', 'true');
+    handle.setAttribute('contenteditable', 'false');
+    handle.title = 'Drag to reorder';
+    handle.style.pointerEvents = 'all';
+    handle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/>
+      <circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/>
+      <circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/>
+    </svg>`;
+
+    handle.addEventListener('dragstart', (event: DragEvent) => {
+      event.stopPropagation();
+      if (event.dataTransfer) {
+        event.dataTransfer.setData('dragged-component-id', element.id);
+        event.dataTransfer.effectAllowed = 'move';
+      }
+      element.style.opacity = '0.45';
+      handle.style.cursor = 'grabbing';
+    });
+
+    handle.addEventListener('dragend', () => {
+      element.style.opacity = '';
+      handle.style.cursor = 'grab';
+      /* Clean up the indicator if the drop landed outside the canvas */
+      CanvasSharedState.canvasElement
+        ?.querySelector('.drop-insert-indicator')
+        ?.remove();
+    });
+
+    return handle;
   }
 
   /**

@@ -8,7 +8,7 @@ export class ComponentControlsManager {
     };
   }
   /**
-   * Adds a controls div (with delete button) to the component.
+   * Adds a controls div (with drag handle in grid mode, delete button) to the component.
    *
    * Image containers: we use appendChild (not prepend) and skip adding
    * `position: relative` — both of which were the original fix that kept
@@ -48,8 +48,60 @@ export class ComponentControlsManager {
         element.prepend(controlsDiv);
       }
     }
+    /*
+     * In grid mode add a drag handle so every component — including
+     * containers whose children cover the entire surface — can be grabbed
+     * and reordered without needing to hit empty border space.
+     */
+    if (
+      CanvasSharedState.layoutMode === 'grid' &&
+      !controlsDiv.querySelector('.drag-handle')
+    ) {
+      const dragHandle = this.createDragHandle(element);
+      controlsDiv.prepend(dragHandle);
+    }
     const deleteIcon = this.createDeleteIcon(element, controlsDiv);
     controlsDiv.appendChild(deleteIcon);
+  }
+  /**
+   * Creates a drag handle that sets 'dragged-component-id' on the data
+   * transfer so the canvas drop handler knows to reorder rather than create.
+   */
+  createDragHandle(element) {
+    const handle = document.createElement('div');
+    handle.className = 'drag-handle';
+    handle.setAttribute('draggable', 'true');
+    handle.setAttribute('contenteditable', 'false');
+    handle.title = 'Drag to reorder';
+    handle.style.pointerEvents = 'all';
+    handle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="9" cy="5" r="2"/><circle cx="15" cy="5" r="2"/>
+      <circle cx="9" cy="12" r="2"/><circle cx="15" cy="12" r="2"/>
+      <circle cx="9" cy="19" r="2"/><circle cx="15" cy="19" r="2"/>
+    </svg>`;
+    handle.addEventListener('dragstart', event => {
+      event.stopPropagation();
+      if (event.dataTransfer) {
+        event.dataTransfer.setData('dragged-component-id', element.id);
+        event.dataTransfer.effectAllowed = 'move';
+      }
+      element.style.opacity = '0.45';
+      handle.style.cursor = 'grabbing';
+    });
+    handle.addEventListener('dragend', () => {
+      var _a, _b;
+      element.style.opacity = '';
+      handle.style.cursor = 'grab';
+      /* Clean up the indicator if the drop landed outside the canvas */
+      (_b =
+        (_a = CanvasSharedState.canvasElement) === null || _a === void 0
+          ? void 0
+          : _a.querySelector('.drop-insert-indicator')) === null ||
+      _b === void 0
+        ? void 0
+        : _b.remove();
+    });
+    return handle;
   }
   /**
    * Creates (or reuses) the delete icon inside `controlsDiv`.

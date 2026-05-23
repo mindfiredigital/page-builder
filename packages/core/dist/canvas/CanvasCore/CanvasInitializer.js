@@ -50,7 +50,10 @@ export class CanvasInitializer {
     );
     /* Grid drop-preview overlay */
     CanvasSharedState.gridManager = new GridManager();
-    CanvasSharedState.gridManager.initializeDropPreview(canvasElement);
+    CanvasSharedState.gridManager.initializeDropPreview(
+      canvasElement,
+      layoutMode
+    );
     /* Sidebar ↔ canvas drag-and-drop bridge */
     const dragDropManager = new DragDropManager(canvasElement, sidebarElement);
     dragDropManager.enable();

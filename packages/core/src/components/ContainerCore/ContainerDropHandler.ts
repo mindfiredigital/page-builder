@@ -6,10 +6,14 @@ export function handleContainerDrop(
   event: DragEvent
 ): void {
   event.preventDefault();
-  event.stopPropagation();
 
   const componentType = event.dataTransfer?.getData('component-type');
+  /* Only handle new-component drops from the sidebar.  Drag-handle reorders
+     set 'dragged-component-id' instead; don't swallow those — let them bubble
+     up to the canvas drop handler. */
   if (!componentType) return;
+
+  event.stopPropagation();
 
   const component = Canvas.createComponent(componentType);
   if (!component) return;

@@ -2,7 +2,7 @@ export declare class ComponentControlsManager {
   private icons;
   constructor(_canvas?: unknown);
   /**
-   * Adds a controls div (with delete button) to the component.
+   * Adds a controls div (with drag handle in grid mode, delete button) to the component.
    *
    * Image containers: we use appendChild (not prepend) and skip adding
    * `position: relative` — both of which were the original fix that kept
@@ -11,6 +11,11 @@ export declare class ComponentControlsManager {
    * of inside `controlsDiv` (fixed in createDeleteIcon below).
    */
   addControlButtons(element: HTMLElement): void;
+  /**
+   * Creates a drag handle that sets 'dragged-component-id' on the data
+   * transfer so the canvas drop handler knows to reorder rather than create.
+   */
+  private createDragHandle;
   /**
    * Creates (or reuses) the delete icon inside `controlsDiv`.
    *

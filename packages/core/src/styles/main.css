@@ -1565,6 +1565,50 @@ html {
   color: #374151;
 }
 
+/* Drag handle (grid mode) — shown inside .component-controls on hover */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  cursor: grab;
+  color: #94a3b8;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.drag-handle:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Insert-position indicator shown during grid-mode drag */
+.drop-insert-indicator {
+  height: 3px;
+  background-color: #3b82f6;
+  border-radius: 2px;
+  pointer-events: none;
+  position: relative;
+  margin: 0;
+  width: 100%;
+}
+
+.drop-insert-indicator::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+}
+
 /* Drop preview styling */
 .drop-preview {
   border: 2px dashed #3b82f6;

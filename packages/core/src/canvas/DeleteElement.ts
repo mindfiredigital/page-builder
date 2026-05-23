@@ -30,9 +30,34 @@ export class DeleteElementHandler {
     );
   }
 
+  /**
+   * Selects the nearest ancestor container of the currently selected element
+   * and shows its sidebar.  Allows the user to "bubble up" through nested
+   * containers by pressing Escape repeatedly.
+   */
+  private selectParentContainer(): void {
+    if (!this.selectedElement) return;
+
+    const parent = this.selectedElement.parentElement?.closest(
+      '.container-component'
+    ) as HTMLElement | null;
+
+    if (!parent) return;
+
+    this.selectElement(parent);
+
+    import('../sidebar/CustomizationSidebar').then(
+      ({ CustomizationSidebar }) => {
+        CustomizationSidebar.showSidebar(parent.id);
+      }
+    );
+  }
+
   private handleKeydown(event: KeyboardEvent): void {
     if (event.key === 'Delete') {
       this.deleteSelectedElement();
+    } else if (event.key === 'Escape') {
+      this.selectParentContainer();
     }
   }
 

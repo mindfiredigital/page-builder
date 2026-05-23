@@ -221,6 +221,9 @@ export class CanvasStateManager {
       CanvasSharedState.components.push(component);
     });
     /** Re-initialise the grid drop-preview overlay after all components are placed */
-    gridManager.initializeDropPreview(canvasElement);
+    gridManager.initializeDropPreview(
+      canvasElement,
+      CanvasSharedState.layoutMode
+    );
   }
 }

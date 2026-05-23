@@ -28,9 +28,31 @@ export class DeleteElementHandler {
       }
     );
   }
+  /**
+   * Selects the nearest ancestor container of the currently selected element
+   * and shows its sidebar.  Allows the user to "bubble up" through nested
+   * containers by pressing Escape repeatedly.
+   */
+  selectParentContainer() {
+    var _a;
+    if (!this.selectedElement) return;
+    const parent =
+      (_a = this.selectedElement.parentElement) === null || _a === void 0
+        ? void 0
+        : _a.closest('.container-component');
+    if (!parent) return;
+    this.selectElement(parent);
+    import('../sidebar/CustomizationSidebar').then(
+      ({ CustomizationSidebar }) => {
+        CustomizationSidebar.showSidebar(parent.id);
+      }
+    );
+  }
   handleKeydown(event) {
     if (event.key === 'Delete') {
       this.deleteSelectedElement();
+    } else if (event.key === 'Escape') {
+      this.selectParentContainer();
     }
   }
   selectElement(element) {

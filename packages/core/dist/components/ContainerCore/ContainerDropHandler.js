@@ -3,12 +3,15 @@ import { Canvas } from '../../canvas/Canvas.js';
 export function handleContainerDrop(element, event) {
   var _a, _b;
   event.preventDefault();
-  event.stopPropagation();
   const componentType =
     (_a = event.dataTransfer) === null || _a === void 0
       ? void 0
       : _a.getData('component-type');
+  /* Only handle new-component drops from the sidebar.  Drag-handle reorders
+       set 'dragged-component-id' instead; don't swallow those — let them bubble
+       up to the canvas drop handler. */
   if (!componentType) return;
+  event.stopPropagation();
   const component = Canvas.createComponent(componentType);
   if (!component) return;
   /* Third class on the container element is its unique identifier */

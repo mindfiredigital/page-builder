@@ -5,11 +5,28 @@ import { CanvasDragHandler } from './CanvasDragHandler.js';
 /** Handles the DragEvent fired when a new component is dropped onto the canvas */
 export class CanvasDropHandler {
   static onDrop(event) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     event.preventDefault();
     const target = event.target;
     const { canvasElement, layoutMode, components, historyManager } =
       CanvasSharedState;
+    /* Always remove the insert-position indicator on drop */
+    (_a = canvasElement.querySelector('.drop-insert-indicator')) === null ||
+    _a === void 0
+      ? void 0
+      : _a.remove();
+    /* Reorder: drag handles set 'dragged-component-id' instead of
+           'component-type', so check this before the container bail-out so that
+           a top-level component can be dropped even when the cursor lands over a
+           container. */
+    const draggedId =
+      (_b = event.dataTransfer) === null || _b === void 0
+        ? void 0
+        : _b.getData('dragged-component-id');
+    if (draggedId) {
+      CanvasDropHandler.handleReorder(draggedId, event, canvasElement);
+      return;
+    }
     /** Containers handle their own drop logic — bail out early */
     if (
       target.classList.contains('container-component') ||
@@ -18,13 +35,13 @@ export class CanvasDropHandler {
       return;
     }
     const componentType =
-      (_a = event.dataTransfer) === null || _a === void 0
+      (_c = event.dataTransfer) === null || _c === void 0
         ? void 0
-        : _a.getData('component-type');
+        : _c.getData('component-type');
     let customSettings =
-      (_b = event.dataTransfer) === null || _b === void 0
+      (_d = event.dataTransfer) === null || _d === void 0
         ? void 0
-        : _b.getData('custom-settings');
+        : _d.getData('custom-settings');
     if (!componentType) return;
     /** If no custom settings in the transfer, fall back to globally registered config */
     if (!customSettings || customSettings.trim() === '') {
@@ -34,12 +51,12 @@ export class CanvasDropHandler {
       if (draggableElement) {
         const customComponents = window.customComponents;
         if (
-          (_c =
+          (_e =
             customComponents === null || customComponents === void 0
               ? void 0
-              : customComponents[componentType]) === null || _c === void 0
+              : customComponents[componentType]) === null || _e === void 0
             ? void 0
-            : _c.settings
+            : _e.settings
         ) {
           customSettings = JSON.stringify(
             customComponents[componentType].settings
@@ -111,11 +128,23 @@ export class CanvasDropHandler {
         component.setAttribute('data-depth', '0');
       }
       components.push(component);
-      canvasElement.appendChild(component);
+      /* In grid mode insert at the cursor position so drops land where the
+               user expects rather than always appending to the end. */
+      if (layoutMode === 'grid') {
+        const insertBefore = CanvasSharedState.gridManager.findInsertionPoint(
+          event,
+          canvasElement
+        );
+        if (insertBefore) {
+          canvasElement.insertBefore(component, insertBefore);
+        } else {
+          canvasElement.appendChild(component);
+        }
+      } else {
+        canvasElement.appendChild(component);
+      }
       /* Set a stable initial width so the sidebar always shows a consistent
-               value regardless of whether sidebars are open or closed.
-               Without this, block elements show offsetWidth (which fluctuates with
-               canvas size) instead of an explicit percentage. */
+               value regardless of whether sidebars are open or closed. */
       if (!component.style.width) {
         const computedDisplay = window.getComputedStyle(component).display;
         if (computedDisplay === 'block') {
@@ -131,6 +160,29 @@ export class CanvasDropHandler {
         }
       );
     }
+    CanvasEventDispatcher.dispatchDesignChange();
+  }
+  /**
+   * Moves an existing top-level canvas component to the position indicated
+   * by the cursor.  Only canvas-level components (direct children of
+   * canvasElement) are eligible; components inside containers are ignored.
+   */
+  static handleReorder(draggedId, event, canvasElement) {
+    const draggedEl = document.getElementById(draggedId);
+    if (!draggedEl || draggedEl.parentElement !== canvasElement) return;
+    const insertBefore = CanvasSharedState.gridManager.findInsertionPoint(
+      event,
+      canvasElement
+    );
+    /* No-op: dropping on the element itself */
+    if (insertBefore === draggedEl) return;
+    if (insertBefore) {
+      canvasElement.insertBefore(draggedEl, insertBefore);
+    } else {
+      canvasElement.appendChild(draggedEl);
+    }
+    draggedEl.style.opacity = '';
+    CanvasSharedState.historyManager.captureState();
     CanvasEventDispatcher.dispatchDesignChange();
   }
 }
