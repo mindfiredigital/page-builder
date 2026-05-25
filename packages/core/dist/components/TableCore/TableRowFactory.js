@@ -13,6 +13,13 @@ export function CreateTableRow(rowIndex, cellCount, tableId) {
     const cell = CreateTableCell(rowIndex, j, tableId);
     rowDiv.appendChild(cell);
   }
+  /* Small "+" button that appears on the bottom border when the row is selected */
+  const insertRowButton = document.createElement('button');
+  insertRowButton.className = 'insert-row-button';
+  insertRowButton.textContent = '+';
+  insertRowButton.contentEditable = 'false';
+  insertRowButton.title = 'Insert row below';
+  rowDiv.appendChild(insertRowButton);
   return rowDiv;
 }
 /* Creates a single table cell with editable content and add/delete control buttons */

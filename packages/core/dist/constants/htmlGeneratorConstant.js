@@ -31,6 +31,7 @@ export const EDITOR_NODES_SELECTOR = [
   '.edit-link',
   '.edit-link-form',
   '.cell-controls',
+  '.insert-row-button',
   '.add-row-button',
   '.add-multiple-rows-button',
   '.table-btn-container',

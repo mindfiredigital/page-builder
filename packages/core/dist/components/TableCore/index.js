@@ -2,7 +2,7 @@
 export { StyleButton } from './TableStyles.js';
 export { CreateTableRow, CreateTableCell } from './TableRowFactory.js';
 export { AddCellToRow, DeleteCell } from './TableCellManager.js';
-export { AddRows } from './TableRowManager.js';
+export { AddRows, InsertRowBelow } from './TableRowManager.js';
 export { EvaluateRowVisibility, EvaluateRule } from './TableVisibility.js';
 export {
   SeedFormulaValues,

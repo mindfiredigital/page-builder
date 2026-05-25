@@ -1,7 +1,7 @@
 /* Restores a previously serialised table component to a fully interactive state */
 
 import { AddCellToRow, DeleteCell } from './TableCellManager';
-import { AddRows } from './TableRowManager';
+import { AddRows, InsertRowBelow } from './TableRowManager';
 import { EvaluateRowVisibility } from './TableVisibility';
 
 /* Returns default values for all Input-typed attributes in the given config */
@@ -135,6 +135,21 @@ export function Restore(
     });
   } else if (editable === false && btnContainer) {
     btnContainer.remove();
+  }
+
+  if (editable === false) {
+    tableWrapper
+      .querySelectorAll('.insert-row-button')
+      .forEach(btn => btn.remove());
+  } else {
+    tableWrapper.addEventListener('click', (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('insert-row-button')) {
+        e.stopPropagation();
+        const row = target.closest('.table-row') as HTMLElement;
+        if (row) InsertRowBelow(row);
+      }
+    });
   }
 
   const defaultValues = GetDefaultValuesOfInput(tableAttributeConfig);

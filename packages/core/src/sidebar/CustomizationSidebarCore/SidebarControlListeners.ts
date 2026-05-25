@@ -54,16 +54,76 @@ export function addControlListeners(
   );
 
   /* ── Spacing ─────────────────────────────────────────────────────────────── */
-  get<HTMLInputElement>('margin')?.addEventListener('input', () => {
-    const unit = get<HTMLSelectElement>('margin-unit')?.value || 'px';
-    component.style.margin = `${get<HTMLInputElement>('margin')!.value}${unit}`;
-    captureStateDebounced();
+
+  /* Margin — all sides: capture element refs once so the handler never re-queries */
+  const marginInput = get<HTMLInputElement>('margin');
+  const marginUnitSel = get<HTMLSelectElement>('margin-unit');
+  if (marginInput) {
+    const applyMarginAll = () => {
+      const val = marginInput.value || '0';
+      const unit = marginUnitSel?.value || 'px';
+      /* Clear individual overrides first so the shorthand is never shadowed */
+      component.style.marginTop = '';
+      component.style.marginRight = '';
+      component.style.marginBottom = '';
+      component.style.marginLeft = '';
+      component.style.margin = `${val}${unit}`;
+      captureStateDebounced();
+    };
+    marginInput.addEventListener('input', applyMarginAll);
+    marginUnitSel?.addEventListener('change', applyMarginAll);
+  }
+
+  /* Margin — individual sides */
+  (['top', 'right', 'bottom', 'left'] as const).forEach(side => {
+    const sideInput = get<HTMLInputElement>(`margin-${side}`);
+    const sideUnit = get<HTMLSelectElement>(`margin-${side}-unit`);
+    const prop = `margin${side.charAt(0).toUpperCase()}${side.slice(1)}`;
+    if (sideInput) {
+      const apply = () => {
+        const unit = sideUnit?.value || 'px';
+        (component.style as unknown as Record<string, string>)[prop] =
+          `${sideInput.value || '0'}${unit}`;
+        captureStateDebounced();
+      };
+      sideInput.addEventListener('input', apply);
+      sideUnit?.addEventListener('change', apply);
+    }
   });
 
-  get<HTMLInputElement>('padding')?.addEventListener('input', () => {
-    const unit = get<HTMLSelectElement>('padding-unit')?.value || 'px';
-    component.style.padding = `${get<HTMLInputElement>('padding')!.value}${unit}`;
-    captureStateDebounced();
+  /* Padding — all sides */
+  const paddingInput = get<HTMLInputElement>('padding');
+  const paddingUnitSel = get<HTMLSelectElement>('padding-unit');
+  if (paddingInput) {
+    const applyPaddingAll = () => {
+      const val = paddingInput.value || '0';
+      const unit = paddingUnitSel?.value || 'px';
+      component.style.paddingTop = '';
+      component.style.paddingRight = '';
+      component.style.paddingBottom = '';
+      component.style.paddingLeft = '';
+      component.style.padding = `${val}${unit}`;
+      captureStateDebounced();
+    };
+    paddingInput.addEventListener('input', applyPaddingAll);
+    paddingUnitSel?.addEventListener('change', applyPaddingAll);
+  }
+
+  /* Padding — individual sides */
+  (['top', 'right', 'bottom', 'left'] as const).forEach(side => {
+    const sideInput = get<HTMLInputElement>(`padding-${side}`);
+    const sideUnit = get<HTMLSelectElement>(`padding-${side}-unit`);
+    const prop = `padding${side.charAt(0).toUpperCase()}${side.slice(1)}`;
+    if (sideInput) {
+      const apply = () => {
+        const unit = sideUnit?.value || 'px';
+        (component.style as unknown as Record<string, string>)[prop] =
+          `${sideInput.value || '0'}${unit}`;
+        captureStateDebounced();
+      };
+      sideInput.addEventListener('input', apply);
+      sideUnit?.addEventListener('change', apply);
+    }
   });
 
   /* ── Typography ──────────────────────────────────────────────────────────── */

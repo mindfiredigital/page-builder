@@ -6,6 +6,7 @@ export {
 export {
   createControl,
   createSelectControl,
+  createSpacingControl,
   rgbToHex,
 } from './controlBuilders.js';
 export { createAttributeControls } from './attributeControls.js';

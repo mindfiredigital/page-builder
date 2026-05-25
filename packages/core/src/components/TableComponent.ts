@@ -6,6 +6,7 @@ import {
   StyleButton,
   CreateTableRow,
   AddRows,
+  InsertRowBelow,
   EvaluateRowVisibility,
   SeedFormulaValues,
   UpdateInputValues,
@@ -53,6 +54,16 @@ export class TableComponent {
     container.appendChild(tableWrapper);
 
     if (!isPreview) {
+      /* Delegate insert-row button clicks so we avoid per-row listener setup */
+      tableWrapper.addEventListener('click', (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('insert-row-button')) {
+          e.stopPropagation();
+          const row = target.closest('.table-row') as HTMLElement;
+          if (row) InsertRowBelow(row);
+        }
+      });
+
       const buttonContainer = document.createElement('div');
       buttonContainer.classList.add('table-btn-container');
       buttonContainer.style.display = 'flex';

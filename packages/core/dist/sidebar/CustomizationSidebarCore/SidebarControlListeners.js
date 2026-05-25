@@ -8,26 +8,7 @@ export function addControlListeners(
   addListenersFn /* recursive ref for re-populate */,
   customizeComponentTagName
 ) {
-  var _a,
-    _b,
-    _c,
-    _d,
-    _e,
-    _f,
-    _g,
-    _h,
-    _j,
-    _k,
-    _l,
-    _m,
-    _o,
-    _p,
-    _q,
-    _r,
-    _s,
-    _t,
-    _u,
-    _v;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
   /* Single debounced handler shared by all controls to batch history captures */
   const captureStateDebounced = debounce(() => {
     Canvas.dispatchDesignChange();
@@ -77,38 +58,101 @@ export function addControlListeners(
         captureStateDebounced();
       });
   /* ── Spacing ─────────────────────────────────────────────────────────────── */
-  (_e = get('margin')) === null || _e === void 0
-    ? void 0
-    : _e.addEventListener('input', () => {
-        var _a;
+  /* Margin — all sides: capture element refs once so the handler never re-queries */
+  const marginInput = get('margin');
+  const marginUnitSel = get('margin-unit');
+  if (marginInput) {
+    const applyMarginAll = () => {
+      const val = marginInput.value || '0';
+      const unit =
+        (marginUnitSel === null || marginUnitSel === void 0
+          ? void 0
+          : marginUnitSel.value) || 'px';
+      /* Clear individual overrides first so the shorthand is never shadowed */
+      component.style.marginTop = '';
+      component.style.marginRight = '';
+      component.style.marginBottom = '';
+      component.style.marginLeft = '';
+      component.style.margin = `${val}${unit}`;
+      captureStateDebounced();
+    };
+    marginInput.addEventListener('input', applyMarginAll);
+    marginUnitSel === null || marginUnitSel === void 0
+      ? void 0
+      : marginUnitSel.addEventListener('change', applyMarginAll);
+  }
+  /* Margin — individual sides */
+  ['top', 'right', 'bottom', 'left'].forEach(side => {
+    const sideInput = get(`margin-${side}`);
+    const sideUnit = get(`margin-${side}-unit`);
+    const prop = `margin${side.charAt(0).toUpperCase()}${side.slice(1)}`;
+    if (sideInput) {
+      const apply = () => {
         const unit =
-          ((_a = get('margin-unit')) === null || _a === void 0
+          (sideUnit === null || sideUnit === void 0
             ? void 0
-            : _a.value) || 'px';
-        component.style.margin = `${get('margin').value}${unit}`;
+            : sideUnit.value) || 'px';
+        component.style[prop] = `${sideInput.value || '0'}${unit}`;
         captureStateDebounced();
-      });
-  (_f = get('padding')) === null || _f === void 0
-    ? void 0
-    : _f.addEventListener('input', () => {
-        var _a;
+      };
+      sideInput.addEventListener('input', apply);
+      sideUnit === null || sideUnit === void 0
+        ? void 0
+        : sideUnit.addEventListener('change', apply);
+    }
+  });
+  /* Padding — all sides */
+  const paddingInput = get('padding');
+  const paddingUnitSel = get('padding-unit');
+  if (paddingInput) {
+    const applyPaddingAll = () => {
+      const val = paddingInput.value || '0';
+      const unit =
+        (paddingUnitSel === null || paddingUnitSel === void 0
+          ? void 0
+          : paddingUnitSel.value) || 'px';
+      component.style.paddingTop = '';
+      component.style.paddingRight = '';
+      component.style.paddingBottom = '';
+      component.style.paddingLeft = '';
+      component.style.padding = `${val}${unit}`;
+      captureStateDebounced();
+    };
+    paddingInput.addEventListener('input', applyPaddingAll);
+    paddingUnitSel === null || paddingUnitSel === void 0
+      ? void 0
+      : paddingUnitSel.addEventListener('change', applyPaddingAll);
+  }
+  /* Padding — individual sides */
+  ['top', 'right', 'bottom', 'left'].forEach(side => {
+    const sideInput = get(`padding-${side}`);
+    const sideUnit = get(`padding-${side}-unit`);
+    const prop = `padding${side.charAt(0).toUpperCase()}${side.slice(1)}`;
+    if (sideInput) {
+      const apply = () => {
         const unit =
-          ((_a = get('padding-unit')) === null || _a === void 0
+          (sideUnit === null || sideUnit === void 0
             ? void 0
-            : _a.value) || 'px';
-        component.style.padding = `${get('padding').value}${unit}`;
+            : sideUnit.value) || 'px';
+        component.style[prop] = `${sideInput.value || '0'}${unit}`;
         captureStateDebounced();
-      });
+      };
+      sideInput.addEventListener('input', apply);
+      sideUnit === null || sideUnit === void 0
+        ? void 0
+        : sideUnit.addEventListener('change', apply);
+    }
+  });
   /* ── Typography ──────────────────────────────────────────────────────────── */
-  (_g = get('alignment')) === null || _g === void 0
+  (_e = get('alignment')) === null || _e === void 0
     ? void 0
-    : _g.addEventListener('change', () => {
+    : _e.addEventListener('change', () => {
         component.style.textAlign = get('alignment').value;
         captureStateDebounced();
       });
-  (_h = get('font-size')) === null || _h === void 0
+  (_f = get('font-size')) === null || _f === void 0
     ? void 0
-    : _h.addEventListener('input', () => {
+    : _f.addEventListener('input', () => {
         var _a;
         const unit =
           ((_a = get('font-size-unit')) === null || _a === void 0
@@ -117,31 +161,31 @@ export function addControlListeners(
         component.style.fontSize = `${get('font-size').value}${unit}`;
         captureStateDebounced();
       });
-  (_j = get('font-weight')) === null || _j === void 0
+  (_g = get('font-weight')) === null || _g === void 0
     ? void 0
-    : _j.addEventListener('change', () => {
+    : _g.addEventListener('change', () => {
         component.style.fontWeight = get('font-weight').value;
         captureStateDebounced();
       });
-  (_k = get('font-family')) === null || _k === void 0
+  (_h = get('font-family')) === null || _h === void 0
     ? void 0
-    : _k.addEventListener('change', () => {
+    : _h.addEventListener('change', () => {
         component.style.fontFamily = get('font-family').value;
         captureStateDebounced();
       });
   /* ── Text color — two-way sync ───────────────────────────────────────────── */
-  (_l = get('text-color')) === null || _l === void 0
+  (_j = get('text-color')) === null || _j === void 0
     ? void 0
-    : _l.addEventListener('input', () => {
+    : _j.addEventListener('input', () => {
         const val = get('text-color').value;
         component.style.color = val;
         const hexInput = get('text-color-value');
         if (hexInput) hexInput.value = val;
         captureStateDebounced();
       });
-  (_m = get('text-color-value')) === null || _m === void 0
+  (_k = get('text-color-value')) === null || _k === void 0
     ? void 0
-    : _m.addEventListener('input', e => {
+    : _k.addEventListener('input', e => {
         const val = e.target.value;
         component.style.color = val;
         const picker = get('text-color');
@@ -149,9 +193,9 @@ export function addControlListeners(
         captureStateDebounced();
       });
   /* ── Border ──────────────────────────────────────────────────────────────── */
-  (_o = get('border-width')) === null || _o === void 0
+  (_l = get('border-width')) === null || _l === void 0
     ? void 0
-    : _o.addEventListener('input', () => {
+    : _l.addEventListener('input', () => {
         var _a;
         const unit =
           ((_a = get('border-width-unit')) === null || _a === void 0
@@ -160,24 +204,24 @@ export function addControlListeners(
         component.style.borderWidth = `${get('border-width').value}${unit}`;
         captureStateDebounced();
       });
-  (_p = get('border-style')) === null || _p === void 0
+  (_m = get('border-style')) === null || _m === void 0
     ? void 0
-    : _p.addEventListener('change', () => {
+    : _m.addEventListener('change', () => {
         component.style.borderStyle = get('border-style').value;
         captureStateDebounced();
       });
-  (_q = get('border-color')) === null || _q === void 0
+  (_o = get('border-color')) === null || _o === void 0
     ? void 0
-    : _q.addEventListener('input', () => {
+    : _o.addEventListener('input', () => {
         const val = get('border-color').value;
         component.style.borderColor = val;
         const hexInput = get('border-color-value');
         if (hexInput) hexInput.value = val;
         captureStateDebounced();
       });
-  (_r = get('border-color-value')) === null || _r === void 0
+  (_p = get('border-color-value')) === null || _p === void 0
     ? void 0
-    : _r.addEventListener('input', e => {
+    : _p.addEventListener('input', e => {
         const val = e.target.value;
         component.style.borderColor = val;
         const picker = get('border-color');
@@ -185,9 +229,9 @@ export function addControlListeners(
         captureStateDebounced();
       });
   /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
-  (_s = get('display')) === null || _s === void 0
+  (_q = get('display')) === null || _q === void 0
     ? void 0
-    : _s.addEventListener('change', () => {
+    : _q.addEventListener('change', () => {
         const selectedValue = get('display').value;
         if (selectedValue === 'inline') {
           /* Store user intent as "inline" but apply inline-block to the DOM.
@@ -211,21 +255,21 @@ export function addControlListeners(
         );
       });
   /* ── Flex sub-controls ───────────────────────────────────────────────────── */
-  (_t = get('flex-direction')) === null || _t === void 0
+  (_r = get('flex-direction')) === null || _r === void 0
     ? void 0
-    : _t.addEventListener('change', () => {
+    : _r.addEventListener('change', () => {
         component.style.flexDirection = get('flex-direction').value;
         captureStateDebounced();
       });
-  (_u = get('align-items')) === null || _u === void 0
+  (_s = get('align-items')) === null || _s === void 0
     ? void 0
-    : _u.addEventListener('change', () => {
+    : _s.addEventListener('change', () => {
         component.style.alignItems = get('align-items').value;
         captureStateDebounced();
       });
-  (_v = get('justify-content')) === null || _v === void 0
+  (_t = get('justify-content')) === null || _t === void 0
     ? void 0
-    : _v.addEventListener('change', () => {
+    : _t.addEventListener('change', () => {
         component.style.justifyContent = get('justify-content').value;
         captureStateDebounced();
       });

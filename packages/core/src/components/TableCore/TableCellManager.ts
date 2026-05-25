@@ -11,7 +11,8 @@ export function AddCellToRow(
   if (!row) return;
 
   const rowIndex = Array.from(row.parentElement!.children).indexOf(row);
-  const currentCellCount = row.children.length;
+  /* Count only real cells, not the insert-row-button */
+  const currentCellCount = row.querySelectorAll('.table-cell').length;
 
   /* Scan existing cell IDs to find the highest index and avoid duplicates after deletions */
   let maxCellIndex = -1;
@@ -26,7 +27,14 @@ export function AddCellToRow(
   const newCellIndex = maxCellIndex + 1;
 
   const newCell = CreateTableCell(rowIndex, newCellIndex, tableId);
-  row.appendChild(newCell);
+
+  /* Insert before the insert-row-button so DOM order matches cell order */
+  const insertBtn = row.querySelector('.insert-row-button');
+  if (insertBtn) {
+    row.insertBefore(newCell, insertBtn);
+  } else {
+    row.appendChild(newCell);
+  }
 
   /* Update the CSS grid to account for the newly added column */
   row.style.gridTemplateColumns = `repeat(${currentCellCount + 1}, 1fr)`;
@@ -37,7 +45,8 @@ export function DeleteCell(cellToDelete: HTMLElement): void {
   const row = cellToDelete.parentElement;
   if (!row) return;
 
-  const cellCount = row.children.length;
+  /* Count only real cells, not the insert-row-button */
+  const cellCount = row.querySelectorAll('.table-cell').length;
   row.removeChild(cellToDelete);
 
   if (cellCount === 1) {

@@ -2838,3 +2838,144 @@ h6.rt-heading-block { font-size: 0.9em; }
   border-top: 1px solid #e2e8f0;
   margin: 4px 0;
 }
+
+/* ── Spacing control (margin / padding toggle) ──────────────────────────── */
+.spacing-control {
+  gap: 8px;
+}
+
+.spacing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spacing-header label {
+  margin-bottom: 0 !important;
+}
+
+.spacing-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.spacing-mode-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.spacing-mode-btn.active {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.spacing-mode-btn:hover:not(.active) {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+/* All-sides row: input grows, select stays compact */
+.spacing-all {
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Use .spacing-control parent to outrank .control-wrapper rules */
+.spacing-control .spacing-all input[type="number"],
+.spacing-control .spacing-custom input[type="number"] {
+  flex: 1;
+  width: 0;        /* overrides intrinsic browser width; flex: 1 fills the rest */
+  min-width: 0;
+  padding: 5px 6px;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  background-color: #ffffff;
+  color: #334155;
+  transition: none;
+}
+
+.spacing-control .spacing-all select,
+.spacing-control .spacing-custom select {
+  flex-shrink: 0;
+  width: 58px;
+  padding: 5px 2px 5px 4px;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  background-color: #ffffff;
+  color: #334155;
+  transition: none;
+}
+
+/* Custom-sides: vertical column of rows */
+.spacing-custom {
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.spacing-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.spacing-side-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  width: 46px;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.spacing-control input[type="number"]:focus,
+.spacing-control select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.insert-row-button {
+  display: none;
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 20px;
+  height: 20px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.table-row.selected .insert-row-button {
+  display: flex;
+}
+
+.insert-row-button:hover {
+  background-color: #059669;
+}

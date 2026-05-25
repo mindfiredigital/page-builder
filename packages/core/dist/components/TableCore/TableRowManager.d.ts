@@ -3,3 +3,4 @@ export declare function AddRows(
   tableId: string,
   count?: number
 ): void;
+export declare function InsertRowBelow(rowElement: HTMLElement): void;

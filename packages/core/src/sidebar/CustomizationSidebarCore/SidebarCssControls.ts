@@ -255,17 +255,29 @@ export function populateCssControls(
       );
 
     /* Margin — disabled for inline elements (top/bottom ignored by browser) */
+    const hasCustomMargin = !!(
+      component.style.marginTop ||
+      component.style.marginRight ||
+      component.style.marginBottom ||
+      component.style.marginLeft
+    );
     const mStyle = parseStyleValue(
       component.style.margin,
       parseInt(styles.margin) || 0
     );
-    SidebarUtils.createControl(
+    const mTop = parseStyleValue(component.style.marginTop, 0);
+    const mRight = parseStyleValue(component.style.marginRight, 0);
+    const mBottom = parseStyleValue(component.style.marginBottom, 0);
+    const mLeft = parseStyleValue(component.style.marginLeft, 0);
+    SidebarUtils.createSpacingControl(
       'Margin',
       'margin',
-      'number',
+      hasCustomMargin ? 'custom' : 'all',
       mStyle.value,
+      mStyle.unit,
+      { top: mTop, right: mRight, bottom: mBottom, left: mLeft },
       cssContainer,
-      { min: 0, max: 1000, unit: mStyle.unit, parentRef: parentW }
+      { min: 0, max: 1000 }
     );
     if (isInline)
       disableControlWrapper(
@@ -274,17 +286,29 @@ export function populateCssControls(
       );
 
     /* Padding — disabled for inline elements */
+    const hasCustomPadding = !!(
+      component.style.paddingTop ||
+      component.style.paddingRight ||
+      component.style.paddingBottom ||
+      component.style.paddingLeft
+    );
     const pStyle = parseStyleValue(
       component.style.padding,
       parseInt(styles.padding) || 0
     );
-    SidebarUtils.createControl(
+    const pTop = parseStyleValue(component.style.paddingTop, 0);
+    const pRight = parseStyleValue(component.style.paddingRight, 0);
+    const pBottom = parseStyleValue(component.style.paddingBottom, 0);
+    const pLeft = parseStyleValue(component.style.paddingLeft, 0);
+    SidebarUtils.createSpacingControl(
       'Padding',
       'padding',
-      'number',
+      hasCustomPadding ? 'custom' : 'all',
       pStyle.value,
+      pStyle.unit,
+      { top: pTop, right: pRight, bottom: pBottom, left: pLeft },
       cssContainer,
-      { min: 0, max: 1000, unit: pStyle.unit, parentRef: parentW }
+      { min: 0, max: 1000 }
     );
     if (isInline)
       disableControlWrapper(

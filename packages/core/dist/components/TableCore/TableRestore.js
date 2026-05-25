@@ -1,6 +1,6 @@
 /* Restores a previously serialised table component to a fully interactive state */
 import { AddCellToRow, DeleteCell } from './TableCellManager.js';
-import { AddRows } from './TableRowManager.js';
+import { AddRows, InsertRowBelow } from './TableRowManager.js';
 import { EvaluateRowVisibility } from './TableVisibility.js';
 /* Returns default values for all Input-typed attributes in the given config */
 export function GetDefaultValuesOfInput(tableAttributeConfig) {
@@ -113,6 +113,20 @@ export function Restore(container, editable, tableAttributeConfig) {
     });
   } else if (editable === false && btnContainer) {
     btnContainer.remove();
+  }
+  if (editable === false) {
+    tableWrapper
+      .querySelectorAll('.insert-row-button')
+      .forEach(btn => btn.remove());
+  } else {
+    tableWrapper.addEventListener('click', e => {
+      const target = e.target;
+      if (target.classList.contains('insert-row-button')) {
+        e.stopPropagation();
+        const row = target.closest('.table-row');
+        if (row) InsertRowBelow(row);
+      }
+    });
   }
   const defaultValues = GetDefaultValuesOfInput(tableAttributeConfig);
   EvaluateRowVisibility(defaultValues, container);

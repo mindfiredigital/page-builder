@@ -11,6 +11,36 @@ export declare class SidebarUtils {
     controlsContainer: HTMLElement,
     attributes?: Record<string, string | number>
   ): void;
+  static createSpacingControl(
+    label: string,
+    id: string,
+    mode: 'all' | 'custom',
+    allValue: number,
+    allUnit: string,
+    sides: {
+      top: {
+        value: number;
+        unit: string;
+      };
+      right: {
+        value: number;
+        unit: string;
+      };
+      bottom: {
+        value: number;
+        unit: string;
+      };
+      left: {
+        value: number;
+        unit: string;
+      };
+    },
+    controlsContainer: HTMLElement,
+    attributes?: {
+      min?: number;
+      max?: number;
+    }
+  ): void;
   static createSelectControl(
     label: string,
     id: string,

@@ -2,6 +2,7 @@ import {
   createPageSizeSelect,
   createControl,
   createSelectControl,
+  createSpacingControl,
   rgbToHex,
   createAttributeControls,
   populateModalButton,
@@ -32,6 +33,34 @@ export class SidebarUtils {
     attributes: Record<string, string | number> = {}
   ): void {
     createControl(label, id, type, value, controlsContainer, attributes);
+  }
+
+  /* Builds a spacing (margin/padding) control with all-sides and custom-sides toggle */
+  static createSpacingControl(
+    label: string,
+    id: string,
+    mode: 'all' | 'custom',
+    allValue: number,
+    allUnit: string,
+    sides: {
+      top: { value: number; unit: string };
+      right: { value: number; unit: string };
+      bottom: { value: number; unit: string };
+      left: { value: number; unit: string };
+    },
+    controlsContainer: HTMLElement,
+    attributes: { min?: number; max?: number } = {}
+  ): void {
+    createSpacingControl(
+      label,
+      id,
+      mode,
+      allValue,
+      allUnit,
+      sides,
+      controlsContainer,
+      attributes
+    );
   }
 
   /* Builds a labelled <select> control */
