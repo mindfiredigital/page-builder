@@ -148,20 +148,129 @@ export function addControlListeners(
     captureStateDebounced();
   });
 
-  /* ── Text color — two-way sync ───────────────────────────────────────────── */
-  get<HTMLInputElement>('text-color')?.addEventListener('input', () => {
-    const val = get<HTMLInputElement>('text-color')!.value;
-    component.style.color = val;
-    const hexInput = get<HTMLInputElement>('text-color-value');
-    if (hexInput) hexInput.value = val;
+  /* ── Text color — selection-aware ───────────────────────────────────────────
+   *
+   * Problem: clicking the color picker input causes the component to lose
+   * focus, which clears window.getSelection(). By the time the 'input' event
+   * fires the selection is gone, so we can't know what text the user had
+   * highlighted.
+   *
+   * Fix: capture the Range on 'mousedown' (before focus moves to the picker).
+   * On 'input', if the saved range is non-collapsed AND sits inside the
+   * component, wrap it in a <span style="color: …"> instead of painting the
+   * whole component. If there is no selection, fall back to the original
+   * whole-component behaviour so the control keeps working normally.
+   * ──────────────────────────────────────────────────────────────────────── */
+
+  let savedRange: Range | null = null;
+  /* Tracks the <span> created for the current picker session so that
+     dragging the hue/saturation slider updates the same span instead of
+     falling back to component.style.color on every subsequent input event. */
+  let activeColorSpan: HTMLSpanElement | null = null;
+
+  /**
+   * Saves the current selection if it is non-collapsed and inside `component`.
+   * Only starts a fresh session (resets activeColorSpan) when the selection
+   * anchor is OUTSIDE activeColorSpan — a selection that sits inside it means
+   * we just restored it programmatically after a color change, so we leave the
+   * span reference intact.
+   */
+  function saveSelectionInsideComponent(): void {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if (!component.contains(range.commonAncestorContainer)) return;
+
+    savedRange = range.cloneRange();
+
+    /* New user selection outside the active span → fresh session */
+    if (
+      !activeColorSpan ||
+      !activeColorSpan.contains(range.commonAncestorContainer)
+    ) {
+      activeColorSpan = null;
+    }
+  }
+
+  /**
+   * Re-focuses the contenteditable child and selects the span's contents so
+   * the colored text stays visually highlighted while the user drags the
+   * color picker slider.
+   */
+  function restoreVisualSelection(span: HTMLSpanElement): void {
+    const editableEl = component.querySelector<HTMLElement>(
+      '[contenteditable="true"]'
+    );
+    if (!editableEl) return;
+    editableEl.focus({ preventScroll: true });
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(span);
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+  }
+
+  /**
+   * Applies `color` to either:
+   *   1. The activeColorSpan from this session (update in place — no new span),
+   *   2. The savedRange, wrapping selected text in a new <span>, or
+   *   3. The entire component as a fallback when there is no selection.
+   */
+  function applyTextColor(color: string): void {
+    /* Case 1: span already created — just update its color and re-highlight */
+    if (activeColorSpan && component.contains(activeColorSpan)) {
+      activeColorSpan.style.color = color;
+      restoreVisualSelection(activeColorSpan);
+      return;
+    }
+
+    /* Case 2: first application — wrap the saved range in a color span */
+    if (savedRange && !savedRange.collapsed) {
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRange);
+      }
+
+      const span = document.createElement('span');
+      span.style.color = color;
+
+      try {
+        savedRange.surroundContents(span);
+      } catch {
+        const fragment = savedRange.extractContents();
+        span.appendChild(fragment);
+        savedRange.insertNode(span);
+      }
+
+      activeColorSpan = span;
+      savedRange = null;
+      restoreVisualSelection(span);
+      return;
+    }
+
+    /* Case 3: no selection — colour the whole component */
+    component.style.color = color;
+  }
+
+  const textColorPicker = get<HTMLInputElement>('text-color');
+  const textColorHex = get<HTMLInputElement>('text-color-value');
+
+  /* Capture selection before the picker steals focus */
+  textColorPicker?.addEventListener('mousedown', saveSelectionInsideComponent);
+  textColorHex?.addEventListener('mousedown', saveSelectionInsideComponent);
+
+  textColorPicker?.addEventListener('input', () => {
+    const val = textColorPicker.value;
+    applyTextColor(val);
+    if (textColorHex) textColorHex.value = val;
     captureStateDebounced();
   });
 
-  get<HTMLInputElement>('text-color-value')?.addEventListener('input', e => {
+  textColorHex?.addEventListener('input', e => {
     const val = (e.target as HTMLInputElement).value;
-    component.style.color = val;
-    const picker = get<HTMLInputElement>('text-color');
-    if (picker) picker.value = val;
+    applyTextColor(val);
+    if (textColorPicker) textColorPicker.value = val;
     captureStateDebounced();
   });
 

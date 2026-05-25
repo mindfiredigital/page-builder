@@ -353,6 +353,7 @@ html {
   pointer-events: auto;
   background-color: #ffffff;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .component-text-content {

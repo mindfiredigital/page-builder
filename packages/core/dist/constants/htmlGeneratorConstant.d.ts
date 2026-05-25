@@ -10,6 +10,7 @@ export declare const EDITOR_CLASSES_TO_REMOVE: readonly [
   'drop-preview',
   'edit-link-form',
   'edit-link',
+  'selected',
 ];
 export declare const EDITOR_NODES_SELECTOR: string;
 export declare const SVG_ACCESSIBILITY_SELECTOR = 'svg title, svg desc';

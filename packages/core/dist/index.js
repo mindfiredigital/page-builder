@@ -663,6 +663,7 @@ const l = 20,
     'drop-preview',
     'edit-link-form',
     'edit-link',
+    'selected',
   ],
   d = [
     '.component-controls',
@@ -4750,10 +4751,29 @@ function we(e, t, n, A) {
   const c = document.getElementById('background-color'),
     u = document.getElementById('text-color'),
     d = document.getElementById('border-color');
-  (c && (c.value = pe.rgbToHex(i.backgroundColor)),
-    u && (u.value = pe.rgbToHex(i.color)),
-    d && (d.value = pe.rgbToHex(i.borderColor)),
-    n(e));
+  if ((c && (c.value = pe.rgbToHex(i.backgroundColor)), u)) {
+    let t = i.color;
+    const n = window.getSelection();
+    if (n && n.rangeCount > 0) {
+      let A = n.getRangeAt(0).startContainer;
+      for (; A && A !== e; ) {
+        if (
+          A.nodeType === Node.ELEMENT_NODE &&
+          'SPAN' === A.tagName &&
+          A.style.color
+        ) {
+          t = A.style.color;
+          break;
+        }
+        A = A.parentNode;
+      }
+    }
+    const A = pe.rgbToHex(t);
+    u.value = A;
+    const r = document.getElementById('text-color-value');
+    r && (r.value = A);
+  }
+  (d && (d.value = pe.rgbToHex(i.borderColor)), n(e));
 }
 function ye(e) {
   return !!(e && e.length > 0);
@@ -4769,8 +4789,8 @@ function ve(e) {
     }, 2e3));
 }
 function be(e, t, n, A) {
-  var r, i, o, s, a, l, c, u, d, h, f, p, g, m, w, y, v, b;
-  const B = (function (e, t) {
+  var r, i, o, s, a, l, c, u, d, h, f, p, g, m, w, y;
+  const v = (function (e, t) {
       let n = null;
       return (...A) => {
         (null !== n && clearTimeout(n), (n = setTimeout(() => e(...A), t)));
@@ -4778,197 +4798,232 @@ function be(e, t, n, A) {
     })(() => {
       (ne.dispatchDesignChange(), ne.historyManager.captureState());
     }, 300),
-    C = e => document.getElementById(e);
-  (null === (r = C('width')) ||
+    b = e => document.getElementById(e);
+  (null === (r = b('width')) ||
     void 0 === r ||
     r.addEventListener('input', () => {
       var t;
       const n =
-        (null === (t = C('width-unit')) || void 0 === t ? void 0 : t.value) ||
+        (null === (t = b('width-unit')) || void 0 === t ? void 0 : t.value) ||
         'px';
-      ((e.style.width = `${C('width').value}${n}`), B());
+      ((e.style.width = `${b('width').value}${n}`), v());
     }),
-    null === (i = C('height')) ||
+    null === (i = b('height')) ||
       void 0 === i ||
       i.addEventListener('input', () => {
         var t;
         const n =
-          (null === (t = C('height-unit')) || void 0 === t
+          (null === (t = b('height-unit')) || void 0 === t
             ? void 0
             : t.value) || 'px';
-        ((e.style.height = `${C('height').value}${n}`), B());
+        ((e.style.height = `${b('height').value}${n}`), v());
       }),
-    null === (o = C('background-color')) ||
+    null === (o = b('background-color')) ||
       void 0 === o ||
       o.addEventListener('input', () => {
-        const t = C('background-color').value;
+        const t = b('background-color').value;
         e.style.backgroundColor = t;
-        const n = C('background-color-value');
-        (n && (n.value = t), B());
+        const n = b('background-color-value');
+        (n && (n.value = t), v());
       }),
-    null === (s = C('background-color-value')) ||
+    null === (s = b('background-color-value')) ||
       void 0 === s ||
       s.addEventListener('input', t => {
         const n = t.target.value;
         e.style.backgroundColor = n;
-        const A = C('background-color');
-        (A && (A.value = n), B());
+        const A = b('background-color');
+        (A && (A.value = n), v());
       }));
-  const x = C('margin'),
-    _ = C('margin-unit');
-  if (x) {
+  const B = b('margin'),
+    C = b('margin-unit');
+  if (B) {
     const t = () => {
-      const t = x.value || '0',
-        n = (null == _ ? void 0 : _.value) || 'px';
+      const t = B.value || '0',
+        n = (null == C ? void 0 : C.value) || 'px';
       ((e.style.marginTop = ''),
         (e.style.marginRight = ''),
         (e.style.marginBottom = ''),
         (e.style.marginLeft = ''),
         (e.style.margin = `${t}${n}`),
-        B());
+        v());
     };
-    (x.addEventListener('input', t),
-      null == _ || _.addEventListener('change', t));
+    (B.addEventListener('input', t),
+      null == C || C.addEventListener('change', t));
   }
   ['top', 'right', 'bottom', 'left'].forEach(t => {
-    const n = C(`margin-${t}`),
-      A = C(`margin-${t}-unit`),
+    const n = b(`margin-${t}`),
+      A = b(`margin-${t}-unit`),
       r = `margin${t.charAt(0).toUpperCase()}${t.slice(1)}`;
     if (n) {
       const t = () => {
         const t = (null == A ? void 0 : A.value) || 'px';
-        ((e.style[r] = `${n.value || '0'}${t}`), B());
+        ((e.style[r] = `${n.value || '0'}${t}`), v());
       };
       (n.addEventListener('input', t),
         null == A || A.addEventListener('change', t));
     }
   });
-  const j = C('padding'),
-    F = C('padding-unit');
-  if (j) {
+  const x = b('padding'),
+    _ = b('padding-unit');
+  if (x) {
     const t = () => {
-      const t = j.value || '0',
-        n = (null == F ? void 0 : F.value) || 'px';
+      const t = x.value || '0',
+        n = (null == _ ? void 0 : _.value) || 'px';
       ((e.style.paddingTop = ''),
         (e.style.paddingRight = ''),
         (e.style.paddingBottom = ''),
         (e.style.paddingLeft = ''),
         (e.style.padding = `${t}${n}`),
-        B());
+        v());
     };
-    (j.addEventListener('input', t),
-      null == F || F.addEventListener('change', t));
+    (x.addEventListener('input', t),
+      null == _ || _.addEventListener('change', t));
   }
   (['top', 'right', 'bottom', 'left'].forEach(t => {
-    const n = C(`padding-${t}`),
-      A = C(`padding-${t}-unit`),
+    const n = b(`padding-${t}`),
+      A = b(`padding-${t}-unit`),
       r = `padding${t.charAt(0).toUpperCase()}${t.slice(1)}`;
     if (n) {
       const t = () => {
         const t = (null == A ? void 0 : A.value) || 'px';
-        ((e.style[r] = `${n.value || '0'}${t}`), B());
+        ((e.style[r] = `${n.value || '0'}${t}`), v());
       };
       (n.addEventListener('input', t),
         null == A || A.addEventListener('change', t));
     }
   }),
-    null === (a = C('alignment')) ||
+    null === (a = b('alignment')) ||
       void 0 === a ||
       a.addEventListener('change', () => {
-        ((e.style.textAlign = C('alignment').value), B());
+        ((e.style.textAlign = b('alignment').value), v());
       }),
-    null === (l = C('font-size')) ||
+    null === (l = b('font-size')) ||
       void 0 === l ||
       l.addEventListener('input', () => {
         var t;
         const n =
-          (null === (t = C('font-size-unit')) || void 0 === t
+          (null === (t = b('font-size-unit')) || void 0 === t
             ? void 0
             : t.value) || 'px';
-        ((e.style.fontSize = `${C('font-size').value}${n}`), B());
+        ((e.style.fontSize = `${b('font-size').value}${n}`), v());
       }),
-    null === (c = C('font-weight')) ||
+    null === (c = b('font-weight')) ||
       void 0 === c ||
       c.addEventListener('change', () => {
-        ((e.style.fontWeight = C('font-weight').value), B());
+        ((e.style.fontWeight = b('font-weight').value), v());
       }),
-    null === (u = C('font-family')) ||
+    null === (u = b('font-family')) ||
       void 0 === u ||
       u.addEventListener('change', () => {
-        ((e.style.fontFamily = C('font-family').value), B());
+        ((e.style.fontFamily = b('font-family').value), v());
+      }));
+  let j = null,
+    F = null;
+  function E() {
+    const t = window.getSelection();
+    if (!t || 0 === t.rangeCount || t.isCollapsed) return;
+    const n = t.getRangeAt(0);
+    e.contains(n.commonAncestorContainer) &&
+      ((j = n.cloneRange()),
+      (F && F.contains(n.commonAncestorContainer)) || (F = null));
+  }
+  function Q(t) {
+    const n = e.querySelector('[contenteditable="true"]');
+    if (!n) return;
+    n.focus({ preventScroll: !0 });
+    const A = window.getSelection(),
+      r = document.createRange();
+    (r.selectNodeContents(t),
+      null == A || A.removeAllRanges(),
+      null == A || A.addRange(r));
+  }
+  function U(t) {
+    if (F && e.contains(F)) return ((F.style.color = t), void Q(F));
+    if (j && !j.collapsed) {
+      const e = window.getSelection();
+      e && (e.removeAllRanges(), e.addRange(j));
+      const n = document.createElement('span');
+      n.style.color = t;
+      try {
+        j.surroundContents(n);
+      } catch (e) {
+        const t = j.extractContents();
+        (n.appendChild(t), j.insertNode(n));
+      }
+      return ((F = n), (j = null), void Q(n));
+    }
+    e.style.color = t;
+  }
+  const L = b('text-color'),
+    S = b('text-color-value');
+  (null == L || L.addEventListener('mousedown', E),
+    null == S || S.addEventListener('mousedown', E),
+    null == L ||
+      L.addEventListener('input', () => {
+        const e = L.value;
+        (U(e), S && (S.value = e), v());
       }),
-    null === (d = C('text-color')) ||
+    null == S ||
+      S.addEventListener('input', e => {
+        const t = e.target.value;
+        (U(t), L && (L.value = t), v());
+      }),
+    null === (d = b('border-width')) ||
       void 0 === d ||
       d.addEventListener('input', () => {
-        const t = C('text-color').value;
-        e.style.color = t;
-        const n = C('text-color-value');
-        (n && (n.value = t), B());
-      }),
-    null === (h = C('text-color-value')) ||
-      void 0 === h ||
-      h.addEventListener('input', t => {
-        const n = t.target.value;
-        e.style.color = n;
-        const A = C('text-color');
-        (A && (A.value = n), B());
-      }),
-    null === (f = C('border-width')) ||
-      void 0 === f ||
-      f.addEventListener('input', () => {
         var t;
         const n =
-          (null === (t = C('border-width-unit')) || void 0 === t
+          (null === (t = b('border-width-unit')) || void 0 === t
             ? void 0
             : t.value) || 'px';
-        ((e.style.borderWidth = `${C('border-width').value}${n}`), B());
+        ((e.style.borderWidth = `${b('border-width').value}${n}`), v());
       }),
-    null === (p = C('border-style')) ||
-      void 0 === p ||
-      p.addEventListener('change', () => {
-        ((e.style.borderStyle = C('border-style').value), B());
+    null === (h = b('border-style')) ||
+      void 0 === h ||
+      h.addEventListener('change', () => {
+        ((e.style.borderStyle = b('border-style').value), v());
       }),
-    null === (g = C('border-color')) ||
-      void 0 === g ||
-      g.addEventListener('input', () => {
-        const t = C('border-color').value;
+    null === (f = b('border-color')) ||
+      void 0 === f ||
+      f.addEventListener('input', () => {
+        const t = b('border-color').value;
         e.style.borderColor = t;
-        const n = C('border-color-value');
-        (n && (n.value = t), B());
+        const n = b('border-color-value');
+        (n && (n.value = t), v());
       }),
-    null === (m = C('border-color-value')) ||
-      void 0 === m ||
-      m.addEventListener('input', t => {
+    null === (p = b('border-color-value')) ||
+      void 0 === p ||
+      p.addEventListener('input', t => {
         const n = t.target.value;
         e.style.borderColor = n;
-        const A = C('border-color');
-        (A && (A.value = n), B());
+        const A = b('border-color');
+        (A && (A.value = n), v());
       }),
-    null === (w = C('display')) ||
-      void 0 === w ||
-      w.addEventListener('change', () => {
-        const r = C('display').value;
+    null === (g = b('display')) ||
+      void 0 === g ||
+      g.addEventListener('change', () => {
+        const r = b('display').value;
         ('inline' === r
           ? ((e.style.display = 'inline-block'),
             (e.dataset.displayIntent = 'inline'))
           : ((e.style.display = r), delete e.dataset.displayIntent),
-          B(),
+          v(),
           requestAnimationFrame(() => we(e, t, n, A)));
       }),
-    null === (y = C('flex-direction')) ||
+    null === (m = b('flex-direction')) ||
+      void 0 === m ||
+      m.addEventListener('change', () => {
+        ((e.style.flexDirection = b('flex-direction').value), v());
+      }),
+    null === (w = b('align-items')) ||
+      void 0 === w ||
+      w.addEventListener('change', () => {
+        ((e.style.alignItems = b('align-items').value), v());
+      }),
+    null === (y = b('justify-content')) ||
       void 0 === y ||
       y.addEventListener('change', () => {
-        ((e.style.flexDirection = C('flex-direction').value), B());
-      }),
-    null === (v = C('align-items')) ||
-      void 0 === v ||
-      v.addEventListener('change', () => {
-        ((e.style.alignItems = C('align-items').value), B());
-      }),
-    null === (b = C('justify-content')) ||
-      void 0 === b ||
-      b.addEventListener('change', () => {
-        ((e.style.justifyContent = C('justify-content').value), B());
+        ((e.style.justifyContent = b('justify-content').value), v());
       }));
 }
 class Be {

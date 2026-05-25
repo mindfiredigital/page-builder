@@ -14,6 +14,7 @@ export const EDITOR_CLASSES_TO_REMOVE = [
   'drop-preview',
   'edit-link-form',
   'edit-link',
+  'selected',
 ] as const;
 
 /* ─── EditorNodesSelector ─────────────────────────────────────────────────────

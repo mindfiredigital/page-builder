@@ -12,18 +12,6 @@ function parseStyleValue(
   return { value: fallbackPx, unit: 'px' };
 }
 
-/*
- * Returns the reliable pixel width of an element to use as the % reference.
- *
- * Problem: the canvas has `width: 100%` in CSS, so its offsetWidth shrinks
- * when sidebars are open and expands when they close (preview). If we used
- * offsetWidth for the % reference, converting "1113px → %" with sidebars open
- * would produce a different visual result in preview (no sidebars, wider canvas).
- *
- * Fix: prefer the element's own inline pixel width (the user-configured value)
- * which is sidebar-independent. Fall back to offsetWidth only when no inline
- * pixel width has been set.
- */
 function getReliableWidth(el: HTMLElement | null): number {
   if (!el) return window.innerWidth;
   const inlineW = parseFloat(el.style.width);
@@ -41,7 +29,6 @@ export function disableControlWrapper(
   const el = document.getElementById(controlId);
   if (!el) return;
 
-  /* Walk up to the nearest .control-wrapper ancestor */
   const wrapper = el.closest('.control-wrapper') as HTMLElement | null;
   if (!wrapper) return;
 
@@ -50,7 +37,6 @@ export function disableControlWrapper(
   wrapper.style.cursor = 'not-allowed';
   wrapper.title = reason;
 
-  /* Append a ⊘ badge next to the label so the user knows why it's locked */
   const label = wrapper.querySelector('label');
   if (label && !label.querySelector('.inline-disabled-badge')) {
     const badge = document.createElement('span');
@@ -67,7 +53,6 @@ export function disableControlWrapper(
     label.appendChild(badge);
   }
 
-  /* Also disable every input/select so keyboard interaction is blocked */
   wrapper.querySelectorAll('input, select').forEach(input => {
     (input as HTMLInputElement | HTMLSelectElement).disabled = true;
     (input as HTMLElement).style.cursor = 'not-allowed';
@@ -87,7 +72,6 @@ export function populateCssControls(
   const styles = getComputedStyle(component);
   const isCanvas = component.id.toLowerCase() === 'canvas';
 
-  /* ── Default / Custom toggle (only when a customizeComponent is configured) ── */
   let cssContainer: HTMLElement = controlsContainer;
 
   if (customizeComponentTagName) {
@@ -137,7 +121,6 @@ export function populateCssControls(
     });
   }
 
-  /* Prefer inline style over computed — avoids browser-resolved values losing "inline" */
   const displayIntent = component.dataset.displayIntent;
   const displayValue =
     displayIntent || component.style.display || styles.display || 'block';
@@ -151,7 +134,6 @@ export function populateCssControls(
     cssContainer
   );
 
-  /* Show flex sub-controls only when the current display is flex */
   if (styles.display === 'flex' || component.style.display === 'flex') {
     SidebarUtils.createSelectControl(
       'Flex Direction',
@@ -216,7 +198,6 @@ export function populateCssControls(
     const parentW = getReliableWidth(parentEl);
     const parentH = parentEl?.offsetHeight ?? window.innerHeight;
 
-    /* Width — disabled for inline elements */
     const wStyle = parseStyleValue(
       component.style.width,
       component.offsetWidth
@@ -227,7 +208,11 @@ export function populateCssControls(
       'number',
       wStyle.value,
       cssContainer,
-      { min: 0, unit: wStyle.unit, parentRef: parentW }
+      {
+        min: 0,
+        unit: wStyle.unit,
+        parentRef: parentW,
+      }
     );
     if (isInline)
       disableControlWrapper(
@@ -235,7 +220,6 @@ export function populateCssControls(
         'Width is not supported for inline display'
       );
 
-    /* Height — disabled for inline elements */
     const hStyle = parseStyleValue(
       component.style.height,
       component.offsetHeight
@@ -246,7 +230,11 @@ export function populateCssControls(
       'number',
       hStyle.value,
       cssContainer,
-      { min: 0, unit: hStyle.unit, parentRef: parentH }
+      {
+        min: 0,
+        unit: hStyle.unit,
+        parentRef: parentH,
+      }
     );
     if (isInline)
       disableControlWrapper(
@@ -254,7 +242,6 @@ export function populateCssControls(
         'Height is not supported for inline display'
       );
 
-    /* Margin — disabled for inline elements (top/bottom ignored by browser) */
     const hasCustomMargin = !!(
       component.style.marginTop ||
       component.style.marginRight ||
@@ -285,7 +272,6 @@ export function populateCssControls(
         'Top/bottom margin is not supported for inline display'
       );
 
-    /* Padding — disabled for inline elements */
     const hasCustomPadding = !!(
       component.style.paddingTop ||
       component.style.paddingRight ||
@@ -426,10 +412,43 @@ export function populateCssControls(
   const borderColorInput = document.getElementById(
     'border-color'
   ) as HTMLInputElement;
+
   if (bgColorInput)
     bgColorInput.value = SidebarUtils.rgbToHex(styles.backgroundColor);
-  if (textColorInput)
-    textColorInput.value = SidebarUtils.rgbToHex(styles.color);
+
+  if (textColorInput) {
+    /*
+     * Show the color of whichever span the cursor is currently sitting inside.
+     * When the user clicks on cyan text, the cursor lands in the cyan <span>
+     * and we walk up from the anchor node to find it. Falls back to the
+     * component's own computed color when the cursor is not inside a colored span.
+     */
+    let displayColor = styles.color;
+
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      let node: Node | null = sel.getRangeAt(0).startContainer;
+      while (node && node !== component) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as HTMLElement).tagName === 'SPAN' &&
+          !!(node as HTMLElement).style.color
+        ) {
+          displayColor = (node as HTMLElement).style.color;
+          break;
+        }
+        node = node.parentNode;
+      }
+    }
+
+    const hexColor = SidebarUtils.rgbToHex(displayColor);
+    textColorInput.value = hexColor;
+    const textColorHexInput = document.getElementById(
+      'text-color-value'
+    ) as HTMLInputElement | null;
+    if (textColorHexInput) textColorHexInput.value = hexColor;
+  }
+
   if (borderColorInput)
     borderColorInput.value = SidebarUtils.rgbToHex(styles.borderColor);
 

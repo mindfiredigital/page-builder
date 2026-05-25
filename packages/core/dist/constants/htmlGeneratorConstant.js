@@ -14,6 +14,7 @@ export const EDITOR_CLASSES_TO_REMOVE = [
   'drop-preview',
   'edit-link-form',
   'edit-link',
+  'selected',
 ];
 /* ─── EditorNodesSelector ─────────────────────────────────────────────────────
    Combined CSS selector that targets all editor-only DOM nodes to be removed
