@@ -107,6 +107,7 @@ export class StyleCollector {
       body, html {
         margin: 0; padding: 0; width: 100%; height: 100%;
         box-sizing: border-box; display: flex; overflow: hidden;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
       #canvas {
         position: relative; width: 100%; flex-grow: 1; min-width: 0;
@@ -127,6 +128,7 @@ export class StyleCollector {
     return `
       body, html {
         margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box; background-color: #f8fafc;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
       #canvas.home {
         position: relative; display: block; width: 100%; min-height: 100vh;
