@@ -78,6 +78,7 @@ export class CanvasDragHandler {
       element.style.left = `${newX}px`;
       element.style.top = `${newY}px`;
       element.style.cursor = 'grab';
+      CanvasSharedState.updateCanvasScrollSpace();
       CanvasSharedState.historyManager.captureState();
       CanvasEventDispatcher.dispatchDesignChange();
     });

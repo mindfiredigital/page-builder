@@ -62,7 +62,12 @@ export class CanvasInitializer {
       CanvasStateManager.restoreState(initialData);
     } else {
       const savedState = CanvasSharedState.jsonStorage.load();
-      if (savedState) CanvasStateManager.restoreState(savedState);
+      if (savedState) {
+        CanvasStateManager.restoreState(savedState);
+      } else {
+        /* Empty canvas — still add the scroll buffer so there's room to drop */
+        CanvasSharedState.updateCanvasScrollSpace();
+      }
     }
   }
   /* Pull attribute configs for built-in component types out of the host config */

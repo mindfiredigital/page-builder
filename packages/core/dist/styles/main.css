@@ -2,16 +2,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 /* General Styles */
-body,
 html {
   margin: 0;
   padding: 0;
+  height: 100%;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  display: flex;
-  flex-direction: column;
   background-color: #f8fafc;
   overflow: hidden;
   color: #334155;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  overflow: hidden;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -48,6 +58,8 @@ html {
 /* App Container */
 #app {
   display: flex;
+  flex: 1;
+  min-height: 0;
   background-color: #f8fafc;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -58,6 +70,7 @@ html {
 #sidebar {
   width: 180px;
   flex-shrink: 0;
+  min-height: 0;
   background-color: #ffffff;
   padding: 16px 12px;
   overflow-y: auto;
@@ -74,25 +87,21 @@ html {
 
 /* Canvas Area */
 #canvas {
-  width: 100%;
   flex-grow: 1;
   min-width: 0;
+  min-height: 0;
   background-color: #ffffff;
   overflow: auto;
   box-sizing: border-box;
-  height: calc(100vh - 40px);
   background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px);
 }
 
 #canvas.grid-layout-active {
   display: block;
-  height: calc(100vh - 40px);
-
 }
 
 #canvas.preview-printable {
   max-width: 869px;
-  max-height: 1123px;
   margin-left: auto;
   margin-right: auto;
   background-color: #ffffff;
@@ -176,6 +185,8 @@ html {
   display: none;
   right: 0;
   width: 300px;
+  flex-shrink: 0;
+  min-height: 0;
   background-color: #ffffff;
   box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
   padding: 24px;

@@ -43,6 +43,8 @@ export const EDITOR_NODES_SELECTOR = [
   '.rt-block-controls',
   '.rt-add-popover',
   'input[type="file"]',
+  // Canvas scroll spacer (absolute-mode layout aid, not real content)
+  '#canvas-scroll-spacer',
 ].join(', ');
 
 /* ─── SvgAccessibilitySelector ────────────────────────────────────────────────

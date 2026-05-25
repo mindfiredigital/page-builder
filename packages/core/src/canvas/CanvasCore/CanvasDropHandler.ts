@@ -133,14 +133,19 @@ export class CanvasDropHandler {
       components.push(component);
 
       /* In grid mode insert at the cursor position so drops land where the
-         user expects rather than always appending to the end. */
+         user expects rather than always appending to the end. When no
+         insertion point is found (drop below all components), insert before
+         the scroll spacer so it always stays last. */
       if (layoutMode === 'grid') {
         const insertBefore = CanvasSharedState.gridManager.findInsertionPoint(
           event,
           canvasElement
         );
+        const spacer = canvasElement.querySelector('#canvas-scroll-spacer');
         if (insertBefore) {
           canvasElement.insertBefore(component, insertBefore);
+        } else if (spacer) {
+          canvasElement.insertBefore(component, spacer);
         } else {
           canvasElement.appendChild(component);
         }
@@ -158,6 +163,7 @@ export class CanvasDropHandler {
         }
       }
 
+      CanvasSharedState.updateCanvasScrollSpace();
       historyManager.captureState();
 
       /* Auto-switch the sidebar to the newly dropped component */

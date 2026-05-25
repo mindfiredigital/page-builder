@@ -225,5 +225,7 @@ export class CanvasStateManager {
       canvasElement,
       CanvasSharedState.layoutMode
     );
+    /* Expand canvas min-height to cover all restored absolute-positioned components */
+    CanvasSharedState.updateCanvasScrollSpace();
   }
 }

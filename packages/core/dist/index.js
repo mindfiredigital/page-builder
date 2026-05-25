@@ -1,5 +1,33 @@
 'use strict';
-class e {}
+class e {
+  static updateCanvasScrollSpace() {
+    const t = e.canvasElement;
+    if (!t) return;
+    const n = 'canvas-scroll-spacer';
+    let A = t.querySelector(`#${n}`);
+    if (
+      (A ||
+        ((A = document.createElement('div')),
+        (A.id = n),
+        (A.style.cssText =
+          'position:static;pointer-events:none;visibility:hidden;width:1px;flex-shrink:0;')),
+      t.appendChild(A),
+      'absolute' === e.layoutMode)
+    ) {
+      let e = 0;
+      (Array.from(t.children).forEach(t => {
+        if (t.id === n) return;
+        const A = t;
+        'absolute' === window.getComputedStyle(A).position &&
+          (e = Math.max(e, A.offsetTop + A.offsetHeight));
+      }),
+        (A.style.height = `${Math.max(t.clientHeight, e) + 300}px`));
+    } else A.style.height = '300px';
+  }
+  static expandCanvasForAbsoluteMode() {
+    e.updateCanvasScrollSpace();
+  }
+}
 ((e.components = []), (e.editable = null), (e.lastCanvasWidth = null));
 class t {
   static dispatchDesignChange() {
@@ -686,6 +714,7 @@ const l = 20,
     '.rt-block-controls',
     '.rt-add-popover',
     'input[type="file"]',
+    '#canvas-scroll-spacer',
   ].join(', '),
   h = ['contenteditable', 'draggable'],
   f = [
@@ -3087,6 +3116,7 @@ class G {
         ((n.style.left = `${m}px`),
           (n.style.top = `${w}px`),
           (n.style.cursor = 'grab'),
+          e.updateCanvasScrollSpace(),
           e.historyManager.captureState(),
           t.dispatchDesignChange());
       }));
@@ -3240,7 +3270,8 @@ class W {
           n.appendChild(c),
           e.components.push(c));
       }),
-      s.initializeDropPreview(n, e.layoutMode));
+      s.initializeDropPreview(n, e.layoutMode),
+      e.updateCanvasScrollSpace());
   }
 }
 class X {
@@ -3318,14 +3349,16 @@ class X {
         u.push(w),
         'grid' === c)
       ) {
-        const t = e.gridManager.findInsertionPoint(n, l);
-        t ? l.insertBefore(w, t) : l.appendChild(w);
+        const t = e.gridManager.findInsertionPoint(n, l),
+          A = l.querySelector('#canvas-scroll-spacer');
+        t ? l.insertBefore(w, t) : A ? l.insertBefore(w, A) : l.appendChild(w);
       } else l.appendChild(w);
       if (!w.style.width) {
         'block' === window.getComputedStyle(w).display &&
           (w.style.width = 'grid' === c ? '100%' : `${l.offsetWidth}px`);
       }
-      (d.captureState(),
+      (e.updateCanvasScrollSpace(),
+        d.captureState(),
         Promise.resolve()
           .then(function () {
             return Ce;
@@ -3630,7 +3663,7 @@ class te {
     if ((new ee(o, s).enable(), n)) W.restoreState(n);
     else {
       const t = e.jsonStorage.load();
-      t && W.restoreState(t);
+      t ? W.restoreState(t) : e.updateCanvasScrollSpace();
     }
   }
   static applyComponentConfigs(t) {
