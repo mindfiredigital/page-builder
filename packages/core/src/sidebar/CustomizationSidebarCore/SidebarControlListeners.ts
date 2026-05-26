@@ -132,14 +132,167 @@ export function addControlListeners(
     captureStateDebounced();
   });
 
-  get<HTMLInputElement>('font-size')?.addEventListener('input', () => {
-    const unit = get<HTMLSelectElement>('font-size-unit')?.value || 'px';
-    component.style.fontSize = `${get<HTMLInputElement>('font-size')!.value}${unit}`;
+  /* ── Font size — selection-aware ────────────────────────────────────────────
+   *
+   * Same mechanism as text color:
+   *   • Capture the Range on 'mousedown' (before the input steals focus).
+   *   • On 'input', if a saved range is non-collapsed and inside the component,
+   *     wrap it in <span style="font-size: …"> instead of painting the whole
+   *     component.  Subsequent changes update the same span (activeFontSizeSpan)
+   *     so the value tracks the slider without creating duplicate wraps.
+   * ─────────────────────────────────────────────────────────────────────────── */
+
+  let savedRangeFS: Range | null = null;
+  let activeFontSizeSpan: HTMLSpanElement | null = null;
+
+  function saveSelectionForFontSize(): void {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if (!component.contains(range.commonAncestorContainer)) return;
+    savedRangeFS = range.cloneRange();
+    if (
+      !activeFontSizeSpan ||
+      !activeFontSizeSpan.contains(range.commonAncestorContainer)
+    ) {
+      activeFontSizeSpan = null;
+    }
+  }
+
+  function restoreVisualSelectionFS(span: HTMLSpanElement): void {
+    const editableEl = component.querySelector<HTMLElement>(
+      '[contenteditable="true"]'
+    );
+    if (!editableEl) return;
+    editableEl.focus({ preventScroll: true });
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(span);
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+  }
+
+  function applyFontSize(size: string): void {
+    if (activeFontSizeSpan && component.contains(activeFontSizeSpan)) {
+      activeFontSizeSpan.style.fontSize = size;
+      restoreVisualSelectionFS(activeFontSizeSpan);
+      return;
+    }
+    if (savedRangeFS && !savedRangeFS.collapsed) {
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRangeFS);
+      }
+      const span = document.createElement('span');
+      span.style.fontSize = size;
+      try {
+        savedRangeFS.surroundContents(span);
+      } catch {
+        const fragment = savedRangeFS.extractContents();
+        span.appendChild(fragment);
+        savedRangeFS.insertNode(span);
+      }
+      activeFontSizeSpan = span;
+      savedRangeFS = null;
+      restoreVisualSelectionFS(span);
+      return;
+    }
+    /* Fallback — no selection, apply to whole component */
+    component.style.fontSize = size;
+  }
+
+  const fontSizeInput = get<HTMLInputElement>('font-size');
+  const fontSizeUnit = get<HTMLSelectElement>('font-size-unit');
+
+  fontSizeInput?.addEventListener('mousedown', saveSelectionForFontSize);
+
+  fontSizeInput?.addEventListener('input', () => {
+    if (!fontSizeInput) return;
+    const unit = fontSizeUnit?.value || 'px';
+    applyFontSize(`${fontSizeInput.value}${unit}`);
     captureStateDebounced();
   });
 
-  get<HTMLSelectElement>('font-weight')?.addEventListener('change', () => {
-    component.style.fontWeight = get<HTMLSelectElement>('font-weight')!.value;
+  fontSizeUnit?.addEventListener('change', () => {
+    if (!fontSizeInput) return;
+    const unit = fontSizeUnit?.value || 'px';
+    applyFontSize(`${fontSizeInput.value}${unit}`);
+    captureStateDebounced();
+  });
+
+  /* ── Font weight — selection-aware ──────────────────────────────────────────
+   *
+   * Same mechanism as font size above.
+   * ─────────────────────────────────────────────────────────────────────────── */
+
+  let savedRangeFW: Range | null = null;
+  let activeFontWeightSpan: HTMLSpanElement | null = null;
+
+  function saveSelectionForFontWeight(): void {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if (!component.contains(range.commonAncestorContainer)) return;
+    savedRangeFW = range.cloneRange();
+    if (
+      !activeFontWeightSpan ||
+      !activeFontWeightSpan.contains(range.commonAncestorContainer)
+    ) {
+      activeFontWeightSpan = null;
+    }
+  }
+
+  function restoreVisualSelectionFW(span: HTMLSpanElement): void {
+    const editableEl = component.querySelector<HTMLElement>(
+      '[contenteditable="true"]'
+    );
+    if (!editableEl) return;
+    editableEl.focus({ preventScroll: true });
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(span);
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+  }
+
+  function applyFontWeight(weight: string): void {
+    if (activeFontWeightSpan && component.contains(activeFontWeightSpan)) {
+      activeFontWeightSpan.style.fontWeight = weight;
+      restoreVisualSelectionFW(activeFontWeightSpan);
+      return;
+    }
+    if (savedRangeFW && !savedRangeFW.collapsed) {
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRangeFW);
+      }
+      const span = document.createElement('span');
+      span.style.fontWeight = weight;
+      try {
+        savedRangeFW.surroundContents(span);
+      } catch {
+        const fragment = savedRangeFW.extractContents();
+        span.appendChild(fragment);
+        savedRangeFW.insertNode(span);
+      }
+      activeFontWeightSpan = span;
+      savedRangeFW = null;
+      restoreVisualSelectionFW(span);
+      return;
+    }
+    /* Fallback — no selection, apply to whole component */
+    component.style.fontWeight = weight;
+  }
+
+  const fontWeightSel = get<HTMLSelectElement>('font-weight');
+
+  fontWeightSel?.addEventListener('mousedown', saveSelectionForFontWeight);
+
+  fontWeightSel?.addEventListener('change', () => {
+    if (!fontWeightSel) return;
+    applyFontWeight(fontWeightSel.value);
     captureStateDebounced();
   });
 

@@ -8,7 +8,7 @@ export function addControlListeners(
   addListenersFn /* recursive ref for re-populate */,
   customizeComponentTagName
 ) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
   /* Single debounced handler shared by all controls to batch history captures */
   const captureStateDebounced = debounce(() => {
     Canvas.dispatchDesignChange();
@@ -150,26 +150,168 @@ export function addControlListeners(
         component.style.textAlign = get('alignment').value;
         captureStateDebounced();
       });
-  (_f = get('font-size')) === null || _f === void 0
+  /* ── Font size — selection-aware ────────────────────────────────────────────
+   *
+   * Same mechanism as text color:
+   *   • Capture the Range on 'mousedown' (before the input steals focus).
+   *   • On 'input', if a saved range is non-collapsed and inside the component,
+   *     wrap it in <span style="font-size: …"> instead of painting the whole
+   *     component.  Subsequent changes update the same span (activeFontSizeSpan)
+   *     so the value tracks the slider without creating duplicate wraps.
+   * ─────────────────────────────────────────────────────────────────────────── */
+  let savedRangeFS = null;
+  let activeFontSizeSpan = null;
+  function saveSelectionForFontSize() {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if (!component.contains(range.commonAncestorContainer)) return;
+    savedRangeFS = range.cloneRange();
+    if (
+      !activeFontSizeSpan ||
+      !activeFontSizeSpan.contains(range.commonAncestorContainer)
+    ) {
+      activeFontSizeSpan = null;
+    }
+  }
+  function restoreVisualSelectionFS(span) {
+    const editableEl = component.querySelector('[contenteditable="true"]');
+    if (!editableEl) return;
+    editableEl.focus({ preventScroll: true });
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(span);
+    sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
+    sel === null || sel === void 0 ? void 0 : sel.addRange(range);
+  }
+  function applyFontSize(size) {
+    if (activeFontSizeSpan && component.contains(activeFontSizeSpan)) {
+      activeFontSizeSpan.style.fontSize = size;
+      restoreVisualSelectionFS(activeFontSizeSpan);
+      return;
+    }
+    if (savedRangeFS && !savedRangeFS.collapsed) {
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRangeFS);
+      }
+      const span = document.createElement('span');
+      span.style.fontSize = size;
+      try {
+        savedRangeFS.surroundContents(span);
+      } catch (_a) {
+        const fragment = savedRangeFS.extractContents();
+        span.appendChild(fragment);
+        savedRangeFS.insertNode(span);
+      }
+      activeFontSizeSpan = span;
+      savedRangeFS = null;
+      restoreVisualSelectionFS(span);
+      return;
+    }
+    /* Fallback — no selection, apply to whole component */
+    component.style.fontSize = size;
+  }
+  const fontSizeInput = get('font-size');
+  const fontSizeUnit = get('font-size-unit');
+  fontSizeInput === null || fontSizeInput === void 0
     ? void 0
-    : _f.addEventListener('input', () => {
-        var _a;
+    : fontSizeInput.addEventListener('mousedown', saveSelectionForFontSize);
+  fontSizeInput === null || fontSizeInput === void 0
+    ? void 0
+    : fontSizeInput.addEventListener('input', () => {
+        if (!fontSizeInput) return;
         const unit =
-          ((_a = get('font-size-unit')) === null || _a === void 0
+          (fontSizeUnit === null || fontSizeUnit === void 0
             ? void 0
-            : _a.value) || 'px';
-        component.style.fontSize = `${get('font-size').value}${unit}`;
+            : fontSizeUnit.value) || 'px';
+        applyFontSize(`${fontSizeInput.value}${unit}`);
         captureStateDebounced();
       });
-  (_g = get('font-weight')) === null || _g === void 0
+  fontSizeUnit === null || fontSizeUnit === void 0
     ? void 0
-    : _g.addEventListener('change', () => {
-        component.style.fontWeight = get('font-weight').value;
+    : fontSizeUnit.addEventListener('change', () => {
+        if (!fontSizeInput) return;
+        const unit =
+          (fontSizeUnit === null || fontSizeUnit === void 0
+            ? void 0
+            : fontSizeUnit.value) || 'px';
+        applyFontSize(`${fontSizeInput.value}${unit}`);
         captureStateDebounced();
       });
-  (_h = get('font-family')) === null || _h === void 0
+  /* ── Font weight — selection-aware ──────────────────────────────────────────
+   *
+   * Same mechanism as font size above.
+   * ─────────────────────────────────────────────────────────────────────────── */
+  let savedRangeFW = null;
+  let activeFontWeightSpan = null;
+  function saveSelectionForFontWeight() {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+    const range = sel.getRangeAt(0);
+    if (!component.contains(range.commonAncestorContainer)) return;
+    savedRangeFW = range.cloneRange();
+    if (
+      !activeFontWeightSpan ||
+      !activeFontWeightSpan.contains(range.commonAncestorContainer)
+    ) {
+      activeFontWeightSpan = null;
+    }
+  }
+  function restoreVisualSelectionFW(span) {
+    const editableEl = component.querySelector('[contenteditable="true"]');
+    if (!editableEl) return;
+    editableEl.focus({ preventScroll: true });
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(span);
+    sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
+    sel === null || sel === void 0 ? void 0 : sel.addRange(range);
+  }
+  function applyFontWeight(weight) {
+    if (activeFontWeightSpan && component.contains(activeFontWeightSpan)) {
+      activeFontWeightSpan.style.fontWeight = weight;
+      restoreVisualSelectionFW(activeFontWeightSpan);
+      return;
+    }
+    if (savedRangeFW && !savedRangeFW.collapsed) {
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRangeFW);
+      }
+      const span = document.createElement('span');
+      span.style.fontWeight = weight;
+      try {
+        savedRangeFW.surroundContents(span);
+      } catch (_a) {
+        const fragment = savedRangeFW.extractContents();
+        span.appendChild(fragment);
+        savedRangeFW.insertNode(span);
+      }
+      activeFontWeightSpan = span;
+      savedRangeFW = null;
+      restoreVisualSelectionFW(span);
+      return;
+    }
+    /* Fallback — no selection, apply to whole component */
+    component.style.fontWeight = weight;
+  }
+  const fontWeightSel = get('font-weight');
+  fontWeightSel === null || fontWeightSel === void 0
     ? void 0
-    : _h.addEventListener('change', () => {
+    : fontWeightSel.addEventListener('mousedown', saveSelectionForFontWeight);
+  fontWeightSel === null || fontWeightSel === void 0
+    ? void 0
+    : fontWeightSel.addEventListener('change', () => {
+        if (!fontWeightSel) return;
+        applyFontWeight(fontWeightSel.value);
+        captureStateDebounced();
+      });
+  (_f = get('font-family')) === null || _f === void 0
+    ? void 0
+    : _f.addEventListener('change', () => {
         component.style.fontFamily = get('font-family').value;
         captureStateDebounced();
       });
@@ -293,9 +435,9 @@ export function addControlListeners(
         captureStateDebounced();
       });
   /* ── Border ──────────────────────────────────────────────────────────────── */
-  (_j = get('border-width')) === null || _j === void 0
+  (_g = get('border-width')) === null || _g === void 0
     ? void 0
-    : _j.addEventListener('input', () => {
+    : _g.addEventListener('input', () => {
         var _a;
         const unit =
           ((_a = get('border-width-unit')) === null || _a === void 0
@@ -304,33 +446,33 @@ export function addControlListeners(
         component.style.borderWidth = `${get('border-width').value}${unit}`;
         captureStateDebounced();
       });
-  (_k = get('border-style')) === null || _k === void 0
+  (_h = get('border-style')) === null || _h === void 0
     ? void 0
-    : _k.addEventListener('change', () => {
+    : _h.addEventListener('change', () => {
         component.style.borderStyle = get('border-style').value;
         captureStateDebounced();
       });
-  (_l = get('border-color')) === null || _l === void 0
+  (_j = get('border-color')) === null || _j === void 0
     ? void 0
-    : _l.addEventListener('input', () => {
+    : _j.addEventListener('input', () => {
         const val = get('border-color').value;
         component.style.borderColor = val;
         const hexInput = get('border-color-value');
         if (hexInput) hexInput.value = val;
         captureStateDebounced();
       });
-  (_m = get('border-color-value')) === null || _m === void 0
+  (_k = get('border-color-value')) === null || _k === void 0
     ? void 0
-    : _m.addEventListener('input', e => {
+    : _k.addEventListener('input', e => {
         const val = e.target.value;
         component.style.borderColor = val;
         const picker = get('border-color');
         if (picker) picker.value = val;
         captureStateDebounced();
       });
-  (_o = get('border-radius')) === null || _o === void 0
+  (_l = get('border-radius')) === null || _l === void 0
     ? void 0
-    : _o.addEventListener('input', () => {
+    : _l.addEventListener('input', () => {
         var _a;
         const unit =
           ((_a = get('border-radius-unit')) === null || _a === void 0
@@ -340,9 +482,9 @@ export function addControlListeners(
         captureStateDebounced();
       });
   /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
-  (_p = get('display')) === null || _p === void 0
+  (_m = get('display')) === null || _m === void 0
     ? void 0
-    : _p.addEventListener('change', () => {
+    : _m.addEventListener('change', () => {
         const selectedValue = get('display').value;
         if (selectedValue === 'inline') {
           /* Store user intent as "inline" but apply inline-block to the DOM.
@@ -366,21 +508,21 @@ export function addControlListeners(
         );
       });
   /* ── Flex sub-controls ───────────────────────────────────────────────────── */
-  (_q = get('flex-direction')) === null || _q === void 0
+  (_o = get('flex-direction')) === null || _o === void 0
     ? void 0
-    : _q.addEventListener('change', () => {
+    : _o.addEventListener('change', () => {
         component.style.flexDirection = get('flex-direction').value;
         captureStateDebounced();
       });
-  (_r = get('align-items')) === null || _r === void 0
+  (_p = get('align-items')) === null || _p === void 0
     ? void 0
-    : _r.addEventListener('change', () => {
+    : _p.addEventListener('change', () => {
         component.style.alignItems = get('align-items').value;
         captureStateDebounced();
       });
-  (_s = get('justify-content')) === null || _s === void 0
+  (_q = get('justify-content')) === null || _q === void 0
     ? void 0
-    : _s.addEventListener('change', () => {
+    : _q.addEventListener('change', () => {
         component.style.justifyContent = get('justify-content').value;
         captureStateDebounced();
       });

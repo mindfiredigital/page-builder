@@ -310,18 +310,71 @@ export function populateCssControls(
     ],
     cssContainer
   );
+  /* ── Font Size ─────────────────────────────────────────────────────────────
+   * Walk up from the cursor position to find if we're sitting inside a
+   * <span style="font-size: …">.  If so, display that span's value so the
+   * sidebar reflects per-selection font size, not just the component default.
+   * ─────────────────────────────────────────────────────────────────────────── */
+  let displayFontSize = styles.fontSize;
+  let displayFontSizeUnit = 'px';
+  {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      let node = sel.getRangeAt(0).startContainer;
+      while (node && node !== component) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.tagName === 'SPAN' &&
+          !!node.style.fontSize
+        ) {
+          displayFontSize = node.style.fontSize;
+          break;
+        }
+        node = node.parentNode;
+      }
+    }
+    /* Parse value and unit from whatever we ended up with */
+    const fsMatch = displayFontSize.match(/^(-?[\d.]+)(px|rem|vh|%|em)?$/);
+    if (fsMatch) {
+      displayFontSize = fsMatch[1];
+      displayFontSizeUnit = fsMatch[2] || 'px';
+    } else {
+      displayFontSize = String(parseInt(displayFontSize) || 16);
+    }
+  }
   SidebarUtils.createControl(
     'Font Size',
     'font-size',
     'number',
-    parseInt(styles.fontSize) || 16,
+    parseFloat(displayFontSize) || 16,
     cssContainer,
-    { min: 0, max: 100, unit: 'px' }
+    { min: 0, max: 100, unit: displayFontSizeUnit }
   );
+  /* ── Font Weight ────────────────────────────────────────────────────────────
+   * Same cursor-position walk-up for font-weight spans.
+   * ─────────────────────────────────────────────────────────────────────────── */
+  let displayFontWeight = styles.fontWeight;
+  {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      let node = sel.getRangeAt(0).startContainer;
+      while (node && node !== component) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.tagName === 'SPAN' &&
+          !!node.style.fontWeight
+        ) {
+          displayFontWeight = node.style.fontWeight;
+          break;
+        }
+        node = node.parentNode;
+      }
+    }
+  }
   SidebarUtils.createSelectControl(
     'Font Weight',
     'font-weight',
-    styles.fontWeight,
+    displayFontWeight,
     [
       'normal',
       'bold',
