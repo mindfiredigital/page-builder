@@ -5,7 +5,9 @@ export declare class StyleCollector {
   generateCSS(): string;
   applyCSS(css: string): void;
   private buildBaseCSS;
+  private static readonly INLINE_ONLY_PROPS;
   private collectComputedStyles;
+  private collectInlineDecorativeStyles;
   private applyInlineVerticalAlign;
   private isSVGElement;
   private handleSVGElement;

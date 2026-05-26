@@ -362,7 +362,9 @@ body {
   cursor: text;
   position: relative;
   pointer-events: auto;
-  background-color: #ffffff;
+  /* No default background-color — components are transparent so parent container
+     background colours are always visible through child components.
+     Users set background explicitly via the sidebar. */
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
@@ -398,44 +400,44 @@ body {
 .container-component[data-depth="3"] { border: 1px dashed #f97316; }
 
 /*
- * Hover colours: ALL ancestor containers show their depth colour when the
- * cursor is somewhere inside them (CSS :hover applies to all ancestors).
- * Only the INNERMOST container's label is shown (controlled by JS via
- * the .label-visible class — see below).
+ * Hover / drag-highlight indicators use OUTLINE so they never conflict with
+ * the user's custom border (which is an inline style set via the sidebar).
+ * box-shadow no longer needs !important because it doesn't collide with border.
  */
 .container-component[data-depth="0"]:hover,
 .container-component[data-depth="0"].container-highlight {
-  border-color: #0f172a !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.2) !important;
+  outline: 2px solid #0f172a !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.2);
 }
 .container-component[data-depth="1"]:hover,
 .container-component[data-depth="1"].container-highlight {
-  border-color: #2563eb !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+  outline: 2px solid #2563eb !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 .container-component[data-depth="2"]:hover,
 .container-component[data-depth="2"].container-highlight {
-  border-color: #059669 !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+  outline: 2px solid #059669 !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 .container-component[data-depth="3"]:hover,
 .container-component[data-depth="3"].container-highlight {
-  border-color: #ea580c !important;
-  border-style: solid !important;
-  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2) !important;
+  outline: 2px solid #ea580c !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
 }
 
 /* Fallback for containers that don't yet have a data-depth attribute */
 .container-component:not([data-depth]):hover {
-  border-color: #3b82f6;
+  outline: 1px solid #3b82f6;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
 }
 .container-highlight:not([data-depth]) {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .container-component.container-grid-active {
@@ -2368,9 +2370,10 @@ body {
 .editable-component.selected,
 .table-cell-content.selected,
 .table-row.selected {
-  border: 2px solid #3b82f6 !important;
+  /* Use outline so the selection indicator never overrides the user's custom border */
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 1px;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-  outline: none;
   position: relative;
 }
 
@@ -2394,7 +2397,8 @@ body {
 }
 
 .editable-component:hover {
-  border-color: #3b82f6;
+  /* Use outline so hover indicator never conflicts with the user's border-color */
+  outline: 1px solid #3b82f6;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
 }
 

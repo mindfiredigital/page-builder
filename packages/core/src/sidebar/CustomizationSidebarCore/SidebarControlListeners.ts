@@ -302,6 +302,12 @@ export function addControlListeners(
     captureStateDebounced();
   });
 
+  get<HTMLInputElement>('border-radius')?.addEventListener('input', () => {
+    const unit = get<HTMLSelectElement>('border-radius-unit')?.value || 'px';
+    component.style.borderRadius = `${get<HTMLInputElement>('border-radius')!.value}${unit}`;
+    captureStateDebounced();
+  });
+
   /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
   get<HTMLSelectElement>('display')?.addEventListener('change', () => {
     const selectedValue = get<HTMLSelectElement>('display')!.value;

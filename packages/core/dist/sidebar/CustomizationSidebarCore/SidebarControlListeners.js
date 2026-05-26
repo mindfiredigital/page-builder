@@ -8,7 +8,7 @@ export function addControlListeners(
   addListenersFn /* recursive ref for re-populate */,
   customizeComponentTagName
 ) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
   /* Single debounced handler shared by all controls to batch history captures */
   const captureStateDebounced = debounce(() => {
     Canvas.dispatchDesignChange();
@@ -328,10 +328,21 @@ export function addControlListeners(
         if (picker) picker.value = val;
         captureStateDebounced();
       });
-  /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
-  (_o = get('display')) === null || _o === void 0
+  (_o = get('border-radius')) === null || _o === void 0
     ? void 0
-    : _o.addEventListener('change', () => {
+    : _o.addEventListener('input', () => {
+        var _a;
+        const unit =
+          ((_a = get('border-radius-unit')) === null || _a === void 0
+            ? void 0
+            : _a.value) || 'px';
+        component.style.borderRadius = `${get('border-radius').value}${unit}`;
+        captureStateDebounced();
+      });
+  /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
+  (_p = get('display')) === null || _p === void 0
+    ? void 0
+    : _p.addEventListener('change', () => {
         const selectedValue = get('display').value;
         if (selectedValue === 'inline') {
           /* Store user intent as "inline" but apply inline-block to the DOM.
@@ -355,21 +366,21 @@ export function addControlListeners(
         );
       });
   /* ── Flex sub-controls ───────────────────────────────────────────────────── */
-  (_p = get('flex-direction')) === null || _p === void 0
+  (_q = get('flex-direction')) === null || _q === void 0
     ? void 0
-    : _p.addEventListener('change', () => {
+    : _q.addEventListener('change', () => {
         component.style.flexDirection = get('flex-direction').value;
         captureStateDebounced();
       });
-  (_q = get('align-items')) === null || _q === void 0
+  (_r = get('align-items')) === null || _r === void 0
     ? void 0
-    : _q.addEventListener('change', () => {
+    : _r.addEventListener('change', () => {
         component.style.alignItems = get('align-items').value;
         captureStateDebounced();
       });
-  (_r = get('justify-content')) === null || _r === void 0
+  (_s = get('justify-content')) === null || _s === void 0
     ? void 0
-    : _r.addEventListener('change', () => {
+    : _s.addEventListener('change', () => {
         component.style.justifyContent = get('justify-content').value;
         captureStateDebounced();
       });

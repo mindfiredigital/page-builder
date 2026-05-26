@@ -401,6 +401,14 @@ export function populateCssControls(
     styles.borderColor || '#000000',
     cssContainer
   );
+  SidebarUtils.createControl(
+    'Border Radius',
+    'border-radius',
+    'number',
+    parseInt(styles.borderRadius) || 0,
+    cssContainer,
+    { min: 0, max: 500, unit: 'px' }
+  );
 
   /* Sync hex color pickers to the computed RGB values */
   const bgColorInput = document.getElementById(

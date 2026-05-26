@@ -75,7 +75,11 @@ export class StyleCollector {
         return;
       }
 
-      this.collectComputedStyles(computedStyles, componentStyles);
+      this.collectComputedStyles(
+        computedStyles,
+        componentStyles,
+        component as HTMLElement
+      );
       this.applyInlineVerticalAlign(computedStyles, componentStyles);
 
       const selector = this.generateUniqueSelector(component);
@@ -121,7 +125,14 @@ export class StyleCollector {
       ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
       ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
       .table-component { border-collapse: collapse; box-sizing: border-box; }
-      .editable-component { border: none !important; box-shadow: none !important; }
+      /* Strip editor visual indicators (dashed border, selection outline, hover glow)
+         from the preview. User-set borders are applied via element-specific rules
+         generated from inline styles, which have higher specificity than this rule. */
+      .editable-component { border: none; outline: none; box-shadow: none; }
+      /* .container-component[data-depth="N"] rules in main.css have specificity 0,1,1
+         (one class + one attribute selector), which beats the 0,1,0 rule above.
+         This rule matches that specificity so later-cascade wins for containers too. */
+      .container-component[data-depth] { border: none; outline: none; }
       `;
     }
 
@@ -135,21 +146,69 @@ export class StyleCollector {
         background-color: ${backgroundColor}; margin: 0; overflow: visible;
       }
       table { border-collapse: collapse; }
-      .editable-component { border: none !important; box-shadow: none !important; }
+      /* Strip editor visual indicators. User-set borders are applied via element-specific
+         rules generated from inline styles, which have higher specificity than this rule. */
+      .editable-component { border: none; outline: none; box-shadow: none; }
+      .container-component[data-depth] { border: none; outline: none; }
       `;
   }
 
   /* ─── CollectComputedStyles ─────────────────────────────────────────────────
      Iterates the full computed style list for a non-SVG element, skipping
      properties in the exclusion list and empty/auto/none values.
+
+     Border paint properties (width/style/color), outline, and box-shadow are
+     intentionally excluded from the computed pass — the editor injects its own
+     dashed-border and selection/hover glow into the live DOM, so reading them
+     from getComputedStyle() would pollute the preview with editor chrome.
+     Instead, these properties are sourced exclusively from the element's inline
+     style (user-set values) via collectInlineDecorativeStyles().
      ─────────────────────────────────────────────────────────────────────────── */
+
+  /* Properties that must come from inline styles, not computed styles.
+     Computed values for these include editor-injected chrome (dashed border,
+     selection outline, hover glow) that must never appear in the preview. */
+  private static readonly INLINE_ONLY_PROPS = new Set([
+    /* Border paint — width / style / color per side */
+    'border-top-width',
+    'border-right-width',
+    'border-bottom-width',
+    'border-left-width',
+    'border-top-style',
+    'border-right-style',
+    'border-bottom-style',
+    'border-left-style',
+    'border-top-color',
+    'border-right-color',
+    'border-bottom-color',
+    'border-left-color',
+    /* Border image */
+    'border-image-source',
+    'border-image-slice',
+    'border-image-width',
+    'border-image-outset',
+    'border-image-repeat',
+    /* Outline — now used for editor selection/hover indicators */
+    'outline',
+    'outline-width',
+    'outline-style',
+    'outline-color',
+    'outline-offset',
+    /* Box-shadow — selection glow would leak into the preview if captured */
+    'box-shadow',
+  ]);
+
   private collectComputedStyles(
     computedStyles: CSSStyleDeclaration,
-    out: string[]
+    out: string[],
+    element?: HTMLElement
   ): void {
     for (let i = 0; i < computedStyles.length; i++) {
       const prop = computedStyles[i];
       const value = computedStyles.getPropertyValue(prop);
+
+      /* Skip properties whose computed values are polluted by editor chrome */
+      if (StyleCollector.INLINE_ONLY_PROPS.has(prop)) continue;
 
       if (Canvas.layoutMode === 'grid') {
         if (CSS_PROPERTIES_TO_EXCLUDE.includes(prop as never)) continue;
@@ -167,6 +226,55 @@ export class StyleCollector {
         out.push(`${prop}: ${value};`);
       }
     }
+
+    /* Append user-set decorative styles read from inline styles only */
+    if (element) {
+      this.collectInlineDecorativeStyles(element, out);
+    }
+  }
+
+  /* ─── CollectInlineDecorativeStyles ────────────────────────────────────────
+     Reads border and box-shadow values exclusively from the element's inline
+     style attribute (i.e. what the user explicitly set via the sidebar).
+     If a property is not in the inline style it is omitted, which lets the
+     lower-specificity buildBaseCSS rule (.editable-component { border: none })
+     act as the safe default — keeping the preview clean for un-bordered elements
+     while still showing the correct value for elements the user styled.
+     ─────────────────────────────────────────────────────────────────────────── */
+  private collectInlineDecorativeStyles(
+    element: HTMLElement,
+    out: string[]
+  ): void {
+    const s = element.style;
+
+    /* Border — shorthand takes priority; fall back to longhand properties */
+    if (s.border) {
+      out.push(`border: ${s.border};`);
+    } else {
+      if (s.borderWidth) out.push(`border-width: ${s.borderWidth};`);
+      if (s.borderStyle) out.push(`border-style: ${s.borderStyle};`);
+      if (s.borderColor) out.push(`border-color: ${s.borderColor};`);
+
+      /* Per-side overrides (future-proofing for per-side sidebar controls) */
+      (['Top', 'Right', 'Bottom', 'Left'] as const).forEach(side => {
+        const sl = side.toLowerCase();
+        const w = (s as unknown as Record<string, string>)[
+          `border${side}Width`
+        ];
+        const st = (s as unknown as Record<string, string>)[
+          `border${side}Style`
+        ];
+        const c = (s as unknown as Record<string, string>)[
+          `border${side}Color`
+        ];
+        if (w) out.push(`border-${sl}-width: ${w};`);
+        if (st) out.push(`border-${sl}-style: ${st};`);
+        if (c) out.push(`border-${sl}-color: ${c};`);
+      });
+    }
+
+    /* Box-shadow — sidebar has no control yet, but read inline if ever set */
+    if (s.boxShadow) out.push(`box-shadow: ${s.boxShadow};`);
   }
 
   /* ─── ApplyInlineVerticalAlign ──────────────────────────────────────────────
