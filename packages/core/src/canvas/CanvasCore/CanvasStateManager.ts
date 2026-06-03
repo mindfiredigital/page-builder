@@ -238,7 +238,9 @@ export class CanvasStateManager {
 
       if (editable !== false) {
         controlsManager.addControlButtons(component);
-        CanvasDragHandler.addDraggableListeners(component);
+        if (CanvasSharedState.layoutMode === 'absolute') {
+          CanvasDragHandler.addDraggableListeners(component);
+        }
       }
 
       /** Component-specific post-restore hooks */

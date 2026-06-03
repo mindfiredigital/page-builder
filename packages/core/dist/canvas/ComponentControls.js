@@ -17,6 +17,7 @@ export class ComponentControlsManager {
    * of inside `controlsDiv` (fixed in createDeleteIcon below).
    */
   addControlButtons(element) {
+    var _a;
     const isImageContainer = !!element.querySelector('img');
     /* Only set position:relative on non-image wrappers */
     if (!isImageContainer) {
@@ -52,11 +53,15 @@ export class ComponentControlsManager {
      * In grid mode add a drag handle so every component — including
      * containers whose children cover the entire surface — can be grabbed
      * and reordered without needing to hit empty border space.
+     *
+     * Always remove and recreate the handle so it always has a live
+     * dragstart listener — a handle restored from serialised innerHTML
+     * has no event listeners and would silently do nothing on drag.
      */
-    if (
-      CanvasSharedState.layoutMode === 'grid' &&
-      !controlsDiv.querySelector('.drag-handle')
-    ) {
+    if (CanvasSharedState.layoutMode === 'grid') {
+      (_a = controlsDiv.querySelector('.drag-handle')) === null || _a === void 0
+        ? void 0
+        : _a.remove();
       const dragHandle = this.createDragHandle(element);
       controlsDiv.prepend(dragHandle);
     }

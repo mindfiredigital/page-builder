@@ -70,17 +70,22 @@ export class GridManager {
   }
   updateInsertIndicator(event, canvasElement) {
     var _a;
-    const insertBefore = this.findInsertionPoint(event, canvasElement);
     (_a = canvasElement.querySelector('.drop-insert-indicator')) === null ||
     _a === void 0
       ? void 0
       : _a.remove();
+    const insertBefore = this.findInsertionPoint(event, canvasElement);
     const indicator = document.createElement('div');
     indicator.className = 'drop-insert-indicator';
     if (insertBefore) {
       canvasElement.insertBefore(indicator, insertBefore);
     } else {
-      canvasElement.appendChild(indicator);
+      const spacer = canvasElement.querySelector('#canvas-scroll-spacer');
+      if (spacer) {
+        canvasElement.insertBefore(indicator, spacer);
+      } else {
+        canvasElement.appendChild(indicator);
+      }
     }
   }
   showGridCornerHighlight(event, dropPreview, canvasElement) {

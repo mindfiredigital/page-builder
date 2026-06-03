@@ -3251,7 +3251,9 @@ class W {
             Object.entries(t.dataAttributes).forEach(([e, t]) => {
               c.setAttribute(e, t);
             }),
-          !1 !== r && (i.addControlButtons(c), G.addDraggableListeners(c)),
+          !1 !== r &&
+            (i.addControlButtons(c),
+            'absolute' === e.layoutMode && G.addDraggableListeners(c)),
           c.classList.contains('container-component') &&
             C.restoreContainer(c, r),
           (c.classList.contains('twoCol-component') ||
@@ -3373,11 +3375,17 @@ class X {
     const o = document.getElementById(n);
     if (!o || o.parentElement !== r) return;
     const i = e.gridManager.findInsertionPoint(A, r);
-    i !== o &&
-      (i ? r.insertBefore(o, i) : r.appendChild(o),
-      (o.style.opacity = ''),
-      e.historyManager.captureState(),
-      t.dispatchDesignChange());
+    if (i !== o) {
+      if (i) r.insertBefore(o, i);
+      else {
+        const e = r.querySelector('#canvas-scroll-spacer');
+        e ? r.insertBefore(o, e) : r.appendChild(o);
+      }
+      ((o.style.opacity = ''),
+        e.updateCanvasScrollSpace(),
+        e.historyManager.captureState(),
+        t.dispatchDesignChange());
+    }
   }
 }
 class Y {
@@ -3439,32 +3447,36 @@ class $ {
     };
   }
   addControlButtons(t) {
-    const n = !!t.querySelector('img');
-    n ||
+    var n;
+    const A = !!t.querySelector('img');
+    A ||
       (t.style.position && 'static' !== t.style.position) ||
       (t.style.position = 'relative');
-    let A = t.querySelector('.component-controls');
+    let r = t.querySelector('.component-controls');
     if (
-      (A ||
-        ((A = document.createElement('div')),
-        (A.className = 'component-controls'),
-        A.setAttribute('contenteditable', 'false'),
-        (A.style.position = 'absolute'),
-        (A.style.top = '0'),
-        (A.style.right = '0'),
-        (A.style.zIndex = '100'),
-        (A.style.display = 'flex'),
-        (A.style.gap = '4px'),
-        (A.style.padding = '2px'),
-        (A.style.pointerEvents = 'none'),
-        n ? t.appendChild(A) : t.prepend(A)),
-      'grid' === e.layoutMode && !A.querySelector('.drag-handle'))
+      (r ||
+        ((r = document.createElement('div')),
+        (r.className = 'component-controls'),
+        r.setAttribute('contenteditable', 'false'),
+        (r.style.position = 'absolute'),
+        (r.style.top = '0'),
+        (r.style.right = '0'),
+        (r.style.zIndex = '100'),
+        (r.style.display = 'flex'),
+        (r.style.gap = '4px'),
+        (r.style.padding = '2px'),
+        (r.style.pointerEvents = 'none'),
+        A ? t.appendChild(r) : t.prepend(r)),
+      'grid' === e.layoutMode)
     ) {
+      null === (n = r.querySelector('.drag-handle')) ||
+        void 0 === n ||
+        n.remove();
       const e = this.createDragHandle(t);
-      A.prepend(e);
+      r.prepend(e);
     }
-    const r = this.createDeleteIcon(t, A);
-    A.appendChild(r);
+    const o = this.createDeleteIcon(t, r);
+    r.appendChild(o);
   }
   createDragHandle(t) {
     const n = document.createElement('div');
@@ -3583,13 +3595,16 @@ class Z {
   }
   updateInsertIndicator(e, t) {
     var n;
-    const A = this.findInsertionPoint(e, t);
     null === (n = t.querySelector('.drop-insert-indicator')) ||
       void 0 === n ||
       n.remove();
-    const r = document.createElement('div');
-    ((r.className = 'drop-insert-indicator'),
-      A ? t.insertBefore(r, A) : t.appendChild(r));
+    const A = this.findInsertionPoint(e, t),
+      r = document.createElement('div');
+    if (((r.className = 'drop-insert-indicator'), A)) t.insertBefore(r, A);
+    else {
+      const e = t.querySelector('#canvas-scroll-spacer');
+      e ? t.insertBefore(r, e) : t.appendChild(r);
+    }
   }
   showGridCornerHighlight(e, t, n) {
     const { gridX: A, gridY: r } = this.mousePositionAtGridCorner(e, n);

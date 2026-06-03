@@ -87,8 +87,8 @@ export class GridManager {
     event: DragEvent,
     canvasElement: HTMLElement
   ): void {
-    const insertBefore = this.findInsertionPoint(event, canvasElement);
     canvasElement.querySelector('.drop-insert-indicator')?.remove();
+    const insertBefore = this.findInsertionPoint(event, canvasElement);
 
     const indicator = document.createElement('div');
     indicator.className = 'drop-insert-indicator';
@@ -96,7 +96,12 @@ export class GridManager {
     if (insertBefore) {
       canvasElement.insertBefore(indicator, insertBefore);
     } else {
-      canvasElement.appendChild(indicator);
+      const spacer = canvasElement.querySelector('#canvas-scroll-spacer');
+      if (spacer) {
+        canvasElement.insertBefore(indicator, spacer);
+      } else {
+        canvasElement.appendChild(indicator);
+      }
     }
   }
 

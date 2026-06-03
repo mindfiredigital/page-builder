@@ -201,10 +201,16 @@ export class CanvasDropHandler {
     if (insertBefore) {
       canvasElement.insertBefore(draggedEl, insertBefore);
     } else {
-      canvasElement.appendChild(draggedEl);
+      const spacer = canvasElement.querySelector('#canvas-scroll-spacer');
+      if (spacer) {
+        canvasElement.insertBefore(draggedEl, spacer);
+      } else {
+        canvasElement.appendChild(draggedEl);
+      }
     }
 
     draggedEl.style.opacity = '';
+    CanvasSharedState.updateCanvasScrollSpace();
     CanvasSharedState.historyManager.captureState();
     CanvasEventDispatcher.dispatchDesignChange();
   }

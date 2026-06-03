@@ -61,11 +61,13 @@ export class ComponentControlsManager {
      * In grid mode add a drag handle so every component — including
      * containers whose children cover the entire surface — can be grabbed
      * and reordered without needing to hit empty border space.
+     *
+     * Always remove and recreate the handle so it always has a live
+     * dragstart listener — a handle restored from serialised innerHTML
+     * has no event listeners and would silently do nothing on drag.
      */
-    if (
-      CanvasSharedState.layoutMode === 'grid' &&
-      !controlsDiv.querySelector('.drag-handle')
-    ) {
+    if (CanvasSharedState.layoutMode === 'grid') {
+      controlsDiv.querySelector('.drag-handle')?.remove();
       const dragHandle = this.createDragHandle(element);
       controlsDiv.prepend(dragHandle);
     }
