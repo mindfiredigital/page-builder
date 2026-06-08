@@ -10,6 +10,7 @@ import { createExportModal } from './services/ExportModalService';
 import { setupExportPDFButton } from './services/ExportPdfService';
 import { createHeaderIfNeeded } from './utils/pageBuilderNavbarSetup';
 import { setupExportDropdown } from './utils/exportDropdownSetup';
+import { MobileResponsiveManager } from './utils/MobileResponsiveManager';
 import {
   setupSaveButton,
   setupResetButton,
@@ -45,7 +46,7 @@ export class PageBuilder {
     editable: boolean | null = true,
     brandTitle?: string,
     showAttributeTab?: boolean,
-    layoutMode: 'absolute' | 'grid' | undefined = 'absolute'
+    layoutMode: 'absolute' | 'grid' | undefined = 'grid'
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;
@@ -107,6 +108,9 @@ export class PageBuilder {
 
     createHeaderIfNeeded(this.editable, this.brandTitle, this.showAttributeTab);
     PageBuilder.headerInitialized = true;
+
+    /* Mobile responsive setup — grid layout only, runs after all DOM is ready */
+    MobileResponsiveManager.init(this.layoutMode, this.editable);
   }
 
   /* Wires the Export HTML button — creates the export modal on click */

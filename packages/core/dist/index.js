@@ -66845,7 +66845,232 @@ function _a(e, t = 'Page Builder', n) {
     );
   return (A.appendChild(o), A.appendChild(r), A.appendChild(i), A);
 }
-function ja(e, t = 'grid', n = null) {
+const ja = {
+  components:
+    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+  properties:
+    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg>',
+  close:
+    '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+};
+class Fa {
+  constructor() {
+    ((this.backdrop = null),
+      (this.fabBar = null),
+      (this.componentsFabBtn = null),
+      (this.propertiesFabBtn = null),
+      (this.tapListenerCleanup = null),
+      (this.mediaQuery = window.matchMedia('(max-width: 768px)')));
+  }
+  static init(e, t) {
+    if ('grid' !== e) return;
+    new Fa().setup(t);
+  }
+  setup(e) {
+    (this.createBackdrop(),
+      this.injectDrawerHeaders(e),
+      this.createFabBar(e),
+      this.onViewportChange(e),
+      this.mediaQuery.addEventListener('change', () =>
+        this.onViewportChange(e)
+      ));
+  }
+  createBackdrop() {
+    document.getElementById('mobile-drawer-backdrop') ||
+      ((this.backdrop = document.createElement('div')),
+      (this.backdrop.id = 'mobile-drawer-backdrop'),
+      this.backdrop.addEventListener('click', () => this.closeAllDrawers()),
+      document.body.appendChild(this.backdrop));
+  }
+  injectDrawerHeaders(e) {
+    const t = document.getElementById('sidebar'),
+      n = document.getElementById('customization');
+    if (t && !t.querySelector('.mobile-drawer-header')) {
+      const n = this.buildDrawerHeader('Components', () =>
+        this.closeAllDrawers()
+      );
+      if ((t.insertBefore(n, t.firstChild), !1 !== e)) {
+        const e = document.createElement('div');
+        ((e.className = 'mobile-tap-hint'),
+          (e.textContent = 'Tap a component to add it to the canvas'),
+          t.insertBefore(e, n.nextSibling));
+      }
+    }
+    if (n && !n.querySelector('.mobile-drawer-header')) {
+      const e = this.buildDrawerHeader('Properties', () =>
+        this.closeAllDrawers()
+      );
+      n.insertBefore(e, n.firstChild);
+    }
+  }
+  buildDrawerHeader(e, t) {
+    const n = document.createElement('div');
+    n.className = 'mobile-drawer-header';
+    const A = document.createElement('h4');
+    A.textContent = e;
+    const r = document.createElement('button');
+    return (
+      (r.className = 'mobile-drawer-close'),
+      (r.innerHTML = ja.close),
+      r.setAttribute('aria-label', `Close ${e} panel`),
+      r.addEventListener('click', t),
+      n.appendChild(A),
+      n.appendChild(r),
+      n
+    );
+  }
+  createFabBar(e) {
+    document.getElementById('mobile-fab-bar') ||
+      ((this.fabBar = document.createElement('div')),
+      (this.fabBar.id = 'mobile-fab-bar'),
+      this.fabBar.setAttribute('role', 'toolbar'),
+      this.fabBar.setAttribute('aria-label', 'Mobile editor controls'),
+      !1 !== e &&
+        ((this.componentsFabBtn = this.buildFabButton(
+          'Components',
+          ja.components,
+          'components-fab',
+          () => this.toggleDrawer('left')
+        )),
+        this.fabBar.appendChild(this.componentsFabBtn)),
+      (this.propertiesFabBtn = this.buildFabButton(
+        'Properties',
+        ja.properties,
+        'properties-fab',
+        () => this.toggleDrawer('right')
+      )),
+      this.fabBar.appendChild(this.propertiesFabBtn),
+      document.body.appendChild(this.fabBar));
+  }
+  buildFabButton(e, t, n, A) {
+    const r = document.createElement('button');
+    return (
+      (r.className = `mobile-fab-btn ${n}`),
+      r.setAttribute('aria-label', e),
+      (r.innerHTML = `${t}<span>${e}</span>`),
+      r.addEventListener('click', A),
+      r
+    );
+  }
+  toggleDrawer(e) {
+    var t, n, A, r;
+    const o = document.getElementById('sidebar'),
+      i = document.getElementById('customization');
+    if ('left' === e) {
+      const e = null == o ? void 0 : o.classList.contains('mobile-open');
+      (this.closeAllDrawers(),
+        e ||
+          (null == o || o.classList.add('mobile-open'),
+          null === (t = this.backdrop) ||
+            void 0 === t ||
+            t.classList.add('active'),
+          null === (n = this.componentsFabBtn) ||
+            void 0 === n ||
+            n.classList.add('active'),
+          document.body.classList.add('drawer-open')));
+    } else {
+      const e = null == i ? void 0 : i.classList.contains('mobile-open');
+      (this.closeAllDrawers(),
+        e ||
+          (null == i || i.classList.add('mobile-open'),
+          null === (A = this.backdrop) ||
+            void 0 === A ||
+            A.classList.add('active'),
+          null === (r = this.propertiesFabBtn) ||
+            void 0 === r ||
+            r.classList.add('active'),
+          document.body.classList.add('drawer-open')));
+    }
+  }
+  closeAllDrawers() {
+    var e, t, n, A, r;
+    (null === (e = document.getElementById('sidebar')) ||
+      void 0 === e ||
+      e.classList.remove('mobile-open'),
+      null === (t = document.getElementById('customization')) ||
+        void 0 === t ||
+        t.classList.remove('mobile-open'),
+      null === (n = this.backdrop) ||
+        void 0 === n ||
+        n.classList.remove('active'),
+      null === (A = this.componentsFabBtn) ||
+        void 0 === A ||
+        A.classList.remove('active'),
+      null === (r = this.propertiesFabBtn) ||
+        void 0 === r ||
+        r.classList.remove('active'),
+      document.body.classList.remove('drawer-open'));
+  }
+  enableTapToAdd() {
+    const e = document.getElementById('sidebar');
+    if (!e) return;
+    const t = e => {
+      if (!this.mediaQuery.matches) return;
+      const t = e.target.closest('.draggable');
+      if (!t) return;
+      (e.preventDefault(), e.stopPropagation());
+      const n = t.id,
+        A = t.getAttribute('data-component-settings');
+      (this.addComponentToCanvas(n, A), this.closeAllDrawers());
+    };
+    (e.addEventListener('click', t),
+      (this.tapListenerCleanup = () => e.removeEventListener('click', t)));
+  }
+  disableTapToAdd() {
+    var e;
+    (null === (e = this.tapListenerCleanup) || void 0 === e || e.call(this),
+      (this.tapListenerCleanup = null));
+  }
+  addComponentToCanvas(n, A) {
+    var r;
+    const o = e.canvasElement;
+    if (!o || !1 === e.editable) return;
+    let i = A;
+    if (!i || '' === i.trim()) {
+      const e = window.customComponents;
+      (null === (r = null == e ? void 0 : e[n]) || void 0 === r
+        ? void 0
+        : r.settings) && (i = JSON.stringify(e[n].settings));
+    }
+    const s = ne.createComponent(n, i);
+    if (!s) return;
+    const a = ne.generateUniqueClass(n);
+    ((s.id = a),
+      s.classList.add(a),
+      (s.style.position = ''),
+      s.hasAttribute('draggable') &&
+        (s.removeAttribute('draggable'), (s.style.cursor = 'default')));
+    ('block' !== window.getComputedStyle(s).display ||
+      s.style.width ||
+      (s.style.width = '100%'),
+      e.components.push(s));
+    const l = o.querySelector('#canvas-scroll-spacer');
+    (l ? o.insertBefore(s, l) : o.appendChild(s),
+      e.updateCanvasScrollSpace(),
+      e.historyManager.captureState(),
+      t.dispatchDesignChange(),
+      Promise.resolve()
+        .then(function () {
+          return Ce;
+        })
+        .then(({ CustomizationSidebar: e }) => {
+          (e.showSidebar(s.id),
+            this.mediaQuery.matches &&
+              setTimeout(() => this.toggleDrawer('right'), 150));
+        }));
+  }
+  onViewportChange(e) {
+    if (this.mediaQuery.matches)
+      (!1 !== e && this.enableTapToAdd(), this.closeAllDrawers());
+    else {
+      (this.disableTapToAdd(), this.closeAllDrawers());
+      const e = document.getElementById('sidebar'),
+        t = document.getElementById('customization');
+      (e && (e.style.display = ''), t && (t.style.display = ''));
+    }
+  }
+}
+function Ea(e, t = 'grid', n = null) {
   const A = 'absolute' === t,
     r = !A && null !== n && n.width > 0,
     o = document.createElement('div');
@@ -66948,7 +67173,7 @@ function ja(e, t = 'grid', n = null) {
   }
   return o;
 }
-function Fa(e) {
+function Qa(e) {
   const t = document.getElementById('reset-btn');
   t &&
     t.addEventListener('click', () => {
@@ -66980,14 +67205,14 @@ function Fa(e) {
       );
     });
 }
-class Ea {
+class Ua {
   constructor(
     e = { Basic: [], Extra: [], Custom: {} },
     t = null,
     n = !0,
     A,
     r,
-    o = 'absolute'
+    o = 'grid'
   ) {
     ((this.dynamicComponents = e),
       (this.initialDesign = t),
@@ -67003,7 +67228,7 @@ class Ea {
       this.initializeEventListeners());
   }
   static resetHeaderFlag() {
-    Ea.headerInitialized = !1;
+    Ua.headerInitialized = !1;
   }
   initializeEventListeners() {
     var e, t, n, A;
@@ -67025,7 +67250,7 @@ class Ea {
               ve('Saving progress...'));
           });
       })(this.jsonStorage),
-      Fa(this.jsonStorage),
+      Qa(this.jsonStorage),
       (function () {
         const e = document.getElementById('export-btn');
         if (!e) return;
@@ -67149,7 +67374,7 @@ class Ea {
                 void 0 !== n
                   ? n
                   : null,
-              i = ja(A, t, o);
+              i = Ea(A, t, o);
             document.body.appendChild(i);
           });
       })(this.htmlGenerator, this.layoutMode),
@@ -67225,7 +67450,8 @@ class Ea {
           } else console.error('Error: #app not found in the DOM');
         }
       })(this.editable, this.brandTitle, this.showAttributeTab),
-      (Ea.headerInitialized = !0));
+      (Ua.headerInitialized = !0),
+      Fa.init(this.layoutMode, this.editable));
   }
   setupExportHTMLButton() {
     const e = document.getElementById('export-html-btn');
@@ -67260,6 +67486,6 @@ class Ea {
       });
   }
 }
-((Ea.headerInitialized = !1), (Ea.initialCanvasWidth = null));
-const Qa = new Ea();
-((exports.PageBuilder = Ea), (exports.PageBuilderCore = Qa));
+((Ua.headerInitialized = !1), (Ua.initialCanvasWidth = null));
+const La = new Ua();
+((exports.PageBuilder = Ua), (exports.PageBuilderCore = La));
