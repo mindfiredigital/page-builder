@@ -1,0 +1,40 @@
+/* ============================================================
+   Page Builder — CSS Entry Point
+   postcss-import bundles all files into a single output at
+   build time. Load order: base → layout → components → ui → responsive.
+   ============================================================ */
+
+/* Google Fonts — loaded once from the entry */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* ── 1. Base ───────────────────────────────────────────────── */
+@import './base/reset.css';
+@import './base/scrollbar.css';
+
+/* ── 2. Layout ─────────────────────────────────────────────── */
+@import './layout/app.css';
+@import './layout/navbar.css';
+@import './layout/canvasModes.css';
+
+/* ── 3. Components ─────────────────────────────────────────── */
+@import './components/draggable.css';
+@import './components/editable.css';
+@import './components/container.css';
+@import './components/text.css';
+@import './components/button.css';
+@import './components/header.css';
+@import './components/image.css';
+@import './components/video.css';
+@import './components/table.css';
+@import './components/link.css';
+@import './components/richText.css';
+
+/* ── 4. UI Panels ──────────────────────────────────────────── */
+@import './ui/customizationSidebar.css';
+@import './ui/layerView.css';
+@import './ui/modal.css';
+@import './ui/exportDropdown.css';
+
+/* ── 5. Responsive ─────────────────────────────────────────── */
+@import './responsive/breakpoints.css';
+@import './mobile/drawers.css';

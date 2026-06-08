@@ -1,0 +1,16 @@
+/* Components — Button component */
+
+.button-component {
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: black;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.button-component:hover {
+  transform: translateY(-1px);
+}

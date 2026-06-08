@@ -1,0 +1,48 @@
+/* Responsive — Media query breakpoints (non-mobile drawer) */
+
+@media (max-width: 768px) {
+  .preview-tablet {
+    width: 100%;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  #sidebar {
+    width: 90px;
+  }
+
+  .draggable {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .draggable:nth-child(2n) {
+    margin-right: 0;
+  }
+
+  #customization {
+    width: 320px;
+  }
+}
+
+@media (max-width: 1400px) {
+  #customization {
+    width: 300px;
+  }
+}
+
+@media (max-width: 550px) {
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .preview-btn {
+    padding: 4px 6px;
+  }
+
+  .center-text {
+    font-size: 17px;
+  }
+}

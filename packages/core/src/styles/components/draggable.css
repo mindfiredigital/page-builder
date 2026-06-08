@@ -1,0 +1,99 @@
+/* Components — Draggable sidebar items */
+
+/* Draggable Items */
+.draggable {
+  text-align: center;
+  cursor: grab;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  width: calc(50% - 6px);
+  display: inline-block;
+  margin-right: 8px;
+  margin-bottom: 12px;
+  padding: 12px 8px;
+  font-size: 11px;
+  color: #64748b;
+  vertical-align: top;
+  border-radius: 6px;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  min-height: 70px;
+
+  /* Center content vertically */
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.draggable:nth-child(2n) {
+  margin-right: 4px;
+}
+
+/* Add this new class for the category container */
+.category {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.draggable:hover {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+/* Draggable Icons */
+.component-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  transition: opacity 0.2s ease;
+  opacity: 0.7;
+}
+
+.draggable:hover .component-icon {
+  opacity: 1;
+}
+
+/* Custom component letter styling */
+.custom-component-letter {
+  width: 28px;
+  height: 28px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Drag text styling */
+.drag-text {
+  font-size: 10px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-top: 4px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Category headings */
+.categoryHeading {
+  margin: 0 0 16px 0;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 4px;
+}

@@ -1,0 +1,190 @@
+/* Components — Editable component base styles and interaction states */
+
+/* Component Styles */
+.component {
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  /* position: absolute; */
+  position: relative;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.component:hover {
+  border-color: #94a3b8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Editable components on the canvas */
+.editable-component {
+  border: 1px dashed #cbd5e1;
+  cursor: text;
+  position: relative;
+  pointer-events: auto;
+  /* No default background-color — components are transparent so parent container
+     background colours are always visible through child components.
+     Users set background explicitly via the sidebar. */
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.component-text-content {
+  display: block;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.component-resizer {
+  overflow: hidden !important;
+  resize: both !important;
+}
+
+.component-label,
+.column-label {
+  position: absolute;
+  top: -2px;
+  left: 6px;
+  background-color: #1e293b;
+  color: white;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: none;
+  z-index: 9000;
+  pointer-events: none;
+  pointer-events: none;
+}
+
+.column:hover .column-label {
+  display: block;
+}
+
+/* Control panel that appears on hover */
+.component-controls {
+  display: none;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  align-items: center;
+  z-index: 9000;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+  padding: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.component-controls img {
+  pointer-events: auto;
+}
+
+.delete-icon {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Drag handle (grid mode) — shown inside .component-controls on hover */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  cursor: grab;
+  color: #94a3b8;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.drag-handle:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Insert-position indicator shown during grid-mode drag */
+.drop-insert-indicator {
+  height: 3px;
+  background-color: #3b82f6;
+  border-radius: 2px;
+  pointer-events: none;
+  position: relative;
+  margin: 0;
+  width: 100%;
+}
+
+.drop-insert-indicator::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+}
+
+/* Drop preview styling */
+.drop-preview {
+  border: 2px dashed #3b82f6;
+  background-color: rgba(59, 130, 246, 0.05);
+  position: absolute;
+  pointer-events: none;
+  display: none;
+  border-radius: 4px;
+}
+
+.drop-preview.visible {
+  display: block;
+}
+
+.editable-component.selected,
+.table-cell-content.selected,
+.table-row.selected {
+  /* Use outline so the selection indicator never overrides the user's custom border */
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  position: relative;
+}
+
+.editable-component.selected>.component-controls:first-of-type {
+  display: flex !important;
+}
+
+.editable-component.selected>.component-label:first-of-type {
+  display: block !important;
+}
+
+/* Containers use JS-controlled .label-visible — exclude them here to prevent
+   every ancestor container showing its label when cursor enters a child. */
+.editable-component:not(.container-component):hover>.component-label:first-of-type {
+  display: block !important;
+}
+
+.editable-component:hover>.component-controls:first-of-type {
+  display: flex;
+  gap: 2px;
+}
+
+.editable-component:hover {
+  /* Use outline so hover indicator never conflicts with the user's border-color */
+  outline: 1px solid #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}

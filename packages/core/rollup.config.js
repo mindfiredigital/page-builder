@@ -4,6 +4,7 @@ const commonjs = require('@rollup/plugin-commonjs');
 const { babel } = require('@rollup/plugin-babel');
 const terser = require('@rollup/plugin-terser');
 const postcss = require('rollup-plugin-postcss');
+const postcssImport = require('postcss-import');
 const { dts } = require('rollup-plugin-dts');
 const replace = require('@rollup/plugin-replace');
 
@@ -29,6 +30,7 @@ module.exports = [
         extract: true,
         minimize: true,
         inject: true,
+        plugins: [postcssImport()],
       }),
       typescript({
         tsconfig: './tsconfig.json',

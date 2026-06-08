@@ -22,7 +22,7 @@ import {
   syntaxHighlightHTML,
   syntaxHighlightCSS,
 } from './utils/utilityFunctions.js';
-import './styles/main.css';
+import './styles/index.css';
 export class PageBuilder {
   constructor(
     dynamicComponents = { Basic: [], Extra: [], Custom: {} },

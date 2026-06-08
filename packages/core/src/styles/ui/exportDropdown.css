@@ -1,0 +1,37 @@
+/* UI — Export dropdown menu */
+
+/* Export dropdown */
+.export-dropdown {
+  display: none;
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-top: 4px;
+  right: 20px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.export-dropdown.visible {
+  display: block;
+}
+
+.export-option {
+  padding: 10px 16px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.export-option:hover {
+  background-color: #f8fafc;
+  color: #1e293b;
+}

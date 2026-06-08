@@ -1,0 +1,76 @@
+/* Layout — App container and sidebar shell */
+
+/* App Container */
+#app {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Sidebar (Left) */
+#sidebar {
+  width: 180px;
+  flex-shrink: 0;
+  min-height: 0;
+  background-color: #ffffff;
+  padding: 16px 12px;
+  overflow-y: auto;
+  border-right: 1px solid #e2e8f0;
+}
+
+#sidebar h3 {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+/* Canvas Area */
+#canvas {
+  flex-grow: 1;
+  min-width: 0;
+  min-height: 0;
+  background-color: #ffffff;
+  overflow: auto;
+  box-sizing: border-box;
+  background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px);
+}
+
+#canvas.grid-layout-active {
+  display: block;
+}
+
+#customization {
+  position: relative;
+  display: none;
+  right: 0;
+  width: 300px;
+  flex-shrink: 0;
+  min-height: 0;
+  background-color: #ffffff;
+  box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  border-left: 1px solid #e2e8f0;
+  overflow: auto;
+  color: #334155;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Utility Classes */
+.hidden {
+  display: none;
+}
+
+/* Typography refinements */
+#customization * {
+  font-size: inherit;
+  line-height: inherit;
+}

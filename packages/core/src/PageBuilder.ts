@@ -22,7 +22,7 @@ import {
   syntaxHighlightHTML,
   syntaxHighlightCSS,
 } from './utils/utilityFunctions';
-import './styles/main.css';
+import './styles/index.css';
 
 export class PageBuilder {
   private canvas: Canvas;

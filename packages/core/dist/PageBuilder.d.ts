@@ -1,4 +1,4 @@
-import './styles/main.css';
+import './styles/index.css';
 export declare class PageBuilder {
   private canvas;
   private sidebar;

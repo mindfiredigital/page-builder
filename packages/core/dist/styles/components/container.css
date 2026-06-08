@@ -1,0 +1,78 @@
+/* Components — Container component with depth-based borders and highlights */
+
+/* Container Component */
+.container-component {
+  border: 1px dashed #cbd5e1;
+  position: relative;
+  pointer-events: auto;
+  box-sizing: border-box;
+  border-radius: 4px;
+  min-height: 100px;
+  min-width: 100px;
+}
+
+/* Depth-based default borders — each nesting level gets a distinct colour */
+.container-component[data-depth="0"] { border: 1px dashed #334155; }
+.container-component[data-depth="1"] { border: 1px dashed #3b82f6; }
+.container-component[data-depth="2"] { border: 1px dashed #10b981; }
+.container-component[data-depth="3"] { border: 1px dashed #f97316; }
+
+/*
+ * Hover / drag-highlight indicators use OUTLINE so they never conflict with
+ * the user's custom border (which is an inline style set via the sidebar).
+ * box-shadow no longer needs !important because it doesn't collide with border.
+ */
+.container-component[data-depth="0"]:hover,
+.container-component[data-depth="0"].container-highlight {
+  outline: 2px solid #0f172a !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.2);
+}
+.container-component[data-depth="1"]:hover,
+.container-component[data-depth="1"].container-highlight {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+.container-component[data-depth="2"]:hover,
+.container-component[data-depth="2"].container-highlight {
+  outline: 2px solid #059669 !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+.container-component[data-depth="3"]:hover,
+.container-component[data-depth="3"].container-highlight {
+  outline: 2px solid #ea580c !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+
+/* Fallback for containers that don't yet have a data-depth attribute */
+.container-component:not([data-depth]):hover {
+  outline: 1px solid #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+.container-highlight:not([data-depth]) {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.container-component.container-grid-active {
+  display: block;
+}
+
+/* Depth-based label badge colours match the container border */
+.container-component[data-depth="0"] > .component-label { background-color: #334155; }
+.container-component[data-depth="1"] > .component-label { background-color: #3b82f6; }
+.container-component[data-depth="2"] > .component-label { background-color: #10b981; }
+.container-component[data-depth="3"] > .component-label { background-color: #f97316; }
+
+/*
+ * Container labels are managed entirely by JS via the .label-visible class
+ * (added/removed in initContainerEventListeners on mouseover/leave).
+ * Override the generic CSS :hover rule so only the innermost hovered
+ * container shows its name — not every ancestor that is also :hover.
+ */
+.container-component > .component-label { display: none; }
+.container-component.label-visible > .component-label:first-of-type { display: block; }
