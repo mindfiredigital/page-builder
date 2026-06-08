@@ -64,10 +64,14 @@ export class CanvasDragHandler {
       let newY = actualMouseY + offsetY;
 
       /* --- Boundary clamping: printable (A4) mode vs free-form canvas --- */
+      const isTopLevel = element.parentElement === canvasEl;
+
       if (
         CanvasSharedState.layoutMode === 'absolute' &&
-        canvasEl.classList.contains('preview-printable')
+        canvasEl.classList.contains('preview-printable') &&
+        isTopLevel
       ) {
+        /* Top-level components: clamp to the canvas content area (inside margins) */
         const style = window.getComputedStyle(canvasEl);
         const paddingRight = parseFloat(style.paddingRight);
         const paddingLeft = parseFloat(style.paddingLeft);
@@ -86,13 +90,20 @@ export class CanvasDragHandler {
         newY = Math.max(newY, paddingTop);
 
         /* No bottom constraint — canvas grows via scrollHeight */
-      } else {
-        /* General mode: clamp to canvas scroll dimensions */
+      } else if (isTopLevel) {
+        /* General top-level mode: clamp to canvas scroll dimensions */
         const elementRect = element.getBoundingClientRect();
         const maxX = canvasEl.scrollWidth - elementRect.width;
         const maxY = canvasEl.scrollHeight - elementRect.height;
         newX = Math.max(0, Math.min(newX, maxX));
         newY = Math.max(0, Math.min(newY, maxY));
+      } else {
+        /* Nested inside a container: clamp to container bounds (0 → container size) */
+        const parentEl = element.parentElement as HTMLElement;
+        const maxX = parentEl.offsetWidth - element.offsetWidth;
+        const maxY = parentEl.offsetHeight - element.offsetHeight;
+        newX = Math.max(0, Math.min(newX, Math.max(0, maxX)));
+        newY = Math.max(0, Math.min(newY, Math.max(0, maxY)));
       }
 
       element.style.left = `${newX}px`;

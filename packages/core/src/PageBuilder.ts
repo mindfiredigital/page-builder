@@ -45,7 +45,7 @@ export class PageBuilder {
     editable: boolean | null = true,
     brandTitle?: string,
     showAttributeTab?: boolean,
-    layoutMode: 'absolute' | 'grid' | undefined = 'grid'
+    layoutMode: 'absolute' | 'grid' | undefined = 'absolute'
   ) {
     this.dynamicComponents = dynamicComponents;
     this.initialDesign = initialDesign;

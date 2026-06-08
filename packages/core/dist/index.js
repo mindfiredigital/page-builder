@@ -3094,9 +3094,11 @@ class G {
           g = i - f;
         let m = l.clientX - u.left + c.scrollLeft + p,
           w = l.clientY - u.top + c.scrollTop + g;
+        const y = n.parentElement === c;
         if (
           'absolute' === e.layoutMode &&
-          c.classList.contains('preview-printable')
+          c.classList.contains('preview-printable') &&
+          y
         ) {
           const e = window.getComputedStyle(c),
             t = parseFloat(e.paddingRight),
@@ -3106,12 +3108,18 @@ class G {
           m = Math.max(m, A);
           const i = c.offsetWidth - t - o;
           ((m = Math.min(m, i)), (w = Math.max(w, r)));
-        } else {
+        } else if (y) {
           const e = n.getBoundingClientRect(),
             t = c.scrollWidth - e.width,
             A = c.scrollHeight - e.height;
           ((m = Math.max(0, Math.min(m, t))),
             (w = Math.max(0, Math.min(w, A))));
+        } else {
+          const e = n.parentElement,
+            t = e.offsetWidth - n.offsetWidth,
+            A = e.offsetHeight - n.offsetHeight;
+          ((m = Math.max(0, Math.min(m, Math.max(0, t)))),
+            (w = Math.max(0, Math.min(w, Math.max(0, A)))));
         }
         ((n.style.left = `${m}px`),
           (n.style.top = `${w}px`),
@@ -66979,7 +66987,7 @@ class Ea {
     n = !0,
     A,
     r,
-    o = 'grid'
+    o = 'absolute'
   ) {
     ((this.dynamicComponents = e),
       (this.initialDesign = t),
