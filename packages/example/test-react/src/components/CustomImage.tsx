@@ -1,69 +1,98 @@
-import * as React from 'react';
-import { useImageStore } from '../store/ImageStore';
+import React, { forwardRef, Ref, useRef, useLayoutEffect } from 'react';
+import { useImageStore, IMAGE_DEFAULTS } from '../store/ImageStore';
 
 interface CustomImageProps {
   componentId?: string;
 }
 
-const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
-  ({ componentId }, ref) => {
-    const id = componentId || 'default';
-    const [imageSrc, setImageSrc] = React.useState<string | null>(null);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
+const CustomImage = forwardRef(
+  (props: CustomImageProps, ref: Ref<HTMLDivElement>) => {
+    const id = (props as any).componentId || 'default';
+    const hasSettings = useImageStore(state => id in state.settings);
+    const s = useImageStore(state => state.settings[id] ?? IMAGE_DEFAULTS);
+    const set = useImageStore(state => state.set);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const objectFit = useImageStore(state => state.getObjectFit(id));
-    const altText = useImageStore(state => state.getAltText(id));
-    const caption = useImageStore(state => state.getCaption(id));
+    useLayoutEffect(() => {
+      if (!hasSettings) {
+        const el = document.getElementById(id);
+        if (el instanceof HTMLElement) {
+          const saved = el.getAttribute('data-pb-settings');
+          if (saved) {
+            try {
+              set(id, JSON.parse(saved));
+            } catch {}
+          }
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
+
+    useLayoutEffect(() => {
+      const el = document.getElementById(id);
+      if (el instanceof HTMLElement) {
+        el.setAttribute('data-pb-settings', JSON.stringify(s));
+      }
+    });
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = () => setImageSrc(reader.result as string);
+      reader.onload = () => set(id, { src: reader.result as string });
       reader.readAsDataURL(file);
     };
+
+    const filterCss =
+      [
+        s.brightness !== 100 ? `brightness(${s.brightness}%)` : '',
+        s.contrast !== 100 ? `contrast(${s.contrast}%)` : '',
+        s.grayscale > 0 ? `grayscale(${s.grayscale}%)` : '',
+        s.blur > 0 ? `blur(${s.blur}px)` : '',
+        s.sepia > 0 ? `sepia(${s.sepia}%)` : '',
+        s.saturate !== 100 ? `saturate(${s.saturate}%)` : '',
+      ]
+        .filter(Boolean)
+        .join(' ') || undefined;
 
     return (
       <div
         ref={ref}
         style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#f1f5f9',
+          width: `${s.widthValue}${s.widthUnit}`,
+          height: `${s.heightValue}${s.heightUnit}`,
+          paddingTop: s.paddingTop ? `${s.paddingTop}px` : undefined,
+          paddingRight: s.paddingRight ? `${s.paddingRight}px` : undefined,
+          paddingBottom: s.paddingBottom ? `${s.paddingBottom}px` : undefined,
+          paddingLeft: s.paddingLeft ? `${s.paddingLeft}px` : undefined,
+          backgroundColor: s.src ? undefined : '#f1f5f9',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '6px',
+          borderRadius: `${s.borderRadius}px`,
           overflow: 'hidden',
-          border: '2px dashed #cbd5e1',
+          border: s.src ? 'none' : '2px dashed #cbd5e1',
           position: 'relative',
           boxSizing: 'border-box',
+          opacity: s.opacity,
+          boxShadow: s.boxShadow === 'none' ? undefined : s.boxShadow,
         }}
       >
-        {imageSrc ? (
+        {s.src ? (
           <>
-            {/*
-              Keep width/height 100% fixed so object-fit has a defined box to
-              work within. object-fit controls how the image *content* is scaled
-              inside that box — not the box dimensions itself.
-                contain  → scale down/up to fit, letterboxed
-                cover    → scale to fill, crops edges
-                fill     → stretch to fill (no aspect ratio)
-                none     → natural size, centered (crops if larger than box)
-                scale-down → smaller of contain vs none
-            */}
             <img
-              src={imageSrc}
-              alt={altText}
+              src={s.src}
+              alt={s.altText}
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: objectFit as React.CSSProperties['objectFit'],
+                objectFit: s.objectFit as React.CSSProperties['objectFit'],
                 display: 'block',
+                filter: filterCss,
               }}
             />
-            {caption && (
+            {s.caption && (
               <div
                 style={{
                   position: 'absolute',
@@ -77,7 +106,7 @@ const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
                   textAlign: 'center',
                 }}
               >
-                {caption}
+                {s.caption}
               </div>
             )}
             <button
@@ -125,11 +154,13 @@ const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
                 d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
               />
             </svg>
-            <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b' }}>
+            <span
+              style={{ fontSize: '13px', fontWeight: 500, color: '#64748b' }}
+            >
               Click to upload image
             </span>
             <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-              PNG, JPG, WebP supported
+              or paste a URL in settings
             </span>
           </div>
         )}
@@ -145,4 +176,5 @@ const CustomImage = React.forwardRef<HTMLDivElement, CustomImageProps>(
   }
 );
 
+CustomImage.displayName = 'CustomImage';
 export default CustomImage;

@@ -1,5 +1,42 @@
 import { handleContainerDrop } from './ContainerDropHandler';
 
+/**
+ * Shows a blue insert-indicator line inside the container at the position
+ * where the dragged component would be inserted.  Called during dragover
+ * when a reorder drag (dragged-component-id) is detected.
+ */
+function updateContainerInsertIndicator(
+  event: DragEvent,
+  container: HTMLElement
+): void {
+  /* Remove any existing indicators inside this container */
+  container
+    .querySelectorAll<HTMLElement>(':scope > .drop-insert-indicator')
+    .forEach(el => el.remove());
+
+  const children = Array.from(
+    container.querySelectorAll<HTMLElement>(':scope > .editable-component')
+  );
+
+  let insertBefore: HTMLElement | null = null;
+  for (const child of children) {
+    const rect = child.getBoundingClientRect();
+    if (event.clientY < rect.top + rect.height / 2) {
+      insertBefore = child;
+      break;
+    }
+  }
+
+  const indicator = document.createElement('div');
+  indicator.className = 'drop-insert-indicator';
+
+  if (insertBefore) {
+    container.insertBefore(indicator, insertBefore);
+  } else {
+    container.appendChild(indicator);
+  }
+}
+
 /* Wires all DOM event listeners onto the container element */
 export function initContainerEventListeners(element: HTMLElement): void {
   /* Stop drag bubbling when the container itself is the drag source */
@@ -10,9 +47,26 @@ export function initContainerEventListeners(element: HTMLElement): void {
   element.addEventListener('drop', (event: DragEvent) =>
     handleContainerDrop(element, event)
   );
-  element.addEventListener('dragover', (event: Event) =>
-    event.preventDefault()
-  );
+
+  element.addEventListener('dragover', (event: DragEvent) => {
+    event.preventDefault();
+    /* When a component is being reordered (drag handle), show an insert
+       indicator within this container and stop the event from reaching the
+       canvas-level dragover handler so the canvas indicator doesn't appear. */
+    if (event.dataTransfer?.types.includes('dragged-component-id')) {
+      event.stopPropagation();
+      updateContainerInsertIndicator(event, element);
+    }
+  });
+
+  /* Clean up the insert indicator when the cursor leaves the container */
+  element.addEventListener('dragleave', (event: DragEvent) => {
+    if (!element.contains(event.relatedTarget as Node)) {
+      element
+        .querySelectorAll<HTMLElement>(':scope > .drop-insert-indicator')
+        .forEach(el => el.remove());
+    }
+  });
 
   /*
    * mouseover fires for every element the cursor enters (bubbles up).

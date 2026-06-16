@@ -1,9 +1,7 @@
 export declare function createTextContent(): HTMLElement;
 export declare function createHeadingContent(level: number): HTMLElement;
 export declare function createImageContent(): HTMLElement;
-export declare function createListContent(
-  style: 'unordered' | 'ordered'
-): HTMLElement;
+export declare function createListContent(style: 'unordered' | 'ordered'): HTMLElement;
 export declare function createCodeContent(): HTMLElement;
 export declare function createQuoteContent(): HTMLElement;
 export declare function createDelimiterContent(): HTMLElement;

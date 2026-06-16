@@ -145,6 +145,9 @@ export class PageBuilderComponent extends HTMLElement {
   set configData(value: any) {
     this.config = value;
     this.initialized = false;
+    if (!this.firstElementChild) {
+      this.innerHTML = this.template;
+    }
     this.initializePageBuilder();
   }
 

@@ -1,3 +1,3 @@
 export declare class ButtonComponent {
-  create(label?: string): HTMLElement;
+    create(label?: string): HTMLElement;
 }

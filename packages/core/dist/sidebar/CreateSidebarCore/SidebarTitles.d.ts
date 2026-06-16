@@ -1,3 +1,3 @@
 export declare const SIDEBAR_TITLES: {
-  [key: string]: string;
+    [key: string]: string;
 };

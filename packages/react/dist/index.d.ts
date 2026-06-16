@@ -58,11 +58,4 @@ interface PageBuilderReactProps {
 
 declare const PageBuilderReact: React$1.FC<PageBuilderReactProps>;
 
-export {
-  BasicComponent,
-  ComponentAttribute,
-  CustomComponentConfig,
-  DynamicComponents,
-  PageBuilderDesign,
-  PageBuilderReact,
-};
+export { BasicComponent, ComponentAttribute, CustomComponentConfig, DynamicComponents, PageBuilderDesign, PageBuilderReact };

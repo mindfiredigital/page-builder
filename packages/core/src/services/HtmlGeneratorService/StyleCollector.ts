@@ -75,10 +75,21 @@ export class StyleCollector {
         return;
       }
 
+      /* If this element lives inside a custom component whose outer wrapper
+         has a user-set style.color (applied via the sidebar), propagate that
+         color to every descendant so the sidebar choice is always honoured.
+         Without this, a React-rendered inner element's own style.color (from
+         the component's store default) would win due to higher specificity. */
+      const ancestorColor = this.findCustomAncestorColor(
+        component as HTMLElement,
+        canvasElement
+      );
+
       this.collectComputedStyles(
         computedStyles,
         componentStyles,
-        component as HTMLElement
+        component as HTMLElement,
+        ancestorColor
       );
       this.applyInlineVerticalAlign(computedStyles, componentStyles);
 
@@ -198,17 +209,61 @@ export class StyleCollector {
     'box-shadow',
   ]);
 
+  /* ─── FindCustomAncestorColor ──────────────────────────────────────────────
+     Walks up from the given element to the canvas root. If any ancestor is a
+     custom element (hyphenated tag name — e.g. react-component-customtext) AND
+     has an explicit style.color set by the sidebar, returns that color string.
+     Returns an empty string when no such ancestor exists.
+
+     This is needed because when the user sets a color on the outer custom-element
+     wrapper via the sidebar, the React-rendered inner elements still carry their
+     own style.color (from the component store default). That inner color has higher
+     selector specificity and would otherwise override the user's choice in the
+     preview. Propagating the ancestor color with !important fixes this.
+     ─────────────────────────────────────────────────────────────────────────── */
+  private findCustomAncestorColor(
+    element: HTMLElement,
+    canvas: HTMLElement
+  ): string {
+    let ancestor = element.parentElement;
+    while (ancestor && ancestor !== canvas) {
+      if (
+        ancestor.tagName.toLowerCase().includes('-') &&
+        (ancestor as HTMLElement).style.color
+      ) {
+        return (ancestor as HTMLElement).style.color;
+      }
+      ancestor = ancestor.parentElement;
+    }
+    return '';
+  }
+
   private collectComputedStyles(
     computedStyles: CSSStyleDeclaration,
     out: string[],
-    element?: HTMLElement
+    element?: HTMLElement,
+    ancestorColor?: string
   ): void {
+    /* If the element has an explicit inline color, skip 'color' from the
+       computed pass — we'll emit it with !important below so it always beats
+       any conflicting rule that may appear in the embeddedStyles block. */
+    const hasInlineColor = !!element?.style.color;
+
+    /* When a custom-component ancestor has a user-set color (ancestorColor),
+       use that color for this element instead of its own React-rendered color.
+       This ensures the sidebar color choice propagates into all inner elements. */
+    const effectiveColor =
+      ancestorColor || (hasInlineColor ? element!.style.color : '');
+
     for (let i = 0; i < computedStyles.length; i++) {
       const prop = computedStyles[i];
       const value = computedStyles.getPropertyValue(prop);
 
       /* Skip properties whose computed values are polluted by editor chrome */
       if (StyleCollector.INLINE_ONLY_PROPS.has(prop)) continue;
+
+      /* Handled separately with !important via effectiveColor below */
+      if (prop === 'color' && effectiveColor) continue;
 
       if (Canvas.layoutMode === 'grid') {
         if (CSS_PROPERTIES_TO_EXCLUDE.includes(prop as never)) continue;
@@ -230,6 +285,14 @@ export class StyleCollector {
     /* Append user-set decorative styles read from inline styles only */
     if (element) {
       this.collectInlineDecorativeStyles(element, out);
+
+      /* Emit the effective color with !important so it always wins:
+         - effectiveColor comes from ancestorColor when a sidebar-colored custom
+           element ancestor is present (propagates the user's choice to inner elements)
+         - otherwise effectiveColor is the element's own inline style.color */
+      if (effectiveColor) {
+        out.push(`color: ${effectiveColor} !important;`);
+      }
     }
   }
 

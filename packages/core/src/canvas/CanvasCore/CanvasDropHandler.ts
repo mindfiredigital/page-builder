@@ -178,9 +178,9 @@ export class CanvasDropHandler {
   }
 
   /**
-   * Moves an existing top-level canvas component to the position indicated
-   * by the cursor.  Only canvas-level components (direct children of
-   * canvasElement) are eligible; components inside containers are ignored.
+   * Moves a component to the position indicated by the cursor.
+   * Works for both top-level canvas components AND components nested inside
+   * containers — always reorders within whatever parent the component belongs to.
    */
   private static handleReorder(
     draggedId: string,
@@ -188,25 +188,45 @@ export class CanvasDropHandler {
     canvasElement: HTMLElement
   ): void {
     const draggedEl = document.getElementById(draggedId);
-    if (!draggedEl || draggedEl.parentElement !== canvasElement) return;
+    if (!draggedEl) return;
 
-    const insertBefore = CanvasSharedState.gridManager.findInsertionPoint(
-      event,
-      canvasElement
+    const parent = draggedEl.parentElement;
+    if (!parent) return;
+
+    /* Remove any insert indicators — both canvas-level and container-level */
+    document
+      .querySelectorAll('.drop-insert-indicator')
+      .forEach(el => el.remove());
+
+    /* Find insertion point among the parent's direct editable-component children,
+       skipping the dragged element so it is never returned as its own target. */
+    const siblings = Array.from(
+      parent.querySelectorAll<HTMLElement>(':scope > .editable-component')
     );
 
-    /* No-op: dropping on the element itself */
-    if (insertBefore === draggedEl) return;
+    let insertBefore: HTMLElement | null = null;
+    for (const sibling of siblings) {
+      if (sibling === draggedEl) continue;
+      const rect = sibling.getBoundingClientRect();
+      if (event.clientY < rect.top + rect.height / 2) {
+        insertBefore = sibling;
+        break;
+      }
+    }
 
     if (insertBefore) {
-      canvasElement.insertBefore(draggedEl, insertBefore);
-    } else {
+      parent.insertBefore(draggedEl, insertBefore);
+    } else if (parent === canvasElement) {
+      /* Canvas level: keep the scroll spacer last */
       const spacer = canvasElement.querySelector('#canvas-scroll-spacer');
       if (spacer) {
         canvasElement.insertBefore(draggedEl, spacer);
       } else {
         canvasElement.appendChild(draggedEl);
       }
+    } else {
+      /* Container level: append to end */
+      parent.appendChild(draggedEl);
     }
 
     draggedEl.style.opacity = '';

@@ -3,11 +3,23 @@ import { CanvasStateManager } from './CanvasStateManager';
 
 /* Handles all custom event dispatching originating from the canvas */
 export class CanvasEventDispatcher {
-  /* Fires 'design-change' with the current state and persists to JSONStorage */
+  private static _designChangeTimer: ReturnType<typeof setTimeout> | null =
+    null;
+
+  /* Fires 'design-change' with the current state and persists to JSONStorage.
+     Calls are debounced (300 ms) so that rapid sequences — e.g. every keystroke
+     while typing in a text component — collapse into a single serialisation and
+     localStorage write.  This is the main performance lever for large pages. */
   static dispatchDesignChange(): void {
     const { canvasElement, editable, jsonStorage } = CanvasSharedState;
+    if (!canvasElement || editable === false) return;
 
-    if (canvasElement && editable !== false) {
+    if (CanvasEventDispatcher._designChangeTimer !== null) {
+      clearTimeout(CanvasEventDispatcher._designChangeTimer);
+    }
+
+    CanvasEventDispatcher._designChangeTimer = setTimeout(() => {
+      CanvasEventDispatcher._designChangeTimer = null;
       const currentDesign = CanvasStateManager.getState();
 
       /* Bubble the design change up through the shadow DOM if needed */
@@ -19,7 +31,7 @@ export class CanvasEventDispatcher {
 
       canvasElement.dispatchEvent(event);
       jsonStorage.save(currentDesign);
-    }
+    }, 300);
   }
 
   /* Attach the global table-design-change listener on the window */

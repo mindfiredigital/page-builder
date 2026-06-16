@@ -15,7 +15,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
   editable = true,
   brandTitle,
   showAttributeTab,
-  layoutMode = 'absolute'
+  layoutMode = 'absolute',
 }) => {
   const builderRef = useRef<PageBuilderElement>(null);
   const [processedConfig, setProcessedConfig] =
@@ -42,7 +42,12 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
             connectedCallback() {
-              /* Guard against double-mount on reconnect */
+              /* A DOM move fires disconnectedCallback then connectedCallback.
+                 Cancel any pending unmount so the React tree survives moves. */
+              clearTimeout((this as any)._unmountTimer);
+              (this as any)._unmountTimer = undefined;
+
+              /* Guard against double-mount on reconnect (element was just moved) */
               if ((this as any)._pbMounted) return;
               (this as any)._pbMounted = true;
 
@@ -55,6 +60,20 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
                 this.style.width = componentConfig.defaultWidth;
               if (!this.style.height && componentConfig.defaultHeight)
                 this.style.height = componentConfig.defaultHeight;
+
+              /* Remove any stale React-rendered children that arrived via the
+                 parent container's innerHTML = savedContent during restoreState.
+                 Keep .component-controls and .component-label which are
+                 positioning fixtures re-added by addControlButtons. */
+              Array.from(this.children).forEach(child => {
+                const el = child as HTMLElement;
+                if (
+                  !el.classList.contains('component-controls') &&
+                  !el.classList.contains('component-label')
+                ) {
+                  el.remove();
+                }
+              });
 
               const mountPoint = document.createElement('div');
               mountPoint.style.cssText =
@@ -76,16 +95,25 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
             }
 
             disconnectedCallback() {
-              /* Notify stores/components that this instance is gone so they
-                 can purge stale per-ID data before the ID is reused. */
-              document.dispatchEvent(
-                new CustomEvent('pb:component-removed', {
-                  detail: { componentId: this.id },
-                })
-              );
-              /* Unmount React asynchronously to let the event settle first */
+              /* Defer unmount so a DOM move (disconnect + immediate reconnect)
+                 does not destroy the React tree.  connectedCallback cancels
+                 this timer when the element reconnects.  If it never reconnects
+                 (element truly deleted), the timer fires, we confirm with
+                 isConnected, then unmount and notify stores. */
               const root = (this as any)._pbRoot;
-              if (root) setTimeout(() => root.unmount(), 0);
+              const self = this;
+              (this as any)._unmountTimer = setTimeout(() => {
+                (self as any)._unmountTimer = undefined;
+                if (self.isConnected) return; // moved, not removed — skip
+                document.dispatchEvent(
+                  new CustomEvent('pb:component-removed', {
+                    detail: { componentId: self.id },
+                  })
+                );
+                if (root) root.unmount();
+                (self as any)._pbRoot = null;
+                (self as any)._pbMounted = false;
+              }, 0);
             }
           }
 
@@ -98,16 +126,18 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
           !customElements.get(settingsTagName)
         ) {
           class ReactSettingsElement extends HTMLElement {
-            connectedCallback() {
-              this.innerHTML = '';
-              const mountPoint = document.createElement('div');
-              this.appendChild(mountPoint);
+            _renderSettings() {
+              if (!(this as any)._settingsRoot) {
+                const mountPoint = document.createElement('div');
+                this.appendChild(mountPoint);
+                (this as any)._settingsRoot = ReactDOM.createRoot(mountPoint);
+              }
               const settingsData = this.getAttribute('data-settings');
               const parsedSettings = settingsData
                 ? JSON.parse(settingsData)
                 : {};
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                (this as any)._settingsRoot.render(
                   React.createElement(
                     componentConfig.settingsComponent!,
                     parsedSettings
@@ -116,6 +146,9 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
               } catch (error) {
                 console.error(`Error rendering settings component:`, error);
               }
+            }
+            connectedCallback() {
+              this._renderSettings();
             }
             static get observedAttributes() {
               return ['data-settings'];
@@ -126,19 +159,7 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
               newValue: string
             ) {
               if (name === 'data-settings' && newValue !== oldValue) {
-                this.innerHTML = '';
-                const mountPoint = document.createElement('div');
-                this.appendChild(mountPoint);
-                const settingsData = this.getAttribute('data-settings');
-                const parsedSettings = settingsData
-                  ? JSON.parse(settingsData)
-                  : {};
-                ReactDOM.createRoot(mountPoint).render(
-                  React.createElement(
-                    componentConfig.settingsComponent!,
-                    parsedSettings
-                  )
-                );
+                this._renderSettings();
               }
             }
           }
@@ -170,19 +191,24 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
               }
             }
             _mount() {
-              this.innerHTML = '';
-              const mountPoint = document.createElement('div');
-              this.appendChild(mountPoint);
+              if (!(this as any)._customizeRoot) {
+                const mountPoint = document.createElement('div');
+                this.appendChild(mountPoint);
+                (this as any)._customizeRoot = ReactDOM.createRoot(mountPoint);
+              }
               const settingsData = this.getAttribute('data-settings');
               const parsedSettings = settingsData
                 ? JSON.parse(settingsData)
                 : {};
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                (this as any)._customizeRoot.render(
                   React.createElement(CustomizeCtor, parsedSettings)
                 );
               } catch (error) {
-                console.error(`Error rendering customize component for ${key}:`, error);
+                console.error(
+                  `Error rendering customize component for ${key}:`,
+                  error
+                );
               }
             }
           }

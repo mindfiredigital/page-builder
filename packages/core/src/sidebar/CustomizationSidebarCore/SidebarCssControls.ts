@@ -75,50 +75,14 @@ export function populateCssControls(
   let cssContainer: HTMLElement = controlsContainer;
 
   if (customizeComponentTagName) {
-    const modeToggle = document.createElement('div');
-    modeToggle.className = 'customize-mode-toggle';
-
-    const defaultBtn = document.createElement('button');
-    defaultBtn.className = 'mode-btn active';
-    defaultBtn.textContent = 'Default';
-
-    const customBtn = document.createElement('button');
-    customBtn.className = 'mode-btn';
-    customBtn.textContent = 'Custom';
-
-    modeToggle.appendChild(defaultBtn);
-    modeToggle.appendChild(customBtn);
-    controlsContainer.appendChild(modeToggle);
-
-    const defaultPanel = document.createElement('div');
-    defaultPanel.className = 'default-css-panel';
-    controlsContainer.appendChild(defaultPanel);
-    cssContainer = defaultPanel;
-
-    const customPanel = document.createElement('div');
-    customPanel.className = 'custom-settings-panel';
-    customPanel.style.display = 'none';
-
     const customEl = document.createElement(customizeComponentTagName);
     customEl.setAttribute(
       'data-settings',
       JSON.stringify({ targetComponentId: component.id })
     );
-    customPanel.appendChild(customEl);
-    controlsContainer.appendChild(customPanel);
-
-    defaultBtn.addEventListener('click', () => {
-      defaultBtn.classList.add('active');
-      customBtn.classList.remove('active');
-      defaultPanel.style.display = 'block';
-      customPanel.style.display = 'none';
-    });
-    customBtn.addEventListener('click', () => {
-      customBtn.classList.add('active');
-      defaultBtn.classList.remove('active');
-      customPanel.style.display = 'block';
-      defaultPanel.style.display = 'none';
-    });
+    controlsContainer.appendChild(customEl);
+    addListenersFn(component);
+    return;
   }
 
   const displayIntent = component.dataset.displayIntent;

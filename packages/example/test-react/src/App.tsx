@@ -1,15 +1,22 @@
-import { PageBuilderReact, ComponentAttribute } from '@mindfiredigital/page-builder-react';
+import {
+  PageBuilderReact,
+  ComponentAttribute,
+} from '@mindfiredigital/page-builder-react';
 import ColorPicker from './components/ColorPicker';
 import CustomRating from './components/CustomRating';
 import CustomRatingSettings from './settings/CustomRatingSetting';
 import Image from './components/Image';
 import LandingPage from './components/LandingPage';
+import InvestorDeck from './components/InvestorDeck';
 import CustomVideo from './components/CustomVideo';
 import CustomImage from './components/CustomImage';
+import CustomText from './components/CustomText';
 import VideoSettings from './settings/VideoSettings';
 import ImageSettings from './settings/ImageSettings';
+import TextSettings from './settings/TextSettings';
+import InvestorDeckSettings from './settings/InvestorDeckSettings';
 import { localExecuteFunction } from './utils/executeFormula';
-import "./App.css";
+import './App.css';
 
 const App = () => {
   const dynamicAttributes: ComponentAttribute[] = [
@@ -60,11 +67,26 @@ const App = () => {
   const dynamicComponents = {
     Basic: [
       { name: 'button' },
-      { name: 'header', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
-      { name: 'text', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
-      { name: 'table', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
+      {
+        name: 'header',
+        attributes: dynamicAttributes,
+        globalExecuteFunction: localExecuteFunction,
+      },
+      {
+        name: 'text',
+        attributes: dynamicAttributes,
+        globalExecuteFunction: localExecuteFunction,
+      },
+      {
+        name: 'table',
+        attributes: dynamicAttributes,
+        globalExecuteFunction: localExecuteFunction,
+      },
       { name: 'video' },
       { name: 'image' },
+      { name: 'container' },
+      { name: 'twoCol' },
+      { name: 'threeCol' },
     ],
     Extra: [],
   };
@@ -123,14 +145,37 @@ const App = () => {
       </svg>`,
       title: 'Landing Page',
     },
+    CustomText: {
+      component: CustomText,
+      svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 6h16M4 12h16M4 18h10" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+      title: 'Custom Text',
+      customizeComponent: TextSettings,
+    },
+    InvestorDeck: {
+      component: InvestorDeck,
+      svg: `<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 17H15M9 13H15M9 9H10M4 4H20C20.5523 4 21 4.44772 21 5V19C21 19.5523 20.5523 20 20 20H4C3.44772 20 3 19.5523 3 19V5C3 4.44772 3.44772 4 4 4Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+      title: 'Investor Deck',
+      customizeComponent: InvestorDeckSettings,
+    },
   };
 
   return (
-    <div>
+    <div
+      style={{
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <PageBuilderReact
         config={dynamicComponents}
         customComponents={customComponents}
-        layoutMode='grid'
+        layoutMode="grid"
       />
     </div>
   );

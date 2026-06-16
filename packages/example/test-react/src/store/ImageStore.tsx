@@ -1,52 +1,89 @@
 import { create } from 'zustand';
 
-interface ImageState {
-  altTexts: Record<string, string>;
-  objectFits: Record<string, string>;
-  captions: Record<string, string>;
-  setAltText: (id: string, text: string) => void;
-  setObjectFit: (id: string, fit: string) => void;
-  setCaption: (id: string, caption: string) => void;
-  clearComponent: (id: string) => void;
-  getAltText: (id: string) => string;
-  getObjectFit: (id: string) => string;
-  getCaption: (id: string) => string;
+export interface ImageSettings {
+  src: string;
+  objectFit: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+  altText: string;
+  caption: string;
+  borderRadius: number;
+  opacity: number;
+  brightness: number;
+  contrast: number;
+  grayscale: number;
+  blur: number;
+  sepia: number;
+  saturate: number;
+  boxShadow: string;
+  widthValue: number;
+  widthUnit: 'px' | '%';
+  heightValue: number;
+  heightUnit: 'px' | '%';
+  paddingTop: number;
+  paddingRight: number;
+  paddingBottom: number;
+  paddingLeft: number;
 }
 
-export const useImageStore = create<ImageState>((set, get) => ({
-  altTexts: {},
-  objectFits: {},
-  captions: {},
+export const IMAGE_DEFAULTS: ImageSettings = {
+  src: '',
+  objectFit: 'contain',
+  altText: '',
+  caption: '',
+  borderRadius: 0,
+  opacity: 1,
+  brightness: 100,
+  contrast: 100,
+  grayscale: 0,
+  blur: 0,
+  sepia: 0,
+  saturate: 100,
+  boxShadow: 'none',
+  widthValue: 100,
+  widthUnit: '%',
+  heightValue: 100,
+  heightUnit: '%',
+  paddingTop: 0,
+  paddingRight: 0,
+  paddingBottom: 0,
+  paddingLeft: 0,
+};
 
-  setAltText: (id, text) =>
-    set(state => ({ altTexts: { ...state.altTexts, [id]: text } })),
+interface ImageState {
+  settings: Record<string, ImageSettings>;
+  set: (id: string, patch: Partial<ImageSettings>) => void;
+  clearComponent: (id: string) => void;
+}
 
-  setObjectFit: (id, fit) =>
-    set(state => ({ objectFits: { ...state.objectFits, [id]: fit } })),
+export const useImageStore = create<ImageState>(setState => ({
+  settings: {},
 
-  setCaption: (id, caption) =>
-    set(state => ({ captions: { ...state.captions, [id]: caption } })),
+  set: (id, patch) =>
+    setState(state => ({
+      settings: {
+        ...state.settings,
+        [id]: { ...(state.settings[id] ?? IMAGE_DEFAULTS), ...patch },
+      },
+    })),
 
-  /* Wipe all data for a specific component instance when it is removed */
-  clearComponent: id => {
-    set(state => {
-      const altTexts = { ...state.altTexts };
-      const objectFits = { ...state.objectFits };
-      const captions = { ...state.captions };
-      delete altTexts[id];
-      delete objectFits[id];
-      delete captions[id];
-      return { altTexts, objectFits, captions };
-    });
-  },
-
-  getAltText: id => get().altTexts[id] ?? '',
-  getObjectFit: id => get().objectFits[id] ?? 'contain',
-  getCaption: id => get().captions[id] ?? '',
+  clearComponent: id =>
+    setState(state => {
+      const settings = { ...state.settings };
+      delete settings[id];
+      return { settings };
+    }),
 }));
 
-/* Clear store data whenever the page-builder removes a component from the canvas */
 document.addEventListener('pb:component-removed', (e: Event) => {
   const { componentId } = (e as CustomEvent<{ componentId: string }>).detail;
   useImageStore.getState().clearComponent(componentId);
+});
+
+let _saveTimer: ReturnType<typeof setTimeout> | undefined;
+useImageStore.subscribe((newState, oldState) => {
+  if (newState.settings !== oldState.settings) {
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('table-design-change'));
+    }, 150);
+  }
 });

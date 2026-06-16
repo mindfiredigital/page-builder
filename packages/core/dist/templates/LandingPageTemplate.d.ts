@@ -1,3 +1,3 @@
 export declare class LandingPageTemplate {
-  create(): HTMLElement;
+    create(): HTMLElement;
 }

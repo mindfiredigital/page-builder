@@ -2,528 +2,447 @@ import { Canvas } from '../../canvas/Canvas.js';
 import { debounce } from '../../utils/utilityFunctions.js';
 import { populateCssControls } from './SidebarCssControls.js';
 /* Attaches every CSS-property change/input listener to the sidebar controls */
-export function addControlListeners(
-  component,
-  controlsContainer,
-  addListenersFn /* recursive ref for re-populate */,
-  customizeComponentTagName
-) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
-  /* Single debounced handler shared by all controls to batch history captures */
-  const captureStateDebounced = debounce(() => {
-    Canvas.dispatchDesignChange();
-    Canvas.historyManager.captureState();
-  }, 300);
-  const get = id => document.getElementById(id);
-  /* ── Dimensions ──────────────────────────────────────────────────────────── */
-  (_a = get('width')) === null || _a === void 0
-    ? void 0
-    : _a.addEventListener('input', () => {
+export function addControlListeners(component, controlsContainer, addListenersFn /* recursive ref for re-populate */, customizeComponentTagName) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+    /* Single debounced handler shared by all controls to batch history captures */
+    const captureStateDebounced = debounce(() => {
+        Canvas.dispatchDesignChange();
+        Canvas.historyManager.captureState();
+    }, 300);
+    const get = (id) => document.getElementById(id);
+    /* ── Dimensions ──────────────────────────────────────────────────────────── */
+    (_a = get('width')) === null || _a === void 0 ? void 0 : _a.addEventListener('input', () => {
         var _a;
-        const unit =
-          ((_a = get('width-unit')) === null || _a === void 0
-            ? void 0
-            : _a.value) || 'px';
+        const unit = ((_a = get('width-unit')) === null || _a === void 0 ? void 0 : _a.value) || 'px';
         component.style.width = `${get('width').value}${unit}`;
         captureStateDebounced();
-      });
-  (_b = get('height')) === null || _b === void 0
-    ? void 0
-    : _b.addEventListener('input', () => {
+    });
+    (_b = get('height')) === null || _b === void 0 ? void 0 : _b.addEventListener('input', () => {
         var _a;
-        const unit =
-          ((_a = get('height-unit')) === null || _a === void 0
-            ? void 0
-            : _a.value) || 'px';
+        const unit = ((_a = get('height-unit')) === null || _a === void 0 ? void 0 : _a.value) || 'px';
         component.style.height = `${get('height').value}${unit}`;
         captureStateDebounced();
-      });
-  /* ── Background color — two-way sync between picker and hex input ───────── */
-  (_c = get('background-color')) === null || _c === void 0
-    ? void 0
-    : _c.addEventListener('input', () => {
+    });
+    /* ── Background color — two-way sync between picker and hex input ───────── */
+    (_c = get('background-color')) === null || _c === void 0 ? void 0 : _c.addEventListener('input', () => {
         const val = get('background-color').value;
         component.style.backgroundColor = val;
         const hexInput = get('background-color-value');
-        if (hexInput) hexInput.value = val;
+        if (hexInput)
+            hexInput.value = val;
         captureStateDebounced();
-      });
-  (_d = get('background-color-value')) === null || _d === void 0
-    ? void 0
-    : _d.addEventListener('input', e => {
+    });
+    (_d = get('background-color-value')) === null || _d === void 0 ? void 0 : _d.addEventListener('input', e => {
         const val = e.target.value;
         component.style.backgroundColor = val;
         const picker = get('background-color');
-        if (picker) picker.value = val;
+        if (picker)
+            picker.value = val;
         captureStateDebounced();
-      });
-  /* ── Spacing ─────────────────────────────────────────────────────────────── */
-  /* Margin — all sides: capture element refs once so the handler never re-queries */
-  const marginInput = get('margin');
-  const marginUnitSel = get('margin-unit');
-  if (marginInput) {
-    const applyMarginAll = () => {
-      const val = marginInput.value || '0';
-      const unit =
-        (marginUnitSel === null || marginUnitSel === void 0
-          ? void 0
-          : marginUnitSel.value) || 'px';
-      /* Clear individual overrides first so the shorthand is never shadowed */
-      component.style.marginTop = '';
-      component.style.marginRight = '';
-      component.style.marginBottom = '';
-      component.style.marginLeft = '';
-      component.style.margin = `${val}${unit}`;
-      captureStateDebounced();
-    };
-    marginInput.addEventListener('input', applyMarginAll);
-    marginUnitSel === null || marginUnitSel === void 0
-      ? void 0
-      : marginUnitSel.addEventListener('change', applyMarginAll);
-  }
-  /* Margin — individual sides */
-  ['top', 'right', 'bottom', 'left'].forEach(side => {
-    const sideInput = get(`margin-${side}`);
-    const sideUnit = get(`margin-${side}-unit`);
-    const prop = `margin${side.charAt(0).toUpperCase()}${side.slice(1)}`;
-    if (sideInput) {
-      const apply = () => {
-        const unit =
-          (sideUnit === null || sideUnit === void 0
-            ? void 0
-            : sideUnit.value) || 'px';
-        component.style[prop] = `${sideInput.value || '0'}${unit}`;
-        captureStateDebounced();
-      };
-      sideInput.addEventListener('input', apply);
-      sideUnit === null || sideUnit === void 0
-        ? void 0
-        : sideUnit.addEventListener('change', apply);
+    });
+    /* ── Spacing ─────────────────────────────────────────────────────────────── */
+    /* Margin — all sides: capture element refs once so the handler never re-queries */
+    const marginInput = get('margin');
+    const marginUnitSel = get('margin-unit');
+    if (marginInput) {
+        const applyMarginAll = () => {
+            const val = marginInput.value || '0';
+            const unit = (marginUnitSel === null || marginUnitSel === void 0 ? void 0 : marginUnitSel.value) || 'px';
+            /* Clear individual overrides first so the shorthand is never shadowed */
+            component.style.marginTop = '';
+            component.style.marginRight = '';
+            component.style.marginBottom = '';
+            component.style.marginLeft = '';
+            component.style.margin = `${val}${unit}`;
+            captureStateDebounced();
+        };
+        marginInput.addEventListener('input', applyMarginAll);
+        marginUnitSel === null || marginUnitSel === void 0 ? void 0 : marginUnitSel.addEventListener('change', applyMarginAll);
     }
-  });
-  /* Padding — all sides */
-  const paddingInput = get('padding');
-  const paddingUnitSel = get('padding-unit');
-  if (paddingInput) {
-    const applyPaddingAll = () => {
-      const val = paddingInput.value || '0';
-      const unit =
-        (paddingUnitSel === null || paddingUnitSel === void 0
-          ? void 0
-          : paddingUnitSel.value) || 'px';
-      component.style.paddingTop = '';
-      component.style.paddingRight = '';
-      component.style.paddingBottom = '';
-      component.style.paddingLeft = '';
-      component.style.padding = `${val}${unit}`;
-      captureStateDebounced();
-    };
-    paddingInput.addEventListener('input', applyPaddingAll);
-    paddingUnitSel === null || paddingUnitSel === void 0
-      ? void 0
-      : paddingUnitSel.addEventListener('change', applyPaddingAll);
-  }
-  /* Padding — individual sides */
-  ['top', 'right', 'bottom', 'left'].forEach(side => {
-    const sideInput = get(`padding-${side}`);
-    const sideUnit = get(`padding-${side}-unit`);
-    const prop = `padding${side.charAt(0).toUpperCase()}${side.slice(1)}`;
-    if (sideInput) {
-      const apply = () => {
-        const unit =
-          (sideUnit === null || sideUnit === void 0
-            ? void 0
-            : sideUnit.value) || 'px';
-        component.style[prop] = `${sideInput.value || '0'}${unit}`;
-        captureStateDebounced();
-      };
-      sideInput.addEventListener('input', apply);
-      sideUnit === null || sideUnit === void 0
-        ? void 0
-        : sideUnit.addEventListener('change', apply);
+    /* Margin — individual sides */
+    ['top', 'right', 'bottom', 'left'].forEach(side => {
+        const sideInput = get(`margin-${side}`);
+        const sideUnit = get(`margin-${side}-unit`);
+        const prop = `margin${side.charAt(0).toUpperCase()}${side.slice(1)}`;
+        if (sideInput) {
+            const apply = () => {
+                const unit = (sideUnit === null || sideUnit === void 0 ? void 0 : sideUnit.value) || 'px';
+                component.style[prop] =
+                    `${sideInput.value || '0'}${unit}`;
+                captureStateDebounced();
+            };
+            sideInput.addEventListener('input', apply);
+            sideUnit === null || sideUnit === void 0 ? void 0 : sideUnit.addEventListener('change', apply);
+        }
+    });
+    /* Padding — all sides */
+    const paddingInput = get('padding');
+    const paddingUnitSel = get('padding-unit');
+    if (paddingInput) {
+        const applyPaddingAll = () => {
+            const val = paddingInput.value || '0';
+            const unit = (paddingUnitSel === null || paddingUnitSel === void 0 ? void 0 : paddingUnitSel.value) || 'px';
+            component.style.paddingTop = '';
+            component.style.paddingRight = '';
+            component.style.paddingBottom = '';
+            component.style.paddingLeft = '';
+            component.style.padding = `${val}${unit}`;
+            captureStateDebounced();
+        };
+        paddingInput.addEventListener('input', applyPaddingAll);
+        paddingUnitSel === null || paddingUnitSel === void 0 ? void 0 : paddingUnitSel.addEventListener('change', applyPaddingAll);
     }
-  });
-  /* ── Typography ──────────────────────────────────────────────────────────── */
-  (_e = get('alignment')) === null || _e === void 0
-    ? void 0
-    : _e.addEventListener('change', () => {
+    /* Padding — individual sides */
+    ['top', 'right', 'bottom', 'left'].forEach(side => {
+        const sideInput = get(`padding-${side}`);
+        const sideUnit = get(`padding-${side}-unit`);
+        const prop = `padding${side.charAt(0).toUpperCase()}${side.slice(1)}`;
+        if (sideInput) {
+            const apply = () => {
+                const unit = (sideUnit === null || sideUnit === void 0 ? void 0 : sideUnit.value) || 'px';
+                component.style[prop] =
+                    `${sideInput.value || '0'}${unit}`;
+                captureStateDebounced();
+            };
+            sideInput.addEventListener('input', apply);
+            sideUnit === null || sideUnit === void 0 ? void 0 : sideUnit.addEventListener('change', apply);
+        }
+    });
+    /* ── Typography ──────────────────────────────────────────────────────────── */
+    (_e = get('alignment')) === null || _e === void 0 ? void 0 : _e.addEventListener('change', () => {
         component.style.textAlign = get('alignment').value;
         captureStateDebounced();
-      });
-  /* ── Font size — selection-aware ────────────────────────────────────────────
-   *
-   * Same mechanism as text color:
-   *   • Capture the Range on 'mousedown' (before the input steals focus).
-   *   • On 'input', if a saved range is non-collapsed and inside the component,
-   *     wrap it in <span style="font-size: …"> instead of painting the whole
-   *     component.  Subsequent changes update the same span (activeFontSizeSpan)
-   *     so the value tracks the slider without creating duplicate wraps.
-   * ─────────────────────────────────────────────────────────────────────────── */
-  let savedRangeFS = null;
-  let activeFontSizeSpan = null;
-  function saveSelectionForFontSize() {
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
-    const range = sel.getRangeAt(0);
-    if (!component.contains(range.commonAncestorContainer)) return;
-    savedRangeFS = range.cloneRange();
-    if (
-      !activeFontSizeSpan ||
-      !activeFontSizeSpan.contains(range.commonAncestorContainer)
-    ) {
-      activeFontSizeSpan = null;
+    });
+    /* ── Font size — selection-aware ────────────────────────────────────────────
+     *
+     * Same mechanism as text color:
+     *   • Capture the Range on 'mousedown' (before the input steals focus).
+     *   • On 'input', if a saved range is non-collapsed and inside the component,
+     *     wrap it in <span style="font-size: …"> instead of painting the whole
+     *     component.  Subsequent changes update the same span (activeFontSizeSpan)
+     *     so the value tracks the slider without creating duplicate wraps.
+     * ─────────────────────────────────────────────────────────────────────────── */
+    let savedRangeFS = null;
+    let activeFontSizeSpan = null;
+    function saveSelectionForFontSize() {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0 || sel.isCollapsed)
+            return;
+        const range = sel.getRangeAt(0);
+        if (!component.contains(range.commonAncestorContainer))
+            return;
+        savedRangeFS = range.cloneRange();
+        if (!activeFontSizeSpan ||
+            !activeFontSizeSpan.contains(range.commonAncestorContainer)) {
+            activeFontSizeSpan = null;
+        }
     }
-  }
-  function restoreVisualSelectionFS(span) {
-    const editableEl = component.querySelector('[contenteditable="true"]');
-    if (!editableEl) return;
-    editableEl.focus({ preventScroll: true });
-    const sel = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(span);
-    sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
-    sel === null || sel === void 0 ? void 0 : sel.addRange(range);
-  }
-  function applyFontSize(size) {
-    if (activeFontSizeSpan && component.contains(activeFontSizeSpan)) {
-      activeFontSizeSpan.style.fontSize = size;
-      restoreVisualSelectionFS(activeFontSizeSpan);
-      return;
+    function restoreVisualSelectionFS(span) {
+        const editableEl = component.querySelector('[contenteditable="true"]');
+        if (!editableEl)
+            return;
+        editableEl.focus({ preventScroll: true });
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(span);
+        sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
+        sel === null || sel === void 0 ? void 0 : sel.addRange(range);
     }
-    if (savedRangeFS && !savedRangeFS.collapsed) {
-      const sel = window.getSelection();
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(savedRangeFS);
-      }
-      const span = document.createElement('span');
-      span.style.fontSize = size;
-      try {
-        savedRangeFS.surroundContents(span);
-      } catch (_a) {
-        const fragment = savedRangeFS.extractContents();
-        span.appendChild(fragment);
-        savedRangeFS.insertNode(span);
-      }
-      activeFontSizeSpan = span;
-      savedRangeFS = null;
-      restoreVisualSelectionFS(span);
-      return;
+    function applyFontSize(size) {
+        if (activeFontSizeSpan && component.contains(activeFontSizeSpan)) {
+            activeFontSizeSpan.style.fontSize = size;
+            restoreVisualSelectionFS(activeFontSizeSpan);
+            return;
+        }
+        if (savedRangeFS && !savedRangeFS.collapsed) {
+            const sel = window.getSelection();
+            if (sel) {
+                sel.removeAllRanges();
+                sel.addRange(savedRangeFS);
+            }
+            const span = document.createElement('span');
+            span.style.fontSize = size;
+            try {
+                savedRangeFS.surroundContents(span);
+            }
+            catch (_a) {
+                const fragment = savedRangeFS.extractContents();
+                span.appendChild(fragment);
+                savedRangeFS.insertNode(span);
+            }
+            activeFontSizeSpan = span;
+            savedRangeFS = null;
+            restoreVisualSelectionFS(span);
+            return;
+        }
+        /* Fallback — no selection, apply to whole component */
+        component.style.fontSize = size;
     }
-    /* Fallback — no selection, apply to whole component */
-    component.style.fontSize = size;
-  }
-  const fontSizeInput = get('font-size');
-  const fontSizeUnit = get('font-size-unit');
-  fontSizeInput === null || fontSizeInput === void 0
-    ? void 0
-    : fontSizeInput.addEventListener('mousedown', saveSelectionForFontSize);
-  fontSizeInput === null || fontSizeInput === void 0
-    ? void 0
-    : fontSizeInput.addEventListener('input', () => {
-        if (!fontSizeInput) return;
-        const unit =
-          (fontSizeUnit === null || fontSizeUnit === void 0
-            ? void 0
-            : fontSizeUnit.value) || 'px';
+    const fontSizeInput = get('font-size');
+    const fontSizeUnit = get('font-size-unit');
+    fontSizeInput === null || fontSizeInput === void 0 ? void 0 : fontSizeInput.addEventListener('mousedown', saveSelectionForFontSize);
+    fontSizeInput === null || fontSizeInput === void 0 ? void 0 : fontSizeInput.addEventListener('input', () => {
+        if (!fontSizeInput)
+            return;
+        const unit = (fontSizeUnit === null || fontSizeUnit === void 0 ? void 0 : fontSizeUnit.value) || 'px';
         applyFontSize(`${fontSizeInput.value}${unit}`);
         captureStateDebounced();
-      });
-  fontSizeUnit === null || fontSizeUnit === void 0
-    ? void 0
-    : fontSizeUnit.addEventListener('change', () => {
-        if (!fontSizeInput) return;
-        const unit =
-          (fontSizeUnit === null || fontSizeUnit === void 0
-            ? void 0
-            : fontSizeUnit.value) || 'px';
+    });
+    fontSizeUnit === null || fontSizeUnit === void 0 ? void 0 : fontSizeUnit.addEventListener('change', () => {
+        if (!fontSizeInput)
+            return;
+        const unit = (fontSizeUnit === null || fontSizeUnit === void 0 ? void 0 : fontSizeUnit.value) || 'px';
         applyFontSize(`${fontSizeInput.value}${unit}`);
         captureStateDebounced();
-      });
-  /* ── Font weight — selection-aware ──────────────────────────────────────────
-   *
-   * Same mechanism as font size above.
-   * ─────────────────────────────────────────────────────────────────────────── */
-  let savedRangeFW = null;
-  let activeFontWeightSpan = null;
-  function saveSelectionForFontWeight() {
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
-    const range = sel.getRangeAt(0);
-    if (!component.contains(range.commonAncestorContainer)) return;
-    savedRangeFW = range.cloneRange();
-    if (
-      !activeFontWeightSpan ||
-      !activeFontWeightSpan.contains(range.commonAncestorContainer)
-    ) {
-      activeFontWeightSpan = null;
+    });
+    /* ── Font weight — selection-aware ──────────────────────────────────────────
+     *
+     * Same mechanism as font size above.
+     * ─────────────────────────────────────────────────────────────────────────── */
+    let savedRangeFW = null;
+    let activeFontWeightSpan = null;
+    function saveSelectionForFontWeight() {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0 || sel.isCollapsed)
+            return;
+        const range = sel.getRangeAt(0);
+        if (!component.contains(range.commonAncestorContainer))
+            return;
+        savedRangeFW = range.cloneRange();
+        if (!activeFontWeightSpan ||
+            !activeFontWeightSpan.contains(range.commonAncestorContainer)) {
+            activeFontWeightSpan = null;
+        }
     }
-  }
-  function restoreVisualSelectionFW(span) {
-    const editableEl = component.querySelector('[contenteditable="true"]');
-    if (!editableEl) return;
-    editableEl.focus({ preventScroll: true });
-    const sel = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(span);
-    sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
-    sel === null || sel === void 0 ? void 0 : sel.addRange(range);
-  }
-  function applyFontWeight(weight) {
-    if (activeFontWeightSpan && component.contains(activeFontWeightSpan)) {
-      activeFontWeightSpan.style.fontWeight = weight;
-      restoreVisualSelectionFW(activeFontWeightSpan);
-      return;
+    function restoreVisualSelectionFW(span) {
+        const editableEl = component.querySelector('[contenteditable="true"]');
+        if (!editableEl)
+            return;
+        editableEl.focus({ preventScroll: true });
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(span);
+        sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
+        sel === null || sel === void 0 ? void 0 : sel.addRange(range);
     }
-    if (savedRangeFW && !savedRangeFW.collapsed) {
-      const sel = window.getSelection();
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(savedRangeFW);
-      }
-      const span = document.createElement('span');
-      span.style.fontWeight = weight;
-      try {
-        savedRangeFW.surroundContents(span);
-      } catch (_a) {
-        const fragment = savedRangeFW.extractContents();
-        span.appendChild(fragment);
-        savedRangeFW.insertNode(span);
-      }
-      activeFontWeightSpan = span;
-      savedRangeFW = null;
-      restoreVisualSelectionFW(span);
-      return;
+    function applyFontWeight(weight) {
+        if (activeFontWeightSpan && component.contains(activeFontWeightSpan)) {
+            activeFontWeightSpan.style.fontWeight = weight;
+            restoreVisualSelectionFW(activeFontWeightSpan);
+            return;
+        }
+        if (savedRangeFW && !savedRangeFW.collapsed) {
+            const sel = window.getSelection();
+            if (sel) {
+                sel.removeAllRanges();
+                sel.addRange(savedRangeFW);
+            }
+            const span = document.createElement('span');
+            span.style.fontWeight = weight;
+            try {
+                savedRangeFW.surroundContents(span);
+            }
+            catch (_a) {
+                const fragment = savedRangeFW.extractContents();
+                span.appendChild(fragment);
+                savedRangeFW.insertNode(span);
+            }
+            activeFontWeightSpan = span;
+            savedRangeFW = null;
+            restoreVisualSelectionFW(span);
+            return;
+        }
+        /* Fallback — no selection, apply to whole component */
+        component.style.fontWeight = weight;
     }
-    /* Fallback — no selection, apply to whole component */
-    component.style.fontWeight = weight;
-  }
-  const fontWeightSel = get('font-weight');
-  fontWeightSel === null || fontWeightSel === void 0
-    ? void 0
-    : fontWeightSel.addEventListener('mousedown', saveSelectionForFontWeight);
-  fontWeightSel === null || fontWeightSel === void 0
-    ? void 0
-    : fontWeightSel.addEventListener('change', () => {
-        if (!fontWeightSel) return;
+    const fontWeightSel = get('font-weight');
+    fontWeightSel === null || fontWeightSel === void 0 ? void 0 : fontWeightSel.addEventListener('mousedown', saveSelectionForFontWeight);
+    fontWeightSel === null || fontWeightSel === void 0 ? void 0 : fontWeightSel.addEventListener('change', () => {
+        if (!fontWeightSel)
+            return;
         applyFontWeight(fontWeightSel.value);
         captureStateDebounced();
-      });
-  (_f = get('font-family')) === null || _f === void 0
-    ? void 0
-    : _f.addEventListener('change', () => {
+    });
+    (_f = get('font-family')) === null || _f === void 0 ? void 0 : _f.addEventListener('change', () => {
         component.style.fontFamily = get('font-family').value;
         captureStateDebounced();
-      });
-  /* ── Text color — selection-aware ───────────────────────────────────────────
-   *
-   * Problem: clicking the color picker input causes the component to lose
-   * focus, which clears window.getSelection(). By the time the 'input' event
-   * fires the selection is gone, so we can't know what text the user had
-   * highlighted.
-   *
-   * Fix: capture the Range on 'mousedown' (before focus moves to the picker).
-   * On 'input', if the saved range is non-collapsed AND sits inside the
-   * component, wrap it in a <span style="color: …"> instead of painting the
-   * whole component. If there is no selection, fall back to the original
-   * whole-component behaviour so the control keeps working normally.
-   * ──────────────────────────────────────────────────────────────────────── */
-  let savedRange = null;
-  /* Tracks the <span> created for the current picker session so that
+    });
+    /* ── Text color — selection-aware ───────────────────────────────────────────
+     *
+     * Problem: clicking the color picker input causes the component to lose
+     * focus, which clears window.getSelection(). By the time the 'input' event
+     * fires the selection is gone, so we can't know what text the user had
+     * highlighted.
+     *
+     * Fix: capture the Range on 'mousedown' (before focus moves to the picker).
+     * On 'input', if the saved range is non-collapsed AND sits inside the
+     * component, wrap it in a <span style="color: …"> instead of painting the
+     * whole component. If there is no selection, fall back to the original
+     * whole-component behaviour so the control keeps working normally.
+     * ──────────────────────────────────────────────────────────────────────── */
+    let savedRange = null;
+    /* Tracks the <span> created for the current picker session so that
        dragging the hue/saturation slider updates the same span instead of
        falling back to component.style.color on every subsequent input event. */
-  let activeColorSpan = null;
-  /**
-   * Saves the current selection if it is non-collapsed and inside `component`.
-   * Only starts a fresh session (resets activeColorSpan) when the selection
-   * anchor is OUTSIDE activeColorSpan — a selection that sits inside it means
-   * we just restored it programmatically after a color change, so we leave the
-   * span reference intact.
-   */
-  function saveSelectionInsideComponent() {
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
-    const range = sel.getRangeAt(0);
-    if (!component.contains(range.commonAncestorContainer)) return;
-    savedRange = range.cloneRange();
-    /* New user selection outside the active span → fresh session */
-    if (
-      !activeColorSpan ||
-      !activeColorSpan.contains(range.commonAncestorContainer)
-    ) {
-      activeColorSpan = null;
+    let activeColorSpan = null;
+    /**
+     * Saves the current selection if it is non-collapsed and inside `component`.
+     * Only starts a fresh session (resets activeColorSpan) when the selection
+     * anchor is OUTSIDE activeColorSpan — a selection that sits inside it means
+     * we just restored it programmatically after a color change, so we leave the
+     * span reference intact.
+     */
+    function saveSelectionInsideComponent() {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0 || sel.isCollapsed)
+            return;
+        const range = sel.getRangeAt(0);
+        if (!component.contains(range.commonAncestorContainer))
+            return;
+        savedRange = range.cloneRange();
+        /* New user selection outside the active span → fresh session */
+        if (!activeColorSpan ||
+            !activeColorSpan.contains(range.commonAncestorContainer)) {
+            activeColorSpan = null;
+        }
     }
-  }
-  /**
-   * Re-focuses the contenteditable child and selects the span's contents so
-   * the colored text stays visually highlighted while the user drags the
-   * color picker slider.
-   */
-  function restoreVisualSelection(span) {
-    const editableEl = component.querySelector('[contenteditable="true"]');
-    if (!editableEl) return;
-    editableEl.focus({ preventScroll: true });
-    const sel = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(span);
-    sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
-    sel === null || sel === void 0 ? void 0 : sel.addRange(range);
-  }
-  /**
-   * Applies `color` to either:
-   *   1. The activeColorSpan from this session (update in place — no new span),
-   *   2. The savedRange, wrapping selected text in a new <span>, or
-   *   3. The entire component as a fallback when there is no selection.
-   */
-  function applyTextColor(color) {
-    /* Case 1: span already created — just update its color and re-highlight */
-    if (activeColorSpan && component.contains(activeColorSpan)) {
-      activeColorSpan.style.color = color;
-      restoreVisualSelection(activeColorSpan);
-      return;
+    /**
+     * Re-focuses the contenteditable child and selects the span's contents so
+     * the colored text stays visually highlighted while the user drags the
+     * color picker slider.
+     */
+    function restoreVisualSelection(span) {
+        const editableEl = component.querySelector('[contenteditable="true"]');
+        if (!editableEl)
+            return;
+        editableEl.focus({ preventScroll: true });
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(span);
+        sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
+        sel === null || sel === void 0 ? void 0 : sel.addRange(range);
     }
-    /* Case 2: first application — wrap the saved range in a color span */
-    if (savedRange && !savedRange.collapsed) {
-      const sel = window.getSelection();
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(savedRange);
-      }
-      const span = document.createElement('span');
-      span.style.color = color;
-      try {
-        savedRange.surroundContents(span);
-      } catch (_a) {
-        const fragment = savedRange.extractContents();
-        span.appendChild(fragment);
-        savedRange.insertNode(span);
-      }
-      activeColorSpan = span;
-      savedRange = null;
-      restoreVisualSelection(span);
-      return;
+    /**
+     * Applies `color` to either:
+     *   1. The activeColorSpan from this session (update in place — no new span),
+     *   2. The savedRange, wrapping selected text in a new <span>, or
+     *   3. The entire component as a fallback when there is no selection.
+     */
+    function applyTextColor(color) {
+        /* Case 1: span already created — just update its color and re-highlight */
+        if (activeColorSpan && component.contains(activeColorSpan)) {
+            activeColorSpan.style.color = color;
+            restoreVisualSelection(activeColorSpan);
+            return;
+        }
+        /* Case 2: first application — wrap the saved range in a color span */
+        if (savedRange && !savedRange.collapsed) {
+            const sel = window.getSelection();
+            if (sel) {
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
+            }
+            const span = document.createElement('span');
+            span.style.color = color;
+            try {
+                savedRange.surroundContents(span);
+            }
+            catch (_a) {
+                const fragment = savedRange.extractContents();
+                span.appendChild(fragment);
+                savedRange.insertNode(span);
+            }
+            activeColorSpan = span;
+            savedRange = null;
+            restoreVisualSelection(span);
+            return;
+        }
+        /* Case 3: no selection — colour the whole component */
+        component.style.color = color;
     }
-    /* Case 3: no selection — colour the whole component */
-    component.style.color = color;
-  }
-  const textColorPicker = get('text-color');
-  const textColorHex = get('text-color-value');
-  /* Capture selection before the picker steals focus */
-  textColorPicker === null || textColorPicker === void 0
-    ? void 0
-    : textColorPicker.addEventListener(
-        'mousedown',
-        saveSelectionInsideComponent
-      );
-  textColorHex === null || textColorHex === void 0
-    ? void 0
-    : textColorHex.addEventListener('mousedown', saveSelectionInsideComponent);
-  textColorPicker === null || textColorPicker === void 0
-    ? void 0
-    : textColorPicker.addEventListener('input', () => {
+    const textColorPicker = get('text-color');
+    const textColorHex = get('text-color-value');
+    /* Capture selection before the picker steals focus */
+    textColorPicker === null || textColorPicker === void 0 ? void 0 : textColorPicker.addEventListener('mousedown', saveSelectionInsideComponent);
+    textColorHex === null || textColorHex === void 0 ? void 0 : textColorHex.addEventListener('mousedown', saveSelectionInsideComponent);
+    textColorPicker === null || textColorPicker === void 0 ? void 0 : textColorPicker.addEventListener('input', () => {
         const val = textColorPicker.value;
         applyTextColor(val);
-        if (textColorHex) textColorHex.value = val;
+        if (textColorHex)
+            textColorHex.value = val;
         captureStateDebounced();
-      });
-  textColorHex === null || textColorHex === void 0
-    ? void 0
-    : textColorHex.addEventListener('input', e => {
+    });
+    textColorHex === null || textColorHex === void 0 ? void 0 : textColorHex.addEventListener('input', e => {
         const val = e.target.value;
         applyTextColor(val);
-        if (textColorPicker) textColorPicker.value = val;
+        if (textColorPicker)
+            textColorPicker.value = val;
         captureStateDebounced();
-      });
-  /* ── Border ──────────────────────────────────────────────────────────────── */
-  (_g = get('border-width')) === null || _g === void 0
-    ? void 0
-    : _g.addEventListener('input', () => {
+    });
+    /* ── Border ──────────────────────────────────────────────────────────────── */
+    (_g = get('border-width')) === null || _g === void 0 ? void 0 : _g.addEventListener('input', () => {
         var _a;
-        const unit =
-          ((_a = get('border-width-unit')) === null || _a === void 0
-            ? void 0
-            : _a.value) || 'px';
+        const unit = ((_a = get('border-width-unit')) === null || _a === void 0 ? void 0 : _a.value) || 'px';
         component.style.borderWidth = `${get('border-width').value}${unit}`;
         captureStateDebounced();
-      });
-  (_h = get('border-style')) === null || _h === void 0
-    ? void 0
-    : _h.addEventListener('change', () => {
+    });
+    (_h = get('border-style')) === null || _h === void 0 ? void 0 : _h.addEventListener('change', () => {
         component.style.borderStyle = get('border-style').value;
         captureStateDebounced();
-      });
-  (_j = get('border-color')) === null || _j === void 0
-    ? void 0
-    : _j.addEventListener('input', () => {
+    });
+    (_j = get('border-color')) === null || _j === void 0 ? void 0 : _j.addEventListener('input', () => {
         const val = get('border-color').value;
         component.style.borderColor = val;
         const hexInput = get('border-color-value');
-        if (hexInput) hexInput.value = val;
+        if (hexInput)
+            hexInput.value = val;
         captureStateDebounced();
-      });
-  (_k = get('border-color-value')) === null || _k === void 0
-    ? void 0
-    : _k.addEventListener('input', e => {
+    });
+    (_k = get('border-color-value')) === null || _k === void 0 ? void 0 : _k.addEventListener('input', e => {
         const val = e.target.value;
         component.style.borderColor = val;
         const picker = get('border-color');
-        if (picker) picker.value = val;
+        if (picker)
+            picker.value = val;
         captureStateDebounced();
-      });
-  (_l = get('border-radius')) === null || _l === void 0
-    ? void 0
-    : _l.addEventListener('input', () => {
+    });
+    (_l = get('border-radius')) === null || _l === void 0 ? void 0 : _l.addEventListener('input', () => {
         var _a;
-        const unit =
-          ((_a = get('border-radius-unit')) === null || _a === void 0
-            ? void 0
-            : _a.value) || 'px';
+        const unit = ((_a = get('border-radius-unit')) === null || _a === void 0 ? void 0 : _a.value) || 'px';
         component.style.borderRadius = `${get('border-radius').value}${unit}`;
         captureStateDebounced();
-      });
-  /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
-  (_m = get('display')) === null || _m === void 0
-    ? void 0
-    : _m.addEventListener('change', () => {
+    });
+    /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
+    (_m = get('display')) === null || _m === void 0 ? void 0 : _m.addEventListener('change', () => {
         const selectedValue = get('display').value;
         if (selectedValue === 'inline') {
-          /* Store user intent as "inline" but apply inline-block to the DOM.
+            /* Store user intent as "inline" but apply inline-block to the DOM.
                Pure inline ignores width/height/vertical spacing in the builder. */
-          component.style.display = 'inline-block';
-          component.dataset.displayIntent = 'inline';
-        } else {
-          component.style.display = selectedValue;
-          /* Clear the intent flag for all non-inline selections */
-          delete component.dataset.displayIntent;
+            component.style.display = 'inline-block';
+            component.dataset.displayIntent = 'inline';
+        }
+        else {
+            component.style.display = selectedValue;
+            /* Clear the intent flag for all non-inline selections */
+            delete component.dataset.displayIntent;
         }
         captureStateDebounced();
         /* Defer re-populate so the inline style is committed before being read back */
-        requestAnimationFrame(() =>
-          populateCssControls(
-            component,
-            controlsContainer,
-            addListenersFn,
-            customizeComponentTagName
-          )
-        );
-      });
-  /* ── Flex sub-controls ───────────────────────────────────────────────────── */
-  (_o = get('flex-direction')) === null || _o === void 0
-    ? void 0
-    : _o.addEventListener('change', () => {
-        component.style.flexDirection = get('flex-direction').value;
+        requestAnimationFrame(() => populateCssControls(component, controlsContainer, addListenersFn, customizeComponentTagName));
+    });
+    /* ── Flex sub-controls ───────────────────────────────────────────────────── */
+    (_o = get('flex-direction')) === null || _o === void 0 ? void 0 : _o.addEventListener('change', () => {
+        component.style.flexDirection =
+            get('flex-direction').value;
         captureStateDebounced();
-      });
-  (_p = get('align-items')) === null || _p === void 0
-    ? void 0
-    : _p.addEventListener('change', () => {
+    });
+    (_p = get('align-items')) === null || _p === void 0 ? void 0 : _p.addEventListener('change', () => {
         component.style.alignItems = get('align-items').value;
         captureStateDebounced();
-      });
-  (_q = get('justify-content')) === null || _q === void 0
-    ? void 0
-    : _q.addEventListener('change', () => {
-        component.style.justifyContent = get('justify-content').value;
+    });
+    (_q = get('justify-content')) === null || _q === void 0 ? void 0 : _q.addEventListener('change', () => {
+        component.style.justifyContent =
+            get('justify-content').value;
         captureStateDebounced();
-      });
+    });
 }

@@ -1,5 +1,1 @@
-export declare function renderCategory(
-  category: string,
-  components: CategoryComponents,
-  templatesMenu: HTMLElement
-): void;
+export declare function renderCategory(category: string, components: CategoryComponents, templatesMenu: HTMLElement): void;

@@ -1,5 +1,5 @@
 // src/components/PageBuilder.ts
-import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
+import { PageBuilder } from "@mindfiredigital/page-builder/dist/PageBuilder.js";
 var PageBuilderComponent = class extends HTMLElement {
   constructor() {
     super();
@@ -103,12 +103,7 @@ var PageBuilderComponent = class extends HTMLElement {
   }
   hasValidConfig() {
     var _a, _b;
-    return (
-      this.config &&
-      (((_a = this.config.Basic) == null ? void 0 : _a.length) > 0 ||
-        ((_b = this.config.Extra) == null ? void 0 : _b.length) > 0 ||
-        (this.config.Custom && Object.keys(this.config.Custom).length > 0))
-    );
+    return this.config && (((_a = this.config.Basic) == null ? void 0 : _a.length) > 0 || ((_b = this.config.Extra) == null ? void 0 : _b.length) > 0 || this.config.Custom && Object.keys(this.config.Custom).length > 0);
   }
   set configData(value) {
     this.config = value;
@@ -124,13 +119,13 @@ var PageBuilderComponent = class extends HTMLElement {
       return;
     }
     try {
-      const app = this.querySelector('#app');
+      const app = this.querySelector("#app");
       if (app === null) {
-        console.error('Error: #app element not found.');
+        console.error("Error: #app element not found.");
         return;
       }
       if (app && this.pageBuilder) {
-        app.innerHTML = '';
+        app.innerHTML = "";
         this.innerHTML = this.template;
       }
       this.pageBuilder = new PageBuilder(
@@ -143,13 +138,15 @@ var PageBuilderComponent = class extends HTMLElement {
       );
       this.initialized = true;
     } catch (error) {
-      console.error('Failed to initialize PageBuilder:', error);
+      console.error("Failed to initialize PageBuilder:", error);
       this.initialized = false;
     }
   }
 };
-if (!customElements.get('page-builder')) {
-  customElements.define('page-builder', PageBuilderComponent);
+if (!customElements.get("page-builder")) {
+  customElements.define("page-builder", PageBuilderComponent);
 }
-export { PageBuilderComponent };
+export {
+  PageBuilderComponent
+};
 //# sourceMappingURL=index.js.map

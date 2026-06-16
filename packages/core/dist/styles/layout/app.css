@@ -69,6 +69,49 @@
   display: none;
 }
 
+/* ── Inline Preview Mode ───────────────────────────────────────────────────
+   Activated by setupViewButton() toggling the class on <body>.
+   Hides both sidebars and all editor chrome; the canvas becomes read-only.
+   The eye/edit button in the navbar is the only interactive element.
+   ─────────────────────────────────────────────────────────────────────── */
+body.pb-preview-active #sidebar,
+body.pb-preview-active #customization {
+  display: none !important;
+}
+
+body.pb-preview-active #canvas {
+  pointer-events: none !important;
+  cursor: default !important;
+  background-image: none !important;
+}
+
+body.pb-preview-active .component-controls,
+body.pb-preview-active .component-label,
+body.pb-preview-active .resizers {
+  display: none !important;
+}
+
+body.pb-preview-active .editable-component {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep the navbar interactive in preview mode so the eye button is clickable */
+body.pb-preview-active #preview-navbar {
+  pointer-events: auto;
+}
+
+/* Dim all navbar buttons except the active view-btn to signal preview mode */
+body.pb-preview-active #preview-navbar button:not(#view-btn) {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+body.pb-preview-active #view-btn {
+  background-color: #e2e8f0 !important;
+  border-color: #94a3b8 !important;
+}
+
 /* Typography refinements */
 #customization * {
   font-size: inherit;

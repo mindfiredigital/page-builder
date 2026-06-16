@@ -31,6 +31,8 @@ var PageBuilderReact = ({
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
             connectedCallback() {
+              clearTimeout(this._unmountTimer);
+              this._unmountTimer = void 0;
               if (this._pbMounted)
                 return;
               this._pbMounted = true;
@@ -39,6 +41,12 @@ var PageBuilderReact = ({
                 this.style.width = componentConfig.defaultWidth;
               if (!this.style.height && componentConfig.defaultHeight)
                 this.style.height = componentConfig.defaultHeight;
+              Array.from(this.children).forEach((child) => {
+                const el = child;
+                if (!el.classList.contains("component-controls") && !el.classList.contains("component-label")) {
+                  el.remove();
+                }
+              });
               const mountPoint = document.createElement("div");
               mountPoint.style.cssText = "width:100%;height:100%;display:block;margin:0;padding:0;";
               this.appendChild(mountPoint);
@@ -56,14 +64,22 @@ var PageBuilderReact = ({
               }
             }
             disconnectedCallback() {
-              document.dispatchEvent(
-                new CustomEvent("pb:component-removed", {
-                  detail: { componentId: this.id }
-                })
-              );
               const root = this._pbRoot;
-              if (root)
-                setTimeout(() => root.unmount(), 0);
+              const self = this;
+              this._unmountTimer = setTimeout(() => {
+                self._unmountTimer = void 0;
+                if (self.isConnected)
+                  return;
+                document.dispatchEvent(
+                  new CustomEvent("pb:component-removed", {
+                    detail: { componentId: self.id }
+                  })
+                );
+                if (root)
+                  root.unmount();
+                self._pbRoot = null;
+                self._pbMounted = false;
+              }, 0);
             }
           }
           customElements.define(tagName, ReactComponentElement);
@@ -71,14 +87,16 @@ var PageBuilderReact = ({
         const settingsTagName = `react-settings-component-${key.toLowerCase()}`;
         if (componentConfig.settingsComponent && !customElements.get(settingsTagName)) {
           class ReactSettingsElement extends HTMLElement {
-            connectedCallback() {
-              this.innerHTML = "";
-              const mountPoint = document.createElement("div");
-              this.appendChild(mountPoint);
+            _renderSettings() {
+              if (!this._settingsRoot) {
+                const mountPoint = document.createElement("div");
+                this.appendChild(mountPoint);
+                this._settingsRoot = ReactDOM.createRoot(mountPoint);
+              }
               const settingsData = this.getAttribute("data-settings");
               const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                this._settingsRoot.render(
                   React.createElement(
                     componentConfig.settingsComponent,
                     parsedSettings
@@ -88,22 +106,15 @@ var PageBuilderReact = ({
                 console.error(`Error rendering settings component:`, error);
               }
             }
+            connectedCallback() {
+              this._renderSettings();
+            }
             static get observedAttributes() {
               return ["data-settings"];
             }
             attributeChangedCallback(name, oldValue, newValue) {
               if (name === "data-settings" && newValue !== oldValue) {
-                this.innerHTML = "";
-                const mountPoint = document.createElement("div");
-                this.appendChild(mountPoint);
-                const settingsData = this.getAttribute("data-settings");
-                const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
-                ReactDOM.createRoot(mountPoint).render(
-                  React.createElement(
-                    componentConfig.settingsComponent,
-                    parsedSettings
-                  )
-                );
+                this._renderSettings();
               }
             }
           }
@@ -125,13 +136,15 @@ var PageBuilderReact = ({
               }
             }
             _mount() {
-              this.innerHTML = "";
-              const mountPoint = document.createElement("div");
-              this.appendChild(mountPoint);
+              if (!this._customizeRoot) {
+                const mountPoint = document.createElement("div");
+                this.appendChild(mountPoint);
+                this._customizeRoot = ReactDOM.createRoot(mountPoint);
+              }
               const settingsData = this.getAttribute("data-settings");
               const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                this._customizeRoot.render(
                   React.createElement(CustomizeCtor, parsedSettings)
                 );
               } catch (error) {

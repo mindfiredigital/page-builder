@@ -195,6 +195,12 @@ export class CanvasStateManager {
       /** Never restore 'selected' highlight state */
       component.classList.remove('selected');
 
+      /** Restore the saved id; createComponent generates a provisional id via
+       *  generateUniqueClass which may differ from the saved one when earlier
+       *  components have been deleted.  Setting it here keeps id and classList
+       *  in sync with what was captured in getState(). */
+      component.id = componentData.id;
+
       /** Remove resize handle in non-editable mode */
       if (editable === false) {
         component.classList.remove('component-resizer');

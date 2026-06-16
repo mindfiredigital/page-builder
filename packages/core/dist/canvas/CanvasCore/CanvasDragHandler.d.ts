@@ -1,3 +1,3 @@
 export declare class CanvasDragHandler {
-  static addDraggableListeners(element: HTMLElement): void;
+    static addDraggableListeners(element: HTMLElement): void;
 }
