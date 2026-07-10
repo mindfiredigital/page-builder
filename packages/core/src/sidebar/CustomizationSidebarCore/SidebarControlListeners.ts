@@ -128,7 +128,11 @@ export function addControlListeners(
 
   /* ── Typography ──────────────────────────────────────────────────────────── */
   get<HTMLSelectElement>('alignment')?.addEventListener('change', () => {
-    component.style.textAlign = get<HTMLSelectElement>('alignment')!.value;
+    const val = get<HTMLSelectElement>('alignment')!.value;
+    component.style.textAlign = val;
+    component.querySelectorAll<HTMLElement>('.rt-block-content').forEach(el => {
+      el.style.textAlign = val;
+    });
     captureStateDebounced();
   });
 
@@ -160,9 +164,9 @@ export function addControlListeners(
   }
 
   function restoreVisualSelectionFS(span: HTMLSpanElement): void {
-    const editableEl = component.querySelector<HTMLElement>(
-      '[contenteditable="true"]'
-    );
+    const editableEl =
+      span.closest<HTMLElement>('[contenteditable="true"]') ??
+      component.querySelector<HTMLElement>('[contenteditable="true"]');
     if (!editableEl) return;
     editableEl.focus({ preventScroll: true });
     const sel = window.getSelection();
@@ -198,8 +202,11 @@ export function addControlListeners(
       restoreVisualSelectionFS(span);
       return;
     }
-    /* Fallback — no selection, apply to whole component */
+    /* Fallback — no selection, apply to whole component + inner rt blocks */
     component.style.fontSize = size;
+    component.querySelectorAll<HTMLElement>('.rt-block-content').forEach(el => {
+      el.style.fontSize = size;
+    });
   }
 
   const fontSizeInput = get<HTMLInputElement>('font-size');
@@ -244,9 +251,9 @@ export function addControlListeners(
   }
 
   function restoreVisualSelectionFW(span: HTMLSpanElement): void {
-    const editableEl = component.querySelector<HTMLElement>(
-      '[contenteditable="true"]'
-    );
+    const editableEl =
+      span.closest<HTMLElement>('[contenteditable="true"]') ??
+      component.querySelector<HTMLElement>('[contenteditable="true"]');
     if (!editableEl) return;
     editableEl.focus({ preventScroll: true });
     const sel = window.getSelection();
@@ -282,8 +289,11 @@ export function addControlListeners(
       restoreVisualSelectionFW(span);
       return;
     }
-    /* Fallback — no selection, apply to whole component */
+    /* Fallback — no selection, apply to whole component + inner rt blocks */
     component.style.fontWeight = weight;
+    component.querySelectorAll<HTMLElement>('.rt-block-content').forEach(el => {
+      el.style.fontWeight = weight;
+    });
   }
 
   const fontWeightSel = get<HTMLSelectElement>('font-weight');
@@ -297,7 +307,11 @@ export function addControlListeners(
   });
 
   get<HTMLSelectElement>('font-family')?.addEventListener('change', () => {
-    component.style.fontFamily = get<HTMLSelectElement>('font-family')!.value;
+    const val = get<HTMLSelectElement>('font-family')!.value;
+    component.style.fontFamily = val;
+    component.querySelectorAll<HTMLElement>('.rt-block-content').forEach(el => {
+      el.style.fontFamily = val;
+    });
     captureStateDebounced();
   });
 
@@ -351,9 +365,9 @@ export function addControlListeners(
    * color picker slider.
    */
   function restoreVisualSelection(span: HTMLSpanElement): void {
-    const editableEl = component.querySelector<HTMLElement>(
-      '[contenteditable="true"]'
-    );
+    const editableEl =
+      span.closest<HTMLElement>('[contenteditable="true"]') ??
+      component.querySelector<HTMLElement>('[contenteditable="true"]');
     if (!editableEl) return;
     editableEl.focus({ preventScroll: true });
     const sel = window.getSelection();
@@ -402,8 +416,11 @@ export function addControlListeners(
       return;
     }
 
-    /* Case 3: no selection — colour the whole component */
+    /* Case 3: no selection — colour the whole component + inner rt blocks */
     component.style.color = color;
+    component.querySelectorAll<HTMLElement>('.rt-block-content').forEach(el => {
+      el.style.color = color;
+    });
   }
 
   const textColorPicker = get<HTMLInputElement>('text-color');

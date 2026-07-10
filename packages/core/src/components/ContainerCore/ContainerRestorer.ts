@@ -2,6 +2,7 @@ import { Canvas } from '../../canvas/Canvas';
 import { ImageComponent } from '../ImageComponent';
 import { ContainerResizeHandler } from './ContainerResizeHandler';
 import { initContainerEventListeners } from './ContainerEventListeners';
+import { CanvasResizeHandler } from '../../canvas/CanvasCore/CanvasResizeHandler';
 
 /* Shows the hover label on a non-container component */
 function showLabel(event: MouseEvent, component: HTMLElement): void {
@@ -51,6 +52,7 @@ export function restoreContainer(
 
       if (isGridMode) {
         childElement.classList.remove('component-resizer');
+        childElement.querySelector('.canvas-resizers')?.remove();
         childElement.removeAttribute('draggable');
         childElement.style.cursor = 'default';
         childElement.style.position = '';
@@ -60,6 +62,11 @@ export function restoreContainer(
         Canvas.addDraggableListeners(childElement);
         childElement.style.position = 'absolute';
         childElement.classList.add('component-resizer');
+        try {
+          CanvasResizeHandler.restore(childElement);
+        } catch {
+          /* non-fatal */
+        }
       }
 
       if (childElement.classList.contains('container-component')) {
@@ -87,6 +94,7 @@ export function restoreContainer(
 
       childElement.classList.remove('editable-component');
       childElement.classList.remove('component-resizer');
+      childElement.querySelector('.canvas-resizers')?.remove();
       childElement.removeAttribute('draggable');
       childElement.removeAttribute('contenteditable');
     }

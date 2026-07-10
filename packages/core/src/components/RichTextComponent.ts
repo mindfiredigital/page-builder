@@ -17,7 +17,31 @@ export class RichTextComponent {
     return root;
   }
 
-  static restore(_container: HTMLElement): void {
-    // Implemented in a later step when block data is persisted
+  static restore(container: HTMLElement): void {
+    const generateId = () =>
+      `rt-block-${Date.now()}-${++RichTextComponent.blockCounter}`;
+
+    const manager = new RichTextPopoverManager(container, generateId);
+    manager.init();
+
+    container.querySelectorAll('.rt-block').forEach(blockEl => {
+      const block = blockEl as HTMLElement;
+      const addBtn = block.querySelector('.rt-add-btn') as HTMLElement;
+      const tuneBtn = block.querySelector('.rt-tune-btn') as HTMLElement;
+
+      if (addBtn) {
+        addBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          manager.toggleAddPopover(block, addBtn);
+        });
+      }
+
+      if (tuneBtn) {
+        tuneBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          manager.toggleTunePopover(block, tuneBtn);
+        });
+      }
+    });
   }
 }

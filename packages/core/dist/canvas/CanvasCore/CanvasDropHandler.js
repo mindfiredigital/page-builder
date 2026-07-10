@@ -140,7 +140,9 @@ export class CanvasDropHandler {
         if (!parent)
             return;
         /* Remove any insert indicators — both canvas-level and container-level */
-        document.querySelectorAll('.drop-insert-indicator').forEach(el => el.remove());
+        document
+            .querySelectorAll('.drop-insert-indicator')
+            .forEach(el => el.remove());
         /* Find insertion point among the parent's direct editable-component children,
            skipping the dragged element so it is never returned as its own target. */
         const siblings = Array.from(parent.querySelectorAll(':scope > .editable-component'));

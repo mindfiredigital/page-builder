@@ -233,24 +233,32 @@ export function populateCssControls(component, controlsContainer, addListenersFn
         bgColorInput.value = SidebarUtils.rgbToHex(styles.backgroundColor);
     if (textColorInput) {
         /*
-         * Show the color of whichever span the cursor is currently sitting inside.
-         * When the user clicks on cyan text, the cursor lands in the cyan <span>
-         * and we walk up from the anchor node to find it. Falls back to the
-         * component's own computed color when the cursor is not inside a colored span.
+         * Show the color of whichever span/rt-block-content the cursor is sitting inside.
+         * Walk up from the anchor node to find a colored element. Falls back to the
+         * component's own computed color when the cursor is not inside a colored node.
          */
         let displayColor = styles.color;
         const sel = window.getSelection();
         if (sel && sel.rangeCount > 0) {
             let node = sel.getRangeAt(0).startContainer;
             while (node && node !== component) {
-                if (node.nodeType === Node.ELEMENT_NODE &&
-                    node.tagName === 'SPAN' &&
-                    !!node.style.color) {
-                    displayColor = node.style.color;
-                    break;
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    const el = node;
+                    if ((el.tagName === 'SPAN' || el.classList.contains('rt-block-content')) &&
+                        el.style.color) {
+                        displayColor = el.style.color;
+                        break;
+                    }
                 }
                 node = node.parentNode;
             }
+        }
+        /* If cursor is in a rich text component with no inline color yet,
+           fall back to the first block's computed color */
+        if (displayColor === styles.color && component.classList.contains('rich-text-component')) {
+            const firstBlock = component.querySelector('.rt-block-content');
+            if (firstBlock)
+                displayColor = getComputedStyle(firstBlock).color;
         }
         const hexColor = SidebarUtils.rgbToHex(displayColor);
         textColorInput.value = hexColor;

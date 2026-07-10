@@ -1,5 +1,6 @@
 /** Builds and registers all supported component types */
 export declare class CanvasComponentFactory {
+    private static readonly TYPE_ALIASES;
     /** Lazy factory map — each entry calls create() on demand */
     private static get factoryMap();
     /** Instantiates a component by type; returns null for unknown types */

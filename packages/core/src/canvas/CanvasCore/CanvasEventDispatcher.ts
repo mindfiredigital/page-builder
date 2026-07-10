@@ -13,6 +13,9 @@ export class CanvasEventDispatcher {
   static dispatchDesignChange(): void {
     const { canvasElement, editable, jsonStorage } = CanvasSharedState;
     if (!canvasElement || editable === false) return;
+    /* Never auto-save while restoreState is rebuilding the canvas —
+       a partial snapshot would overwrite the good persisted state */
+    if (CanvasStateManager.isRestoring) return;
 
     if (CanvasEventDispatcher._designChangeTimer !== null) {
       clearTimeout(CanvasEventDispatcher._designChangeTimer);

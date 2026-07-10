@@ -2,6 +2,7 @@ import { Canvas } from '../../canvas/Canvas.js';
 import { ImageComponent } from '../ImageComponent.js';
 import { ContainerResizeHandler } from './ContainerResizeHandler.js';
 import { initContainerEventListeners } from './ContainerEventListeners.js';
+import { CanvasResizeHandler } from '../../canvas/CanvasCore/CanvasResizeHandler.js';
 /* Shows the hover label on a non-container component */
 function showLabel(event, component) {
     event.stopPropagation();
@@ -36,12 +37,13 @@ export function restoreContainer(container, editable) {
         container.querySelectorAll('.resizers').forEach(r => r.remove());
     }
     container.querySelectorAll('.editable-component').forEach(child => {
-        var _a, _b;
+        var _a, _b, _c, _d;
         const childElement = child;
         if (editable !== false) {
             Canvas.controlsManager.addControlButtons(childElement);
             if (isGridMode) {
                 childElement.classList.remove('component-resizer');
+                (_a = childElement.querySelector('.canvas-resizers')) === null || _a === void 0 ? void 0 : _a.remove();
                 childElement.removeAttribute('draggable');
                 childElement.style.cursor = 'default';
                 childElement.style.position = '';
@@ -52,6 +54,10 @@ export function restoreContainer(container, editable) {
                 Canvas.addDraggableListeners(childElement);
                 childElement.style.position = 'absolute';
                 childElement.classList.add('component-resizer');
+                try {
+                    CanvasResizeHandler.restore(childElement);
+                }
+                catch ( /* non-fatal */_e) { /* non-fatal */ }
             }
             if (childElement.classList.contains('container-component')) {
                 /*
@@ -71,11 +77,12 @@ export function restoreContainer(container, editable) {
             childElement.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
             childElement.classList.remove('editable-component');
             childElement.classList.remove('component-resizer');
+            (_b = childElement.querySelector('.canvas-resizers')) === null || _b === void 0 ? void 0 : _b.remove();
             childElement.removeAttribute('draggable');
             childElement.removeAttribute('contenteditable');
         }
         if (childElement.classList.contains('image-component')) {
-            const imageSrc = (_b = (_a = childElement.querySelector('img')) === null || _a === void 0 ? void 0 : _a.getAttribute('src')) !== null && _b !== void 0 ? _b : null;
+            const imageSrc = (_d = (_c = childElement.querySelector('img')) === null || _c === void 0 ? void 0 : _c.getAttribute('src')) !== null && _d !== void 0 ? _d : null;
             ImageComponent.restoreImageUpload(childElement, imageSrc !== null && imageSrc !== void 0 ? imageSrc : '', editable);
         }
         if (childElement.classList.contains('container-component')) {

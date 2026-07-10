@@ -84,6 +84,7 @@ const App = () => {
       },
       { name: 'video' },
       { name: 'image' },
+      { name: 'richtext' },
       { name: 'container' },
       { name: 'twoCol' },
       { name: 'threeCol' },
@@ -175,7 +176,7 @@ const App = () => {
       <PageBuilderReact
         config={dynamicComponents}
         customComponents={customComponents}
-        layoutMode="grid"
+        layoutMode="absolute"
       />
     </div>
   );

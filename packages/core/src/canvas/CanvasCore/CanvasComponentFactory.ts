@@ -1,5 +1,6 @@
 import { CanvasSharedState } from './CanvasSharedState';
 import { CanvasEventDispatcher } from './CanvasEventDispatcher';
+import { CanvasResizeHandler } from './CanvasResizeHandler';
 
 import {
   ButtonComponent,
@@ -18,6 +19,10 @@ import { LandingPageTemplate } from '../../templates/LandingPageTemplate';
 
 /** Builds and registers all supported component types */
 export class CanvasComponentFactory {
+  private static readonly TYPE_ALIASES: Record<string, string> = {
+    'rich-text': 'richtext',
+  };
+
   /** Lazy factory map — each entry calls create() on demand */
   private static get factoryMap(): Record<string, () => HTMLElement | null> {
     const {
@@ -57,7 +62,8 @@ export class CanvasComponentFactory {
     let element: HTMLElement | null = null;
 
     /** Try built-in factory first, then fall back to custom web-component tag */
-    const factoryFn = CanvasComponentFactory.factoryMap[type];
+    const resolvedType = CanvasComponentFactory.TYPE_ALIASES[type] || type;
+    const factoryFn = CanvasComponentFactory.factoryMap[resolvedType];
     if (factoryFn) {
       element = factoryFn();
     } else {
@@ -79,6 +85,9 @@ export class CanvasComponentFactory {
     if (element && editable !== false) {
       /** Attach ResizeObserver to enforce printable-mode boundary constraints */
       const resizeObserver = new ResizeObserver(() => {
+        /* Skip clamping while the user is actively dragging a resize handle */
+        if (CanvasResizeHandler.isResizing) return;
+
         if (
           layoutMode === 'absolute' &&
           CanvasSharedState.canvasElement.classList.contains(
@@ -115,18 +124,27 @@ export class CanvasComponentFactory {
       resizeObserver.observe(element);
       element.classList.add('editable-component');
 
-      /** Resizer class only applies in non-grid absolute layouts */
-      if (type !== 'container' && layoutMode !== 'grid') {
+      /** Resize handles only apply in non-grid absolute layouts */
+      if (resolvedType !== 'container' && layoutMode !== 'grid') {
         element.classList.add('component-resizer');
+        new CanvasResizeHandler(element).addResizeHandles();
       }
 
       /** Images and richtext manage their own internal editing — skip outer contenteditable */
-      if (type === 'image' || type === 'richtext') {
+      if (resolvedType === 'image' || resolvedType === 'richtext') {
         element.setAttribute('contenteditable', 'false');
       } else {
-        if (type !== 'header' && type !== 'text' && type !== 'table') {
+        if (
+          resolvedType !== 'header' &&
+          resolvedType !== 'text' &&
+          resolvedType !== 'table'
+        ) {
           element.setAttribute('contenteditable', 'true');
         }
+      }
+
+      /** Auto-save on content edits (skip image which has no editable text) */
+      if (resolvedType !== 'image') {
         element.addEventListener('input', () => {
           CanvasSharedState.historyManager.captureState();
           CanvasEventDispatcher.dispatchDesignChange();

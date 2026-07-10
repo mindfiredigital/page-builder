@@ -100,11 +100,11 @@ export class RichTextPopoverManager {
         const popover = this.buildAddPopover();
         popover.dataset.popoverType = 'add';
         this.activePopover = popover;
-        const rootRect = this.root.getBoundingClientRect();
         const anchorRect = anchor.getBoundingClientRect();
-        popover.style.top = `${anchorRect.bottom - rootRect.top + 4}px`;
-        popover.style.left = `${anchorRect.left - rootRect.left}px`;
-        this.root.appendChild(popover);
+        popover.style.position = 'fixed';
+        popover.style.top = `${anchorRect.bottom + 4}px`;
+        popover.style.left = `${anchorRect.left}px`;
+        document.body.appendChild(popover);
         setTimeout(() => { var _a; return (_a = popover.querySelector('.rt-popover-filter')) === null || _a === void 0 ? void 0 : _a.focus(); }, 0);
     }
     hidePopover() {
@@ -132,11 +132,11 @@ export class RichTextPopoverManager {
         const popover = this.buildTunePopover(block);
         popover.dataset.popoverType = 'tune';
         this.activePopover = popover;
-        const rootRect = this.root.getBoundingClientRect();
         const anchorRect = anchor.getBoundingClientRect();
-        popover.style.top = `${anchorRect.bottom - rootRect.top + 4}px`;
-        popover.style.left = `${anchorRect.left - rootRect.left}px`;
-        this.root.appendChild(popover);
+        popover.style.position = 'fixed';
+        popover.style.top = `${anchorRect.bottom + 4}px`;
+        popover.style.left = `${anchorRect.left}px`;
+        document.body.appendChild(popover);
         setTimeout(() => { var _a; return (_a = popover.querySelector('.rt-popover-filter')) === null || _a === void 0 ? void 0 : _a.focus(); }, 0);
     }
     buildTunePopover(block) {
@@ -200,11 +200,11 @@ export class RichTextPopoverManager {
         panel.addEventListener('mouseenter', () => this.cancelHideSubmenu());
         panel.addEventListener('mouseleave', () => this.scheduleHideSubmenu());
         this.activeSubmenu = panel;
-        this.root.appendChild(panel);
-        const rootRect = this.root.getBoundingClientRect();
+        document.body.appendChild(panel);
         const anchorRect = anchor.getBoundingClientRect();
-        panel.style.top = `${anchorRect.top - rootRect.top}px`;
-        panel.style.left = `${anchorRect.right - rootRect.left + 4}px`;
+        panel.style.position = 'fixed';
+        panel.style.top = `${anchorRect.top}px`;
+        panel.style.left = `${anchorRect.right + 4}px`;
     }
     hideSubmenuNow() {
         var _a;

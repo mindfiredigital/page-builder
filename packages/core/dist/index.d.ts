@@ -16,6 +16,11 @@ declare class PageBuilder {
     static resetHeaderFlag(): void;
     initializeEventListeners(): void;
     setupInitialComponents(): void;
+    applyDesign(design: PageBuilderDesign): void;
+    generateOutput(): {
+        html: string;
+        css: string;
+    };
     setupExportHTMLButton(): void;
 }
 

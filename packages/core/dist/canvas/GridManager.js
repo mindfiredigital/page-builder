@@ -8,17 +8,8 @@ export class GridManager {
         this.currentLayoutMode = layoutMode;
         (_a = canvasElement.querySelector('.drop-preview')) === null || _a === void 0 ? void 0 : _a.remove();
         if (layoutMode === 'absolute') {
-            const dropPreview = document.createElement('div');
-            dropPreview.className = 'drop-preview';
-            canvasElement.appendChild(dropPreview);
             canvasElement.addEventListener('dragover', (event) => {
                 event.preventDefault();
-                this.showGridCornerHighlight(event, dropPreview, canvasElement);
-            });
-            canvasElement.addEventListener('dragleave', (event) => {
-                if (!canvasElement.contains(event.relatedTarget)) {
-                    dropPreview.classList.remove('visible');
-                }
             });
         }
         else {
@@ -88,17 +79,11 @@ export class GridManager {
     }
     mousePositionAtGridCorner(event, canvas) {
         const canvasRect = canvas.getBoundingClientRect();
-        const scrollLeft = canvas.scrollLeft;
-        const scrollTop = canvas.scrollTop;
-        const mouseX = event.clientX - canvasRect.left + scrollLeft;
-        const mouseY = event.clientY - canvasRect.top + scrollTop;
-        const gridSize = 10;
-        const gridX = Math.round(mouseX / gridSize) * gridSize;
-        const gridY = Math.round(mouseY / gridSize) * gridSize;
-        const padding = 20;
+        const mouseX = event.clientX - canvasRect.left + canvas.scrollLeft;
+        const mouseY = event.clientY - canvasRect.top + canvas.scrollTop;
         return {
-            gridX: Math.max(padding, gridX - padding),
-            gridY: Math.max(padding, gridY - padding),
+            gridX: Math.round(mouseX),
+            gridY: Math.round(mouseY),
         };
     }
     getCellSize() {

@@ -1,0 +1,35 @@
+{
+  "name": "@mindfiredigital/page-builder-cli",
+  "version": "0.1.0",
+  "description": "pagectl — a stable, scriptable, self-describing CLI for @mindfiredigital/page-builder pages",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "pagectl": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && node scripts/copy-assets.mjs",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@mindfiredigital/page-builder": "workspace:*",
+    "@mindfiredigital/page-builder-web-component": "workspace:*",
+    "commander": "^12.1.0",
+    "esbuild": "^0.24.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsup": "^6.7.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

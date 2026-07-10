@@ -140,12 +140,12 @@ export class RichTextPopoverManager {
     popover.dataset.popoverType = 'add';
     this.activePopover = popover;
 
-    const rootRect = this.root.getBoundingClientRect();
     const anchorRect = anchor.getBoundingClientRect();
-    popover.style.top = `${anchorRect.bottom - rootRect.top + 4}px`;
-    popover.style.left = `${anchorRect.left - rootRect.left}px`;
+    popover.style.position = 'fixed';
+    popover.style.top = `${anchorRect.bottom + 4}px`;
+    popover.style.left = `${anchorRect.left}px`;
 
-    this.root.appendChild(popover);
+    document.body.appendChild(popover);
     setTimeout(
       () =>
         popover.querySelector<HTMLInputElement>('.rt-popover-filter')?.focus(),
@@ -185,12 +185,12 @@ export class RichTextPopoverManager {
     popover.dataset.popoverType = 'tune';
     this.activePopover = popover;
 
-    const rootRect = this.root.getBoundingClientRect();
     const anchorRect = anchor.getBoundingClientRect();
-    popover.style.top = `${anchorRect.bottom - rootRect.top + 4}px`;
-    popover.style.left = `${anchorRect.left - rootRect.left}px`;
+    popover.style.position = 'fixed';
+    popover.style.top = `${anchorRect.bottom + 4}px`;
+    popover.style.left = `${anchorRect.left}px`;
 
-    this.root.appendChild(popover);
+    document.body.appendChild(popover);
     setTimeout(
       () =>
         popover.querySelector<HTMLInputElement>('.rt-popover-filter')?.focus(),
@@ -280,12 +280,12 @@ export class RichTextPopoverManager {
     panel.addEventListener('mouseleave', () => this.scheduleHideSubmenu());
 
     this.activeSubmenu = panel;
-    this.root.appendChild(panel);
+    document.body.appendChild(panel);
 
-    const rootRect = this.root.getBoundingClientRect();
     const anchorRect = anchor.getBoundingClientRect();
-    panel.style.top = `${anchorRect.top - rootRect.top}px`;
-    panel.style.left = `${anchorRect.right - rootRect.left + 4}px`;
+    panel.style.position = 'fixed';
+    panel.style.top = `${anchorRect.top}px`;
+    panel.style.left = `${anchorRect.right + 4}px`;
   }
 
   hideSubmenuNow(): void {

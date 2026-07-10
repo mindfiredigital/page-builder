@@ -38,10 +38,38 @@
   box-sizing: border-box;
 }
 
-.component-resizer {
-  overflow: hidden !important;
-  resize: both !important;
+/* 8-direction resize handles for absolute-layout canvas components */
+.canvas-resizers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9001;
+  overflow: visible;
 }
+
+.canvas-resizer {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border: 1.5px solid #3b82f6;
+  border-radius: 2px;
+  pointer-events: auto;
+  z-index: 9002;
+}
+
+.canvas-resizer.nw { top: 0; left: 0; }
+.canvas-resizer.ne { top: 0; right: 0; }
+.canvas-resizer.se { bottom: 0; right: 0; }
+.canvas-resizer.sw { bottom: 0; left: 0; }
+.canvas-resizer.n  { top: 0; left: 50%; transform: translateX(-50%); }
+.canvas-resizer.s  { bottom: 0; left: 50%; transform: translateX(-50%); }
+.canvas-resizer.e  { top: 50%; right: 0; transform: translateY(-50%); }
+.canvas-resizer.w  { top: 50%; left: 0; transform: translateY(-50%); }
+
+.editable-component .canvas-resizers { display: none; }
+.editable-component:hover .canvas-resizers,
+.editable-component.selected .canvas-resizers { display: block; }
 
 .component-label,
 .column-label {

@@ -376,10 +376,8 @@ body {
   box-sizing: border-box;
 }
 
-.component-resizer {
-  overflow: hidden !important;
-  resize: both !important;
-}
+/* component-resizer is kept as a marker class for absolute-mode leaf components */
+.component-resizer { overflow: hidden; }
 
 /* Container Component */
 
@@ -2422,14 +2420,18 @@ body {
 }
 
 .rt-block-controls {
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: 2px;
   opacity: 0;
   transition: opacity 0.15s ease;
-  flex-shrink: 0;
-  margin-right: 4px;
-  padding-top: 3px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .rich-text-component.editable-component .rt-block:hover .rt-block-controls {

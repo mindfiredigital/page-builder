@@ -184,7 +184,10 @@ var PageBuilderReact = ({
                   import_react.default.createElement(CustomizeCtor, parsedSettings)
                 );
               } catch (error) {
-                console.error(`Error rendering customize component for ${key}:`, error);
+                console.error(
+                  `Error rendering customize component for ${key}:`,
+                  error
+                );
               }
             }
           }

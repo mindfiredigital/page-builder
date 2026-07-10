@@ -20,6 +20,7 @@ const CustomVideo = forwardRef(
     const videoRef = useRef<HTMLVideoElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    /* Restore settings from data-pb-settings on first mount */
     useLayoutEffect(() => {
       if (!hasSettings) {
         const el = document.getElementById(id);
@@ -29,18 +30,84 @@ const CustomVideo = forwardRef(
             try {
               set(id, JSON.parse(saved));
             } catch {}
+          } else if (el.style.width || el.style.height) {
+            /* Seed store from canvas defaultWidth/defaultHeight if no saved settings */
+            const wMatch = el.style.width?.match(/^(\d+\.?\d*)(px|%)$/);
+            const hMatch = el.style.height?.match(/^(\d+\.?\d*)(px|%)$/);
+            if (wMatch || hMatch) {
+              set(id, {
+                ...(wMatch
+                  ? {
+                      widthValue: parseFloat(wMatch[1]),
+                      widthUnit: wMatch[2] as 'px' | '%',
+                    }
+                  : {}),
+                ...(hMatch
+                  ? {
+                      heightValue: parseFloat(hMatch[1]),
+                      heightUnit: hMatch[2] as 'px' | '%',
+                    }
+                  : {}),
+              });
+            }
           }
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
+    /* Persist settings to DOM attribute after every render */
     useLayoutEffect(() => {
       const el = document.getElementById(id);
       if (el instanceof HTMLElement) {
         el.setAttribute('data-pb-settings', JSON.stringify(s));
       }
     });
+
+    /* Push width/height changes from the settings panel → outer web component element */
+    useLayoutEffect(() => {
+      const el = document.getElementById(id);
+      if (!(el instanceof HTMLElement)) return;
+      el.style.width = `${s.widthValue}${s.widthUnit}`;
+      el.style.height = `${s.heightValue}${s.heightUnit}`;
+    }, [id, s.widthValue, s.widthUnit, s.heightValue, s.heightUnit]);
+
+    /* Sync canvas drag-resize → store so the settings panel stays accurate */
+    useEffect(() => {
+      const el = document.getElementById(id);
+      if (!(el instanceof HTMLElement)) return;
+
+      const observer = new MutationObserver(() => {
+        const w = el.style.width;
+        const h = el.style.height;
+        const current = useVideoStore.getState().settings[id] ?? VIDEO_DEFAULTS;
+
+        const patch: {
+          widthValue?: number;
+          widthUnit?: 'px' | '%';
+          heightValue?: number;
+          heightUnit?: 'px' | '%';
+        } = {};
+        if (w && w !== `${current.widthValue}${current.widthUnit}`) {
+          const m = w.match(/^(\d+\.?\d*)(px|%)$/);
+          if (m) {
+            patch.widthValue = parseFloat(m[1]);
+            patch.widthUnit = m[2] as 'px' | '%';
+          }
+        }
+        if (h && h !== `${current.heightValue}${current.heightUnit}`) {
+          const m = h.match(/^(\d+\.?\d*)(px|%)$/);
+          if (m) {
+            patch.heightValue = parseFloat(m[1]);
+            patch.heightUnit = m[2] as 'px' | '%';
+          }
+        }
+        if (Object.keys(patch).length) set(id, patch);
+      });
+
+      observer.observe(el, { attributes: true, attributeFilter: ['style'] });
+      return () => observer.disconnect();
+    }, [id, set]);
 
     useEffect(() => {
       const el = videoRef.current;
@@ -60,8 +127,9 @@ const CustomVideo = forwardRef(
       <div
         ref={ref}
         style={{
-          width: `${s.widthValue}${s.widthUnit}`,
-          height: `${s.heightValue}${s.heightUnit}`,
+          /* Width/height live on the outer web component element; this div fills it */
+          width: '100%',
+          height: '100%',
           paddingTop: s.paddingTop ? `${s.paddingTop}px` : undefined,
           paddingRight: s.paddingRight ? `${s.paddingRight}px` : undefined,
           paddingBottom: s.paddingBottom ? `${s.paddingBottom}px` : undefined,

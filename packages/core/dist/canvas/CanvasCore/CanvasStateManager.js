@@ -1,7 +1,8 @@
 import { CanvasSharedState } from './CanvasSharedState.js';
 import { CanvasComponentFactory } from './CanvasComponentFactory.js';
 import { CanvasDragHandler } from './CanvasDragHandler.js';
-import { ContainerComponent, ImageComponent, TableComponent, LinkComponent, HeaderComponent, TextComponent, } from '../../components/index.js';
+import { CanvasResizeHandler } from './CanvasResizeHandler.js';
+import { ContainerComponent, ImageComponent, TableComponent, LinkComponent, HeaderComponent, TextComponent, RichTextComponent, } from '../../components/index.js';
 import { MultiColumnContainer } from '../../services/MultiColumnContainer.js';
 /** Serialises and deserialises the canvas DOM into/from PageBuilderDesign */
 export class CanvasStateManager {
@@ -106,6 +107,7 @@ export class CanvasStateManager {
     }
     /** Rehydrate the canvas DOM from a previously captured PageBuilderDesign */
     static restoreState(state) {
+        CanvasStateManager.isRestoring = true;
         const { canvasElement, editable, controlsManager, gridManager } = CanvasSharedState;
         /** Restore canvas-level styles and classes first */
         const canvasDataIndex = state.findIndex(data => data.id === 'canvas' && data.type === 'canvas');
@@ -122,7 +124,7 @@ export class CanvasStateManager {
         canvasElement.innerHTML = '';
         CanvasSharedState.components = [];
         state.forEach(componentData => {
-            var _a;
+            var _a, _b;
             const customSettings = componentData.dataAttributes['data-custom-settings'] || null;
             const component = CanvasComponentFactory.createComponent(componentData.type, customSettings, componentData.content);
             if (!component)
@@ -146,9 +148,10 @@ export class CanvasStateManager {
              *  components have been deleted.  Setting it here keeps id and classList
              *  in sync with what was captured in getState(). */
             component.id = componentData.id;
-            /** Remove resize handle in non-editable mode */
+            /** Remove resize handles in non-editable mode */
             if (editable === false) {
                 component.classList.remove('component-resizer');
+                (_a = component.querySelector('.canvas-resizers')) === null || _a === void 0 ? void 0 : _a.remove();
             }
             /** Restore video source and hide the upload placeholder */
             if (componentData.type === 'video') {
@@ -183,6 +186,13 @@ export class CanvasStateManager {
                 controlsManager.addControlButtons(component);
                 if (CanvasSharedState.layoutMode === 'absolute') {
                     CanvasDragHandler.addDraggableListeners(component);
+                    /* innerHTML was overwritten above — re-attach resize handle listeners */
+                    try {
+                        if (component.classList.contains('component-resizer')) {
+                            CanvasResizeHandler.restore(component);
+                        }
+                    }
+                    catch ( /* non-fatal — component still usable without resize handles */_c) { /* non-fatal — component still usable without resize handles */ }
                 }
             }
             /** Component-specific post-restore hooks */
@@ -194,7 +204,7 @@ export class CanvasStateManager {
                 MultiColumnContainer.restoreColumn(component);
             }
             if (componentData.type === 'image') {
-                ImageComponent.restoreImageUpload(component, (_a = componentData.imageSrc) !== null && _a !== void 0 ? _a : '', editable);
+                ImageComponent.restoreImageUpload(component, (_b = componentData.imageSrc) !== null && _b !== void 0 ? _b : '', editable);
             }
             if (componentData.type === 'table')
                 TableComponent.restore(component, editable);
@@ -204,6 +214,8 @@ export class CanvasStateManager {
                 HeaderComponent.restore(component);
             if (componentData.type === 'text')
                 TextComponent.restore(component);
+            if (componentData.type === 'rich-text')
+                RichTextComponent.restore(component);
             canvasElement.appendChild(component);
             CanvasSharedState.components.push(component);
         });
@@ -211,5 +223,9 @@ export class CanvasStateManager {
         gridManager.initializeDropPreview(canvasElement, CanvasSharedState.layoutMode);
         /* Expand canvas min-height to cover all restored absolute-positioned components */
         CanvasSharedState.updateCanvasScrollSpace();
+        CanvasStateManager.isRestoring = false;
     }
 }
+/* True while restoreState is running — prevents auto-save from
+   overwriting the persisted state with a partially restored canvas */
+CanvasStateManager.isRestoring = false;

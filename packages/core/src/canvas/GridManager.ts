@@ -15,25 +15,8 @@ export class GridManager {
     canvasElement.querySelector('.drop-preview')?.remove();
 
     if (layoutMode === 'absolute') {
-      const dropPreview = document.createElement('div');
-      dropPreview.className = 'drop-preview';
-      canvasElement.appendChild(dropPreview);
-
       canvasElement.addEventListener('dragover', (event: Event) => {
         event.preventDefault();
-        this.showGridCornerHighlight(
-          event as DragEvent,
-          dropPreview,
-          canvasElement
-        );
-      });
-
-      canvasElement.addEventListener('dragleave', (event: Event) => {
-        if (
-          !canvasElement.contains((event as DragEvent).relatedTarget as Node)
-        ) {
-          dropPreview.classList.remove('visible');
-        }
       });
     } else {
       /* Grid mode: show a horizontal insert-indicator line instead of the
@@ -128,20 +111,12 @@ export class GridManager {
     canvas: HTMLElement
   ): { gridX: number; gridY: number } {
     const canvasRect = canvas.getBoundingClientRect();
-    const scrollLeft = canvas.scrollLeft;
-    const scrollTop = canvas.scrollTop;
-
-    const mouseX = event.clientX - canvasRect.left + scrollLeft;
-    const mouseY = event.clientY - canvasRect.top + scrollTop;
-
-    const gridSize = 10;
-    const gridX = Math.round(mouseX / gridSize) * gridSize;
-    const gridY = Math.round(mouseY / gridSize) * gridSize;
-    const padding = 20;
+    const mouseX = event.clientX - canvasRect.left + canvas.scrollLeft;
+    const mouseY = event.clientY - canvasRect.top + canvas.scrollTop;
 
     return {
-      gridX: Math.max(padding, gridX - padding),
-      gridY: Math.max(padding, gridY - padding),
+      gridX: Math.round(mouseX),
+      gridY: Math.round(mouseY),
     };
   }
 

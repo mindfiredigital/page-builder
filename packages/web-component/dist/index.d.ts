@@ -34,6 +34,11 @@ declare class PageBuilderComponent extends HTMLElement {
     private hasValidConfig;
     set configData(value: any);
     get configData(): any;
+    applyDesign(design: PageBuilderDesign): void;
+    generateOutput(): {
+        html: string;
+        css: string;
+    };
     private initializePageBuilder;
 }
 

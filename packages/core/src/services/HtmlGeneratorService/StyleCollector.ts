@@ -54,7 +54,21 @@ export class StyleCollector {
     const styles: string[] = [];
     const processedSelectors = new Set<string>();
 
-    styles.push(this.buildBaseCSS(backgroundColor));
+    /* Calculate the lowest edge of absolute-positioned content so the
+       preview canvas min-height covers everything (the scroll spacer is
+       stripped from the exported HTML, so absolute children would otherwise
+       not push the canvas height). */
+    let contentBottom = 0;
+    if (Canvas.layoutMode === 'absolute') {
+      canvasElement
+        .querySelectorAll<HTMLElement>(':scope > .editable-component')
+        .forEach(el => {
+          const bottom = (parseFloat(el.style.top) || 0) + el.offsetHeight;
+          if (bottom > contentBottom) contentBottom = bottom;
+        });
+    }
+
+    styles.push(this.buildBaseCSS(backgroundColor, contentBottom));
 
     canvasElement.querySelectorAll('*').forEach((component, index) => {
       if (CSS_CLASSES_TO_EXCLUDE.some(cls => component.classList.contains(cls)))
@@ -116,7 +130,10 @@ export class StyleCollector {
      between grid layout mode (overflow:hidden, flex body) and absolute/print
      mode (block canvas, min-height 100vh).
      ─────────────────────────────────────────────────────────────────────────── */
-  private buildBaseCSS(backgroundColor: string): string {
+  private buildBaseCSS(
+    backgroundColor: string,
+    contentBottom: number = 0
+  ): string {
     if (Canvas.layoutMode === 'grid') {
       return `
       body, html {
@@ -147,14 +164,18 @@ export class StyleCollector {
       `;
     }
 
+    /* 75px top + 75px bottom padding; ensure the canvas covers all content */
+    const canvasMinHeight = Math.max(1123, contentBottom + 150);
+
     return `
       body, html {
-        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box; background-color: #f8fafc;
+        margin: 0; padding: 0; width: 100%; height: auto; box-sizing: border-box; background-color: #f8fafc;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        display: block; overflow: auto;
       }
-      #canvas.home {
-        position: relative; display: block; width: 100%; min-height: 100vh;
-        background-color: ${backgroundColor}; margin: 0; overflow: visible;
+      #canvas.preview-printable {
+        background-color: ${backgroundColor}; overflow: visible;
+        min-height: ${canvasMinHeight}px; padding-bottom: 75px;
       }
       table { border-collapse: collapse; }
       /* Strip editor visual indicators. User-set borders are applied via element-specific

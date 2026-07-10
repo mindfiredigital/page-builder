@@ -1,6 +1,7 @@
 import { CanvasSharedState } from './CanvasSharedState';
 import { CanvasComponentFactory } from './CanvasComponentFactory';
 import { CanvasDragHandler } from './CanvasDragHandler';
+import { CanvasResizeHandler } from './CanvasResizeHandler';
 
 import {
   ContainerComponent,
@@ -9,11 +10,16 @@ import {
   LinkComponent,
   HeaderComponent,
   TextComponent,
+  RichTextComponent,
 } from '../../components/index';
 import { MultiColumnContainer } from '../../services/MultiColumnContainer';
 
 /** Serialises and deserialises the canvas DOM into/from PageBuilderDesign */
 export class CanvasStateManager {
+  /* True while restoreState is running — prevents auto-save from
+     overwriting the persisted state with a partially restored canvas */
+  static isRestoring = false;
+
   /** Capture a full snapshot of the canvas and every component on it */
   static getState(): PageBuilderDesign {
     const canvasElement = CanvasSharedState.canvasElement;
@@ -137,6 +143,8 @@ export class CanvasStateManager {
 
   /** Rehydrate the canvas DOM from a previously captured PageBuilderDesign */
   static restoreState(state: PageBuilderDesign): void {
+    CanvasStateManager.isRestoring = true;
+
     const { canvasElement, editable, controlsManager, gridManager } =
       CanvasSharedState;
 
@@ -201,9 +209,10 @@ export class CanvasStateManager {
        *  in sync with what was captured in getState(). */
       component.id = componentData.id;
 
-      /** Remove resize handle in non-editable mode */
+      /** Remove resize handles in non-editable mode */
       if (editable === false) {
         component.classList.remove('component-resizer');
+        component.querySelector('.canvas-resizers')?.remove();
       }
 
       /** Restore video source and hide the upload placeholder */
@@ -246,6 +255,14 @@ export class CanvasStateManager {
         controlsManager.addControlButtons(component);
         if (CanvasSharedState.layoutMode === 'absolute') {
           CanvasDragHandler.addDraggableListeners(component);
+          /* innerHTML was overwritten above — re-attach resize handle listeners */
+          try {
+            if (component.classList.contains('component-resizer')) {
+              CanvasResizeHandler.restore(component);
+            }
+          } catch {
+            /* non-fatal — component still usable without resize handles */
+          }
         }
       }
 
@@ -273,6 +290,8 @@ export class CanvasStateManager {
       if (componentData.type === 'link') LinkComponent.restore(component);
       if (componentData.type === 'header') HeaderComponent.restore(component);
       if (componentData.type === 'text') TextComponent.restore(component);
+      if (componentData.type === 'rich-text')
+        RichTextComponent.restore(component);
 
       canvasElement.appendChild(component);
       CanvasSharedState.components.push(component);
@@ -286,5 +305,7 @@ export class CanvasStateManager {
 
     /* Expand canvas min-height to cover all restored absolute-positioned components */
     CanvasSharedState.updateCanvasScrollSpace();
+
+    CanvasStateManager.isRestoring = false;
   }
 }

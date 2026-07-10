@@ -61,6 +61,24 @@ export class PageBuilder {
         /* Mobile responsive setup — grid layout only, runs after all DOM is ready */
         MobileResponsiveManager.init(this.layoutMode, this.editable);
     }
+    /* Applies a new design to the already-mounted canvas, live — the same
+       mechanism undo/redo uses. This is the seam a live-sync client (e.g. a
+       sidecar push) calls to reflect an externally-made edit in an
+       already-open tab, without a full reload. */
+    applyDesign(design) {
+        Canvas.restoreState(design);
+    }
+    /* Returns the current design as final HTML/CSS strings, without any DOM
+       modal/button involved. Reuses the same generator the export button
+       uses — this is the seam headless callers (e.g. the CLI's `render`
+       command) call directly via a real (possibly headless) browser. */
+    generateOutput() {
+        const htmlGenerator = new HTMLGenerator(new Canvas());
+        return {
+            html: htmlGenerator.generateHTML(),
+            css: htmlGenerator.generateCSS(),
+        };
+    }
     /* Wires the Export HTML button — creates the export modal on click */
     setupExportHTMLButton() {
         const exportButton = document.getElementById('export-html-btn');
