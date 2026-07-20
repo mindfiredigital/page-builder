@@ -28,7 +28,6 @@ import { ImageComponent } from '../../components/ImageComponent.js';
 // ── Typed aliases for the mocked functions (resolved after import) ────────────
 const mockCaptureState = Canvas.historyManager.captureState;
 const mockCreateComponent = Canvas.createComponent;
-const mockGenerateUniqueClass = Canvas.generateUniqueClass;
 const mockAddDraggableListeners = Canvas.addDraggableListeners;
 const mockAddControlButtons = Canvas.controlsManager
     .addControlButtons;

@@ -20,6 +20,7 @@ export interface UpdateBlockOptions extends BaseFlags {
   x?: string;
   y?: string;
   content?: string;
+  src?: string;
   style?: string[];
   class?: string[];
   rawContent?: boolean;
@@ -51,13 +52,14 @@ export function updateBlockCommand(options: UpdateBlockOptions): void {
   }
 
   const hasContentEdit = options.content !== undefined;
+  const hasSrcEdit = options.src !== undefined;
   const hasStyleEdit = (options.style ?? []).length > 0;
   const hasClassEdit = (options.class ?? []).length > 0;
 
-  if (directions.length === 0 && !hasExplicitMove && !hasContentEdit && !hasStyleEdit && !hasClassEdit) {
+  if (directions.length === 0 && !hasExplicitMove && !hasContentEdit && !hasSrcEdit && !hasStyleEdit && !hasClassEdit) {
     badInput(
       'Nothing to update.',
-      `Pass a direction (--left/--right/--up/--down), an explicit --x/--y, and/or --content/--style/--class. Valid directions: ${DIRECTION_VALUES.join(', ')}.`
+      `Pass a direction (--left/--right/--up/--down), an explicit --x/--y, and/or --content/--src/--style/--class. Valid directions: ${DIRECTION_VALUES.join(', ')}.`
     );
   }
 
@@ -108,6 +110,13 @@ export function updateBlockCommand(options: UpdateBlockOptions): void {
     } else {
       updated.content = def.defaultContent(options.content);
     }
+  }
+
+  if (hasSrcEdit) {
+    if (block.type !== 'image') {
+      badInput('--src is only valid for image blocks.', `Block "${options.id}" is type "${block.type}".`);
+    }
+    updated.imageSrc = options.src;
   }
 
   if (hasStyleEdit) {

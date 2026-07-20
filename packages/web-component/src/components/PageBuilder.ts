@@ -1,16 +1,15 @@
 import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
+import type {
+  PageBuilderDesign,
+  ComponentAttribute,
+  BasicComponent,
+} from '@mindfiredigital/page-builder';
 
-export interface PageBuilderDesign {
-  pages?: Array<{
-    id: string;
-    components: Array<{
-      type: string;
-      id: string;
-      props: Record<string, any>;
-    }>;
-  }>;
-  [key: string]: any;
-}
+/* Re-exported so consumers (e.g. the react wrapper) can keep importing
+   these shared shapes from this package without reaching into core directly.
+   The canonical definitions live in core — see core/src/types/types.d.ts. */
+export type { PageBuilderDesign, ComponentAttribute, BasicComponent };
+
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
   private initialized = false;
@@ -162,7 +161,7 @@ export class PageBuilderComponent extends HTMLElement {
     if (!this.pageBuilder) {
       throw new Error('PageBuilder is not initialized yet.');
     }
-    this.pageBuilder.applyDesign(design as any);
+    this.pageBuilder.applyDesign(design);
   }
 
   /* Returns the current design as final HTML/CSS strings. Used by headless

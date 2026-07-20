@@ -30,6 +30,7 @@ export interface AddBlockOptions extends BaseFlags {
   type: string;
   id: string;
   content?: string;
+  src?: string;
   style?: string[];
   class?: string[];
   rawContent?: boolean;
@@ -62,6 +63,10 @@ export function addBlockCommand(options: AddBlockOptions): void {
     );
   }
 
+  if (options.src && options.type !== 'image') {
+    badInput('--src is only valid for --type image.', 'Drop --src, or use --type image.');
+  }
+
   const def = BLOCKS[options.type];
   const { page, path } = loadPageFile(options.page);
   const blocks = getBlocks(page);
@@ -87,6 +92,14 @@ export function addBlockCommand(options: AddBlockOptions): void {
       );
     }
     content = def.defaultContent();
+  } else if (options.type === 'image') {
+    if (options.content || options.rawContent) {
+      badInput(
+        'image blocks take no --content in pagectl v1.',
+        'Use --src <url> to set the image URL instead of --content.'
+      );
+    }
+    content = def.defaultContent();
   } else if (options.rawContent) {
     if (!options.content) {
       badInput('--raw-content requires --content.', 'Pass --content "<markup>" alongside --raw-content.');
@@ -104,14 +117,39 @@ export function addBlockCommand(options: AddBlockOptions): void {
 
   const existing = blocks.find(b => b.id === options.id);
   const style = parseKeyValueList(options.style, '--style');
+
+  /* Two independent real-editor behaviors both fight a block's declared
+     width/height after it leaves this process, so every block type (not
+     just container) gets a matching min-width/min-height baked into its
+     own inline style — confirmed live with Playwright to fully immunize
+     against both:
+       1. packages/core's .container-component CSS class carries a
+          `min-height: 100px; min-width: 100px;` floor for editor
+          drop-target visibility. A container added with e.g. --height 6
+          (a hairline divider) silently renders ~100px tall without this.
+       2. Independently, #canvas.preview-printable's real rendered width
+          (see harnessPage.ts's matching comment) can leave less usable
+          space than pagectl's CANVAS.width assumes; the real editor then
+          silently shrinks any text/header/button/container block whose
+          right edge would exceed that space, wrapping its text into a
+          near-zero-width column. Images are unaffected by either.
+     CSS min-height/min-width always win over a smaller height/width, so
+     baking the real dimensions in (unless the caller already set one via
+     --style) beats both without a specificity fight. */
+  if (!('min-height' in style)) style['min-height'] = `${height}px`;
+  if (!('min-width' in style)) style['min-width'] = `${width}px`;
+
   const classes = Array.from(new Set([def.baseClass, ...(options.class ?? [])]));
+
+  const imageSrc = options.type === 'image' ? (options.src ?? null) : undefined;
 
   if (existing) {
     const candidateSameShape =
       existing.type === options.type &&
       existing.content === content &&
       JSON.stringify(existing.style) === JSON.stringify({ ...existing.style, ...style }) &&
-      classes.every(c => existing.classes.includes(c));
+      classes.every(c => existing.classes.includes(c)) &&
+      (options.type !== 'image' || (existing.imageSrc ?? null) === imageSrc);
 
     if (candidateSameShape) {
       emitResult(!!options.json, { status: 'already-exists', id: options.id, path }, () => {
@@ -163,6 +201,7 @@ export function addBlockCommand(options: AddBlockOptions): void {
     inlineStyle: renderInlineStyle(placement.box, style),
     classes,
     dataAttributes: {},
+    ...(options.type === 'image' ? { imageSrc } : {}),
   };
 
   const nextPage = [...page, newBlock];

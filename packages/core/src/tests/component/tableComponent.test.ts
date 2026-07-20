@@ -40,15 +40,6 @@ function makeTable(rows = 2, cols = 2, isPreview = false): HTMLElement {
   return tc.create(rows, cols, isPreview, []);
 }
 
-function makeTableWithConfig(
-  config: ComponentAttribute[],
-  rows = 2,
-  cols = 2
-): HTMLElement {
-  const tc = new TableComponent();
-  return tc.create(rows, cols, false, config);
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // TableComponent (public API)
 // ─────────────────────────────────────────────────────────────────────────────

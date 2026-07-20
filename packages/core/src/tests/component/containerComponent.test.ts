@@ -35,7 +35,6 @@ import { ImageComponent } from '../../components/ImageComponent';
 // ── Typed aliases for the mocked functions (resolved after import) ────────────
 const mockCaptureState = Canvas.historyManager.captureState as jest.Mock;
 const mockCreateComponent = Canvas.createComponent as jest.Mock;
-const mockGenerateUniqueClass = Canvas.generateUniqueClass as jest.Mock;
 const mockAddDraggableListeners = Canvas.addDraggableListeners as jest.Mock;
 const mockAddControlButtons = Canvas.controlsManager
   .addControlButtons as jest.Mock;

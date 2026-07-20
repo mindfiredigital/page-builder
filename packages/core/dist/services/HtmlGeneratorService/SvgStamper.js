@@ -57,12 +57,18 @@ export class SvgStamper {
        ─────────────────────────────────────────────────────────────────────────── */
     restoreSVGStamps(records) {
         records.forEach(({ el, prevWidth, prevHeight, prevViewBox, prevStyle, addedViewBox }) => {
-            prevWidth !== null
-                ? el.setAttribute('width', prevWidth)
-                : el.removeAttribute('width');
-            prevHeight !== null
-                ? el.setAttribute('height', prevHeight)
-                : el.removeAttribute('height');
+            if (prevWidth !== null) {
+                el.setAttribute('width', prevWidth);
+            }
+            else {
+                el.removeAttribute('width');
+            }
+            if (prevHeight !== null) {
+                el.setAttribute('height', prevHeight);
+            }
+            else {
+                el.removeAttribute('height');
+            }
             if (addedViewBox) {
                 el.removeAttribute('viewBox');
             }

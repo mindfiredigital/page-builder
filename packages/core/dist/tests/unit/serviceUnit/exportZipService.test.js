@@ -45,6 +45,7 @@ function withAnchorCapture(fn) {
     let captured = null;
     const original = HTMLAnchorElement.prototype.click;
     HTMLAnchorElement.prototype.click = function () {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias -- capturing which anchor was clicked, not a readability shortcut
         captured = this;
         // Do NOT forward to the real click — we don't want navigation.
     };

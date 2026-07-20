@@ -39,6 +39,12 @@ describe('ImageComponent', () => {
             expect(img.style.display).toBe('block');
             expect(img.src).toContain('img.png');
         });
+        it('should default alt to an explicit empty string, never leaving it unset', () => {
+            const el = imageComponent.create();
+            const img = el.querySelector('img');
+            expect(img.hasAttribute('alt')).toBe(true);
+            expect(img.alt).toBe('');
+        });
         it('should have background color #f0f0f0 when no src', () => {
             const el = imageComponent.create();
             expect(el.style.backgroundColor).toBe('rgb(240, 240, 240)');

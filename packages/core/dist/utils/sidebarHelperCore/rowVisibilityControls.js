@@ -62,17 +62,31 @@ export function populateRowVisibilityControls(row, inputs) {
         rules.forEach((rule, index) => {
             const ruleItem = document.createElement('div');
             ruleItem.className = 'rule-item';
-            ruleItem.innerHTML = `
-        <span class="rule-item-text">
-          If <strong class="text-blue-600">${rule.inputKey}</strong>
-          ${rule.operator}
-          '<strong class="text-green-600">${rule.value}</strong>',
-          then <strong class="text-purple-600">${rule.action}</strong>
-        </span>
-        <button class="delete-rule-btn">${DELETE_ICON}</button>
-      `;
+            /* Built via DOM APIs (not innerHTML) — rule.inputKey/value/action are
+               attacker-controllable (round-trip through data-visibility-rules,
+               which import/export/restore can populate from untrusted JSON), so
+               they must never be concatenated into an HTML string. */
+            const textSpan = document.createElement('span');
+            textSpan.className = 'rule-item-text';
+            const appendStrong = (text, className) => {
+                const strong = document.createElement('strong');
+                strong.className = className;
+                strong.textContent = text;
+                textSpan.appendChild(strong);
+            };
+            textSpan.appendChild(document.createTextNode('If '));
+            appendStrong(rule.inputKey, 'text-blue-600');
+            textSpan.appendChild(document.createTextNode(` ${rule.operator} '`));
+            appendStrong(rule.value, 'text-green-600');
+            textSpan.appendChild(document.createTextNode("', then "));
+            appendStrong(rule.action, 'text-purple-600');
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-rule-btn';
+            deleteBtn.innerHTML = DELETE_ICON; // static trusted constant, not user data
+            ruleItem.appendChild(textSpan);
+            ruleItem.appendChild(deleteBtn);
             /** Each rule row gets its own scoped delete handler */
-            ruleItem.querySelector('.delete-rule-btn').addEventListener('click', () => {
+            deleteBtn.addEventListener('click', () => {
                 deleteRule(row, index);
                 renderRules();
                 Canvas.dispatchDesignChange();

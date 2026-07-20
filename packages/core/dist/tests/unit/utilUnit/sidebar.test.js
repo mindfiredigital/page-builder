@@ -774,6 +774,25 @@ describe('populateRowVisibilityControls', () => {
         // There should still be exactly one panel, not two
         expect(document.querySelectorAll('#visibility-rules-panel')).toHaveLength(1);
     });
+    it('renders a rule value containing HTML as inert text, not markup (XSS regression)', () => {
+        setupFunctionsPanel();
+        const row = document.createElement('tr');
+        row.setAttribute('data-visibility-rules', JSON.stringify([
+            {
+                inputKey: '<img src=x onerror=alert(1)>',
+                operator: 'equals',
+                value: '<script>window.__pwned = true</script>',
+                action: 'show',
+            },
+        ]));
+        populateRowVisibilityControls(row, INPUTS);
+        const ruleText = document.querySelector('.rule-item-text');
+        // No injected elements — the payload must be plain text content
+        expect(ruleText.querySelector('img')).toBeNull();
+        expect(ruleText.querySelector('script')).toBeNull();
+        expect(ruleText.textContent).toContain('<img src=x onerror=alert(1)>');
+        expect(ruleText.textContent).toContain('<script>window.__pwned = true</script>');
+    });
 });
 // ===========================================================================
 // SidebarUtils (delegation layer)

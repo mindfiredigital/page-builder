@@ -1,4 +1,4 @@
-name: Deployment Workflow
+name: Release Workflow
 
 on:
   push:
@@ -21,16 +21,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.6.0
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
-
-      - name: Enable Corepack
-        run: npm install -g pnpm
+          node-version: 20
+          cache: 'pnpm'
 
       - name: 'Install dependencies with pnpm'
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm turbo run lint
+
+      - name: Test
+        run: pnpm turbo run test
 
       - name: 'Build application'
         run: pnpm turbo run build
@@ -73,14 +82,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.6.0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
-
-      - name: Enable Corepack
-        run: npm install -g pnpm
+        with:
+          node-version: 20
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Pull latest changes
         run: |

@@ -47,6 +47,8 @@ function renderBlock(block: Block): string {
   switch (block.type) {
     case 'button':
       return `<button id="${escapeHtml(block.id)}" class="${escapeHtml(classAttr)}" style="${escapeHtml(style)}">${block.content}</button>`;
+    case 'image':
+      return `<div id="${escapeHtml(block.id)}" class="${escapeHtml(classAttr)}" style="${escapeHtml(style)}"><img src="${escapeHtml(block.imageSrc ?? '')}" alt="" style="width:100%;height:100%;object-fit:contain;border:none;" /></div>`;
     case 'text':
     case 'header':
     case 'container':

@@ -57,7 +57,9 @@ export function restoreContainer(container, editable) {
                 try {
                     CanvasResizeHandler.restore(childElement);
                 }
-                catch ( /* non-fatal */_e) { /* non-fatal */ }
+                catch (_e) {
+                    /* non-fatal */
+                }
             }
             if (childElement.classList.contains('container-component')) {
                 /*

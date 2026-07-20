@@ -1,5 +1,4 @@
 import { setupExportPDFButton } from '../../../services/ExportPdfService';
-import { HTMLGenerator } from '../../../services/HTMLGenerator';
 import { showNotification } from '../../../utils/utilityFunctions';
 import html2pdf from 'html2pdf.js';
 

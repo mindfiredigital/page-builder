@@ -88,16 +88,40 @@ export function setupExportPDFButton(): void {
       }
 
       const PX_TO_MM = 25.4 / 96;
-      const pageWidthMm = contentWidth * PX_TO_MM;
-      const pageHeightMm = contentHeight * PX_TO_MM;
+
+      /* jsPDF hard-caps any page dimension at 14400pt (= 5080mm, since
+         1mm = 72/25.4pt); shrink the page — keeping aspect ratio — before it
+         hits that ceiling instead of letting jsPDF silently clamp it.
+         Separately, browsers silently return an empty canvas from
+         toDataURL() once a canvas dimension crosses roughly 15-16k px (far
+         lower on Safari) — html2canvas never surfaces this, jsPDF just
+         fails to decode the resulting empty PNG. Cap the render scale so
+         that can't happen. */
+      const MAX_PAGE_MM = 5000;
+      const MAX_CANVAS_PX = 8000;
+
+      let pageWidthMm = contentWidth * PX_TO_MM;
+      let pageHeightMm = contentHeight * PX_TO_MM;
+      const pageClamp = Math.min(
+        1,
+        MAX_PAGE_MM / Math.max(pageWidthMm, pageHeightMm)
+      );
+      pageWidthMm *= pageClamp;
+      pageHeightMm *= pageClamp;
+
+      const renderScale = Math.min(
+        2,
+        MAX_CANVAS_PX / contentWidth,
+        MAX_CANVAS_PX / contentHeight
+      );
 
       await html2pdf()
         .set({
           filename: 'exported_page_download.pdf',
           margin: 0,
-          image: { type: 'png', quality: 1 },
+          image: { type: 'jpeg', quality: 0.92 },
           html2canvas: {
-            scale: 2,
+            scale: renderScale,
             width: contentWidth,
             height: contentHeight,
             scrollX: 0,

@@ -31,13 +31,19 @@ export function renderInlineStyle(box: Box, extraStyle: Record<string, string> =
   return declarations.join('; ') + ';';
 }
 
+/** Bounded by CANVAS.margin on both edges, not 0/CANVAS.width — matches
+    the real editor's own drag-boundary clamp for preview-printable canvases
+    (see CANVAS.margin's doc comment in schema.ts). When width alone
+    already exceeds the margin-safe span, the lower bound still wins (left
+    margin honored, right overflow unavoidable) rather than producing a
+    negative/nonsensical range. */
 function clampX(x: number, width: number): number {
-  const max = Math.max(0, CANVAS.width - width);
-  return Math.min(Math.max(x, 0), max);
+  const max = Math.max(CANVAS.margin, CANVAS.width - CANVAS.margin - width);
+  return Math.min(Math.max(x, CANVAS.margin), max);
 }
 
 function clampY(y: number): number {
-  return Math.max(y, 0);
+  return Math.max(y, CANVAS.margin);
 }
 
 /** Snaps to the grid, then clamps to the canvas bounds. Reports whether
@@ -60,15 +66,16 @@ export function clampAndSnap(x: number, y: number, width: number, height: number
     cursor wasn't tracking the true visual bottom. */
 export function nextAutoFlowY(page: Block[]): number {
   const blocks = getBlocks(page);
-  if (blocks.length === 0) return CANVAS.gap;
+  if (blocks.length === 0) return CANVAS.margin;
   const maxBottom = Math.max(...blocks.map(b => b.position.y + b.dimensions.height));
   return maxBottom + CANVAS.gap;
 }
 
-/** --align defaults to 'left' (the historical CANVAS.gap-from-the-left
-    behavior); 'center'/'right' align against the full canvas width, same
-    vocabulary as --below's anchor-relative align, since a top-level
-    auto-flow block's only real "anchor" is the canvas itself. */
+/** --align defaults to 'left' (flush against CANVAS.margin, the real
+    editor's own left boundary); 'center'/'right' align against the full
+    canvas width the same way, same vocabulary as --below's anchor-relative
+    align, since a top-level auto-flow block's only real "anchor" is the
+    canvas itself. */
 export function computeAutoFlowPosition(
   page: Block[],
   width: number,
@@ -79,13 +86,13 @@ export function computeAutoFlowPosition(
   let x: number;
   switch (align) {
     case 'left':
-      x = CANVAS.gap;
+      x = CANVAS.margin;
       break;
     case 'center':
       x = CANVAS.width / 2 - width / 2;
       break;
     case 'right':
-      x = CANVAS.width - CANVAS.gap - width;
+      x = CANVAS.width - CANVAS.margin - width;
       break;
   }
   return clampAndSnap(x, y, width, height);
@@ -218,15 +225,24 @@ export interface OutOfBounds {
   reason: string;
 }
 
+/** Bounds match clampX/clampY's CANVAS.margin, not raw 0/CANVAS.width — a
+    block inside that dead zone passes a naive "on the canvas" check but
+    still gets silently repositioned by the real editor's own drag-boundary
+    clamp (see CANVAS.margin's doc comment in schema.ts), so it belongs in
+    validate's report even though nothing here is literally off-canvas. */
 export function findOutOfBounds(blocks: Block[]): OutOfBounds[] {
   const issues: OutOfBounds[] = [];
   for (const b of blocks) {
-    if (b.position.x < 0) issues.push({ id: b.id, reason: `x (${b.position.x}) is negative.` });
-    if (b.position.y < 0) issues.push({ id: b.id, reason: `y (${b.position.y}) is negative.` });
-    if (b.position.x + b.dimensions.width > CANVAS.width) {
+    if (b.position.x < CANVAS.margin) {
+      issues.push({ id: b.id, reason: `x (${b.position.x}) is inside the canvas margin (< ${CANVAS.margin}) — the real editor will silently push it to x=${CANVAS.margin}.` });
+    }
+    if (b.position.y < CANVAS.margin) {
+      issues.push({ id: b.id, reason: `y (${b.position.y}) is inside the canvas margin (< ${CANVAS.margin}) — the real editor will silently push it to y=${CANVAS.margin}.` });
+    }
+    if (b.position.x + b.dimensions.width > CANVAS.width - CANVAS.margin) {
       issues.push({
         id: b.id,
-        reason: `right edge (${b.position.x + b.dimensions.width}) exceeds canvas width (${CANVAS.width}).`,
+        reason: `right edge (${b.position.x + b.dimensions.width}) is inside the canvas margin (> ${CANVAS.width - CANVAS.margin}) — the real editor will silently shrink its width to fit.`,
       });
     }
   }

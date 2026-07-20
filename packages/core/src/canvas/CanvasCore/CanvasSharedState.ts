@@ -72,5 +72,5 @@ export class CanvasSharedState {
   public static tableAttributeConfig: ComponentAttribute[] | undefined;
   public static textAttributeConfig: ComponentAttribute[] | undefined;
   public static headerAttributeConfig: ComponentAttribute[] | undefined;
-  public static ImageAttributeConfig: Function | undefined;
+  public static ImageAttributeConfig: ImageAttributeConfigHandler | undefined;
 }

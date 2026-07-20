@@ -102,7 +102,6 @@ describe('HistoryManager', () => {
             expect(mockRestoreState).toHaveBeenCalledWith(makeDesign('v1'));
         });
         it('should warn when undo stack has exactly 1 entry and fall back to storage', () => {
-            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
             mockGetState.mockReturnValueOnce(makeDesign('only'));
             manager.captureState();
             mockJsonStorageLoad.mockReturnValueOnce(makeDesign('saved'));

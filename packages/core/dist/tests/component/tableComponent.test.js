@@ -26,10 +26,6 @@ function makeTable(rows = 2, cols = 2, isPreview = false) {
     const tc = new TableComponent();
     return tc.create(rows, cols, isPreview, []);
 }
-function makeTableWithConfig(config, rows = 2, cols = 2) {
-    const tc = new TableComponent();
-    return tc.create(rows, cols, false, config);
-}
 // ─────────────────────────────────────────────────────────────────────────────
 // TableComponent (public API)
 // ─────────────────────────────────────────────────────────────────────────────

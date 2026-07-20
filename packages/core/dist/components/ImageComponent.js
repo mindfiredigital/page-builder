@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Canvas } from '../canvas/Canvas.js';
+import { EDIT_PENCIL_ICON } from '../constants/index.js';
 export class ImageComponent {
     create(src = null, imageAttributeConfig) {
         ImageComponent.imageAttributeConfig = imageAttributeConfig;
@@ -39,7 +40,7 @@ export class ImageComponent {
         // Create the pencil icon button
         const pencilButton = document.createElement('button');
         pencilButton.classList.add('upload-btn');
-        pencilButton.innerHTML = '🖊️';
+        pencilButton.innerHTML = EDIT_PENCIL_ICON;
         pencilButton.style.position = 'absolute';
         pencilButton.style.padding = '8px';
         pencilButton.style.background = 'transparent';
@@ -56,6 +57,11 @@ export class ImageComponent {
         const element = document.createElement('img');
         const uniqueImageId = `${uniqueContainerId}-img`;
         element.id = uniqueImageId;
+        /* Never leave alt entirely absent — an explicit empty value marks the
+           image as decorative until the author sets real text via the Alt Text
+           sidebar control, which is still meaningfully better for screen readers
+           than a missing alt attribute. */
+        element.alt = '';
         element.style.width = '100%';
         element.style.height = '100%';
         element.style.objectFit = 'contain';

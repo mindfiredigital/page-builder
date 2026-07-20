@@ -17,6 +17,7 @@ module.exports = {
         'configuration/features/view-mode',
         'configuration/features/attributes-formulas',
         'configuration/features/components',
+        'configuration/features/rich-text-editor',
         'configuration/features/custom-components',
         'configuration/features/state-management',
       ],
@@ -26,6 +27,12 @@ module.exports = {
       label: ' React Wrapper',
       collapsed: false,
       items: ['react/examples'],
+    },
+    {
+      type: 'category',
+      label: 'CLI',
+      collapsed: false,
+      items: ['Getting-started/cli'],
     },
 
     {

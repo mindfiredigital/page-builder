@@ -8,8 +8,8 @@ export function schemaCommand(options: BaseFlags): void {
   const data = {
     binary: 'pagectl',
     scope: {
-      description: 'v1 covers flat, top-level, absolute-mode pages using text/header/button/container blocks only.',
-      outOfScope: ['grid-mode pages', 'nested containers', 'image', 'video', 'table', 'richtext', 'link', 'twoCol', 'threeCol', 'landingpage', 'multi-page projects'],
+      description: 'v1 covers flat, top-level, absolute-mode pages using text/header/button/container/image blocks only.',
+      outOfScope: ['grid-mode pages', 'nested containers', 'video', 'table', 'richtext', 'link', 'twoCol', 'threeCol', 'landingpage', 'multi-page projects'],
     },
     workflow: {
       afterEditingBlocks:
@@ -24,7 +24,10 @@ export function schemaCommand(options: BaseFlags): void {
       description:
         'Every command that takes --page falls back to this one file (relative to the current directory) when --page is omitted. It is auto-created on first use. Use this by default — only pass --page for a deliberately separate, named page (see "new"). This means an agent given zero file-naming instructions always converges on the same file as everything else, including "serve".',
     },
-    canvas: CANVAS,
+    canvas: {
+      ...CANVAS,
+      marginNote: `The real editor refuses to let a top-level block sit closer than canvas.margin (${CANVAS.margin}px) to any canvas edge — add-block/update-block already account for this automatically (positions default to/clamp against the margin, not 0), so no manual math is needed. The one thing to know: a genuinely "full-width" block's usable --width is canvas.width - 2*canvas.margin (${CANVAS.width - 2 * CANVAS.margin}px), not the full canvas.width (${CANVAS.width}px) — a wider block still gets created, but its right side will be pushed past the margin by the real editor.`,
+    },
     blockTypes: BLOCK_TYPES,
     blocks: BLOCK_TYPES.map(type => ({
       type,
@@ -71,16 +74,16 @@ export function schemaCommand(options: BaseFlags): void {
       {
         name: 'add-block',
         usage:
-          'pagectl add-block [--page <file>] --type <type> --id <id> [--content <text>] [--style k=v]... [--class <name>]... [--raw-content] [--width <n>] [--height <n>] [--below <id> | --right-of <id> | --x <n> --y <n>] [--align left|center|right] [--gap <n>] [--dry-run] [--json]',
+          'pagectl add-block [--page <file>] --type <type> --id <id> [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--width <n>] [--height <n>] [--below <id> | --right-of <id> | --x <n> --y <n>] [--align left|center|right] [--gap <n>] [--dry-run] [--json]',
         description:
-          'Add a block to the default page (or --page if given), auto-creating that page file if it does not exist yet. Default placement is auto-flow (no coordinates needed); --align applies even without --below (left/center/right against the full canvas width). Idempotent on identical retry ("already-exists", exit 0); different content on the same --id is a distinct error directing you to update-block, exit 2. Missing anchor id -> exit 4. Nesting inside a container is refused (out of scope).',
+          'Add a block to the default page (or --page if given), auto-creating that page file if it does not exist yet. Default placement is auto-flow (no coordinates needed); --align applies even without --below (left/center/right against the full canvas width). --src sets the image URL for --type image (that type takes no --content). Idempotent on identical retry ("already-exists", exit 0); different content on the same --id is a distinct error directing you to update-block, exit 2. Missing anchor id -> exit 4. Nesting inside a container is refused (out of scope).',
       },
       {
         name: 'update-block',
         usage:
-          'pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--content <text>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]',
+          'pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]',
         description:
-          'Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box — "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) — not both in the same call. Either can be combined with --content/--style/--class.',
+          'Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box — "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) — not both in the same call. Either can be combined with --content/--src/--style/--class. --src changes an existing image block\'s URL (image blocks only).',
       },
       {
         name: 'remove-block',

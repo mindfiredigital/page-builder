@@ -23,7 +23,7 @@ program
   .name('pagectl')
   .description(
     'Scriptable, self-describing CLI for @mindfiredigital/page-builder pages. ' +
-      'v1 covers flat, top-level, absolute-mode pages (text/header/button/container). ' +
+      'v1 covers flat, top-level, absolute-mode pages (text/header/button/container/image). ' +
       'Run "pagectl schema" for the full machine-readable command tree.'
   )
   .version('1.0.0');
@@ -63,9 +63,10 @@ program
   .command('add-block')
   .description('Add a block to the default (or given) page, auto-creating it if needed. Default placement is auto-flow.')
   .option('--page <file>', 'page JSON file (default: .pagectl/page.json, auto-created on first use)')
-  .option('--type <type>', 'block type: text|header|button|container')
+  .option('--type <type>', 'block type: text|header|button|container|image')
   .option('--id <id>', 'unique block id')
   .option('--content <text>', 'block text content')
+  .option('--src <url>', 'image URL (--type image only)')
   .option('--style <kv>', 'CSS style as key=value (repeatable)', collect, [])
   .option('--class <name>', 'extra CSS class (repeatable)', collect, [])
   .option('--raw-content', 'use --content verbatim instead of auto-wrapping it')
@@ -95,6 +96,7 @@ program
   .option('--x <n>', 'explicit x (escape hatch for a large move; requires --y)')
   .option('--y <n>', 'explicit y (escape hatch for a large move; requires --x)')
   .option('--content <text>', 'new text content')
+  .option('--src <url>', 'new image URL (image blocks only)')
   .option('--style <kv>', 'CSS style as key=value (repeatable)', collect, [])
   .option('--class <name>', 'extra CSS class (repeatable)', collect, [])
   .option('--raw-content', 'use --content verbatim instead of auto-wrapping it')

@@ -101,18 +101,17 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
                  (element truly deleted), the timer fires, we confirm with
                  isConnected, then unmount and notify stores. */
               const root = (this as any)._pbRoot;
-              const self = this;
               (this as any)._unmountTimer = setTimeout(() => {
-                (self as any)._unmountTimer = undefined;
-                if (self.isConnected) return; // moved, not removed — skip
+                (this as any)._unmountTimer = undefined;
+                if (this.isConnected) return; // moved, not removed — skip
                 document.dispatchEvent(
                   new CustomEvent('pb:component-removed', {
-                    detail: { componentId: self.id },
+                    detail: { componentId: this.id },
                   })
                 );
                 if (root) root.unmount();
-                (self as any)._pbRoot = null;
-                (self as any)._pbMounted = false;
+                (this as any)._pbRoot = null;
+                (this as any)._pbMounted = false;
               }, 0);
             }
           }
@@ -252,7 +251,14 @@ export const PageBuilderReact: React.FC<PageBuilderReactProps> = ({
         }
       });
     }
-  }, [processedConfig, initialDesign, editable, brandTitle, showAttributeTab]);
+  }, [
+    processedConfig,
+    initialDesign,
+    editable,
+    brandTitle,
+    showAttributeTab,
+    layoutMode,
+  ]);
   useEffect(() => {
     const webComponent = builderRef.current;
 

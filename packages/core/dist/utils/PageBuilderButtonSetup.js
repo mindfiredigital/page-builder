@@ -23,9 +23,7 @@ export function setupResetButton(jsonStorage) {
             jsonStorage.remove();
             Canvas.clearCanvas();
             showNotification('The saved layout has been successfully reset.');
-        }, () => {
-            console.log('Layout reset canceled.');
-        });
+        }, () => { });
     });
 }
 /* Wires the View button to open a full-screen preview modal */

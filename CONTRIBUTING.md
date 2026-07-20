@@ -68,7 +68,6 @@ Here are some ways you can contribute to the project:
 ## Development Setup
 
 1. **Prerequisites**:
-
    - Node.js (v20 or later)
    - pnpm (v8 or later)
 
@@ -84,6 +83,20 @@ Here are some ways you can contribute to the project:
    pnpm turbo run build        # Build all packages
    pnpm lint         # Run linting
    ```
+
+## Package Layout Conventions
+
+Each package under `packages/*` follows the same internal shape once it grows past a single entry file — mirror it rather than inventing a new one:
+
+- `src/index.ts(x)` — the only file other packages/consumers are allowed to import from. Everything else is a private implementation detail.
+- `src/components/` — UI-producing units (DOM builders, React components, custom elements).
+- `src/services/` — stateful or side-effecting operations (export, storage, history).
+- `src/utils/` — stateless helper functions.
+- `src/types/` — shared TypeScript interfaces/types for that package.
+- `src/constants/` — shared literals (labels, class names, SVG icon strings) — if you're about to paste an SVG string or CSS class name that already exists elsewhere in the package, it belongs here instead.
+- `src/tests/` — mirrors the folder it's testing (`tests/unit/<area>Unit/`, `tests/component/`).
+
+`core` is the reference implementation of this layout (see `packages/core/src/`). `react` and `web-component` are currently small enough to stay flat (`src/index.ts` + one component file) — split into the folders above once a package grows past ~3-4 files.
 
 ## Local Package Testing
 
@@ -182,7 +195,6 @@ Similar to React, Angular package also depends on `core` and `web-component` pac
 2. **Version Conflicts**: If you encounter version conflicts, ensure you're using the same version numbers across all interdependent packages.
 
 3. **Test Different Scenarios**:
-
    - Fresh project setup
    - Upgrading from previous version
    - Different Node.js versions
@@ -225,35 +237,27 @@ type(scope): subject
 ### Commit Types and Release Impact
 
 - **feat**: A new feature or significant change (triggers MINOR version bump)
-
   - Example: `feat(react): add new drag-and-drop functionality`
 
 - **fix**: A bug fix or issue resolution (triggers PATCH version bump)
-
   - Example: `fix(core): resolve element positioning bug`
 
 - **docs**: Documentation changes only (no version bump)
-
   - Example: `docs(web-component): update API documentation`
 
 - **chore**: Routine tasks, maintenance, or tooling changes (no version bump)
-
   - Example: `chore(react): update dev dependencies`
 
 - **style**: Code style/formatting changes (no version bump)
-
   - Example: `style(core): format according to new eslint rules`
 
 - **refactor**: Code changes that neither fix a bug nor add a feature (no version bump)
-
   - Example: `refactor(web-component): improve rendering performance`
 
 - **test**: Adding or modifying tests (no version bump)
-
   - Example: `test(react): add unit tests for form component`
 
 - **perf**: Performance improvements (triggers PATCH version bump)
-
   - Example: `perf(core): optimize rendering logic`
 
 - **ci**: Changes to CI configuration (no version bump)
@@ -284,15 +288,12 @@ Breaking changes will trigger a MAJOR version bump.
 Commit messages directly influence our automated release process:
 
 1. MAJOR version (1.0.0 → 2.0.0)
-
    - Any commit with a breaking change (`!` or `BREAKING CHANGE` in body)
 
 2. MINOR version (1.1.0 → 1.2.0)
-
    - Commits with `feat` type
 
 3. PATCH version (1.1.1 → 1.1.2)
-
    - Commits with `fix` or `perf` type
 
 4. No version change
@@ -328,19 +329,16 @@ module.exports = {
 ## Pull Request Guidelines
 
 1. **Before Submitting a PR**:
-
    - Run the linter: `pnpm lint`
    - Update documentation if needed
    - Add tests for new features
    - Run `pnpm build` to ensure everything builds correctly
 
 2. **PR Title**:
-
    - Follow the same convention as commit messages
    - Example: `feat(core): add new template engine`
 
 3. **PR Description**:
-
    - Clearly describe the changes
    - Reference any related issues
    - Include any breaking changes
@@ -353,16 +351,17 @@ module.exports = {
    - Keep the PR focused and atomic
    - Rebase if needed to resolve conflicts
 
+5. **Automated Checks**:
+   - Every PR against `main` runs the **PR Checks** workflow (`.github/workflows/pr-checks.yml`): lint, build, and test across all packages. This must pass before merging — it's what `pnpm lint` / `pnpm build` / `pnpm test` catch locally, run automatically so a broken change can't slip through solely because someone forgot to run them.
+
 ## Documentation Guidelines
 
 1. **API Documentation**:
-
    - Document all public APIs
    - Include JSDoc comments for TypeScript/JavaScript code
    - Provide usage examples
 
 2. **Package Documentation**:
-
    - Each package should have its own README.md
    - Include installation instructions
    - Provide basic usage examples

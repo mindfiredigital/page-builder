@@ -1,3 +1,4 @@
+import { EDIT_PENCIL_ICON } from '../constants/index.js';
 export class LinkComponent {
     constructor() {
         this.link = null;
@@ -19,7 +20,7 @@ export class LinkComponent {
         this.link.innerText = label;
         this.link.classList.add('link-component-label');
         const editButton = document.createElement('button');
-        editButton.innerHTML = '🖊️';
+        editButton.innerHTML = EDIT_PENCIL_ICON;
         editButton.classList.add('edit-link');
         const editForm = document.createElement('div');
         editForm.classList.add('edit-link-form');

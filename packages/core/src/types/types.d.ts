@@ -141,12 +141,17 @@ declare global {
     lastCanvasWidth: number | null;
   }
 
+  /** Uploads a base64 image and resolves the hosted URL to use as `src`. */
+  type ImageAttributeConfigHandler = (
+    base64String: string
+  ) => Promise<{ url: string }> | { url: string };
+
   /* Attribute config types for component factories */
   interface ComponentFactoryConfig {
     tableAttributeConfig?: ComponentAttribute[];
     textAttributeConfig?: ComponentAttribute[];
     headerAttributeConfig?: ComponentAttribute[];
-    ImageAttributeConfig?: Function;
+    ImageAttributeConfig?: ImageAttributeConfigHandler;
   }
 
   /* Describes a single resizer handle — its CSS class and cursor style */

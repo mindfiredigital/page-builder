@@ -1,39 +1,20 @@
 import React$1 from 'react';
+import { BasicComponent, PageBuilderDesign } from '@mindfiredigital/page-builder-web-component';
+export { BasicComponent, ComponentAttribute, PageBuilderDesign } from '@mindfiredigital/page-builder-web-component';
+
+/* ComponentAttribute, BasicComponent, and PageBuilderDesign are defined once
+   in core (packages/core/src/types/types.d.ts) and re-exported through
+   web-component — imported here rather than redeclared so this package can't
+   silently drift from what core/web-component actually accept. Only shapes
+   that are genuinely React-specific (because they carry React component
+   references, not the post-bridging string/tag-name form core deals with)
+   are declared locally below. */
+
 
 interface DynamicComponents {
   Basic: BasicComponent[];
   Extra: string[];
   Custom?: Record<string, CustomComponentConfig>;
-}
-
-interface ComponentAttribute {
-  id: string;
-  type: 'Constant' | 'Formula' | 'Input' | 'Image';
-  input_type?: 'text' | 'number' | 'checkbox';
-  title: string;
-  key: string;
-  value: string | number | boolean;
-  execute_order: number;
-  editable?: boolean;
-  default_value?: string | number | boolean | null;
-}
-
-interface BasicComponent {
-  name: string;
-  attributes?: ComponentAttribute[];
-  globalExecuteFunction?: Function;
-}
-
-interface PageBuilderDesign {
-  pages?: Array<{
-    id: string;
-    components: Array<{
-      type: string;
-      id: string;
-      props: Record<string, any>;
-    }>;
-  }>;
-  [key: string]: any;
 }
 interface CustomComponentConfig {
   component: React.ComponentType<any> | string;
@@ -58,4 +39,4 @@ interface PageBuilderReactProps {
 
 declare const PageBuilderReact: React$1.FC<PageBuilderReactProps>;
 
-export { BasicComponent, ComponentAttribute, CustomComponentConfig, DynamicComponents, PageBuilderDesign, PageBuilderReact };
+export { CustomComponentConfig, DynamicComponents, PageBuilderReact };

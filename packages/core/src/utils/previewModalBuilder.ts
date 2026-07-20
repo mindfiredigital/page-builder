@@ -59,12 +59,12 @@ export function createFullScreenPreviewModal(
        box-shadow:0 4px 24px rgba(0,0,0,0.12); border-radius:4px;`;
   }
 
-  /* Inject cursor:none so hovering over the preview page shows no cursor */
-  const noPointerStyle =
-    '<style>*,*::before,*::after{cursor:none!important;}</style>';
+  /* Keep the normal cursor visible but block real interaction/editing */
+  const noInteractionStyle =
+    '<style>*,*::before,*::after{pointer-events:none!important;}</style>';
   const previewHtml = html.includes('</head>')
-    ? html.replace('</head>', noPointerStyle + '</head>')
-    : noPointerStyle + html;
+    ? html.replace('</head>', noInteractionStyle + '</head>')
+    : noInteractionStyle + html;
   iframe.srcdoc = previewHtml;
   paperWrapper.appendChild(iframe);
   fullScreenModal.appendChild(paperWrapper);

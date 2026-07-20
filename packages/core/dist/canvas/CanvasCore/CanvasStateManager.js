@@ -192,7 +192,9 @@ export class CanvasStateManager {
                             CanvasResizeHandler.restore(component);
                         }
                     }
-                    catch ( /* non-fatal — component still usable without resize handles */_c) { /* non-fatal — component still usable without resize handles */ }
+                    catch (_c) {
+                        /* non-fatal — component still usable without resize handles */
+                    }
                 }
             }
             /** Component-specific post-restore hooks */

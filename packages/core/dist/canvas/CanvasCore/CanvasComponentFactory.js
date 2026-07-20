@@ -86,7 +86,9 @@ export class CanvasComponentFactory {
                 element.setAttribute('contenteditable', 'false');
             }
             else {
-                if (resolvedType !== 'header' && resolvedType !== 'text' && resolvedType !== 'table') {
+                if (resolvedType !== 'header' &&
+                    resolvedType !== 'text' &&
+                    resolvedType !== 'table') {
                     element.setAttribute('contenteditable', 'true');
                 }
             }

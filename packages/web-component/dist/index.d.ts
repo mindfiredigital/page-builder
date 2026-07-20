@@ -1,14 +1,6 @@
-interface PageBuilderDesign {
-    pages?: Array<{
-        id: string;
-        components: Array<{
-            type: string;
-            id: string;
-            props: Record<string, any>;
-        }>;
-    }>;
-    [key: string]: any;
-}
+import { PageBuilderDesign } from '@mindfiredigital/page-builder';
+export { BasicComponent, ComponentAttribute, PageBuilderDesign } from '@mindfiredigital/page-builder';
+
 declare class PageBuilderComponent extends HTMLElement {
     private pageBuilder;
     private initialized;
@@ -42,4 +34,4 @@ declare class PageBuilderComponent extends HTMLElement {
     private initializePageBuilder;
 }
 
-export { PageBuilderComponent, PageBuilderDesign };
+export { PageBuilderComponent };

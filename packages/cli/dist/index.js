@@ -9,6 +9,196 @@ var __export = (target, all) => {
     __defProp(target, name, { get: all[name], enumerable: true });
 };
 
+// src/schema.ts
+import { z } from "zod";
+function isBlockType(type) {
+  return BLOCK_TYPES.includes(type);
+}
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function wrapTextSpan(text) {
+  return `<span class="component-text-content" contenteditable="true">${escapeHtml(text)}</span>`;
+}
+function hasTextSpan(html) {
+  return TEXT_CONTENT_SPAN_RE.test(html);
+}
+function imageContentTemplate() {
+  return `<div>Click to upload image</div><input type="file" accept="image/*" style="display: none;" /><button class="upload-btn" style="position: absolute; padding: 8px; background: transparent; border: none; cursor: pointer; opacity: 0; transition: opacity 0.2s; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px;">${EDIT_PENCIL_ICON}</button><img alt="" style="width: 100%; height: 100%; object-fit: contain; border: none; display: none;" />`;
+}
+function estimateWrappedHeight(type, text, width, minHeight) {
+  const metrics = WRAP_METRICS[type];
+  if (!metrics || !text)
+    return minHeight;
+  const usableWidth = Math.max(width - WRAP_PADDING, 40);
+  const charsPerLine = Math.max(Math.floor(usableWidth / metrics.avgCharWidth), 1);
+  const lines = Math.max(Math.ceil(text.length / charsPerLine), 1);
+  const estimated = lines * metrics.lineHeight + WRAP_PADDING;
+  return Math.max(minHeight, estimated);
+}
+function makeCanvasRoot() {
+  return {
+    id: "canvas",
+    type: "canvas",
+    content: "",
+    position: { x: 0, y: 0 },
+    dimensions: { width: CANVAS.width, height: CANVAS.height },
+    style: {},
+    inlineStyle: "",
+    classes: [...ABSOLUTE_CANVAS_CLASSES],
+    dataAttributes: {}
+  };
+}
+function getCanvasRoot(page) {
+  return page.find((b) => b.id === "canvas" && b.type === "canvas");
+}
+function getBlocks(page) {
+  return page.filter((b) => !(b.id === "canvas" && b.type === "canvas"));
+}
+function checkScope(page) {
+  const canvas = getCanvasRoot(page);
+  if (!canvas) {
+    return {
+      reason: 'Page is missing its canvas root entry (id "canvas", type "canvas").',
+      fix: 'Use "pagectl new <slug>" to create a valid page instead of hand-assembling the array.'
+    };
+  }
+  if (canvas.classes.includes("grid-layout-active")) {
+    return {
+      reason: "Page is in grid layout mode; pagectl v1 only supports absolute-mode pages.",
+      fix: "Grid-mode pages are out of scope for this CLI version \u2014 edit them in the page-builder UI instead."
+    };
+  }
+  for (const block of getBlocks(page)) {
+    if (!isBlockType(block.type)) {
+      return {
+        reason: `Block "${block.id}" has type "${block.type}", which is outside pagectl v1's supported palette (${BLOCK_TYPES.join(", ")}).`,
+        fix: "video/table/richtext/link/twoCol/threeCol/landingpage blocks and nested containers are out of scope for this CLI version."
+      };
+    }
+  }
+  return null;
+}
+var CANVAS, DEFAULT_PAGE_DIR, DEFAULT_PAGE_FILENAME, BLOCK_TYPES, ALIGN_VALUES, DIRECTION_VALUES, TEXT_CONTENT_SPAN_RE, EDIT_PENCIL_ICON, BLOCKS, WRAP_METRICS, WRAP_PADDING, blockSchema, pageSchema, ABSOLUTE_CANVAS_CLASSES;
+var init_schema = __esm({
+  "src/schema.ts"() {
+    "use strict";
+    CANVAS = {
+      /* True A4-shaped print page, not an invented widescreen canvas. 869x1123
+         is the real editor's own absolute-mode print-preview shape: 869 is
+         packages/core's `#canvas.preview-printable` max-width (see
+         packages/core/dist/styles/layout/canvas-modes.css), and 1123 is the
+         height its own full-screen preview modal uses for an absolute-layout
+         page (previewModalBuilder.ts's `isAbsolute` iframe: width 869 x
+         min-height 1123 — A4 portrait at 96dpi is 794x1123px, and 869 is that
+         same print-preview treatment with extra side padding baked in). Using
+         these exact numbers means pagectl's fixed-size override in
+         harnessPage.ts pins the canvas to what the real editor already treats
+         as its printable-page shape, instead of fighting it into a wider one. */
+      width: 869,
+      height: 1123,
+      gap: 24,
+      grid: 8,
+      nudgeStep: 8,
+      /* Mirrors packages/core's `#canvas.preview-printable` padding (75px on
+         top/left/right — see packages/core/dist/styles/layout/canvas-modes.css).
+         pagectl always adds "preview-printable" to every canvas root (see
+         ABSOLUTE_CANVAS_CLASSES below), which puts every live "serve" session
+         in that mode. In that mode, CanvasDragHandler.js's own boundary-clamp
+         logic refuses to let a top-level absolute block's left/top go below
+         this margin, or its right edge cross (canvas width − margin) —
+         confirmed live with Playwright: a block positioned/sized without
+         respecting this gets silently repositioned/left where pagectl's own
+         math didn't expect it, breaking any --below/--right-of anchored off
+         of it. CANVAS.gap remains the spacing *between* sibling blocks;
+         CANVAS.margin is the minimum distance from the canvas edge itself —
+         different concerns, both real. There is no bottom padding in the real
+         CSS (top/left/right only), which is why clampY/findOutOfBounds only
+         ever floor y, never cap the bottom edge — a magazine page is allowed
+         to run longer than one A4 height and scroll. */
+      margin: 75
+    };
+    DEFAULT_PAGE_DIR = ".pagectl";
+    DEFAULT_PAGE_FILENAME = "page.json";
+    BLOCK_TYPES = ["text", "header", "button", "container", "image"];
+    ALIGN_VALUES = ["left", "center", "right"];
+    DIRECTION_VALUES = ["left", "right", "up", "down"];
+    TEXT_CONTENT_SPAN_RE = /class="[^"]*\bcomponent-text-content\b[^"]*"/;
+    EDIT_PENCIL_ICON = "\u{1F58A}\uFE0F";
+    BLOCKS = {
+      text: {
+        type: "text",
+        label: "Text",
+        defaultWidth: 300,
+        defaultHeight: 50,
+        baseClass: "text-component",
+        requiresTextSpan: true,
+        defaultText: "Sample Text",
+        defaultContent: (text = "Sample Text") => wrapTextSpan(text)
+      },
+      header: {
+        type: "header",
+        label: "Header",
+        defaultWidth: 400,
+        defaultHeight: 60,
+        baseClass: "header-component",
+        requiresTextSpan: true,
+        defaultText: "Header",
+        defaultContent: (text = "Header") => wrapTextSpan(text)
+      },
+      button: {
+        type: "button",
+        label: "Button",
+        defaultWidth: 160,
+        defaultHeight: 48,
+        baseClass: "button-component",
+        requiresTextSpan: false,
+        defaultText: "Click Me",
+        defaultContent: (text = "Click Me") => escapeHtml(text)
+      },
+      container: {
+        type: "container",
+        label: "Container",
+        defaultWidth: 300,
+        defaultHeight: 200,
+        baseClass: "container-component",
+        requiresTextSpan: false,
+        defaultContent: () => ""
+      },
+      image: {
+        type: "image",
+        label: "Image",
+        defaultWidth: 300,
+        defaultHeight: 300,
+        baseClass: "image-component",
+        requiresTextSpan: false,
+        defaultContent: () => imageContentTemplate()
+      }
+    };
+    WRAP_METRICS = {
+      header: { lineHeight: 32, avgCharWidth: 25 },
+      text: { lineHeight: 24, avgCharWidth: 14 }
+    };
+    WRAP_PADDING = 16;
+    blockSchema = z.object({
+      id: z.string().min(1),
+      type: z.string().min(1),
+      content: z.string(),
+      position: z.object({ x: z.number(), y: z.number() }),
+      dimensions: z.object({ width: z.number(), height: z.number() }),
+      style: z.record(z.string()).default({}),
+      inlineStyle: z.string().default(""),
+      classes: z.array(z.string()).default([]),
+      dataAttributes: z.record(z.string()).default({}),
+      imageSrc: z.string().nullable().optional(),
+      videoSrc: z.string().nullable().optional(),
+      props: z.record(z.unknown()).optional()
+    });
+    pageSchema = z.array(blockSchema).min(1);
+    ABSOLUTE_CANVAS_CLASSES = ["preview-printable", "preview-desktop"];
+  }
+});
+
 // src/serve/bundleLibrary.ts
 var bundleLibrary_exports = {};
 __export(bundleLibrary_exports, {
@@ -78,6 +268,93 @@ function buildHarnessPage() {
     font-family: monospace;
     font-size: 12px;
   }
+
+  /* core's own CSS caps #canvas.preview-printable at max-width: 869px (a
+     "print preview" simulation width) \u2014 deliberately *responsive*, so the
+     editor's own general-purpose UI can shrink on a narrow browser window.
+     pagectl bakes "preview-printable" onto every canvas root (to fix an
+     unrelated "flips to grid on live edit" bug \u2014 see
+     ABSOLUTE_CANVAS_CLASSES in schema.ts), which inadvertently invokes
+     this responsive cap. But pagectl's entire coordinate system is FIXED,
+     not responsive \u2014 every x/y/width in the page's JSON assumes a canvas
+     that is always exactly CANVAS.width x CANVAS.height, the same way a
+     design tool's canvas has a fixed size regardless of window size. Using
+     max-width here (as a first attempt) still let the canvas render
+     narrower than CANVAS.width on a smaller browser window, which put
+     every already-correct absolute position past the real (shrunk) right
+     edge \u2014 confirmed live with Playwright at a narrower viewport. A fixed
+     width (not max-width) forces it to always be exactly CANVAS.width;
+     #canvas itself already has overflow: auto (both axes), so a window too
+     narrow to show the full canvas just gets a horizontal scrollbar,
+     matching how any fixed-size design canvas behaves \u2014 never a resize of
+     the coordinate system itself. Scoped to .preview-desktop specifically
+     (not .preview-tablet/.preview-mobile, both out of pagectl v1's scope)
+     so a manual tablet/mobile preview toggle in the UI isn't fought.
+
+     width alone isn't enough: #canvas's own base rule (bundle.css) sets
+     flex-grow: 1 \u2014 a flex item's width property only sets its flex-basis,
+     and flex-grow then adds any remaining free space in the flex row ON
+     TOP of that regardless of !important, since !important on a property
+     only wins against other declarations of that same property, not
+     against the flex algorithm consuming the value afterward. Confirmed
+     live: with only width overridden, the canvas still rendered at
+     whatever the flex row's available space was (1695px / 1030px at two
+     different window widths), never CANVAS.width. flex-grow/flex-shrink: 0
+     stops it from growing or shrinking away from the fixed width at all. */
+  #canvas.preview-printable.preview-desktop {
+    width: ${CANVAS.width}px !important;
+    max-width: none !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Fallout of pinning #canvas above: #sidebar/#customization already
+     have flex-shrink: 0 of their own (core's base CSS), and now #canvas
+     does too \u2014 so when the sidebar + fixed CANVAS.width canvas + open
+     customization panel (205 + ${CANVAS.width} + 300 = ${205 + CANVAS.width + 300}px) exceeds the actual
+     browser window width, nothing in the row is allowed to shrink and
+     #app's own overflow: hidden (core's base CSS, used to clip children to
+     its rounded corners) silently clips whatever doesn't fit \u2014 with no
+     way to scroll to it. Confirmed live: at a 1500px window with the
+     settings panel open, #app.scrollWidth (1706px) exceeded its
+     clientWidth (1500px) by ~206px, and that entire slice of the settings
+     panel was genuinely unreachable, not just off-screen. overflow-x here
+     (not the overflow shorthand, so overflow-y stays hidden and rounded
+     corners still clip vertically) makes that slice reachable by
+     horizontal scroll instead of invisible. */
+  #app {
+    overflow-x: auto !important;
+  }
+
+  /* Every real consumer of <page-builder> must size it explicitly \u2014 it's a
+     custom element with no default height, so left unstyled it grows to
+     its full content height instead of filling the viewport. Without this,
+     html/body's own "overflow: hidden" (core's own app-shell CSS) just
+     clips whatever overflows past the viewport with no way to scroll to
+     it, because the intended scroll target \u2014 #canvas's "overflow: auto"
+     inside the component \u2014 never gets squeezed by a bounded ancestor in
+     the first place. Mirrors packages/example/test-react/src/index.css's
+     "page-builder { flex: 1; min-height: 0; ... }", the documented pattern
+     every other consumer already applies to this component. */
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  page-builder {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
 </head>
 <body>
@@ -124,6 +401,7 @@ function buildHarnessPage() {
 var init_harnessPage = __esm({
   "src/serve/harnessPage.ts"() {
     "use strict";
+    init_schema();
   }
 });
 
@@ -131,152 +409,9 @@ var init_harnessPage = __esm({
 import { Command } from "commander";
 
 // src/cliRuntime.ts
+init_schema();
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
-
-// src/schema.ts
-import { z } from "zod";
-var CANVAS = {
-  width: 1200,
-  height: 800,
-  gap: 24,
-  grid: 8,
-  nudgeStep: 8
-};
-var DEFAULT_PAGE_DIR = ".pagectl";
-var DEFAULT_PAGE_FILENAME = "page.json";
-var BLOCK_TYPES = ["text", "header", "button", "container"];
-var ALIGN_VALUES = ["left", "center", "right"];
-var DIRECTION_VALUES = ["left", "right", "up", "down"];
-function isBlockType(type) {
-  return BLOCK_TYPES.includes(type);
-}
-function escapeHtml(text) {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-function wrapTextSpan(text) {
-  return `<span class="component-text-content" contenteditable="true">${escapeHtml(text)}</span>`;
-}
-var TEXT_CONTENT_SPAN_RE = /class="[^"]*\bcomponent-text-content\b[^"]*"/;
-function hasTextSpan(html) {
-  return TEXT_CONTENT_SPAN_RE.test(html);
-}
-var BLOCKS = {
-  text: {
-    type: "text",
-    label: "Text",
-    defaultWidth: 300,
-    defaultHeight: 50,
-    baseClass: "text-component",
-    requiresTextSpan: true,
-    defaultText: "Sample Text",
-    defaultContent: (text = "Sample Text") => wrapTextSpan(text)
-  },
-  header: {
-    type: "header",
-    label: "Header",
-    defaultWidth: 400,
-    defaultHeight: 60,
-    baseClass: "header-component",
-    requiresTextSpan: true,
-    defaultText: "Header",
-    defaultContent: (text = "Header") => wrapTextSpan(text)
-  },
-  button: {
-    type: "button",
-    label: "Button",
-    defaultWidth: 160,
-    defaultHeight: 48,
-    baseClass: "button-component",
-    requiresTextSpan: false,
-    defaultText: "Click Me",
-    defaultContent: (text = "Click Me") => escapeHtml(text)
-  },
-  container: {
-    type: "container",
-    label: "Container",
-    defaultWidth: 300,
-    defaultHeight: 200,
-    baseClass: "container-component",
-    requiresTextSpan: false,
-    defaultContent: () => ""
-  }
-};
-var WRAP_METRICS = {
-  header: { lineHeight: 32, avgCharWidth: 25 },
-  text: { lineHeight: 24, avgCharWidth: 14 }
-};
-var WRAP_PADDING = 16;
-function estimateWrappedHeight(type, text, width, minHeight) {
-  const metrics = WRAP_METRICS[type];
-  if (!metrics || !text)
-    return minHeight;
-  const usableWidth = Math.max(width - WRAP_PADDING, 40);
-  const charsPerLine = Math.max(Math.floor(usableWidth / metrics.avgCharWidth), 1);
-  const lines = Math.max(Math.ceil(text.length / charsPerLine), 1);
-  const estimated = lines * metrics.lineHeight + WRAP_PADDING;
-  return Math.max(minHeight, estimated);
-}
-var blockSchema = z.object({
-  id: z.string().min(1),
-  type: z.string().min(1),
-  content: z.string(),
-  position: z.object({ x: z.number(), y: z.number() }),
-  dimensions: z.object({ width: z.number(), height: z.number() }),
-  style: z.record(z.string()).default({}),
-  inlineStyle: z.string().default(""),
-  classes: z.array(z.string()).default([]),
-  dataAttributes: z.record(z.string()).default({}),
-  imageSrc: z.string().nullable().optional(),
-  videoSrc: z.string().nullable().optional(),
-  props: z.record(z.unknown()).optional()
-});
-var pageSchema = z.array(blockSchema).min(1);
-function makeCanvasRoot() {
-  return {
-    id: "canvas",
-    type: "canvas",
-    content: "",
-    position: { x: 0, y: 0 },
-    dimensions: { width: CANVAS.width, height: CANVAS.height },
-    style: {},
-    inlineStyle: "",
-    classes: [],
-    dataAttributes: {}
-  };
-}
-function getCanvasRoot(page) {
-  return page.find((b) => b.id === "canvas" && b.type === "canvas");
-}
-function getBlocks(page) {
-  return page.filter((b) => !(b.id === "canvas" && b.type === "canvas"));
-}
-function checkScope(page) {
-  const canvas = getCanvasRoot(page);
-  if (!canvas) {
-    return {
-      reason: 'Page is missing its canvas root entry (id "canvas", type "canvas").',
-      fix: 'Use "pagectl new <slug>" to create a valid page instead of hand-assembling the array.'
-    };
-  }
-  if (canvas.classes.includes("grid-layout-active")) {
-    return {
-      reason: "Page is in grid layout mode; pagectl v1 only supports absolute-mode pages.",
-      fix: "Grid-mode pages are out of scope for this CLI version \u2014 edit them in the page-builder UI instead."
-    };
-  }
-  for (const block of getBlocks(page)) {
-    if (!isBlockType(block.type)) {
-      return {
-        reason: `Block "${block.id}" has type "${block.type}", which is outside pagectl v1's supported palette (${BLOCK_TYPES.join(", ")}).`,
-        fix: "image/video/table/richtext/link/twoCol/threeCol/landingpage blocks and nested containers are out of scope for this CLI version."
-      };
-    }
-  }
-  return null;
-}
-
-// src/cliRuntime.ts
 var PAGE_FILE_SUFFIX = ".page.json";
 function resolvePagePath(explicit) {
   if (explicit)
@@ -413,12 +548,13 @@ function parseKeyValueList(pairs, flagName) {
 }
 
 // src/commands/schema.ts
+init_schema();
 function schemaCommand(options) {
   const data = {
     binary: "pagectl",
     scope: {
-      description: "v1 covers flat, top-level, absolute-mode pages using text/header/button/container blocks only.",
-      outOfScope: ["grid-mode pages", "nested containers", "image", "video", "table", "richtext", "link", "twoCol", "threeCol", "landingpage", "multi-page projects"]
+      description: "v1 covers flat, top-level, absolute-mode pages using text/header/button/container/image blocks only.",
+      outOfScope: ["grid-mode pages", "nested containers", "video", "table", "richtext", "link", "twoCol", "threeCol", "landingpage", "multi-page projects"]
     },
     workflow: {
       afterEditingBlocks: `Once the user's blocks are added/edited and "validate" passes, ALWAYS run "pagectl serve" next so the user can see the live result in a browser \u2014 do this by default, without asking permission first. Starting a local dev server is not a risky or optional action here; it is the expected last step of building a page. If unsure whether one is already running, check "pagectl status" first (it reports the pid/port) rather than skipping serve or guessing.`,
@@ -429,7 +565,10 @@ function schemaCommand(options) {
       path: `${DEFAULT_PAGE_DIR}/${DEFAULT_PAGE_FILENAME}`,
       description: 'Every command that takes --page falls back to this one file (relative to the current directory) when --page is omitted. It is auto-created on first use. Use this by default \u2014 only pass --page for a deliberately separate, named page (see "new"). This means an agent given zero file-naming instructions always converges on the same file as everything else, including "serve".'
     },
-    canvas: CANVAS,
+    canvas: {
+      ...CANVAS,
+      marginNote: `The real editor refuses to let a top-level block sit closer than canvas.margin (${CANVAS.margin}px) to any canvas edge \u2014 add-block/update-block already account for this automatically (positions default to/clamp against the margin, not 0), so no manual math is needed. The one thing to know: a genuinely "full-width" block's usable --width is canvas.width - 2*canvas.margin (${CANVAS.width - 2 * CANVAS.margin}px), not the full canvas.width (${CANVAS.width}px) \u2014 a wider block still gets created, but its right side will be pushed past the margin by the real editor.`
+    },
     blockTypes: BLOCK_TYPES,
     blocks: BLOCK_TYPES.map((type) => ({
       type,
@@ -473,13 +612,13 @@ function schemaCommand(options) {
       },
       {
         name: "add-block",
-        usage: "pagectl add-block [--page <file>] --type <type> --id <id> [--content <text>] [--style k=v]... [--class <name>]... [--raw-content] [--width <n>] [--height <n>] [--below <id> | --right-of <id> | --x <n> --y <n>] [--align left|center|right] [--gap <n>] [--dry-run] [--json]",
-        description: 'Add a block to the default page (or --page if given), auto-creating that page file if it does not exist yet. Default placement is auto-flow (no coordinates needed); --align applies even without --below (left/center/right against the full canvas width). Idempotent on identical retry ("already-exists", exit 0); different content on the same --id is a distinct error directing you to update-block, exit 2. Missing anchor id -> exit 4. Nesting inside a container is refused (out of scope).'
+        usage: "pagectl add-block [--page <file>] --type <type> --id <id> [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--width <n>] [--height <n>] [--below <id> | --right-of <id> | --x <n> --y <n>] [--align left|center|right] [--gap <n>] [--dry-run] [--json]",
+        description: 'Add a block to the default page (or --page if given), auto-creating that page file if it does not exist yet. Default placement is auto-flow (no coordinates needed); --align applies even without --below (left/center/right against the full canvas width). --src sets the image URL for --type image (that type takes no --content). Idempotent on identical retry ("already-exists", exit 0); different content on the same --id is a distinct error directing you to update-block, exit 2. Missing anchor id -> exit 4. Nesting inside a container is refused (out of scope).'
       },
       {
         name: "update-block",
-        usage: "pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--content <text>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]",
-        description: 'Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box \u2014 "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) \u2014 not both in the same call. Either can be combined with --content/--style/--class.'
+        usage: "pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]",
+        description: `Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box \u2014 "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) \u2014 not both in the same call. Either can be combined with --content/--src/--style/--class. --src changes an existing image block's URL (image blocks only).`
       },
       {
         name: "remove-block",
@@ -519,9 +658,11 @@ function schemaCommand(options) {
 }
 
 // src/commands/status.ts
+init_schema();
 import { existsSync as existsSync3, readFileSync as readFileSync3 } from "node:fs";
 
 // src/serveLock.ts
+init_schema();
 import { existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync2, rmSync, writeFileSync as writeFileSync2 } from "node:fs";
 import { resolve as resolve2 } from "node:path";
 function serveLockPath() {
@@ -589,6 +730,7 @@ function statusCommand(options) {
 }
 
 // src/commands/listBlocks.ts
+init_schema();
 function listBlocksCommand(options) {
   const data = BLOCK_TYPES.map((type) => {
     const def = BLOCKS[type];
@@ -610,6 +752,7 @@ function listBlocksCommand(options) {
 }
 
 // src/commands/new.ts
+init_schema();
 import { existsSync as existsSync4, readFileSync as readFileSync4 } from "node:fs";
 import { resolve as resolve3 } from "node:path";
 function readExisting(filePath) {
@@ -667,7 +810,11 @@ function newCommand(slug, options) {
   );
 }
 
+// src/commands/addBlock.ts
+init_schema();
+
 // src/layout.ts
+init_schema();
 function snap(value) {
   return Math.round(value / CANVAS.grid) * CANVAS.grid;
 }
@@ -683,11 +830,11 @@ function renderInlineStyle(box, extraStyle = {}) {
   return declarations.join("; ") + ";";
 }
 function clampX(x, width) {
-  const max = Math.max(0, CANVAS.width - width);
-  return Math.min(Math.max(x, 0), max);
+  const max = Math.max(CANVAS.margin, CANVAS.width - CANVAS.margin - width);
+  return Math.min(Math.max(x, CANVAS.margin), max);
 }
 function clampY(y) {
-  return Math.max(y, 0);
+  return Math.max(y, CANVAS.margin);
 }
 function clampAndSnap(x, y, width, height) {
   const snappedX = snap(x);
@@ -702,7 +849,7 @@ function clampAndSnap(x, y, width, height) {
 function nextAutoFlowY(page) {
   const blocks = getBlocks(page);
   if (blocks.length === 0)
-    return CANVAS.gap;
+    return CANVAS.margin;
   const maxBottom = Math.max(...blocks.map((b) => b.position.y + b.dimensions.height));
   return maxBottom + CANVAS.gap;
 }
@@ -711,13 +858,13 @@ function computeAutoFlowPosition(page, width, height, align = "left") {
   let x;
   switch (align) {
     case "left":
-      x = CANVAS.gap;
+      x = CANVAS.margin;
       break;
     case "center":
       x = CANVAS.width / 2 - width / 2;
       break;
     case "right":
-      x = CANVAS.width - CANVAS.gap - width;
+      x = CANVAS.width - CANVAS.margin - width;
       break;
   }
   return clampAndSnap(x, y, width, height);
@@ -812,14 +959,16 @@ function findOverlaps(blocks, tolerance = 2) {
 function findOutOfBounds(blocks) {
   const issues = [];
   for (const b of blocks) {
-    if (b.position.x < 0)
-      issues.push({ id: b.id, reason: `x (${b.position.x}) is negative.` });
-    if (b.position.y < 0)
-      issues.push({ id: b.id, reason: `y (${b.position.y}) is negative.` });
-    if (b.position.x + b.dimensions.width > CANVAS.width) {
+    if (b.position.x < CANVAS.margin) {
+      issues.push({ id: b.id, reason: `x (${b.position.x}) is inside the canvas margin (< ${CANVAS.margin}) \u2014 the real editor will silently push it to x=${CANVAS.margin}.` });
+    }
+    if (b.position.y < CANVAS.margin) {
+      issues.push({ id: b.id, reason: `y (${b.position.y}) is inside the canvas margin (< ${CANVAS.margin}) \u2014 the real editor will silently push it to y=${CANVAS.margin}.` });
+    }
+    if (b.position.x + b.dimensions.width > CANVAS.width - CANVAS.margin) {
       issues.push({
         id: b.id,
-        reason: `right edge (${b.position.x + b.dimensions.width}) exceeds canvas width (${CANVAS.width}).`
+        reason: `right edge (${b.position.x + b.dimensions.width}) is inside the canvas margin (> ${CANVAS.width - CANVAS.margin}) \u2014 the real editor will silently shrink its width to fit.`
       });
     }
   }
@@ -827,6 +976,7 @@ function findOutOfBounds(blocks) {
 }
 
 // src/commands/addBlock.ts
+init_schema();
 function addBlockCommand(options) {
   if (!options.type)
     badInput("--type is required.", `Pass --type <${BLOCK_TYPES.join("|")}>.`);
@@ -843,6 +993,9 @@ function addBlockCommand(options) {
       `Unknown block type "${options.type}".`,
       `Supported types in pagectl v1: ${BLOCK_TYPES.join(", ")}. Run "pagectl list-blocks" for details.`
     );
+  }
+  if (options.src && options.type !== "image") {
+    badInput("--src is only valid for --type image.", "Drop --src, or use --type image.");
   }
   const def = BLOCKS[options.type];
   const { page, path } = loadPageFile(options.page);
@@ -862,6 +1015,14 @@ function addBlockCommand(options) {
       );
     }
     content = def.defaultContent();
+  } else if (options.type === "image") {
+    if (options.content || options.rawContent) {
+      badInput(
+        "image blocks take no --content in pagectl v1.",
+        "Use --src <url> to set the image URL instead of --content."
+      );
+    }
+    content = def.defaultContent();
   } else if (options.rawContent) {
     if (!options.content) {
       badInput("--raw-content requires --content.", 'Pass --content "<markup>" alongside --raw-content.');
@@ -878,9 +1039,14 @@ function addBlockCommand(options) {
   }
   const existing = blocks.find((b) => b.id === options.id);
   const style = parseKeyValueList(options.style, "--style");
+  if (!("min-height" in style))
+    style["min-height"] = `${height}px`;
+  if (!("min-width" in style))
+    style["min-width"] = `${width}px`;
   const classes = Array.from(/* @__PURE__ */ new Set([def.baseClass, ...options.class ?? []]));
+  const imageSrc = options.type === "image" ? options.src ?? null : void 0;
   if (existing) {
-    const candidateSameShape = existing.type === options.type && existing.content === content && JSON.stringify(existing.style) === JSON.stringify({ ...existing.style, ...style }) && classes.every((c) => existing.classes.includes(c));
+    const candidateSameShape = existing.type === options.type && existing.content === content && JSON.stringify(existing.style) === JSON.stringify({ ...existing.style, ...style }) && classes.every((c) => existing.classes.includes(c)) && (options.type !== "image" || (existing.imageSrc ?? null) === imageSrc);
     if (candidateSameShape) {
       emitResult(!!options.json, { status: "already-exists", id: options.id, path }, () => {
         console.log(`Block "${options.id}" already exists with identical content (no-op).`);
@@ -925,7 +1091,8 @@ function addBlockCommand(options) {
     style,
     inlineStyle: renderInlineStyle(placement.box, style),
     classes,
-    dataAttributes: {}
+    dataAttributes: {},
+    ...options.type === "image" ? { imageSrc } : {}
   };
   const nextPage = [...page, newBlock];
   if (options.dryRun) {
@@ -949,6 +1116,7 @@ function addBlockCommand(options) {
 }
 
 // src/commands/updateBlock.ts
+init_schema();
 function updateBlockCommand(options) {
   if (!options.id)
     badInput("--id is required.", "Pass --id <block id>.");
@@ -973,12 +1141,13 @@ function updateBlockCommand(options) {
     );
   }
   const hasContentEdit = options.content !== void 0;
+  const hasSrcEdit = options.src !== void 0;
   const hasStyleEdit = (options.style ?? []).length > 0;
   const hasClassEdit = (options.class ?? []).length > 0;
-  if (directions.length === 0 && !hasExplicitMove && !hasContentEdit && !hasStyleEdit && !hasClassEdit) {
+  if (directions.length === 0 && !hasExplicitMove && !hasContentEdit && !hasSrcEdit && !hasStyleEdit && !hasClassEdit) {
     badInput(
       "Nothing to update.",
-      `Pass a direction (--left/--right/--up/--down), an explicit --x/--y, and/or --content/--style/--class. Valid directions: ${DIRECTION_VALUES.join(", ")}.`
+      `Pass a direction (--left/--right/--up/--down), an explicit --x/--y, and/or --content/--src/--style/--class. Valid directions: ${DIRECTION_VALUES.join(", ")}.`
     );
   }
   const { page, path } = loadPageFile(options.page);
@@ -1024,6 +1193,12 @@ function updateBlockCommand(options) {
     } else {
       updated.content = def.defaultContent(options.content);
     }
+  }
+  if (hasSrcEdit) {
+    if (block.type !== "image") {
+      badInput("--src is only valid for image blocks.", `Block "${options.id}" is type "${block.type}".`);
+    }
+    updated.imageSrc = options.src;
   }
   if (hasStyleEdit) {
     Object.assign(updated.style, parseKeyValueList(options.style, "--style"));
@@ -1113,6 +1288,7 @@ function reorderBlockCommand(options) {
 }
 
 // src/commands/inspect.ts
+init_schema();
 function inspectCommand(options) {
   const { page, path } = loadPageFile(options.page);
   const blocks = getBlocks(page);
@@ -1141,6 +1317,7 @@ function inspectCommand(options) {
 }
 
 // src/commands/validate.ts
+init_schema();
 import { existsSync as existsSync5, readFileSync as readFileSync5 } from "node:fs";
 function validateCommand(options) {
   const { path: filePath, isDefault } = resolvePagePath(options.page);
@@ -1190,6 +1367,15 @@ function validateCommand(options) {
   if (violation) {
     issues.push({ kind: "scope", message: violation.reason, fix: violation.fix });
   }
+  const canvasRoot = !violation ? getCanvasRoot(parsed.data) : void 0;
+  const missingCanvasClasses = canvasRoot ? ABSOLUTE_CANVAS_CLASSES.filter((cls) => !canvasRoot.classes.includes(cls)) : [];
+  if (missingCanvasClasses.length > 0) {
+    issues.push({
+      kind: "stale-canvas-classes",
+      message: `Canvas root is missing absolute-mode chrome class(es) (${missingCanvasClasses.join(", ")}) \u2014 the live "serve" preview will lose them on the next edit and appear to fall out of absolute layout.`,
+      fix: options.fix ? "Repairing automatically (--fix was passed)." : "Re-run with --fix to repair automatically."
+    });
+  }
   const blocks = getBlocks(parsed.data);
   const staleIds = /* @__PURE__ */ new Set();
   for (const block of blocks) {
@@ -1220,9 +1406,13 @@ function validateCommand(options) {
       fix: `Reposition it with "pagectl update-block --page ${filePath} --id ${oob.id} --left/--right/--up/--down" until it's back on canvas (${CANVAS.width}x${CANVAS.height}).`
     });
   }
-  const didRepair = !!options.fix && staleIds.size > 0;
+  const fixCanvasClasses = !!options.fix && missingCanvasClasses.length > 0;
+  const didRepair = !!options.fix && staleIds.size > 0 || fixCanvasClasses;
   if (didRepair) {
     const repairedPage = parsed.data.map((block) => {
+      if (fixCanvasClasses && block.id === "canvas" && block.type === "canvas") {
+        return { ...block, classes: Array.from(/* @__PURE__ */ new Set([...block.classes, ...ABSOLUTE_CANVAS_CLASSES])) };
+      }
       if (!staleIds.has(block.id))
         return block;
       return {
@@ -1235,14 +1425,20 @@ function validateCommand(options) {
     });
     writePageFileAtomic(filePath, repairedPage);
   }
-  const remainingIssues = didRepair ? issues.filter((i) => i.kind !== "stale-inline-style") : issues;
-  report(options, filePath, remainingIssues, didRepair ? staleIds.size : 0);
+  const remainingIssues = didRepair ? issues.filter((i) => i.kind !== "stale-inline-style" && i.kind !== "stale-canvas-classes") : issues;
+  const repairedCount = didRepair ? staleIds.size + (fixCanvasClasses ? 1 : 0) : 0;
+  const repairSummary = [];
+  if (didRepair && staleIds.size > 0)
+    repairSummary.push(`stale inlineStyle on ${staleIds.size} block(s)`);
+  if (fixCanvasClasses)
+    repairSummary.push("canvas root chrome classes");
+  report(options, filePath, remainingIssues, repairedCount, repairSummary);
 }
-function report(options, filePath, remainingIssues, repairedCount) {
+function report(options, filePath, remainingIssues, repairedCount, repairSummary) {
   const valid = remainingIssues.length === 0;
-  emitResult(!!options.json, { valid, path: filePath, repairedCount, issues: remainingIssues }, () => {
+  emitResult(!!options.json, { valid, path: filePath, repairedCount, repaired: repairSummary, issues: remainingIssues }, () => {
     if (repairedCount > 0) {
-      console.log(`Repaired stale inlineStyle on ${repairedCount} block(s): ${filePath}`);
+      console.log(`Repaired ${repairSummary.join(" and ")}: ${filePath}`);
     }
     if (valid) {
       console.log(`Valid: ${filePath}`);
@@ -1259,6 +1455,7 @@ function report(options, filePath, remainingIssues, repairedCount) {
 }
 
 // src/commands/build.ts
+init_schema();
 import { createRequire } from "node:module";
 import { dirname as dirname2, resolve as resolve4 } from "node:path";
 import { mkdirSync as mkdirSync3, readFileSync as readFileSync6, writeFileSync as writeFileSync3 } from "node:fs";
@@ -1285,6 +1482,8 @@ function renderBlock(block) {
   switch (block.type) {
     case "button":
       return `<button id="${escapeHtml(block.id)}" class="${escapeHtml(classAttr)}" style="${escapeHtml(style)}">${block.content}</button>`;
+    case "image":
+      return `<div id="${escapeHtml(block.id)}" class="${escapeHtml(classAttr)}" style="${escapeHtml(style)}"><img src="${escapeHtml(block.imageSrc ?? "")}" alt="" style="width:100%;height:100%;object-fit:contain;border:none;" /></div>`;
     case "text":
     case "header":
     case "container":
@@ -1331,6 +1530,7 @@ function buildCommand(options) {
 }
 
 // src/commands/serve.ts
+init_schema();
 import { createServer } from "node:http";
 import { existsSync as existsSync6, readFileSync as readFileSync7, watch } from "node:fs";
 function readDesignFile(filePath) {
@@ -1518,14 +1718,14 @@ function collect(value, previous) {
   return [...previous, value];
 }
 program.name("pagectl").description(
-  'Scriptable, self-describing CLI for @mindfiredigital/page-builder pages. v1 covers flat, top-level, absolute-mode pages (text/header/button/container). Run "pagectl schema" for the full machine-readable command tree.'
+  'Scriptable, self-describing CLI for @mindfiredigital/page-builder pages. v1 covers flat, top-level, absolute-mode pages (text/header/button/container/image). Run "pagectl schema" for the full machine-readable command tree.'
 ).version("1.0.0");
 program.command("schema").description("Print the machine-readable command tree, canvas info, block palette, and every flag enum.").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => schemaCommand(options)));
 program.command("status").description(`Report the default (or given) page file's existence/block count, and whether a "serve" session is already running.`).option("--page <file>", "page JSON file (default: .pagectl/page.json)").option("--json", "emit structured JSON").action((options) => runCommand(!!options.json, () => statusCommand(options)));
 program.command("list-blocks").description("Print the block palette and defaults.").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => listBlocksCommand(options)));
 program.command("new <slug>").description("Explicitly create an additional, separately named page (not needed for the common single-page case \u2014 add-block etc. auto-create the default page).").option("-o, --out <path>", "output file path (default: <slug>.page.json)").option("--force", "overwrite an existing page file with a blank canvas").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((slug, options) => runCommand(!!options.json, () => newCommand(slug, options)));
-program.command("add-block").description("Add a block to the default (or given) page, auto-creating it if needed. Default placement is auto-flow.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--type <type>", "block type: text|header|button|container").option("--id <id>", "unique block id").option("--content <text>", "block text content").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--width <n>", "override the type default width").option("--height <n>", "override the type default height").option("--below <id>", "anchor: place below this block id").option("--right-of <id>", "anchor: place to the right of this block id").option("--align <value>", "left|center|right, used with --below", "left").option("--gap <n>", "override the CLI default gap for anchor placement").option("--x <n>", "explicit x (escape hatch; requires --y)").option("--y <n>", "explicit y (escape hatch; requires --x)").option("--parent <id>", "not supported in v1 \u2014 always refused, out of scope").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => addBlockCommand(options)));
-program.command("update-block").description("Nudge a block one grid step, or jump to an explicit --x/--y, and/or fix its content/style/class.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--left", "nudge left one grid step").option("--right", "nudge right one grid step").option("--up", "nudge up one grid step").option("--down", "nudge down one grid step").option("--x <n>", "explicit x (escape hatch for a large move; requires --y)").option("--y <n>", "explicit y (escape hatch for a large move; requires --x)").option("--content <text>", "new text content").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => updateBlockCommand(options)));
+program.command("add-block").description("Add a block to the default (or given) page, auto-creating it if needed. Default placement is auto-flow.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--type <type>", "block type: text|header|button|container|image").option("--id <id>", "unique block id").option("--content <text>", "block text content").option("--src <url>", "image URL (--type image only)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--width <n>", "override the type default width").option("--height <n>", "override the type default height").option("--below <id>", "anchor: place below this block id").option("--right-of <id>", "anchor: place to the right of this block id").option("--align <value>", "left|center|right, used with --below", "left").option("--gap <n>", "override the CLI default gap for anchor placement").option("--x <n>", "explicit x (escape hatch; requires --y)").option("--y <n>", "explicit y (escape hatch; requires --x)").option("--parent <id>", "not supported in v1 \u2014 always refused, out of scope").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => addBlockCommand(options)));
+program.command("update-block").description("Nudge a block one grid step, or jump to an explicit --x/--y, and/or fix its content/style/class.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--left", "nudge left one grid step").option("--right", "nudge right one grid step").option("--up", "nudge up one grid step").option("--down", "nudge down one grid step").option("--x <n>", "explicit x (escape hatch for a large move; requires --y)").option("--y <n>", "explicit y (escape hatch for a large move; requires --x)").option("--content <text>", "new text content").option("--src <url>", "new image URL (image blocks only)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => updateBlockCommand(options)));
 program.command("remove-block").description("Remove a block from a page.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => removeBlockCommand(options)));
 program.command("reorder-block").description("Change a block's array order (auto-flow order / z-order), not its position.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id to move").option("--before <id>", "move before this block id").option("--after <id>", "move after this block id").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => reorderBlockCommand(options)));
 program.command("inspect").description("Print canvas info, next auto-flow y, and every block's box.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => inspectCommand(options)));

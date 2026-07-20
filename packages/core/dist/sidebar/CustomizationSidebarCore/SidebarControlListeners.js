@@ -1,16 +1,8 @@
 import { Canvas } from '../../canvas/Canvas.js';
 import { debounce } from '../../utils/utilityFunctions.js';
 import { populateCssControls } from './SidebarCssControls.js';
-/* Attaches every CSS-property change/input listener to the sidebar controls */
-export function addControlListeners(component, controlsContainer, addListenersFn /* recursive ref for re-populate */, customizeComponentTagName) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
-    /* Single debounced handler shared by all controls to batch history captures */
-    const captureStateDebounced = debounce(() => {
-        Canvas.dispatchDesignChange();
-        Canvas.historyManager.captureState();
-    }, 300);
-    const get = (id) => document.getElementById(id);
-    /* ── Dimensions ──────────────────────────────────────────────────────────── */
+function attachDimensionListeners(component, get, captureStateDebounced) {
+    var _a, _b;
     (_a = get('width')) === null || _a === void 0 ? void 0 : _a.addEventListener('input', () => {
         var _a;
         const unit = ((_a = get('width-unit')) === null || _a === void 0 ? void 0 : _a.value) || 'px';
@@ -23,8 +15,20 @@ export function addControlListeners(component, controlsContainer, addListenersFn
         component.style.height = `${get('height').value}${unit}`;
         captureStateDebounced();
     });
-    /* ── Background color — two-way sync between picker and hex input ───────── */
-    (_c = get('background-color')) === null || _c === void 0 ? void 0 : _c.addEventListener('input', () => {
+}
+function attachImageAltTextListener(component, get, captureStateDebounced) {
+    var _a;
+    (_a = get('image-alt-text')) === null || _a === void 0 ? void 0 : _a.addEventListener('input', () => {
+        const img = component.querySelector('img');
+        if (img)
+            img.alt = get('image-alt-text').value;
+        captureStateDebounced();
+    });
+}
+function attachBackgroundColorListeners(component, get, captureStateDebounced) {
+    var _a, _b;
+    /* Background color — two-way sync between picker and hex input */
+    (_a = get('background-color')) === null || _a === void 0 ? void 0 : _a.addEventListener('input', () => {
         const val = get('background-color').value;
         component.style.backgroundColor = val;
         const hexInput = get('background-color-value');
@@ -32,7 +36,7 @@ export function addControlListeners(component, controlsContainer, addListenersFn
             hexInput.value = val;
         captureStateDebounced();
     });
-    (_d = get('background-color-value')) === null || _d === void 0 ? void 0 : _d.addEventListener('input', e => {
+    (_b = get('background-color-value')) === null || _b === void 0 ? void 0 : _b.addEventListener('input', e => {
         const val = e.target.value;
         component.style.backgroundColor = val;
         const picker = get('background-color');
@@ -40,7 +44,8 @@ export function addControlListeners(component, controlsContainer, addListenersFn
             picker.value = val;
         captureStateDebounced();
     });
-    /* ── Spacing ─────────────────────────────────────────────────────────────── */
+}
+function attachSpacingListeners(component, get, captureStateDebounced) {
     /* Margin — all sides: capture element refs once so the handler never re-queries */
     const marginInput = get('margin');
     const marginUnitSel = get('margin-unit');
@@ -108,8 +113,10 @@ export function addControlListeners(component, controlsContainer, addListenersFn
             sideUnit === null || sideUnit === void 0 ? void 0 : sideUnit.addEventListener('change', apply);
         }
     });
-    /* ── Typography ──────────────────────────────────────────────────────────── */
-    (_e = get('alignment')) === null || _e === void 0 ? void 0 : _e.addEventListener('change', () => {
+}
+function attachAlignmentListener(component, get, captureStateDebounced) {
+    var _a;
+    (_a = get('alignment')) === null || _a === void 0 ? void 0 : _a.addEventListener('change', () => {
         const val = get('alignment').value;
         component.style.textAlign = val;
         component.querySelectorAll('.rt-block-content').forEach(el => {
@@ -117,15 +124,17 @@ export function addControlListeners(component, controlsContainer, addListenersFn
         });
         captureStateDebounced();
     });
-    /* ── Font size — selection-aware ────────────────────────────────────────────
-     *
-     * Same mechanism as text color:
-     *   • Capture the Range on 'mousedown' (before the input steals focus).
-     *   • On 'input', if a saved range is non-collapsed and inside the component,
-     *     wrap it in <span style="font-size: …"> instead of painting the whole
-     *     component.  Subsequent changes update the same span (activeFontSizeSpan)
-     *     so the value tracks the slider without creating duplicate wraps.
-     * ─────────────────────────────────────────────────────────────────────────── */
+}
+/* ── Font size — selection-aware ────────────────────────────────────────────
+ *
+ * Same mechanism as text color:
+ *   • Capture the Range on 'mousedown' (before the input steals focus).
+ *   • On 'input', if a saved range is non-collapsed and inside the component,
+ *     wrap it in <span style="font-size: …"> instead of painting the whole
+ *     component.  Subsequent changes update the same span (activeFontSizeSpan)
+ *     so the value tracks the slider without creating duplicate wraps.
+ * ─────────────────────────────────────────────────────────────────────────── */
+function attachFontSizeListeners(component, get, captureStateDebounced) {
     let savedRangeFS = null;
     let activeFontSizeSpan = null;
     function saveSelectionForFontSize() {
@@ -203,10 +212,12 @@ export function addControlListeners(component, controlsContainer, addListenersFn
         applyFontSize(`${fontSizeInput.value}${unit}`);
         captureStateDebounced();
     });
-    /* ── Font weight — selection-aware ──────────────────────────────────────────
-     *
-     * Same mechanism as font size above.
-     * ─────────────────────────────────────────────────────────────────────────── */
+}
+/* ── Font weight — selection-aware ──────────────────────────────────────────
+ *
+ * Same mechanism as font size above.
+ * ─────────────────────────────────────────────────────────────────────────── */
+function attachFontWeightListeners(component, get, captureStateDebounced) {
     let savedRangeFW = null;
     let activeFontWeightSpan = null;
     function saveSelectionForFontWeight() {
@@ -275,7 +286,10 @@ export function addControlListeners(component, controlsContainer, addListenersFn
         applyFontWeight(fontWeightSel.value);
         captureStateDebounced();
     });
-    (_f = get('font-family')) === null || _f === void 0 ? void 0 : _f.addEventListener('change', () => {
+}
+function attachFontFamilyListener(component, get, captureStateDebounced) {
+    var _a;
+    (_a = get('font-family')) === null || _a === void 0 ? void 0 : _a.addEventListener('change', () => {
         const val = get('font-family').value;
         component.style.fontFamily = val;
         component.querySelectorAll('.rt-block-content').forEach(el => {
@@ -283,19 +297,21 @@ export function addControlListeners(component, controlsContainer, addListenersFn
         });
         captureStateDebounced();
     });
-    /* ── Text color — selection-aware ───────────────────────────────────────────
-     *
-     * Problem: clicking the color picker input causes the component to lose
-     * focus, which clears window.getSelection(). By the time the 'input' event
-     * fires the selection is gone, so we can't know what text the user had
-     * highlighted.
-     *
-     * Fix: capture the Range on 'mousedown' (before focus moves to the picker).
-     * On 'input', if the saved range is non-collapsed AND sits inside the
-     * component, wrap it in a <span style="color: …"> instead of painting the
-     * whole component. If there is no selection, fall back to the original
-     * whole-component behaviour so the control keeps working normally.
-     * ──────────────────────────────────────────────────────────────────────── */
+}
+/* ── Text color — selection-aware ───────────────────────────────────────────
+ *
+ * Problem: clicking the color picker input causes the component to lose
+ * focus, which clears window.getSelection(). By the time the 'input' event
+ * fires the selection is gone, so we can't know what text the user had
+ * highlighted.
+ *
+ * Fix: capture the Range on 'mousedown' (before focus moves to the picker).
+ * On 'input', if the saved range is non-collapsed AND sits inside the
+ * component, wrap it in a <span style="color: …"> instead of painting the
+ * whole component. If there is no selection, fall back to the original
+ * whole-component behaviour so the control keeps working normally.
+ * ──────────────────────────────────────────────────────────────────────── */
+function attachTextColorListeners(component, get, captureStateDebounced) {
     let savedRange = null;
     /* Tracks the <span> created for the current picker session so that
        dragging the hue/saturation slider updates the same span instead of
@@ -399,18 +415,20 @@ export function addControlListeners(component, controlsContainer, addListenersFn
             textColorPicker.value = val;
         captureStateDebounced();
     });
-    /* ── Border ──────────────────────────────────────────────────────────────── */
-    (_g = get('border-width')) === null || _g === void 0 ? void 0 : _g.addEventListener('input', () => {
+}
+function attachBorderListeners(component, get, captureStateDebounced) {
+    var _a, _b, _c, _d, _e;
+    (_a = get('border-width')) === null || _a === void 0 ? void 0 : _a.addEventListener('input', () => {
         var _a;
         const unit = ((_a = get('border-width-unit')) === null || _a === void 0 ? void 0 : _a.value) || 'px';
         component.style.borderWidth = `${get('border-width').value}${unit}`;
         captureStateDebounced();
     });
-    (_h = get('border-style')) === null || _h === void 0 ? void 0 : _h.addEventListener('change', () => {
+    (_b = get('border-style')) === null || _b === void 0 ? void 0 : _b.addEventListener('change', () => {
         component.style.borderStyle = get('border-style').value;
         captureStateDebounced();
     });
-    (_j = get('border-color')) === null || _j === void 0 ? void 0 : _j.addEventListener('input', () => {
+    (_c = get('border-color')) === null || _c === void 0 ? void 0 : _c.addEventListener('input', () => {
         const val = get('border-color').value;
         component.style.borderColor = val;
         const hexInput = get('border-color-value');
@@ -418,7 +436,7 @@ export function addControlListeners(component, controlsContainer, addListenersFn
             hexInput.value = val;
         captureStateDebounced();
     });
-    (_k = get('border-color-value')) === null || _k === void 0 ? void 0 : _k.addEventListener('input', e => {
+    (_d = get('border-color-value')) === null || _d === void 0 ? void 0 : _d.addEventListener('input', e => {
         const val = e.target.value;
         component.style.borderColor = val;
         const picker = get('border-color');
@@ -426,14 +444,16 @@ export function addControlListeners(component, controlsContainer, addListenersFn
             picker.value = val;
         captureStateDebounced();
     });
-    (_l = get('border-radius')) === null || _l === void 0 ? void 0 : _l.addEventListener('input', () => {
+    (_e = get('border-radius')) === null || _e === void 0 ? void 0 : _e.addEventListener('input', () => {
         var _a;
         const unit = ((_a = get('border-radius-unit')) === null || _a === void 0 ? void 0 : _a.value) || 'px';
         component.style.borderRadius = `${get('border-radius').value}${unit}`;
         captureStateDebounced();
     });
-    /* ── Display — special inline→inline-block mapping + re-populate ─────────── */
-    (_m = get('display')) === null || _m === void 0 ? void 0 : _m.addEventListener('change', () => {
+}
+function attachDisplayListener(component, controlsContainer, addListenersFn, customizeComponentTagName, get, captureStateDebounced) {
+    var _a;
+    (_a = get('display')) === null || _a === void 0 ? void 0 : _a.addEventListener('change', () => {
         const selectedValue = get('display').value;
         if (selectedValue === 'inline') {
             /* Store user intent as "inline" but apply inline-block to the DOM.
@@ -450,19 +470,42 @@ export function addControlListeners(component, controlsContainer, addListenersFn
         /* Defer re-populate so the inline style is committed before being read back */
         requestAnimationFrame(() => populateCssControls(component, controlsContainer, addListenersFn, customizeComponentTagName));
     });
-    /* ── Flex sub-controls ───────────────────────────────────────────────────── */
-    (_o = get('flex-direction')) === null || _o === void 0 ? void 0 : _o.addEventListener('change', () => {
+}
+function attachFlexSubControlListeners(component, get, captureStateDebounced) {
+    var _a, _b, _c;
+    (_a = get('flex-direction')) === null || _a === void 0 ? void 0 : _a.addEventListener('change', () => {
         component.style.flexDirection =
             get('flex-direction').value;
         captureStateDebounced();
     });
-    (_p = get('align-items')) === null || _p === void 0 ? void 0 : _p.addEventListener('change', () => {
+    (_b = get('align-items')) === null || _b === void 0 ? void 0 : _b.addEventListener('change', () => {
         component.style.alignItems = get('align-items').value;
         captureStateDebounced();
     });
-    (_q = get('justify-content')) === null || _q === void 0 ? void 0 : _q.addEventListener('change', () => {
+    (_c = get('justify-content')) === null || _c === void 0 ? void 0 : _c.addEventListener('change', () => {
         component.style.justifyContent =
             get('justify-content').value;
         captureStateDebounced();
     });
+}
+/* Attaches every CSS-property change/input listener to the sidebar controls */
+export function addControlListeners(component, controlsContainer, addListenersFn /* recursive ref for re-populate */, customizeComponentTagName) {
+    /* Single debounced handler shared by all controls to batch history captures */
+    const captureStateDebounced = debounce(() => {
+        Canvas.dispatchDesignChange();
+        Canvas.historyManager.captureState();
+    }, 300);
+    const get = (id) => document.getElementById(id);
+    attachDimensionListeners(component, get, captureStateDebounced);
+    attachImageAltTextListener(component, get, captureStateDebounced);
+    attachBackgroundColorListeners(component, get, captureStateDebounced);
+    attachSpacingListeners(component, get, captureStateDebounced);
+    attachAlignmentListener(component, get, captureStateDebounced);
+    attachFontSizeListeners(component, get, captureStateDebounced);
+    attachFontWeightListeners(component, get, captureStateDebounced);
+    attachFontFamilyListener(component, get, captureStateDebounced);
+    attachTextColorListeners(component, get, captureStateDebounced);
+    attachBorderListeners(component, get, captureStateDebounced);
+    attachDisplayListener(component, controlsContainer, addListenersFn, customizeComponentTagName, get, captureStateDebounced);
+    attachFlexSubControlListeners(component, get, captureStateDebounced);
 }

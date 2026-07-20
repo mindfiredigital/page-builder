@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { CANVAS, checkScope, getBlocks, makeCanvasRoot, pageSchema, type Block } from '../schema.js';
+import { ABSOLUTE_CANVAS_CLASSES, CANVAS, checkScope, getBlocks, getCanvasRoot, makeCanvasRoot, pageSchema, type Block } from '../schema.js';
 import {
   badInput,
   emitResult,
@@ -18,7 +18,7 @@ export interface ValidateOptions extends BaseFlags {
 }
 
 interface Issue {
-  kind: 'schema' | 'scope' | 'overlap' | 'out-of-bounds' | 'stale-inline-style';
+  kind: 'schema' | 'scope' | 'overlap' | 'out-of-bounds' | 'stale-inline-style' | 'stale-canvas-classes';
   message: string;
   fix: string;
 }
@@ -84,6 +84,29 @@ export function validateCommand(options: ValidateOptions): void {
     issues.push({ kind: 'scope', message: violation.reason, fix: violation.fix });
   }
 
+  /* The real editor's restoreState() replaces the canvas element's entire
+     classList with whatever is in this canvas entry's `classes` array on
+     EVERY restore — including the live push a "serve" session broadcasts
+     after every add-block/update-block/etc. A canvas entry missing its
+     absolute-mode chrome classes (e.g. from a page.json written before
+     this was understood, or hand-edited) renders fine on the very first
+     load's own restore, then loses that chrome on the next live edit —
+     reads as "flipped to grid layout" even though nothing in the JSON's
+     block positions is wrong. */
+  const canvasRoot = !violation ? getCanvasRoot(parsed.data) : undefined;
+  const missingCanvasClasses = canvasRoot
+    ? ABSOLUTE_CANVAS_CLASSES.filter(cls => !canvasRoot.classes.includes(cls))
+    : [];
+  if (missingCanvasClasses.length > 0) {
+    issues.push({
+      kind: 'stale-canvas-classes',
+      message: `Canvas root is missing absolute-mode chrome class(es) (${missingCanvasClasses.join(', ')}) — the live "serve" preview will lose them on the next edit and appear to fall out of absolute layout.`,
+      fix: options.fix
+        ? 'Repairing automatically (--fix was passed).'
+        : 'Re-run with --fix to repair automatically.',
+    });
+  }
+
   const blocks = getBlocks(parsed.data);
 
   /* inlineStyle is the only thing the real editor reads to position a
@@ -125,9 +148,13 @@ export function validateCommand(options: ValidateOptions): void {
     });
   }
 
-  const didRepair = !!options.fix && staleIds.size > 0;
+  const fixCanvasClasses = !!options.fix && missingCanvasClasses.length > 0;
+  const didRepair = (!!options.fix && staleIds.size > 0) || fixCanvasClasses;
   if (didRepair) {
     const repairedPage: Block[] = parsed.data.map(block => {
+      if (fixCanvasClasses && block.id === 'canvas' && block.type === 'canvas') {
+        return { ...block, classes: Array.from(new Set([...block.classes, ...ABSOLUTE_CANVAS_CLASSES])) };
+      }
       if (!staleIds.has(block.id)) return block;
       return {
         ...block,
@@ -140,19 +167,33 @@ export function validateCommand(options: ValidateOptions): void {
     writePageFileAtomic(filePath, repairedPage);
   }
 
-  // --fix only resolves stale-inline-style issues — any other issue
-  // (overlap, out-of-bounds, scope, schema) still leaves the page invalid.
-  const remainingIssues = didRepair ? issues.filter(i => i.kind !== 'stale-inline-style') : issues;
+  // --fix only resolves stale-inline-style / stale-canvas-classes issues —
+  // any other issue (overlap, out-of-bounds, scope, schema) still leaves
+  // the page invalid.
+  const remainingIssues = didRepair
+    ? issues.filter(i => i.kind !== 'stale-inline-style' && i.kind !== 'stale-canvas-classes')
+    : issues;
 
-  report(options, filePath, remainingIssues, didRepair ? staleIds.size : 0);
+  const repairedCount = didRepair ? staleIds.size + (fixCanvasClasses ? 1 : 0) : 0;
+  const repairSummary: string[] = [];
+  if (didRepair && staleIds.size > 0) repairSummary.push(`stale inlineStyle on ${staleIds.size} block(s)`);
+  if (fixCanvasClasses) repairSummary.push('canvas root chrome classes');
+
+  report(options, filePath, remainingIssues, repairedCount, repairSummary);
 }
 
-function report(options: ValidateOptions, filePath: string, remainingIssues: Issue[], repairedCount: number): void {
+function report(
+  options: ValidateOptions,
+  filePath: string,
+  remainingIssues: Issue[],
+  repairedCount: number,
+  repairSummary: string[]
+): void {
   const valid = remainingIssues.length === 0;
 
-  emitResult(!!options.json, { valid, path: filePath, repairedCount, issues: remainingIssues }, () => {
+  emitResult(!!options.json, { valid, path: filePath, repairedCount, repaired: repairSummary, issues: remainingIssues }, () => {
     if (repairedCount > 0) {
-      console.log(`Repaired stale inlineStyle on ${repairedCount} block(s): ${filePath}`);
+      console.log(`Repaired ${repairSummary.join(' and ')}: ${filePath}`);
     }
     if (valid) {
       console.log(`Valid: ${filePath}`);

@@ -33,5 +33,5 @@ export declare class CanvasSharedState {
     static tableAttributeConfig: ComponentAttribute[] | undefined;
     static textAttributeConfig: ComponentAttribute[] | undefined;
     static headerAttributeConfig: ComponentAttribute[] | undefined;
-    static ImageAttributeConfig: Function | undefined;
+    static ImageAttributeConfig: ImageAttributeConfigHandler | undefined;
 }

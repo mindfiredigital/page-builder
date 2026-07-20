@@ -101,20 +101,19 @@ var PageBuilderReact = ({
             }
             disconnectedCallback() {
               const root = this._pbRoot;
-              const self = this;
               this._unmountTimer = setTimeout(() => {
-                self._unmountTimer = void 0;
-                if (self.isConnected)
+                this._unmountTimer = void 0;
+                if (this.isConnected)
                   return;
                 document.dispatchEvent(
                   new CustomEvent("pb:component-removed", {
-                    detail: { componentId: self.id }
+                    detail: { componentId: this.id }
                   })
                 );
                 if (root)
                   root.unmount();
-                self._pbRoot = null;
-                self._pbMounted = false;
+                this._pbRoot = null;
+                this._pbMounted = false;
               }, 0);
             }
           }
@@ -224,7 +223,14 @@ var PageBuilderReact = ({
         }
       });
     }
-  }, [processedConfig, initialDesign, editable, brandTitle, showAttributeTab]);
+  }, [
+    processedConfig,
+    initialDesign,
+    editable,
+    brandTitle,
+    showAttributeTab,
+    layoutMode
+  ]);
   (0, import_react.useEffect)(() => {
     const webComponent = builderRef.current;
     const handleDesignChange = (event) => {

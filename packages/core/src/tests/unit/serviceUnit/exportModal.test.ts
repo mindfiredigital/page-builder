@@ -3,12 +3,9 @@ import {
   closeModal,
   createCloseButton,
   createCodeSection,
-  setupModalEventListeners,
 } from '../../../services/ExportModalService';
 
 // 1. Correct the mock path: Mock the ZIP service, NOT the Modal service
-import * as ExportZipService from '../../../services/ExportZipService';
-
 jest.mock('../../../services/ExportZipService', () => ({
   createExportToZipButton: jest.fn(() => document.createElement('button')),
 }));

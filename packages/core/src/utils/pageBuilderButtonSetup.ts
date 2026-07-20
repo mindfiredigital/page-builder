@@ -30,9 +30,7 @@ export function setupResetButton(jsonStorage: JSONStorage): void {
         Canvas.clearCanvas();
         showNotification('The saved layout has been successfully reset.');
       },
-      () => {
-        console.log('Layout reset canceled.');
-      }
+      () => {}
     );
   });
 }

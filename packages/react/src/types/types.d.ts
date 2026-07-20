@@ -1,44 +1,28 @@
+/* ComponentAttribute, BasicComponent, and PageBuilderDesign are defined once
+   in core (packages/core/src/types/types.d.ts) and re-exported through
+   web-component — imported here rather than redeclared so this package can't
+   silently drift from what core/web-component actually accept. Only shapes
+   that are genuinely React-specific (because they carry React component
+   references, not the post-bridging string/tag-name form core deals with)
+   are declared locally below. */
+import type {
+  ComponentAttribute,
+  BasicComponent,
+  PageBuilderDesign,
+} from '@mindfiredigital/page-builder-web-component';
+
+export type { ComponentAttribute, BasicComponent, PageBuilderDesign };
+
 export interface DynamicComponents {
   Basic: BasicComponent[];
   Extra: string[];
   Custom?: Record<string, CustomComponentConfig>;
 }
 
-export interface ComponentAttribute {
-  id: string;
-  type: 'Constant' | 'Formula' | 'Input' | 'Image';
-  input_type?: 'text' | 'number' | 'checkbox';
-  title: string;
-  key: string;
-  value: string | number | boolean;
-  execute_order: number;
-  editable?: boolean;
-  default_value?: string | number | boolean | null;
-}
-
-export interface BasicComponent {
-  name: string;
-  attributes?: ComponentAttribute[];
-  globalExecuteFunction?: Function;
-}
-
-export interface PageBuilderDesign {
-  pages?: Array<{
-    id: string;
-    components: Array<{
-      type: string;
-      id: string;
-      props: Record<string, any>;
-    }>;
-  }>;
-  [key: string]: any;
-}
-
 export interface PageBuilderElement extends HTMLElement {
-  configData: any;
+  configData: DynamicComponents;
   editable: boolean;
   initialDesign?: PageBuilderDesign | null;
-  getDebugInfo?: any;
   brandTitle?: string;
   showAttributeTab?: boolean;
   layoutMode?: 'absolute' | 'grid';
