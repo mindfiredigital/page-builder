@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { CANVAS, escapeHtml, getBlocks, type Block } from '../schema.js';
+import { CANVAS, escapeHtml, getBlocks, getCanvasRoot, type Block } from '../schema.js';
 import { emitResult, loadPageFile, transientErr, type BaseFlags } from '../cliRuntime.js';
 import { renderInlineStyle } from '../layout.js';
 
@@ -60,6 +60,8 @@ function renderBlock(block: Block): string {
 export function buildCommand(options: BuildOptions): void {
   const { page } = loadPageFile(options.page);
   const blocks = getBlocks(page);
+  const canvas = getCanvasRoot(page);
+  const canvasStyle = canvas?.inlineStyle ? escapeHtml(canvas.inlineStyle) : '';
   const css = readCoreCss();
 
   const bodyBlocks = blocks.map(renderBlock).join('\n  ');
@@ -71,7 +73,7 @@ export function buildCommand(options: BuildOptions): void {
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="page-builder-canvas" style="position:relative;width:${CANVAS.width}px;min-height:${CANVAS.height}px;">
+<div class="page-builder-canvas" style="position:relative;width:${CANVAS.width}px;min-height:${CANVAS.height}px;${canvasStyle}">
   ${bodyBlocks}
 </div>
 </body>

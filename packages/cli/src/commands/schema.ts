@@ -81,9 +81,9 @@ export function schemaCommand(options: BaseFlags): void {
       {
         name: 'update-block',
         usage:
-          'pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]',
+          'pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--width <n>] [--height <n>] [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]',
         description:
-          'Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box — "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) — not both in the same call. Either can be combined with --content/--src/--style/--class. --src changes an existing image block\'s URL (image blocks only).',
+          'Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box — "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) — not both in the same call. --width/--height resize the block in place (either alone or together, independent of any move in the same call; a resize with no move re-clamps the existing position against the new size if needed — status "resized" or "resized-clamped"). Any of the above can be combined with --content/--src/--style/--class. --src changes an existing image block\'s URL (image blocks only).',
       },
       {
         name: 'remove-block',
@@ -104,7 +104,13 @@ export function schemaCommand(options: BaseFlags): void {
         name: 'validate',
         usage: 'pagectl validate [--page <file>] [--fix] [--json]',
         description:
-          'Schema validity + scope + overlap + out-of-bounds + stale-inlineStyle checks, each with a fix hint. Exit 2 on any issue. --fix auto-repairs blocks whose inlineStyle drifted from position/dimensions/style (e.g. written by a pagectl build predating that fix) — other issue kinds still need an explicit update-block/remove-block call.',
+          'Schema validity + scope + overlap + out-of-bounds + stale-inlineStyle + possible-text-overflow checks, each with a fix hint. Exit 2 on any issue. possible-text-overflow is a heuristic (not exact browser measurement): every text/header block\'s actual content, width, and font-size are checked against its declared height, whether that height was auto-computed or set explicitly with --height — a custom --style font-size that makes the content wrap more than the box allows is exactly what this catches. --fix auto-repairs blocks whose inlineStyle drifted from position/dimensions/style, and grows any block flagged by possible-text-overflow to the estimated height it needs — other issue kinds (overlap, out-of-bounds, scope, schema) still need an explicit update-block/remove-block call.',
+      },
+      {
+        name: 'set-canvas',
+        usage: 'pagectl set-canvas [--page <file>] --style k=v... [--dry-run] [--json]',
+        description:
+          'Set style (e.g. background-color) on the page\'s canvas root itself, not a block — the only way to theme the page background (a subtle off-white/grey "newsprint" tone, etc.) without adding a full-bleed block that would overlap every other block and fail "validate". Merges into any existing canvas style; does not touch position/dimensions, which stay owned by canvas.width/height.',
       },
       {
         name: 'build',

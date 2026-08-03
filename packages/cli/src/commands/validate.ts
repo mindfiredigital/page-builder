@@ -1,5 +1,17 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { ABSOLUTE_CANVAS_CLASSES, CANVAS, checkScope, getBlocks, getCanvasRoot, makeCanvasRoot, pageSchema, type Block } from '../schema.js';
+import {
+  ABSOLUTE_CANVAS_CLASSES,
+  CANVAS,
+  checkScope,
+  estimateWrappedHeight,
+  extractPlainText,
+  getBlocks,
+  getCanvasRoot,
+  isBlockType,
+  makeCanvasRoot,
+  pageSchema,
+  type Block,
+} from '../schema.js';
 import {
   badInput,
   emitResult,
@@ -18,7 +30,7 @@ export interface ValidateOptions extends BaseFlags {
 }
 
 interface Issue {
-  kind: 'schema' | 'scope' | 'overlap' | 'out-of-bounds' | 'stale-inline-style' | 'stale-canvas-classes';
+  kind: 'schema' | 'scope' | 'overlap' | 'out-of-bounds' | 'stale-inline-style' | 'stale-canvas-classes' | 'possible-text-overflow';
   message: string;
   fix: string;
 }
@@ -148,36 +160,83 @@ export function validateCommand(options: ValidateOptions): void {
     });
   }
 
+  /* Heuristic, not exact math — same estimator addBlock.ts uses when
+     --height is omitted, but here re-run against EVERY text/header block's
+     actual declared height and actual style (including any custom
+     font-size), whether that height came from the estimator or was set
+     explicitly. That gap — nothing ever checked an explicit --height
+     against the real font-size — is exactly how two real layout bugs
+     shipped past a clean "validate" in this project: a masthead and a
+     column title, both custom-sized, both wrapped to an extra line inside
+     a box sized for one. estimateWrappedHeight is deliberately
+     one-directional (over- rather than under-predicts), so this errs
+     toward flagging borderline cases rather than missing real ones. */
+  const overflowEstimates = new Map<string, number>();
+  for (const block of blocks) {
+    if (!isBlockType(block.type)) continue;
+    if (block.type !== 'text' && block.type !== 'header') continue;
+
+    const plainText = extractPlainText(block.content);
+    const estimated = Math.round(estimateWrappedHeight(block.type, plainText, block.dimensions.width, 0, block.style));
+
+    if (estimated > block.dimensions.height) {
+      overflowEstimates.set(block.id, estimated);
+      issues.push({
+        kind: 'possible-text-overflow',
+        message: `"${block.id}"'s content likely wraps past its declared height (${block.dimensions.height}px) at its font-size — estimated ~${estimated}px needed.`,
+        fix: options.fix
+          ? 'Repairing automatically (--fix was passed): growing height to fit.'
+          : `Re-run with --fix to grow it automatically, or "pagectl update-block --page ${filePath} --id ${block.id} --height ${estimated}".`,
+      });
+    }
+  }
+
   const fixCanvasClasses = !!options.fix && missingCanvasClasses.length > 0;
-  const didRepair = (!!options.fix && staleIds.size > 0) || fixCanvasClasses;
+  const fixOverflow = !!options.fix && overflowEstimates.size > 0;
+  const didRepair = (!!options.fix && staleIds.size > 0) || fixCanvasClasses || fixOverflow;
   if (didRepair) {
     const repairedPage: Block[] = parsed.data.map(block => {
       if (fixCanvasClasses && block.id === 'canvas' && block.type === 'canvas') {
         return { ...block, classes: Array.from(new Set([...block.classes, ...ABSOLUTE_CANVAS_CLASSES])) };
       }
-      if (!staleIds.has(block.id)) return block;
+
+      let next = block;
+
+      if (overflowEstimates.has(block.id)) {
+        const estimatedHeight = overflowEstimates.get(block.id)!;
+        const nextStyle = { ...next.style };
+        // Same precedence as addBlock/update-block's own min-height floor:
+        // only bump it if it was ever set, and always keep it in sync with
+        // the real height, so the CSS floor can't silently keep winning.
+        if ('min-height' in nextStyle) nextStyle['min-height'] = `${estimatedHeight}px`;
+        next = { ...next, dimensions: { ...next.dimensions, height: estimatedHeight }, style: nextStyle };
+      }
+
+      if (!staleIds.has(block.id) && !overflowEstimates.has(block.id)) return next;
+
       return {
-        ...block,
+        ...next,
         inlineStyle: renderInlineStyle(
-          { x: block.position.x, y: block.position.y, width: block.dimensions.width, height: block.dimensions.height },
-          block.style
+          { x: next.position.x, y: next.position.y, width: next.dimensions.width, height: next.dimensions.height },
+          next.style
         ),
       };
     });
     writePageFileAtomic(filePath, repairedPage);
   }
 
-  // --fix only resolves stale-inline-style / stale-canvas-classes issues —
-  // any other issue (overlap, out-of-bounds, scope, schema) still leaves
-  // the page invalid.
+  // --fix only resolves stale-inline-style / stale-canvas-classes /
+  // possible-text-overflow issues — any other issue (overlap,
+  // out-of-bounds, scope, schema) still leaves the page invalid.
   const remainingIssues = didRepair
-    ? issues.filter(i => i.kind !== 'stale-inline-style' && i.kind !== 'stale-canvas-classes')
+    ? issues.filter(i => i.kind !== 'stale-inline-style' && i.kind !== 'stale-canvas-classes' && i.kind !== 'possible-text-overflow')
     : issues;
 
-  const repairedCount = didRepair ? staleIds.size + (fixCanvasClasses ? 1 : 0) : 0;
+  const repairedCount = didRepair ? staleIds.size + (fixCanvasClasses ? 1 : 0) + (fixOverflow ? overflowEstimates.size : 0) : 0;
   const repairSummary: string[] = [];
   if (didRepair && staleIds.size > 0) repairSummary.push(`stale inlineStyle on ${staleIds.size} block(s)`);
   if (fixCanvasClasses) repairSummary.push('canvas root chrome classes');
+  if (fixOverflow) repairSummary.push(`possible text overflow on ${overflowEstimates.size} block(s)`);
 
   report(options, filePath, remainingIssues, repairedCount, repairSummary);
 }

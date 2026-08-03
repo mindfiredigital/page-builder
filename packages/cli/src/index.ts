@@ -12,6 +12,7 @@ import { inspectCommand } from './commands/inspect.js';
 import { validateCommand } from './commands/validate.js';
 import { buildCommand } from './commands/build.js';
 import { serveCommand } from './commands/serve.js';
+import { setCanvasCommand } from './commands/setCanvas.js';
 
 const program = new Command();
 
@@ -86,7 +87,7 @@ program
 
 program
   .command('update-block')
-  .description('Nudge a block one grid step, or jump to an explicit --x/--y, and/or fix its content/style/class.')
+  .description('Nudge a block one grid step, jump to an explicit --x/--y, resize it, and/or fix its content/style/class.')
   .option('--page <file>', 'page JSON file (default: .pagectl/page.json, auto-created on first use)')
   .option('--id <id>', 'block id')
   .option('--left', 'nudge left one grid step')
@@ -95,6 +96,8 @@ program
   .option('--down', 'nudge down one grid step')
   .option('--x <n>', 'explicit x (escape hatch for a large move; requires --y)')
   .option('--y <n>', 'explicit y (escape hatch for a large move; requires --x)')
+  .option('--width <n>', 'resize: new width in px (independent of --height)')
+  .option('--height <n>', 'resize: new height in px (independent of --width)')
   .option('--content <text>', 'new text content')
   .option('--src <url>', 'new image URL (image blocks only)')
   .option('--style <kv>', 'CSS style as key=value (repeatable)', collect, [])
@@ -153,6 +156,16 @@ program
   .option('--json', 'emit structured JSON')
   .option('--no-input', 'fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)')
   .action(options => runCommand(!!options.json, () => buildCommand(options)));
+
+program
+  .command('set-canvas')
+  .description('Set style on the page\'s canvas root (e.g. a page background color) without adding a block that would overlap everything else.')
+  .option('--page <file>', 'page JSON file (default: .pagectl/page.json, auto-created on first use)')
+  .option('--style <kv>', 'CSS style as key=value (repeatable)', collect, [])
+  .option('--dry-run', 'compute and report without writing')
+  .option('--json', 'emit structured JSON')
+  .option('--no-input', 'fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)')
+  .action(options => runCommand(!!options.json, () => setCanvasCommand(options)));
 
 program
   .command('serve [file]')

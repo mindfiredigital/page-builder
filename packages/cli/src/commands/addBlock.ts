@@ -72,12 +72,16 @@ export function addBlockCommand(options: AddBlockOptions): void {
   const blocks = getBlocks(page);
 
   const width = options.width ? Number(options.width) : def.defaultWidth;
+  const style = parseKeyValueList(options.style, '--style');
 
   // Only estimate when height wasn't explicitly given, and only for
   // plain (non-raw) text/header content — --raw-content is an escape
-  // hatch the caller already owns full responsibility for.
+  // hatch the caller already owns full responsibility for. Font-size-aware
+  // (see estimateWrappedHeight's doc comment) so a custom --style
+  // font-size=Npx on the *first* add-block call already gets a sane
+  // default height instead of the flat type default.
   const rawText = !options.rawContent ? (options.content ?? def.defaultText ?? '') : '';
-  const height = options.height ? Number(options.height) : estimateWrappedHeight(options.type, rawText, width, def.defaultHeight);
+  const height = options.height ? Number(options.height) : estimateWrappedHeight(options.type, rawText, width, def.defaultHeight, style);
 
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
     badInput('--width and --height must be positive numbers.', 'Omit them to use the type default, or pass positive numbers.');
@@ -116,7 +120,6 @@ export function addBlockCommand(options: AddBlockOptions): void {
   }
 
   const existing = blocks.find(b => b.id === options.id);
-  const style = parseKeyValueList(options.style, '--style');
 
   /* Two independent real-editor behaviors both fight a block's declared
      width/height after it leaves this process, so every block type (not

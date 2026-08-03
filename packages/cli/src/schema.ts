@@ -188,16 +188,72 @@ const WRAP_METRICS: Partial<Record<BlockType, { lineHeight: number; avgCharWidth
   text: { lineHeight: 24, avgCharWidth: 14 },
 };
 
+/* The font-size WRAP_METRICS was calibrated at (packages/core/src/styles/
+   components/{header,text}.css's own defaults) — header.css: font-size
+   24px; text.css: font-size 16px. A block with a custom --style
+   font-size=Npx (very common: masthead/headline treatments almost always
+   override the default) needs avgCharWidth/lineHeight scaled by
+   N/baseline, or the estimate silently assumes the wrong font size and
+   under/over-predicts wrapping. Two real bugs (a masthead and a column
+   title header, both custom-sized, both wrapped to an extra line inside a
+   box sized for one) shipped past `validate` before this existed — the
+   estimator only ever ran when --height was omitted, and neither block
+   used that path, so nothing was ever checking a manually-set --height
+   against the real font-size at all. */
+const WRAP_BASE_FONT_SIZE: Partial<Record<BlockType, number>> = {
+  header: 24,
+  text: 16,
+};
+
 const WRAP_PADDING = 16;
 
-export function estimateWrappedHeight(type: BlockType, text: string, width: number, minHeight: number): number {
+function parseFontSizePx(style: Record<string, string> | undefined): number | undefined {
+  const raw = style?.['font-size'];
+  if (!raw) return undefined;
+  const match = /^([\d.]+)px$/.exec(raw.trim());
+  if (!match) return undefined;
+  const value = Number(match[1]);
+  return Number.isFinite(value) && value > 0 ? value : undefined;
+}
+
+/* Strips markup down to visible text for the wrap estimator — good enough
+   for pagectl's own wrapTextSpan()-produced content; --raw-content callers
+   own their own markup (including any deliberate <br> line breaks, which
+   this does not special-case) per addBlock.ts's existing "escape hatch"
+   framing. */
+export function extractPlainText(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .trim();
+}
+
+export function estimateWrappedHeight(
+  type: BlockType,
+  text: string,
+  width: number,
+  minHeight: number,
+  style?: Record<string, string>
+): number {
   const metrics = WRAP_METRICS[type];
   if (!metrics || !text) return minHeight;
 
+  const baseFontSize = WRAP_BASE_FONT_SIZE[type];
+  const customFontSize = parseFontSizePx(style);
+  const scale = baseFontSize && customFontSize ? customFontSize / baseFontSize : 1;
+
+  const lineHeight = metrics.lineHeight * scale;
+  const avgCharWidth = metrics.avgCharWidth * scale;
+
   const usableWidth = Math.max(width - WRAP_PADDING, 40);
-  const charsPerLine = Math.max(Math.floor(usableWidth / metrics.avgCharWidth), 1);
+  const charsPerLine = Math.max(Math.floor(usableWidth / avgCharWidth), 1);
   const lines = Math.max(Math.ceil(text.length / charsPerLine), 1);
-  const estimated = lines * metrics.lineHeight + WRAP_PADDING;
+  const estimated = lines * lineHeight + WRAP_PADDING;
 
   return Math.max(minHeight, estimated);
 }

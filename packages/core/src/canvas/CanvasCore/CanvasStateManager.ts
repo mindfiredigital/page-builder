@@ -153,6 +153,16 @@ export class CanvasStateManager {
       data => data.id === 'canvas' && data.type === 'canvas'
     );
 
+    /** Everything except the canvas descriptor. Built as a fresh array
+        rather than state.splice()'d in place: `state` may be the same
+        array reference a caller reuses across more than one restoreState
+        call (e.g. the web-component wrapper's initialDesign and configData
+        setters each trigger their own full re-init off the same stored
+        design array within the same tick) — mutating the caller's array
+        here would silently strip the canvas descriptor before the second
+        call ever sees it, discarding its style/classes with no error. */
+    let components = state;
+
     if (canvasDataIndex !== -1) {
       const canvasData = state[canvasDataIndex];
 
@@ -165,14 +175,13 @@ export class CanvasStateManager {
         canvasElement.classList.add(cls)
       );
 
-      /** Remove the canvas descriptor so only component descriptors remain */
-      state.splice(canvasDataIndex, 1);
+      components = state.filter((_, index) => index !== canvasDataIndex);
     }
 
     canvasElement.innerHTML = '';
     CanvasSharedState.components = [];
 
-    state.forEach(componentData => {
+    components.forEach(componentData => {
       const customSettings =
         componentData.dataAttributes['data-custom-settings'] || null;
       const component = CanvasComponentFactory.createComponent(

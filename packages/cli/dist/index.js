@@ -26,14 +26,32 @@ function hasTextSpan(html) {
 function imageContentTemplate() {
   return `<div>Click to upload image</div><input type="file" accept="image/*" style="display: none;" /><button class="upload-btn" style="position: absolute; padding: 8px; background: transparent; border: none; cursor: pointer; opacity: 0; transition: opacity 0.2s; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px;">${EDIT_PENCIL_ICON}</button><img alt="" style="width: 100%; height: 100%; object-fit: contain; border: none; display: none;" />`;
 }
-function estimateWrappedHeight(type, text, width, minHeight) {
+function parseFontSizePx(style) {
+  const raw = style?.["font-size"];
+  if (!raw)
+    return void 0;
+  const match = /^([\d.]+)px$/.exec(raw.trim());
+  if (!match)
+    return void 0;
+  const value = Number(match[1]);
+  return Number.isFinite(value) && value > 0 ? value : void 0;
+}
+function extractPlainText(html) {
+  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+}
+function estimateWrappedHeight(type, text, width, minHeight, style) {
   const metrics = WRAP_METRICS[type];
   if (!metrics || !text)
     return minHeight;
+  const baseFontSize = WRAP_BASE_FONT_SIZE[type];
+  const customFontSize = parseFontSizePx(style);
+  const scale = baseFontSize && customFontSize ? customFontSize / baseFontSize : 1;
+  const lineHeight = metrics.lineHeight * scale;
+  const avgCharWidth = metrics.avgCharWidth * scale;
   const usableWidth = Math.max(width - WRAP_PADDING, 40);
-  const charsPerLine = Math.max(Math.floor(usableWidth / metrics.avgCharWidth), 1);
+  const charsPerLine = Math.max(Math.floor(usableWidth / avgCharWidth), 1);
   const lines = Math.max(Math.ceil(text.length / charsPerLine), 1);
-  const estimated = lines * metrics.lineHeight + WRAP_PADDING;
+  const estimated = lines * lineHeight + WRAP_PADDING;
   return Math.max(minHeight, estimated);
 }
 function makeCanvasRoot() {
@@ -79,7 +97,7 @@ function checkScope(page) {
   }
   return null;
 }
-var CANVAS, DEFAULT_PAGE_DIR, DEFAULT_PAGE_FILENAME, BLOCK_TYPES, ALIGN_VALUES, DIRECTION_VALUES, TEXT_CONTENT_SPAN_RE, EDIT_PENCIL_ICON, BLOCKS, WRAP_METRICS, WRAP_PADDING, blockSchema, pageSchema, ABSOLUTE_CANVAS_CLASSES;
+var CANVAS, DEFAULT_PAGE_DIR, DEFAULT_PAGE_FILENAME, BLOCK_TYPES, ALIGN_VALUES, DIRECTION_VALUES, TEXT_CONTENT_SPAN_RE, EDIT_PENCIL_ICON, BLOCKS, WRAP_METRICS, WRAP_BASE_FONT_SIZE, WRAP_PADDING, blockSchema, pageSchema, ABSOLUTE_CANVAS_CLASSES;
 var init_schema = __esm({
   "src/schema.ts"() {
     "use strict";
@@ -178,6 +196,10 @@ var init_schema = __esm({
     WRAP_METRICS = {
       header: { lineHeight: 32, avgCharWidth: 25 },
       text: { lineHeight: 24, avgCharWidth: 14 }
+    };
+    WRAP_BASE_FONT_SIZE = {
+      header: 24,
+      text: 16
     };
     WRAP_PADDING = 16;
     blockSchema = z.object({
@@ -617,8 +639,8 @@ function schemaCommand(options) {
       },
       {
         name: "update-block",
-        usage: "pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]",
-        description: `Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box \u2014 "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) \u2014 not both in the same call. Either can be combined with --content/--src/--style/--class. --src changes an existing image block's URL (image blocks only).`
+        usage: "pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--width <n>] [--height <n>] [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]",
+        description: `Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box \u2014 "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) \u2014 not both in the same call. --width/--height resize the block in place (either alone or together, independent of any move in the same call; a resize with no move re-clamps the existing position against the new size if needed \u2014 status "resized" or "resized-clamped"). Any of the above can be combined with --content/--src/--style/--class. --src changes an existing image block's URL (image blocks only).`
       },
       {
         name: "remove-block",
@@ -638,7 +660,12 @@ function schemaCommand(options) {
       {
         name: "validate",
         usage: "pagectl validate [--page <file>] [--fix] [--json]",
-        description: "Schema validity + scope + overlap + out-of-bounds + stale-inlineStyle checks, each with a fix hint. Exit 2 on any issue. --fix auto-repairs blocks whose inlineStyle drifted from position/dimensions/style (e.g. written by a pagectl build predating that fix) \u2014 other issue kinds still need an explicit update-block/remove-block call."
+        description: "Schema validity + scope + overlap + out-of-bounds + stale-inlineStyle + possible-text-overflow checks, each with a fix hint. Exit 2 on any issue. possible-text-overflow is a heuristic (not exact browser measurement): every text/header block's actual content, width, and font-size are checked against its declared height, whether that height was auto-computed or set explicitly with --height \u2014 a custom --style font-size that makes the content wrap more than the box allows is exactly what this catches. --fix auto-repairs blocks whose inlineStyle drifted from position/dimensions/style, and grows any block flagged by possible-text-overflow to the estimated height it needs \u2014 other issue kinds (overlap, out-of-bounds, scope, schema) still need an explicit update-block/remove-block call."
+      },
+      {
+        name: "set-canvas",
+        usage: "pagectl set-canvas [--page <file>] --style k=v... [--dry-run] [--json]",
+        description: `Set style (e.g. background-color) on the page's canvas root itself, not a block \u2014 the only way to theme the page background (a subtle off-white/grey "newsprint" tone, etc.) without adding a full-bleed block that would overlap every other block and fail "validate". Merges into any existing canvas style; does not touch position/dimensions, which stay owned by canvas.width/height.`
       },
       {
         name: "build",
@@ -1001,8 +1028,9 @@ function addBlockCommand(options) {
   const { page, path } = loadPageFile(options.page);
   const blocks = getBlocks(page);
   const width = options.width ? Number(options.width) : def.defaultWidth;
+  const style = parseKeyValueList(options.style, "--style");
   const rawText = !options.rawContent ? options.content ?? def.defaultText ?? "" : "";
-  const height = options.height ? Number(options.height) : estimateWrappedHeight(options.type, rawText, width, def.defaultHeight);
+  const height = options.height ? Number(options.height) : estimateWrappedHeight(options.type, rawText, width, def.defaultHeight, style);
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
     badInput("--width and --height must be positive numbers.", "Omit them to use the type default, or pass positive numbers.");
   }
@@ -1038,7 +1066,6 @@ function addBlockCommand(options) {
     content = def.defaultContent(options.content);
   }
   const existing = blocks.find((b) => b.id === options.id);
-  const style = parseKeyValueList(options.style, "--style");
   if (!("min-height" in style))
     style["min-height"] = `${height}px`;
   if (!("min-width" in style))
@@ -1144,10 +1171,21 @@ function updateBlockCommand(options) {
   const hasSrcEdit = options.src !== void 0;
   const hasStyleEdit = (options.style ?? []).length > 0;
   const hasClassEdit = (options.class ?? []).length > 0;
-  if (directions.length === 0 && !hasExplicitMove && !hasContentEdit && !hasSrcEdit && !hasStyleEdit && !hasClassEdit) {
+  const hasResize = options.width !== void 0 || options.height !== void 0;
+  if (options.width !== void 0) {
+    const w = Number(options.width);
+    if (!Number.isFinite(w) || w <= 0)
+      badInput("--width must be a positive number.", "Pass a positive number of pixels.");
+  }
+  if (options.height !== void 0) {
+    const h = Number(options.height);
+    if (!Number.isFinite(h) || h <= 0)
+      badInput("--height must be a positive number.", "Pass a positive number of pixels.");
+  }
+  if (directions.length === 0 && !hasExplicitMove && !hasResize && !hasContentEdit && !hasSrcEdit && !hasStyleEdit && !hasClassEdit) {
     badInput(
       "Nothing to update.",
-      `Pass a direction (--left/--right/--up/--down), an explicit --x/--y, and/or --content/--src/--style/--class. Valid directions: ${DIRECTION_VALUES.join(", ")}.`
+      `Pass a direction (--left/--right/--up/--down), an explicit --x/--y, --width/--height, and/or --content/--src/--style/--class. Valid directions: ${DIRECTION_VALUES.join(", ")}.`
     );
   }
   const { page, path } = loadPageFile(options.page);
@@ -1168,15 +1206,25 @@ function updateBlockCommand(options) {
   const def = BLOCKS[block.type];
   const updated = { ...block, style: { ...block.style }, classes: [...block.classes] };
   let status = "updated";
+  const newWidth = options.width !== void 0 ? Number(options.width) : block.dimensions.width;
+  const newHeight = options.height !== void 0 ? Number(options.height) : block.dimensions.height;
+  if (hasResize) {
+    updated.dimensions = { width: newWidth, height: newHeight };
+  }
   if (directions.length === 1) {
-    const box = { x: block.position.x, y: block.position.y, width: block.dimensions.width, height: block.dimensions.height };
+    const box = { x: block.position.x, y: block.position.y, width: newWidth, height: newHeight };
     const result = nudge(box, directions[0]);
     updated.position = { x: result.box.x, y: result.box.y };
     status = result.status;
   } else if (hasExplicitMove) {
-    const placement = computeExplicitPosition(Number(options.x), Number(options.y), block.dimensions.width, block.dimensions.height);
+    const placement = computeExplicitPosition(Number(options.x), Number(options.y), newWidth, newHeight);
     updated.position = { x: placement.box.x, y: placement.box.y };
     status = placement.clamped ? "clamped-to-edge" : "moved";
+  } else if (hasResize) {
+    const { box } = clampAndSnap(block.position.x, block.position.y, newWidth, newHeight);
+    updated.position = { x: box.x, y: box.y };
+    const positionChanged = box.x !== block.position.x || box.y !== block.position.y;
+    status = positionChanged ? "resized-clamped" : "resized";
   }
   if (hasContentEdit) {
     if (block.type === "container") {
@@ -1202,6 +1250,13 @@ function updateBlockCommand(options) {
   }
   if (hasStyleEdit) {
     Object.assign(updated.style, parseKeyValueList(options.style, "--style"));
+  }
+  if (hasResize) {
+    const styleOverride = hasStyleEdit ? parseKeyValueList(options.style, "--style") : {};
+    if (!("min-height" in styleOverride))
+      updated.style["min-height"] = `${newHeight}px`;
+    if (!("min-width" in styleOverride))
+      updated.style["min-width"] = `${newWidth}px`;
   }
   if (hasClassEdit) {
     updated.classes = Array.from(/* @__PURE__ */ new Set([...updated.classes, ...options.class ?? []]));
@@ -1406,32 +1461,60 @@ function validateCommand(options) {
       fix: `Reposition it with "pagectl update-block --page ${filePath} --id ${oob.id} --left/--right/--up/--down" until it's back on canvas (${CANVAS.width}x${CANVAS.height}).`
     });
   }
+  const overflowEstimates = /* @__PURE__ */ new Map();
+  for (const block of blocks) {
+    if (!isBlockType(block.type))
+      continue;
+    if (block.type !== "text" && block.type !== "header")
+      continue;
+    const plainText = extractPlainText(block.content);
+    const estimated = Math.round(estimateWrappedHeight(block.type, plainText, block.dimensions.width, 0, block.style));
+    if (estimated > block.dimensions.height) {
+      overflowEstimates.set(block.id, estimated);
+      issues.push({
+        kind: "possible-text-overflow",
+        message: `"${block.id}"'s content likely wraps past its declared height (${block.dimensions.height}px) at its font-size \u2014 estimated ~${estimated}px needed.`,
+        fix: options.fix ? "Repairing automatically (--fix was passed): growing height to fit." : `Re-run with --fix to grow it automatically, or "pagectl update-block --page ${filePath} --id ${block.id} --height ${estimated}".`
+      });
+    }
+  }
   const fixCanvasClasses = !!options.fix && missingCanvasClasses.length > 0;
-  const didRepair = !!options.fix && staleIds.size > 0 || fixCanvasClasses;
+  const fixOverflow = !!options.fix && overflowEstimates.size > 0;
+  const didRepair = !!options.fix && staleIds.size > 0 || fixCanvasClasses || fixOverflow;
   if (didRepair) {
     const repairedPage = parsed.data.map((block) => {
       if (fixCanvasClasses && block.id === "canvas" && block.type === "canvas") {
         return { ...block, classes: Array.from(/* @__PURE__ */ new Set([...block.classes, ...ABSOLUTE_CANVAS_CLASSES])) };
       }
-      if (!staleIds.has(block.id))
-        return block;
+      let next = block;
+      if (overflowEstimates.has(block.id)) {
+        const estimatedHeight = overflowEstimates.get(block.id);
+        const nextStyle = { ...next.style };
+        if ("min-height" in nextStyle)
+          nextStyle["min-height"] = `${estimatedHeight}px`;
+        next = { ...next, dimensions: { ...next.dimensions, height: estimatedHeight }, style: nextStyle };
+      }
+      if (!staleIds.has(block.id) && !overflowEstimates.has(block.id))
+        return next;
       return {
-        ...block,
+        ...next,
         inlineStyle: renderInlineStyle(
-          { x: block.position.x, y: block.position.y, width: block.dimensions.width, height: block.dimensions.height },
-          block.style
+          { x: next.position.x, y: next.position.y, width: next.dimensions.width, height: next.dimensions.height },
+          next.style
         )
       };
     });
     writePageFileAtomic(filePath, repairedPage);
   }
-  const remainingIssues = didRepair ? issues.filter((i) => i.kind !== "stale-inline-style" && i.kind !== "stale-canvas-classes") : issues;
-  const repairedCount = didRepair ? staleIds.size + (fixCanvasClasses ? 1 : 0) : 0;
+  const remainingIssues = didRepair ? issues.filter((i) => i.kind !== "stale-inline-style" && i.kind !== "stale-canvas-classes" && i.kind !== "possible-text-overflow") : issues;
+  const repairedCount = didRepair ? staleIds.size + (fixCanvasClasses ? 1 : 0) + (fixOverflow ? overflowEstimates.size : 0) : 0;
   const repairSummary = [];
   if (didRepair && staleIds.size > 0)
     repairSummary.push(`stale inlineStyle on ${staleIds.size} block(s)`);
   if (fixCanvasClasses)
     repairSummary.push("canvas root chrome classes");
+  if (fixOverflow)
+    repairSummary.push(`possible text overflow on ${overflowEstimates.size} block(s)`);
   report(options, filePath, remainingIssues, repairedCount, repairSummary);
 }
 function report(options, filePath, remainingIssues, repairedCount, repairSummary) {
@@ -1494,6 +1577,8 @@ function renderBlock(block) {
 function buildCommand(options) {
   const { page } = loadPageFile(options.page);
   const blocks = getBlocks(page);
+  const canvas = getCanvasRoot(page);
+  const canvasStyle = canvas?.inlineStyle ? escapeHtml(canvas.inlineStyle) : "";
   const css = readCoreCss();
   const bodyBlocks = blocks.map(renderBlock).join("\n  ");
   const html = `<!doctype html>
@@ -1504,7 +1589,7 @@ function buildCommand(options) {
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="page-builder-canvas" style="position:relative;width:${CANVAS.width}px;min-height:${CANVAS.height}px;">
+<div class="page-builder-canvas" style="position:relative;width:${CANVAS.width}px;min-height:${CANVAS.height}px;${canvasStyle}">
   ${bodyBlocks}
 </div>
 </body>
@@ -1712,6 +1797,36 @@ pagectl serve running at http://localhost:${actualPort}`);
   process.on("exit", removeServeLock);
 }
 
+// src/commands/setCanvas.ts
+init_schema();
+function setCanvasCommand(options) {
+  const style = parseKeyValueList(options.style, "--style");
+  if (Object.keys(style).length === 0) {
+    badInput("--style is required (at least one key=value pair).", "Pass e.g. --style background-color=#f2ede4.");
+  }
+  const { page, path } = loadPageFile(options.page);
+  const canvas = getCanvasRoot(page);
+  if (!canvas) {
+    badInput('Page is missing its canvas root entry (id "canvas", type "canvas").', 'Recreate the page with "pagectl new <slug>".');
+  }
+  const nextStyle = { ...canvas.style, ...style };
+  const inlineStyle = Object.entries(nextStyle).map(([key, value]) => `${key}: ${value}`).join("; ") + (Object.keys(nextStyle).length ? ";" : "");
+  const nextCanvas = { ...canvas, style: nextStyle, inlineStyle };
+  const nextPage = page.map((block) => block.id === "canvas" && block.type === "canvas" ? nextCanvas : block);
+  if (options.dryRun) {
+    emitResult(
+      !!options.json,
+      { status: "dry-run", path, style: nextStyle, inlineStyle },
+      () => console.log(`[dry-run] Would set canvas style -> ${inlineStyle}`)
+    );
+    return;
+  }
+  writePageFileAtomic(path, nextPage);
+  emitResult(!!options.json, { status: "updated", path, style: nextStyle, inlineStyle }, () => {
+    console.log(`Updated canvas style -> ${inlineStyle} -> ${path}`);
+  });
+}
+
 // src/index.ts
 var program = new Command();
 function collect(value, previous) {
@@ -1725,12 +1840,13 @@ program.command("status").description(`Report the default (or given) page file's
 program.command("list-blocks").description("Print the block palette and defaults.").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => listBlocksCommand(options)));
 program.command("new <slug>").description("Explicitly create an additional, separately named page (not needed for the common single-page case \u2014 add-block etc. auto-create the default page).").option("-o, --out <path>", "output file path (default: <slug>.page.json)").option("--force", "overwrite an existing page file with a blank canvas").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((slug, options) => runCommand(!!options.json, () => newCommand(slug, options)));
 program.command("add-block").description("Add a block to the default (or given) page, auto-creating it if needed. Default placement is auto-flow.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--type <type>", "block type: text|header|button|container|image").option("--id <id>", "unique block id").option("--content <text>", "block text content").option("--src <url>", "image URL (--type image only)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--width <n>", "override the type default width").option("--height <n>", "override the type default height").option("--below <id>", "anchor: place below this block id").option("--right-of <id>", "anchor: place to the right of this block id").option("--align <value>", "left|center|right, used with --below", "left").option("--gap <n>", "override the CLI default gap for anchor placement").option("--x <n>", "explicit x (escape hatch; requires --y)").option("--y <n>", "explicit y (escape hatch; requires --x)").option("--parent <id>", "not supported in v1 \u2014 always refused, out of scope").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => addBlockCommand(options)));
-program.command("update-block").description("Nudge a block one grid step, or jump to an explicit --x/--y, and/or fix its content/style/class.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--left", "nudge left one grid step").option("--right", "nudge right one grid step").option("--up", "nudge up one grid step").option("--down", "nudge down one grid step").option("--x <n>", "explicit x (escape hatch for a large move; requires --y)").option("--y <n>", "explicit y (escape hatch for a large move; requires --x)").option("--content <text>", "new text content").option("--src <url>", "new image URL (image blocks only)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => updateBlockCommand(options)));
+program.command("update-block").description("Nudge a block one grid step, jump to an explicit --x/--y, resize it, and/or fix its content/style/class.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--left", "nudge left one grid step").option("--right", "nudge right one grid step").option("--up", "nudge up one grid step").option("--down", "nudge down one grid step").option("--x <n>", "explicit x (escape hatch for a large move; requires --y)").option("--y <n>", "explicit y (escape hatch for a large move; requires --x)").option("--width <n>", "resize: new width in px (independent of --height)").option("--height <n>", "resize: new height in px (independent of --width)").option("--content <text>", "new text content").option("--src <url>", "new image URL (image blocks only)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => updateBlockCommand(options)));
 program.command("remove-block").description("Remove a block from a page.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => removeBlockCommand(options)));
 program.command("reorder-block").description("Change a block's array order (auto-flow order / z-order), not its position.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id to move").option("--before <id>", "move before this block id").option("--after <id>", "move after this block id").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => reorderBlockCommand(options)));
 program.command("inspect").description("Print canvas info, next auto-flow y, and every block's box.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => inspectCommand(options)));
 program.command("validate").description("Schema + scope + overlap + out-of-bounds + stale-inlineStyle checks, each with a fix hint.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--fix", "auto-repair blocks whose inlineStyle has drifted from position/dimensions/style").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => validateCommand(options)));
 program.command("build").description('Rough static HTML/CSS export for shipping/inspection (NOT a preview of the real editor \u2014 use "serve" for that).').option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("-o, --out <dir>", "output directory (default: pagectl-output)").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => buildCommand(options)));
+program.command("set-canvas").description("Set style on the page's canvas root (e.g. a page background color) without adding a block that would overlap everything else.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => setCanvasCommand(options)));
 program.command("serve [file]").description("Serve the real page-builder editor backed by the default (or given) page file; watches it on disk for live updates. Refuses to double-start in the same directory.").option("-p, --port <port>", "port to try first; falls back to the next free port if taken", "4321").action(async (file, options) => {
   await serveCommand(file, options);
 });
