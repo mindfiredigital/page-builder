@@ -54,7 +54,7 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1.4.1
+        uses: changesets/action@v2.1.1
         with:
           commit: 'chore(release): version packages'
           title: 'chore(release): version packages'
@@ -102,7 +102,7 @@ jobs:
 
       - name: Publish to npm
         id: changesets
-        uses: changesets/action@v1.4.1
+        uses: changesets/action@v2.1.1
         with:
           run: |
             git checkout main
