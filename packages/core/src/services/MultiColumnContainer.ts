@@ -19,17 +19,13 @@ export class MultiColumnContainer {
     this.element = document.createElement('div');
     this.element.classList.add(className);
     this.element.setAttribute('draggable', 'true');
-    // Create columns dynamically based on columnCount
+
     for (let i = 1; i <= columnCount; i++) {
       const column = this.createColumn(`column-${i}`);
-
       this.element.appendChild(column);
     }
 
-    // Add styles
     this.addStyles(className);
-
-    // Add event listeners
     this.initializeEventListeners();
   }
 
@@ -79,7 +75,6 @@ export class MultiColumnContainer {
 
       const parentId = this.element.id;
 
-      // Determine the column-specific suffix dynamically
       const columnIndex = Array.from(
         targetColumn.parentElement!.children
       ).indexOf(targetColumn);
@@ -105,7 +100,6 @@ export class MultiColumnContainer {
         newColumnClassName
       );
       component.classList.add(uniqueComponentClass);
-
       component.id = uniqueComponentClass;
 
       let componentLabel = component.querySelector(
@@ -165,16 +159,18 @@ export class MultiColumnContainer {
    */
   public static restoreColumn(column: HTMLElement): void {
     const columnChildren = column.querySelectorAll('.editable-component');
-    columnChildren.forEach((child: any) => {
-      Canvas.controlsManager.addControlButtons(child);
-      Canvas.addDraggableListeners(child);
+    columnChildren.forEach(child => {
+      const childElement = child as HTMLElement;
+      Canvas.controlsManager.addControlButtons(childElement);
+      Canvas.addDraggableListeners(childElement);
 
-      if (child.classList.contains('image-component')) {
-        const imageSrc = child.querySelector('img')?.getAttribute('src') || '';
-        ImageComponent.restoreImageUpload(child, imageSrc, null);
+      if (childElement.classList.contains('image-component')) {
+        const imageSrc =
+          childElement.querySelector('img')?.getAttribute('src') ?? null;
+        ImageComponent.restoreImageUpload(childElement, imageSrc ?? '', null);
       }
-      if (child.classList.contains('container-component')) {
-        ContainerComponent.restoreContainer(child);
+      if (childElement.classList.contains('container-component')) {
+        ContainerComponent.restoreContainer(childElement);
       }
     });
   }

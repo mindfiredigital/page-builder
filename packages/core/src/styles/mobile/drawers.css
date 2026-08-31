@@ -1,0 +1,278 @@
+/* Mobile — Responsive drawers, FAB bar, and mobile-specific layout overrides */
+
+/* ============================================================
+   Mobile Responsive — Grid Layout Only
+   Drawers slide in from the sides; FAB bar lives at the bottom.
+   ============================================================ */
+
+/* ── Backdrop ──────────────────────────────────────────────── */
+#mobile-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: backdropFadeIn 0.2s ease;
+}
+
+#mobile-drawer-backdrop.active {
+  display: block;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── FAB bar — always hidden on desktop ────────────────────── */
+#mobile-fab-bar {
+  display: none;
+}
+
+/* ── Drawer headers — hidden on desktop ────────────────────── */
+.mobile-drawer-header {
+  display: none;
+}
+
+/* ── Tap-to-add hint — hidden on desktop ───────────────────── */
+.mobile-tap-hint {
+  display: none;
+}
+
+/* ============================================================
+   Mobile breakpoint  ≤ 768 px
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* ── Body scroll lock when a drawer is open ────────────────── */
+  body.drawer-open {
+    overflow: hidden;
+  }
+
+  /* ── App layout: canvas takes full width ───────────────────── */
+  #app {
+    position: relative;
+  }
+
+  /* ── Left sidebar → slide-in drawer from left ──────────────── */
+  #sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1001;
+    width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.18);
+    display: block !important;   /* always in DOM, off-screen by default */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 0;              /* drawer header handles top spacing */
+  }
+
+  #sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* ── Right customization panel → slide-in drawer from right ─── */
+  #customization {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    width: 290px !important;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.18);
+    display: block !important;   /* always in DOM, off-screen by default */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #customization.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* ── Canvas: pad bottom so FAB bar never covers content ────── */
+  #canvas {
+    padding-bottom: 68px !important;
+  }
+
+  /* ── Drawer headers ─────────────────────────────────────────── */
+  .mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .mobile-drawer-header h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: 0.01em;
+  }
+
+  .mobile-drawer-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    color: #64748b;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-drawer-close:hover,
+  .mobile-drawer-close:active {
+    background: #e2e8f0;
+    color: #334155;
+  }
+
+  /* ── Tap-to-add hint ────────────────────────────────────────── */
+  .mobile-tap-hint {
+    display: block;
+    margin: 8px 12px 4px;
+    padding: 8px 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #3b82f6;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ── FAB bar ────────────────────────────────────────────────── */
+  #mobile-fab-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 998;
+    height: 60px;
+    padding: 0 24px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+    /* Safe area for home indicator on iOS */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .mobile-fab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    padding: 6px 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    font-family: inherit;
+  }
+
+  .mobile-fab-btn:active {
+    background: #f1f5f9;
+  }
+
+  .mobile-fab-btn.active {
+    color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .mobile-fab-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  /* ── Hide redundant / low-value navbar buttons on mobile ──────
+     - sidebar-menu / menu-btn: replaced by the FAB bar
+     - preview-desktop / tablet / mobile: meaningless when the
+       editor itself is on a mobile screen
+     - reset-btn: hidden to reduce clutter (accessible via undo)  */
+  #sidebar-menu,
+  #menu-btn,
+  #preview-desktop,
+  #preview-tablet,
+  #preview-mobile,
+  #reset-btn {
+    display: none !important;
+  }
+
+  /* ── Navbar: give left/right groups room without squishing center */
+  #preview-navbar {
+    padding: 0 6px;
+    gap: 4px;
+  }
+
+  .left-buttons,
+  .right-buttons {
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── Center brand title: shrink gracefully ──────────────────── */
+  .center-text {
+    font-size: 12px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* ── Tighten navbar button padding on mobile ────────────────── */
+  .preview-btn {
+    padding: 5px 6px !important;
+  }
+
+  /* ── Sidebar item grid: single column on mobile ─────────────── */
+  .draggable {
+    width: calc(50% - 8px) !important;
+    margin-right: 6px !important;
+    min-height: 64px !important;
+  }
+
+  /* Keep 2-column grid inside the drawer */
+  #sidebar {
+    padding: 0 !important;
+  }
+
+  #sidebar h3 {
+    padding: 0 16px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  .category {
+    padding: 0 12px;
+  }
+}

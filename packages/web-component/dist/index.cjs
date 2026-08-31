@@ -134,10 +134,31 @@ var PageBuilderComponent = class extends HTMLElement {
   set configData(value) {
     this.config = value;
     this.initialized = false;
+    if (!this.firstElementChild) {
+      this.innerHTML = this.template;
+    }
     this.initializePageBuilder();
   }
   get configData() {
     return this.config;
+  }
+  /* Applies a new design to this already-mounted instance, live — used by a
+     live-sync client (e.g. a sidecar pushing an agent's edit over
+     WebSocket/SSE) to reflect the change without a full page reload. */
+  applyDesign(design) {
+    if (!this.pageBuilder) {
+      throw new Error("PageBuilder is not initialized yet.");
+    }
+    this.pageBuilder.applyDesign(design);
+  }
+  /* Returns the current design as final HTML/CSS strings. Used by headless
+     callers (e.g. the CLI's `render` command) that don't have a click-driven
+     export button in the page. */
+  generateOutput() {
+    if (!this.pageBuilder) {
+      throw new Error("PageBuilder is not initialized yet.");
+    }
+    return this.pageBuilder.generateOutput();
   }
   // Initializes the PageBuilder instance
   initializePageBuilder() {

@@ -1,6 +1,4 @@
-export declare function createZipFile(
-  files: {
+export declare function createZipFile(files: {
     name: string;
     content: string;
-  }[]
-): Blob;
+}[]): Blob;

@@ -1,0 +1,24 @@
+/* Base — HTML and body reset rules */
+
+/* General Styles */
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  overflow: hidden;
+  color: #334155;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  overflow: hidden;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+}

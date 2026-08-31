@@ -4,18 +4,15 @@
 
 If you discover a security vulnerability in this project, please follow these steps:
 
-1. **Do not report security vulnerabilities in public**: Please report security vulnerabilities privately. Publicly disclosing vulnerabilities can lead to potential risks and exploits.
+1. **Do not report security vulnerabilities in public** (no public GitHub issues, discussions, or PRs). Publicly disclosing a vulnerability before a fix is available can lead to it being exploited.
 
-2. **Contact us directly**: Send a detailed report by creating an issue provide as much detail as possible, including:
-
+2. **Report it privately via GitHub Security Advisories**: go to the [Security tab](https://github.com/mindfiredigital/page-builder/security) of this repository and select **"Report a vulnerability"** (or use the direct link: [github.com/mindfiredigital/page-builder/security/advisories/new](https://github.com/mindfiredigital/page-builder/security/advisories/new)). This opens a private draft advisory visible only to maintainers until you and the maintainers agree to disclose it. Include:
    - Description of the vulnerability
    - Steps to reproduce the issue
    - The impact of the vulnerability
    - Any potential exploits or examples
 
 3. **Be patient**: Our team will review your report and respond as quickly as possible. We appreciate your patience as we work to address the issue.
-
-4. **Security Bug Bounty**: If you are interested in participating in our bug bounty program, you can find more information at [GitHub Security Bug Bounty](https://bounty.github.com/).
 
 ## Security Updates
 
@@ -42,6 +39,6 @@ For more information on security practices, you may find these resources helpful
 - [GitHub Security Advisories](https://docs.github.com/en/code-security/supply-chain-security/working-with-security-advisories/about-security-advisories)
 - [CVE Details](https://www.cvedetails.com/)
 
-If you have any questions or need further assistance, please contact us at [security@yourdomain.com](mailto:security@yourdomain.com).
+If you have any questions or need further assistance, please open a private report via [GitHub Security Advisories](https://github.com/mindfiredigital/page-builder/security/advisories/new) rather than a public issue.
 
 Thank you for helping us keep this project secure!

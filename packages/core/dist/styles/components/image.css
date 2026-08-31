@@ -1,0 +1,38 @@
+/* Components — Image component and upload button */
+
+.image-component {
+  max-width: 100%;
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  overflow: hidden;
+}
+
+/* Upload button styling */
+.upload-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: none;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.image-component:hover .upload-btn {
+  display: block;
+}
+
+.upload-btn:hover {
+  background-color: #f1f5f9;
+  color: #475569;
+}

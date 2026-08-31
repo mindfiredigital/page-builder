@@ -6,7 +6,7 @@
 
 <br>
 
-<p align="center"> A lightweight page builder library designed for creating static web pages with a drag-and-drop interface. This component library generates HTML output and supports customization options. Built with TypeScript and vanilla JavaScript for performance, it includes modular components, responsive previews, and data handling for layout storage and retrieval. </p>
+<p align="center"> A lightweight page builder library designed for creating static web page with a drag-and-drop interface. This component library generates HTML output and supports customization options. Built with TypeScript and vanilla JavaScript for performance, it includes modular components, responsive previews, and data handling for layout storage and retrieval. </p>
 
 <br>
 
@@ -17,6 +17,10 @@ Click the button below to open the project on StackBlitz.
 <a href="https://stackblitz.com/edit/stackblitz-starters-3d4yfpj4?file=index.html" target="_blank">
   <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz">
 </a>
+
+## Package Compatibility
+
+`@mindfiredigital/page-builder` (core), `-react`, `-web-component`, and `-cli` are developed and released together from this monorepo. They're tested against each other's current versions — upgrade them together rather than pinning one far behind the others.
 
 ## Screenshot
 

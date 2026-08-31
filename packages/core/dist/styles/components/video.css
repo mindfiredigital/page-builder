@@ -1,0 +1,20 @@
+/* Components — Video component */
+
+/* Video component */
+.video-component {
+  width: 300px;
+  height: 300px;
+  position: relative;
+  background-color: #f8fafc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #cbd5e1;
+  border-radius: 6px;
+}
+
+.video-component .upload-text {
+  color: #64748b;
+  text-align: center;
+  font-weight: 500;
+}

@@ -1,0 +1,54 @@
+/* Layout — Preview navbar and navigation buttons */
+
+/* Navbar for preview buttons */
+#preview-navbar {
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.preview-btn {
+  border: 1px solid #ffffff;
+  padding: 6px 8px;
+  cursor: pointer;
+  background-color: #ffffff;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.preview-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.preview-btn:active {
+  background-color: #e2e8f0;
+}
+
+.nav-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.left-buttons,
+.right-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.center-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

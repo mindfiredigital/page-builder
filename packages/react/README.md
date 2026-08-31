@@ -18,6 +18,10 @@ Click the button below to open the project on StackBlitz.
   <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz">
 </a>
 
+## Package Compatibility
+
+`@mindfiredigital/page-builder-react` depends on `@mindfiredigital/page-builder-web-component`, which in turn depends on `@mindfiredigital/page-builder` (core). All four packages (core, `-react`, `-web-component`, `-cli`) are developed and released together from the same monorepo — upgrade them together rather than pinning one far behind the others.
+
 ## Screenshot
 
  <p align="center">

@@ -1,12 +1,12 @@
-//Function for toggling notification
-export function showNotification(message: string) {
+/** Function for toggling notification */
+export function showNotification(message: string): void {
   const notification = document.getElementById('notification');
   if (notification) {
     notification.innerHTML = message;
     notification.classList.add('visible');
     notification.classList.remove('hidden');
 
-    // Hide the notification after 2 seconds
+    /** Hide the notification after 2 seconds */
     setTimeout(() => {
       notification.classList.remove('visible');
       notification.classList.add('hidden');
@@ -14,38 +14,34 @@ export function showNotification(message: string) {
   }
 }
 
-//Function for handling dialog box, where confirmation and cancellation functions are passed as parameters
+/** Function for handling dialog box, where confirmation and cancellation functions are passed as parameters */
 export function showDialogBox(
   message: string,
   onConfirm: () => void,
   onCancel: () => void
-) {
-  // Get the dialog and buttons from the DOM
+): void {
   const dialog = document.getElementById('dialog');
   const yesButton = document.getElementById('dialog-yes');
   const noButton = document.getElementById('dialog-no');
 
-  // Set the dialog message
   const messageElement = document.getElementById('dialog-message');
   if (messageElement) {
     messageElement.innerHTML = message;
   }
 
-  // Show the dialog by removing the 'hidden' class
   dialog?.classList.remove('hidden');
 
-  // Handle the 'Yes' button click
   yesButton?.addEventListener('click', () => {
-    onConfirm(); // Execute the onConfirm function
-    dialog?.classList.add('hidden'); // Hide the dialog after action
+    onConfirm();
+    dialog?.classList.add('hidden');
   });
 
-  // Handle the 'No' button click
   noButton?.addEventListener('click', () => {
-    onCancel(); // Execute the onCancel function
-    dialog?.classList.add('hidden'); // Hide the dialog after action
+    onCancel();
+    dialog?.classList.add('hidden');
   });
 }
+
 export function syntaxHighlightHTML(html: string): string {
   return html
     .replace(/&/g, '&amp;')
@@ -53,7 +49,7 @@ export function syntaxHighlightHTML(html: string): string {
     .replace(/>/g, '&gt;')
     .replace(
       /\s([a-zA-Z-]+)="(.*?)"/g,
-      (match, attr, value) =>
+      (_match, attr: string, value: string) =>
         ` ${attr}=<span class="attribute">"</span><span class="string">${value}</span><span class="attribute">"</span>`
     )
     .replace(/(&lt;\/?[a-zA-Z-]+&gt;)/g, `<span class="tag">$1</span>`);
@@ -61,15 +57,19 @@ export function syntaxHighlightHTML(html: string): string {
 
 export function syntaxHighlightCSS(css: string): string {
   return css
-    .replace(/([a-zA-Z-]+)(?=:)/g, `<span class="property">$1</span>`) // CSS properties
-    .replace(/(:\s*[^;]+;)/g, `<span class="value">$1</span>`) // CSS values
-    .replace(/({|})/g, `<span class="bracket">$1</span>`); // Braces
+    .replace(/([a-zA-Z-]+)(?=:)/g, `<span class="property">$1</span>`)
+    .replace(/(:\s*[^;]+;)/g, `<span class="value">$1</span>`)
+    .replace(/({|})/g, `<span class="bracket">$1</span>`);
 }
 
-export function debounce(func: Function, delay: number) {
-  let timeoutId: NodeJS.Timeout | null = null;
-  return (...args: any[]) => {
-    if (timeoutId) clearTimeout(timeoutId);
+/** Generic debounce — the callback type is preserved through the overload */
+export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  return (...args: Parameters<T>): void => {
+    if (timeoutId !== null) clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);
   };
 }

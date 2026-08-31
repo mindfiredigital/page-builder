@@ -1,3 +1,5 @@
+import { EDIT_PENCIL_ICON } from '../constants';
+
 export class VideoComponent {
   private captureStateHandler: () => void;
   constructor(captureStateHandler: () => void) {
@@ -6,6 +8,10 @@ export class VideoComponent {
   create(src: string | null = null): HTMLElement {
     const container = document.createElement('div');
     container.classList.add('video-component');
+    container.style.width = '300px';
+    container.style.height = '300px';
+    container.style.position = 'relative';
+    container.style.overflow = 'hidden';
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -31,8 +37,19 @@ export class VideoComponent {
     }
 
     const pencilButton = document.createElement('button');
-    pencilButton.innerHTML = '🖊️';
+    pencilButton.innerHTML = EDIT_PENCIL_ICON;
     pencilButton.classList.add('pencil-button');
+    pencilButton.classList.add('upload-btn');
+    pencilButton.style.position = 'absolute';
+    pencilButton.style.left = '50%';
+    pencilButton.style.top = '50%';
+    pencilButton.style.transform = 'translate(-50%, -50%)';
+    pencilButton.style.padding = '8px';
+    pencilButton.style.background = 'transparent';
+    pencilButton.style.border = 'none';
+    pencilButton.style.cursor = 'pointer';
+    pencilButton.style.fontSize = '24px';
+    pencilButton.style.display = src ? 'none' : 'block';
     pencilButton.addEventListener('click', () => fileInput.click());
 
     container.appendChild(uploadText);
@@ -56,9 +73,13 @@ export class VideoComponent {
         const uploadText = container.querySelector(
           '.upload-text'
         ) as HTMLElement;
+        const pencilButton = container.querySelector(
+          '.pencil-button'
+        ) as HTMLElement | null;
         videoElement.src = reader.result as string;
         videoElement.style.display = 'block';
         uploadText.style.display = 'none';
+        if (pencilButton) pencilButton.style.display = 'none';
       };
       reader.readAsDataURL(file);
     } else {
