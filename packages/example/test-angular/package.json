@@ -19,7 +19,7 @@
     "@angular/platform-browser": "^21.0.5",
     "@angular/platform-browser-dynamic": "^21.0.5",
     "@angular/platform-server": "^21.0.5",
-    "@angular/router": "^21.0.5",
+    "@angular/router": "^22.1.4",
     "@angular/ssr": "^21.0.3",
     "@mindfiredigital/page-builder-angular": "workspace:*",
     "css-loader": "^7.1.2",
