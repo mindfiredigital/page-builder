@@ -6,7 +6,7 @@ export { CreateTableRow, CreateTableCell } from './TableRowFactory';
 
 export { AddCellToRow, DeleteCell } from './TableCellManager';
 
-export { AddRows } from './TableRowManager';
+export { AddRows, InsertRowBelow } from './TableRowManager';
 
 export { EvaluateRowVisibility, EvaluateRule } from './TableVisibility';
 

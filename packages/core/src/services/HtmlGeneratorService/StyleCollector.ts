@@ -4,7 +4,7 @@ import {
   CSS_PROPERTIES_TO_EXCLUDE,
   SVG_CHILD_TAGS,
   SVG_STYLE_PROPERTIES,
-} from '../../constants';
+} from '../../constants/index';
 
 /* ─── StyleCollector ──────────────────────────────────────────────────────────
    Responsible for two tasks:
@@ -54,7 +54,21 @@ export class StyleCollector {
     const styles: string[] = [];
     const processedSelectors = new Set<string>();
 
-    styles.push(this.buildBaseCSS(backgroundColor));
+    /* Calculate the lowest edge of absolute-positioned content so the
+       preview canvas min-height covers everything (the scroll spacer is
+       stripped from the exported HTML, so absolute children would otherwise
+       not push the canvas height). */
+    let contentBottom = 0;
+    if (Canvas.layoutMode === 'absolute') {
+      canvasElement
+        .querySelectorAll<HTMLElement>(':scope > .editable-component')
+        .forEach(el => {
+          const bottom = (parseFloat(el.style.top) || 0) + el.offsetHeight;
+          if (bottom > contentBottom) contentBottom = bottom;
+        });
+    }
+
+    styles.push(this.buildBaseCSS(backgroundColor, contentBottom));
 
     canvasElement.querySelectorAll('*').forEach((component, index) => {
       if (CSS_CLASSES_TO_EXCLUDE.some(cls => component.classList.contains(cls)))
@@ -75,7 +89,22 @@ export class StyleCollector {
         return;
       }
 
-      this.collectComputedStyles(computedStyles, componentStyles);
+      /* If this element lives inside a custom component whose outer wrapper
+         has a user-set style.color (applied via the sidebar), propagate that
+         color to every descendant so the sidebar choice is always honoured.
+         Without this, a React-rendered inner element's own style.color (from
+         the component's store default) would win due to higher specificity. */
+      const ancestorColor = this.findCustomAncestorColor(
+        component as HTMLElement,
+        canvasElement
+      );
+
+      this.collectComputedStyles(
+        computedStyles,
+        componentStyles,
+        component as HTMLElement,
+        ancestorColor
+      );
       this.applyInlineVerticalAlign(computedStyles, componentStyles);
 
       const selector = this.generateUniqueSelector(component);
@@ -101,12 +130,16 @@ export class StyleCollector {
      between grid layout mode (overflow:hidden, flex body) and absolute/print
      mode (block canvas, min-height 100vh).
      ─────────────────────────────────────────────────────────────────────────── */
-  private buildBaseCSS(backgroundColor: string): string {
+  private buildBaseCSS(
+    backgroundColor: string,
+    contentBottom: number = 0
+  ): string {
     if (Canvas.layoutMode === 'grid') {
       return `
       body, html {
         margin: 0; padding: 0; width: 100%; height: 100%;
         box-sizing: border-box; display: flex; overflow: hidden;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
       #canvas {
         position: relative; width: 100%; flex-grow: 1; min-width: 0;
@@ -120,34 +153,138 @@ export class StyleCollector {
       ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
       ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
       .table-component { border-collapse: collapse; box-sizing: border-box; }
-      .editable-component { border: none !important; box-shadow: none !important; }
+      /* Strip editor visual indicators (dashed border, selection outline, hover glow)
+         from the preview. User-set borders are applied via element-specific rules
+         generated from inline styles, which have higher specificity than this rule. */
+      .editable-component { border: none; outline: none; box-shadow: none; }
+      /* .container-component[data-depth="N"] rules in main.css have specificity 0,1,1
+         (one class + one attribute selector), which beats the 0,1,0 rule above.
+         This rule matches that specificity so later-cascade wins for containers too. */
+      .container-component[data-depth] { border: none; outline: none; }
       `;
     }
 
+    /* 75px top + 75px bottom padding; ensure the canvas covers all content */
+    const canvasMinHeight = Math.max(1123, contentBottom + 150);
+
     return `
       body, html {
-        margin: 0; padding: 0; width: 100%; height: 100%; box-sizing: border-box; background-color: #f8fafc;
+        margin: 0; padding: 0; width: 100%; height: auto; box-sizing: border-box; background-color: #f8fafc;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        display: block; overflow: auto;
       }
-      #canvas.home {
-        position: relative; display: block; width: 100%; min-height: 100vh;
-        background-color: ${backgroundColor}; margin: 0; overflow: visible;
+      #canvas.preview-printable {
+        background-color: ${backgroundColor}; overflow: visible;
+        min-height: ${canvasMinHeight}px; padding-bottom: 75px;
       }
       table { border-collapse: collapse; }
-      .editable-component { border: none !important; box-shadow: none !important; }
+      /* Strip editor visual indicators. User-set borders are applied via element-specific
+         rules generated from inline styles, which have higher specificity than this rule. */
+      .editable-component { border: none; outline: none; box-shadow: none; }
+      .container-component[data-depth] { border: none; outline: none; }
       `;
   }
 
   /* ─── CollectComputedStyles ─────────────────────────────────────────────────
      Iterates the full computed style list for a non-SVG element, skipping
      properties in the exclusion list and empty/auto/none values.
+
+     Border paint properties (width/style/color), outline, and box-shadow are
+     intentionally excluded from the computed pass — the editor injects its own
+     dashed-border and selection/hover glow into the live DOM, so reading them
+     from getComputedStyle() would pollute the preview with editor chrome.
+     Instead, these properties are sourced exclusively from the element's inline
+     style (user-set values) via collectInlineDecorativeStyles().
      ─────────────────────────────────────────────────────────────────────────── */
+
+  /* Properties that must come from inline styles, not computed styles.
+     Computed values for these include editor-injected chrome (dashed border,
+     selection outline, hover glow) that must never appear in the preview. */
+  private static readonly INLINE_ONLY_PROPS = new Set([
+    /* Border paint — width / style / color per side */
+    'border-top-width',
+    'border-right-width',
+    'border-bottom-width',
+    'border-left-width',
+    'border-top-style',
+    'border-right-style',
+    'border-bottom-style',
+    'border-left-style',
+    'border-top-color',
+    'border-right-color',
+    'border-bottom-color',
+    'border-left-color',
+    /* Border image */
+    'border-image-source',
+    'border-image-slice',
+    'border-image-width',
+    'border-image-outset',
+    'border-image-repeat',
+    /* Outline — now used for editor selection/hover indicators */
+    'outline',
+    'outline-width',
+    'outline-style',
+    'outline-color',
+    'outline-offset',
+    /* Box-shadow — selection glow would leak into the preview if captured */
+    'box-shadow',
+  ]);
+
+  /* ─── FindCustomAncestorColor ──────────────────────────────────────────────
+     Walks up from the given element to the canvas root. If any ancestor is a
+     custom element (hyphenated tag name — e.g. react-component-customtext) AND
+     has an explicit style.color set by the sidebar, returns that color string.
+     Returns an empty string when no such ancestor exists.
+
+     This is needed because when the user sets a color on the outer custom-element
+     wrapper via the sidebar, the React-rendered inner elements still carry their
+     own style.color (from the component store default). That inner color has higher
+     selector specificity and would otherwise override the user's choice in the
+     preview. Propagating the ancestor color with !important fixes this.
+     ─────────────────────────────────────────────────────────────────────────── */
+  private findCustomAncestorColor(
+    element: HTMLElement,
+    canvas: HTMLElement
+  ): string {
+    let ancestor = element.parentElement;
+    while (ancestor && ancestor !== canvas) {
+      if (
+        ancestor.tagName.toLowerCase().includes('-') &&
+        (ancestor as HTMLElement).style.color
+      ) {
+        return (ancestor as HTMLElement).style.color;
+      }
+      ancestor = ancestor.parentElement;
+    }
+    return '';
+  }
+
   private collectComputedStyles(
     computedStyles: CSSStyleDeclaration,
-    out: string[]
+    out: string[],
+    element?: HTMLElement,
+    ancestorColor?: string
   ): void {
+    /* If the element has an explicit inline color, skip 'color' from the
+       computed pass — we'll emit it with !important below so it always beats
+       any conflicting rule that may appear in the embeddedStyles block. */
+    const hasInlineColor = !!element?.style.color;
+
+    /* When a custom-component ancestor has a user-set color (ancestorColor),
+       use that color for this element instead of its own React-rendered color.
+       This ensures the sidebar color choice propagates into all inner elements. */
+    const effectiveColor =
+      ancestorColor || (hasInlineColor ? element!.style.color : '');
+
     for (let i = 0; i < computedStyles.length; i++) {
       const prop = computedStyles[i];
       const value = computedStyles.getPropertyValue(prop);
+
+      /* Skip properties whose computed values are polluted by editor chrome */
+      if (StyleCollector.INLINE_ONLY_PROPS.has(prop)) continue;
+
+      /* Handled separately with !important via effectiveColor below */
+      if (prop === 'color' && effectiveColor) continue;
 
       if (Canvas.layoutMode === 'grid') {
         if (CSS_PROPERTIES_TO_EXCLUDE.includes(prop as never)) continue;
@@ -165,6 +302,63 @@ export class StyleCollector {
         out.push(`${prop}: ${value};`);
       }
     }
+
+    /* Append user-set decorative styles read from inline styles only */
+    if (element) {
+      this.collectInlineDecorativeStyles(element, out);
+
+      /* Emit the effective color with !important so it always wins:
+         - effectiveColor comes from ancestorColor when a sidebar-colored custom
+           element ancestor is present (propagates the user's choice to inner elements)
+         - otherwise effectiveColor is the element's own inline style.color */
+      if (effectiveColor) {
+        out.push(`color: ${effectiveColor} !important;`);
+      }
+    }
+  }
+
+  /* ─── CollectInlineDecorativeStyles ────────────────────────────────────────
+     Reads border and box-shadow values exclusively from the element's inline
+     style attribute (i.e. what the user explicitly set via the sidebar).
+     If a property is not in the inline style it is omitted, which lets the
+     lower-specificity buildBaseCSS rule (.editable-component { border: none })
+     act as the safe default — keeping the preview clean for un-bordered elements
+     while still showing the correct value for elements the user styled.
+     ─────────────────────────────────────────────────────────────────────────── */
+  private collectInlineDecorativeStyles(
+    element: HTMLElement,
+    out: string[]
+  ): void {
+    const s = element.style;
+
+    /* Border — shorthand takes priority; fall back to longhand properties */
+    if (s.border) {
+      out.push(`border: ${s.border};`);
+    } else {
+      if (s.borderWidth) out.push(`border-width: ${s.borderWidth};`);
+      if (s.borderStyle) out.push(`border-style: ${s.borderStyle};`);
+      if (s.borderColor) out.push(`border-color: ${s.borderColor};`);
+
+      /* Per-side overrides (future-proofing for per-side sidebar controls) */
+      (['Top', 'Right', 'Bottom', 'Left'] as const).forEach(side => {
+        const sl = side.toLowerCase();
+        const w = (s as unknown as Record<string, string>)[
+          `border${side}Width`
+        ];
+        const st = (s as unknown as Record<string, string>)[
+          `border${side}Style`
+        ];
+        const c = (s as unknown as Record<string, string>)[
+          `border${side}Color`
+        ];
+        if (w) out.push(`border-${sl}-width: ${w};`);
+        if (st) out.push(`border-${sl}-style: ${st};`);
+        if (c) out.push(`border-${sl}-color: ${c};`);
+      });
+    }
+
+    /* Box-shadow — sidebar has no control yet, but read inline if ever set */
+    if (s.boxShadow) out.push(`box-shadow: ${s.boxShadow};`);
   }
 
   /* ─── ApplyInlineVerticalAlign ──────────────────────────────────────────────
@@ -343,7 +537,9 @@ export class StyleCollector {
       const parent = currentElement.parentElement;
       if (parent) {
         const siblings = Array.from(parent.children).filter(
-          c => c.tagName === currentElement!.tagName
+          c =>
+            c.tagName === currentElement!.tagName &&
+            !CSS_CLASSES_TO_EXCLUDE.some(cls => c.classList.contains(cls))
         );
         if (siblings.length > 1)
           selector += `:nth-of-type(${siblings.indexOf(currentElement) + 1})`;

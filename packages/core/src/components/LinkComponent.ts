@@ -1,3 +1,5 @@
+import { EDIT_PENCIL_ICON } from '../constants';
+
 export class LinkComponent {
   private link: HTMLAnchorElement | null = null;
   private isEditing: boolean = false;
@@ -20,7 +22,7 @@ export class LinkComponent {
     this.link.classList.add('link-component-label');
 
     const editButton = document.createElement('button');
-    editButton.innerHTML = '🖊️';
+    editButton.innerHTML = EDIT_PENCIL_ICON;
     editButton.classList.add('edit-link');
 
     const editForm = document.createElement('div');

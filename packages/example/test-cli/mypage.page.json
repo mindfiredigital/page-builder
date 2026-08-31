@@ -1,0 +1,70 @@
+[
+  {
+    "id": "canvas",
+    "type": "canvas",
+    "content": "",
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "dimensions": {
+      "width": 1200,
+      "height": 800
+    },
+    "style": {},
+    "inlineStyle": "",
+    "classes": [],
+    "dataAttributes": {}
+  },
+  {
+    "id": "title",
+    "type": "header",
+    "content": "<span class=\"component-text-content\" contenteditable=\"true\">test demo</span>",
+    "position": {
+      "x": 24,
+      "y": 24
+    },
+    "dimensions": {
+      "width": 400,
+      "height": 60
+    },
+    "style": {},
+    "inlineStyle": "",
+    "classes": ["header-component"],
+    "dataAttributes": {}
+  },
+  {
+    "id": "body",
+    "type": "text",
+    "content": "<span class=\"component-text-content\" contenteditable=\"true\">test the body</span>",
+    "position": {
+      "x": 24,
+      "y": 112
+    },
+    "dimensions": {
+      "width": 300,
+      "height": 50
+    },
+    "style": {},
+    "inlineStyle": "",
+    "classes": ["text-component"],
+    "dataAttributes": {}
+  },
+  {
+    "id": "cta",
+    "type": "button",
+    "content": "Go",
+    "position": {
+      "x": 24,
+      "y": 184
+    },
+    "dimensions": {
+      "width": 160,
+      "height": 48
+    },
+    "style": {},
+    "inlineStyle": "",
+    "classes": ["button-component"],
+    "dataAttributes": {}
+  }
+]

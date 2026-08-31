@@ -1,0 +1,1871 @@
+#!/usr/bin/env node
+var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+
+// src/schema.ts
+import { z } from "zod";
+function isBlockType(type) {
+  return BLOCK_TYPES.includes(type);
+}
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function wrapTextSpan(text) {
+  return `<span class="component-text-content" contenteditable="true">${escapeHtml(text)}</span>`;
+}
+function hasTextSpan(html) {
+  return TEXT_CONTENT_SPAN_RE.test(html);
+}
+function imageContentTemplate() {
+  return `<div>Click to upload image</div><input type="file" accept="image/*" style="display: none;" /><button class="upload-btn" style="position: absolute; padding: 8px; background: transparent; border: none; cursor: pointer; opacity: 0; transition: opacity 0.2s; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px;">${EDIT_PENCIL_ICON}</button><img alt="" style="width: 100%; height: 100%; object-fit: contain; border: none; display: none;" />`;
+}
+function parseFontSizePx(style) {
+  const raw = style?.["font-size"];
+  if (!raw)
+    return void 0;
+  const match = /^([\d.]+)px$/.exec(raw.trim());
+  if (!match)
+    return void 0;
+  const value = Number(match[1]);
+  return Number.isFinite(value) && value > 0 ? value : void 0;
+}
+function extractPlainText(html) {
+  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+}
+function estimateWrappedHeight(type, text, width, minHeight, style) {
+  const metrics = WRAP_METRICS[type];
+  if (!metrics || !text)
+    return minHeight;
+  const baseFontSize = WRAP_BASE_FONT_SIZE[type];
+  const customFontSize = parseFontSizePx(style);
+  const scale = baseFontSize && customFontSize ? customFontSize / baseFontSize : 1;
+  const lineHeight = metrics.lineHeight * scale;
+  const avgCharWidth = metrics.avgCharWidth * scale;
+  const usableWidth = Math.max(width - WRAP_PADDING, 40);
+  const charsPerLine = Math.max(Math.floor(usableWidth / avgCharWidth), 1);
+  const lines = Math.max(Math.ceil(text.length / charsPerLine), 1);
+  const estimated = lines * lineHeight + WRAP_PADDING;
+  return Math.max(minHeight, estimated);
+}
+function makeCanvasRoot() {
+  return {
+    id: "canvas",
+    type: "canvas",
+    content: "",
+    position: { x: 0, y: 0 },
+    dimensions: { width: CANVAS.width, height: CANVAS.height },
+    style: {},
+    inlineStyle: "",
+    classes: [...ABSOLUTE_CANVAS_CLASSES],
+    dataAttributes: {}
+  };
+}
+function getCanvasRoot(page) {
+  return page.find((b) => b.id === "canvas" && b.type === "canvas");
+}
+function getBlocks(page) {
+  return page.filter((b) => !(b.id === "canvas" && b.type === "canvas"));
+}
+function checkScope(page) {
+  const canvas = getCanvasRoot(page);
+  if (!canvas) {
+    return {
+      reason: 'Page is missing its canvas root entry (id "canvas", type "canvas").',
+      fix: 'Use "pagectl new <slug>" to create a valid page instead of hand-assembling the array.'
+    };
+  }
+  if (canvas.classes.includes("grid-layout-active")) {
+    return {
+      reason: "Page is in grid layout mode; pagectl v1 only supports absolute-mode pages.",
+      fix: "Grid-mode pages are out of scope for this CLI version \u2014 edit them in the page-builder UI instead."
+    };
+  }
+  for (const block of getBlocks(page)) {
+    if (!isBlockType(block.type)) {
+      return {
+        reason: `Block "${block.id}" has type "${block.type}", which is outside pagectl v1's supported palette (${BLOCK_TYPES.join(", ")}).`,
+        fix: "video/table/richtext/link/twoCol/threeCol/landingpage blocks and nested containers are out of scope for this CLI version."
+      };
+    }
+  }
+  return null;
+}
+var CANVAS, DEFAULT_PAGE_DIR, DEFAULT_PAGE_FILENAME, BLOCK_TYPES, ALIGN_VALUES, DIRECTION_VALUES, TEXT_CONTENT_SPAN_RE, EDIT_PENCIL_ICON, BLOCKS, WRAP_METRICS, WRAP_BASE_FONT_SIZE, WRAP_PADDING, blockSchema, pageSchema, ABSOLUTE_CANVAS_CLASSES;
+var init_schema = __esm({
+  "src/schema.ts"() {
+    "use strict";
+    CANVAS = {
+      /* True A4-shaped print page, not an invented widescreen canvas. 869x1123
+         is the real editor's own absolute-mode print-preview shape: 869 is
+         packages/core's `#canvas.preview-printable` max-width (see
+         packages/core/dist/styles/layout/canvas-modes.css), and 1123 is the
+         height its own full-screen preview modal uses for an absolute-layout
+         page (previewModalBuilder.ts's `isAbsolute` iframe: width 869 x
+         min-height 1123 — A4 portrait at 96dpi is 794x1123px, and 869 is that
+         same print-preview treatment with extra side padding baked in). Using
+         these exact numbers means pagectl's fixed-size override in
+         harnessPage.ts pins the canvas to what the real editor already treats
+         as its printable-page shape, instead of fighting it into a wider one. */
+      width: 869,
+      height: 1123,
+      gap: 24,
+      grid: 8,
+      nudgeStep: 8,
+      /* Mirrors packages/core's `#canvas.preview-printable` padding (75px on
+         top/left/right — see packages/core/dist/styles/layout/canvas-modes.css).
+         pagectl always adds "preview-printable" to every canvas root (see
+         ABSOLUTE_CANVAS_CLASSES below), which puts every live "serve" session
+         in that mode. In that mode, CanvasDragHandler.js's own boundary-clamp
+         logic refuses to let a top-level absolute block's left/top go below
+         this margin, or its right edge cross (canvas width − margin) —
+         confirmed live with Playwright: a block positioned/sized without
+         respecting this gets silently repositioned/left where pagectl's own
+         math didn't expect it, breaking any --below/--right-of anchored off
+         of it. CANVAS.gap remains the spacing *between* sibling blocks;
+         CANVAS.margin is the minimum distance from the canvas edge itself —
+         different concerns, both real. There is no bottom padding in the real
+         CSS (top/left/right only), which is why clampY/findOutOfBounds only
+         ever floor y, never cap the bottom edge — a magazine page is allowed
+         to run longer than one A4 height and scroll. */
+      margin: 75
+    };
+    DEFAULT_PAGE_DIR = ".pagectl";
+    DEFAULT_PAGE_FILENAME = "page.json";
+    BLOCK_TYPES = ["text", "header", "button", "container", "image"];
+    ALIGN_VALUES = ["left", "center", "right"];
+    DIRECTION_VALUES = ["left", "right", "up", "down"];
+    TEXT_CONTENT_SPAN_RE = /class="[^"]*\bcomponent-text-content\b[^"]*"/;
+    EDIT_PENCIL_ICON = "\u{1F58A}\uFE0F";
+    BLOCKS = {
+      text: {
+        type: "text",
+        label: "Text",
+        defaultWidth: 300,
+        defaultHeight: 50,
+        baseClass: "text-component",
+        requiresTextSpan: true,
+        defaultText: "Sample Text",
+        defaultContent: (text = "Sample Text") => wrapTextSpan(text)
+      },
+      header: {
+        type: "header",
+        label: "Header",
+        defaultWidth: 400,
+        defaultHeight: 60,
+        baseClass: "header-component",
+        requiresTextSpan: true,
+        defaultText: "Header",
+        defaultContent: (text = "Header") => wrapTextSpan(text)
+      },
+      button: {
+        type: "button",
+        label: "Button",
+        defaultWidth: 160,
+        defaultHeight: 48,
+        baseClass: "button-component",
+        requiresTextSpan: false,
+        defaultText: "Click Me",
+        defaultContent: (text = "Click Me") => escapeHtml(text)
+      },
+      container: {
+        type: "container",
+        label: "Container",
+        defaultWidth: 300,
+        defaultHeight: 200,
+        baseClass: "container-component",
+        requiresTextSpan: false,
+        defaultContent: () => ""
+      },
+      image: {
+        type: "image",
+        label: "Image",
+        defaultWidth: 300,
+        defaultHeight: 300,
+        baseClass: "image-component",
+        requiresTextSpan: false,
+        defaultContent: () => imageContentTemplate()
+      }
+    };
+    WRAP_METRICS = {
+      header: { lineHeight: 32, avgCharWidth: 25 },
+      text: { lineHeight: 24, avgCharWidth: 14 }
+    };
+    WRAP_BASE_FONT_SIZE = {
+      header: 24,
+      text: 16
+    };
+    WRAP_PADDING = 16;
+    blockSchema = z.object({
+      id: z.string().min(1),
+      type: z.string().min(1),
+      content: z.string(),
+      position: z.object({ x: z.number(), y: z.number() }),
+      dimensions: z.object({ width: z.number(), height: z.number() }),
+      style: z.record(z.string()).default({}),
+      inlineStyle: z.string().default(""),
+      classes: z.array(z.string()).default([]),
+      dataAttributes: z.record(z.string()).default({}),
+      imageSrc: z.string().nullable().optional(),
+      videoSrc: z.string().nullable().optional(),
+      props: z.record(z.unknown()).optional()
+    });
+    pageSchema = z.array(blockSchema).min(1);
+    ABSOLUTE_CANVAS_CLASSES = ["preview-printable", "preview-desktop"];
+  }
+});
+
+// src/serve/bundleLibrary.ts
+var bundleLibrary_exports = {};
+__export(bundleLibrary_exports, {
+  bundleLibrary: () => bundleLibrary
+});
+import { build } from "esbuild";
+import { dirname as dirname3, resolve as resolve5 } from "node:path";
+import { fileURLToPath } from "node:url";
+async function bundleLibrary() {
+  if (cached)
+    return cached;
+  const entry = resolve5(__dirname, "libraryEntry.ts");
+  const result = await build({
+    entryPoints: [entry],
+    bundle: true,
+    write: false,
+    format: "iife",
+    platform: "browser",
+    target: "es2019",
+    outdir: resolve5(__dirname, ".virtual-out"),
+    logLevel: "silent",
+    /* web-component/core declare "sideEffects": false for tree-shaking
+       consumers; we import purely for the customElements.define() side
+       effect, so keep it despite that hint. */
+    ignoreAnnotations: true
+  });
+  let js = "";
+  let css = "";
+  for (const file of result.outputFiles ?? []) {
+    if (file.path.endsWith(".css"))
+      css += file.text;
+    else
+      js += file.text;
+  }
+  if (!js) {
+    throw new Error("esbuild produced no JS output while bundling the library.");
+  }
+  cached = { js, css };
+  return cached;
+}
+var __dirname, cached;
+var init_bundleLibrary = __esm({
+  "src/serve/bundleLibrary.ts"() {
+    "use strict";
+    __dirname = dirname3(fileURLToPath(import.meta.url));
+    cached = null;
+  }
+});
+
+// src/serve/harnessPage.ts
+var harnessPage_exports = {};
+__export(harnessPage_exports, {
+  buildHarnessPage: () => buildHarnessPage
+});
+function buildHarnessPage() {
+  return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>pagebuilder serve</title>
+<link rel="stylesheet" href="/bundle.css" />
+<style>
+  #pb-status {
+    padding: 6px 12px;
+    background: #111;
+    color: #0f0;
+    font-family: monospace;
+    font-size: 12px;
+  }
+
+  /* core's own CSS caps #canvas.preview-printable at max-width: 869px (a
+     "print preview" simulation width) \u2014 deliberately *responsive*, so the
+     editor's own general-purpose UI can shrink on a narrow browser window.
+     pagectl bakes "preview-printable" onto every canvas root (to fix an
+     unrelated "flips to grid on live edit" bug \u2014 see
+     ABSOLUTE_CANVAS_CLASSES in schema.ts), which inadvertently invokes
+     this responsive cap. But pagectl's entire coordinate system is FIXED,
+     not responsive \u2014 every x/y/width in the page's JSON assumes a canvas
+     that is always exactly CANVAS.width x CANVAS.height, the same way a
+     design tool's canvas has a fixed size regardless of window size. Using
+     max-width here (as a first attempt) still let the canvas render
+     narrower than CANVAS.width on a smaller browser window, which put
+     every already-correct absolute position past the real (shrunk) right
+     edge \u2014 confirmed live with Playwright at a narrower viewport. A fixed
+     width (not max-width) forces it to always be exactly CANVAS.width;
+     #canvas itself already has overflow: auto (both axes), so a window too
+     narrow to show the full canvas just gets a horizontal scrollbar,
+     matching how any fixed-size design canvas behaves \u2014 never a resize of
+     the coordinate system itself. Scoped to .preview-desktop specifically
+     (not .preview-tablet/.preview-mobile, both out of pagectl v1's scope)
+     so a manual tablet/mobile preview toggle in the UI isn't fought.
+
+     width alone isn't enough: #canvas's own base rule (bundle.css) sets
+     flex-grow: 1 \u2014 a flex item's width property only sets its flex-basis,
+     and flex-grow then adds any remaining free space in the flex row ON
+     TOP of that regardless of !important, since !important on a property
+     only wins against other declarations of that same property, not
+     against the flex algorithm consuming the value afterward. Confirmed
+     live: with only width overridden, the canvas still rendered at
+     whatever the flex row's available space was (1695px / 1030px at two
+     different window widths), never CANVAS.width. flex-grow/flex-shrink: 0
+     stops it from growing or shrinking away from the fixed width at all. */
+  #canvas.preview-printable.preview-desktop {
+    width: ${CANVAS.width}px !important;
+    max-width: none !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Fallout of pinning #canvas above: #sidebar/#customization already
+     have flex-shrink: 0 of their own (core's base CSS), and now #canvas
+     does too \u2014 so when the sidebar + fixed CANVAS.width canvas + open
+     customization panel (205 + ${CANVAS.width} + 300 = ${205 + CANVAS.width + 300}px) exceeds the actual
+     browser window width, nothing in the row is allowed to shrink and
+     #app's own overflow: hidden (core's base CSS, used to clip children to
+     its rounded corners) silently clips whatever doesn't fit \u2014 with no
+     way to scroll to it. Confirmed live: at a 1500px window with the
+     settings panel open, #app.scrollWidth (1706px) exceeded its
+     clientWidth (1500px) by ~206px, and that entire slice of the settings
+     panel was genuinely unreachable, not just off-screen. overflow-x here
+     (not the overflow shorthand, so overflow-y stays hidden and rounded
+     corners still clip vertically) makes that slice reachable by
+     horizontal scroll instead of invisible. */
+  #app {
+    overflow-x: auto !important;
+  }
+
+  /* Every real consumer of <page-builder> must size it explicitly \u2014 it's a
+     custom element with no default height, so left unstyled it grows to
+     its full content height instead of filling the viewport. Without this,
+     html/body's own "overflow: hidden" (core's own app-shell CSS) just
+     clips whatever overflows past the viewport with no way to scroll to
+     it, because the intended scroll target \u2014 #canvas's "overflow: auto"
+     inside the component \u2014 never gets squeezed by a bounded ancestor in
+     the first place. Mirrors packages/example/test-react/src/index.css's
+     "page-builder { flex: 1; min-height: 0; ... }", the documented pattern
+     every other consumer already applies to this component. */
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  page-builder {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+</head>
+<body>
+<div id="pb-status">connecting...</div>
+<page-builder id="pb"></page-builder>
+<script src="/bundle.js"></script>
+<script>
+  const pb = document.getElementById('pb');
+  const statusEl = document.getElementById('pb-status');
+
+  // layoutMode is a JS property, not an HTML attribute, and the underlying
+  // PageBuilder core defaults to 'grid' when it's left unset \u2014 which
+  // silently breaks pagectl's absolute x/y positions in the live preview.
+  // pagectl v1 is absolute-mode only; pin it before anything initializes.
+  pb.layoutMode = 'absolute';
+
+  fetch('/design')
+    .then(r => r.json())
+    .then(design => {
+      pb.initialDesign = design;
+      pb.configData = { Basic: [], Extra: [], Custom: [] };
+    });
+
+  const source = new EventSource('/events');
+  source.onopen = () => (statusEl.textContent = 'live \u2014 connected to sidecar');
+  source.onmessage = event => {
+    const design = JSON.parse(event.data);
+    if (pb.generateOutput) {
+      try {
+        pb.applyDesign(design);
+      } catch {
+        /* not initialized yet \u2014 fall back to (re)setting initialDesign */
+        pb.initialDesign = design;
+        pb.configData = { Basic: [], Extra: [], Custom: [] };
+      }
+    }
+    statusEl.textContent = 'updated at ' + new Date().toLocaleTimeString();
+  };
+  source.onerror = () => (statusEl.textContent = 'disconnected from sidecar');
+</script>
+</body>
+</html>`;
+}
+var init_harnessPage = __esm({
+  "src/serve/harnessPage.ts"() {
+    "use strict";
+    init_schema();
+  }
+});
+
+// src/index.ts
+import { Command } from "commander";
+
+// src/cliRuntime.ts
+init_schema();
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { basename, dirname, resolve } from "node:path";
+var PAGE_FILE_SUFFIX = ".page.json";
+function resolvePagePath(explicit) {
+  if (explicit)
+    return { path: resolve(explicit), isDefault: false };
+  return { path: resolve(DEFAULT_PAGE_DIR, DEFAULT_PAGE_FILENAME), isDefault: true };
+}
+function findSiblingPageFiles(targetPath) {
+  const dir = dirname(targetPath);
+  const self = basename(targetPath);
+  try {
+    return readdirSync(dir).filter((f) => f.endsWith(PAGE_FILE_SUFFIX) && f !== self).sort();
+  } catch {
+    return [];
+  }
+}
+function slugFromPageFilePath(targetPath) {
+  const name = basename(targetPath);
+  return name.endsWith(PAGE_FILE_SUFFIX) ? name.slice(0, -PAGE_FILE_SUFFIX.length) : null;
+}
+var EXIT = {
+  OK: 0,
+  BAD_INPUT: 2,
+  AUTH: 3,
+  NOT_FOUND: 4,
+  TRANSIENT: 5
+};
+var CliError = class extends Error {
+  constructor(code, message, fix) {
+    super(message);
+    this.code = code;
+    this.fix = fix;
+  }
+};
+function badInput(message, fix) {
+  throw new CliError(EXIT.BAD_INPUT, message, fix);
+}
+function notFoundErr(message, fix) {
+  throw new CliError(EXIT.NOT_FOUND, message, fix);
+}
+function transientErr(message, fix) {
+  throw new CliError(EXIT.TRANSIENT, message, fix);
+}
+function loadPageFile(explicitPath) {
+  const { path: resolved, isDefault } = resolvePagePath(explicitPath);
+  if (!existsSync(resolved)) {
+    if (isDefault) {
+      const fresh = [makeCanvasRoot()];
+      writePageFileAtomic(resolved, fresh);
+      return { page: fresh, path: resolved };
+    }
+    const slug = slugFromPageFilePath(resolved);
+    const createHint = slug ? `pagectl new ${slug}` : `pagectl new <slug> --out ${resolved}`;
+    const siblings = findSiblingPageFiles(resolved);
+    const fix = siblings.length > 0 ? `Found existing page file(s) in this directory: ${siblings.join(", ")}. Pass one of them as --page if that's what you meant, or create a new one with "${createHint}".` : `Create it first with "${createHint}", or omit --page to use the default page at ${DEFAULT_PAGE_DIR}/${DEFAULT_PAGE_FILENAME}.`;
+    notFoundErr(`Page file not found: ${resolved}`, fix);
+  }
+  let raw;
+  try {
+    raw = readFileSync(resolved, "utf8");
+  } catch (err) {
+    transientErr(
+      `Could not read ${resolved}: ${err.message}`,
+      "Check file permissions and retry."
+    );
+  }
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (err) {
+    badInput(
+      `Invalid JSON in ${resolved}: ${err.message}`,
+      'Fix the JSON syntax by hand, or regenerate the file with "pagectl new".'
+    );
+  }
+  const parsed = pageSchema.safeParse(data);
+  if (!parsed.success) {
+    badInput(
+      `${resolved} does not match the page schema: ${parsed.error.issues.map((i) => `${i.path.join(".") || "(root)"}: ${i.message}`).join("; ")}`,
+      `Run "pagectl validate --page ${resolved}" for full details.`
+    );
+  }
+  const violation = checkScope(parsed.data);
+  if (violation) {
+    badInput(violation.reason, violation.fix);
+  }
+  return { page: parsed.data, path: resolved };
+}
+function writePageFileAtomic(filePath, page) {
+  const resolved = resolve(filePath);
+  mkdirSync(dirname(resolved), { recursive: true });
+  const tmp = `${resolved}.${process.pid}.${Date.now()}.tmp`;
+  writeFileSync(tmp, JSON.stringify(page, null, 2) + "\n", "utf8");
+  renameSync(tmp, resolved);
+  return resolved;
+}
+function emitResult(json, data, humanPrinter) {
+  if (json) {
+    process.stdout.write(JSON.stringify({ schema: "1", data }) + "\n");
+  } else {
+    humanPrinter();
+  }
+}
+async function runCommand(json, fn) {
+  try {
+    await fn();
+  } catch (err) {
+    const cliErr = err instanceof CliError ? err : new CliError(
+      EXIT.TRANSIENT,
+      err instanceof Error ? err.message : String(err),
+      "Unexpected error \u2014 re-run the command in isolation, or file an issue with this output."
+    );
+    if (json) {
+      process.stdout.write(JSON.stringify({ error: cliErr.message, fix: cliErr.fix }) + "\n");
+    } else {
+      console.error(`Error: ${cliErr.message}`);
+      console.error(`Fix: ${cliErr.fix}`);
+    }
+    process.exitCode = cliErr.code;
+  }
+}
+function parseKeyValueList(pairs, flagName) {
+  const out = {};
+  for (const pair of pairs ?? []) {
+    const eq = pair.indexOf("=");
+    if (eq <= 0) {
+      badInput(
+        `Malformed ${flagName} value "${pair}" \u2014 expected "key=value".`,
+        `Pass it as e.g. ${flagName} color=#e11.`
+      );
+    }
+    out[pair.slice(0, eq)] = pair.slice(eq + 1);
+  }
+  return out;
+}
+
+// src/commands/schema.ts
+init_schema();
+function schemaCommand(options) {
+  const data = {
+    binary: "pagectl",
+    scope: {
+      description: "v1 covers flat, top-level, absolute-mode pages using text/header/button/container/image blocks only.",
+      outOfScope: ["grid-mode pages", "nested containers", "video", "table", "richtext", "link", "twoCol", "threeCol", "landingpage", "multi-page projects"]
+    },
+    workflow: {
+      afterEditingBlocks: `Once the user's blocks are added/edited and "validate" passes, ALWAYS run "pagectl serve" next so the user can see the live result in a browser \u2014 do this by default, without asking permission first. Starting a local dev server is not a risky or optional action here; it is the expected last step of building a page. If unsure whether one is already running, check "pagectl status" first (it reports the pid/port) rather than skipping serve or guessing.`,
+      whenServeIsAlreadyRunning: `If "pagectl status" shows a serve session already running, do not start a second one (it will refuse anyway) \u2014 just tell the user the existing URL from status's "serve.port", and keep editing via add-block/update-block as normal; the open tab updates live.`,
+      doNotDoThis: 'Do NOT run "pagectl build" as a way to show the user their page, and do NOT describe it as a preview. Its static HTML/CSS output does not resemble the real editor and is template-based, not pixel-accurate. Only run "build" if the user explicitly asks to export/ship static files.'
+    },
+    defaultPage: {
+      path: `${DEFAULT_PAGE_DIR}/${DEFAULT_PAGE_FILENAME}`,
+      description: 'Every command that takes --page falls back to this one file (relative to the current directory) when --page is omitted. It is auto-created on first use. Use this by default \u2014 only pass --page for a deliberately separate, named page (see "new"). This means an agent given zero file-naming instructions always converges on the same file as everything else, including "serve".'
+    },
+    canvas: {
+      ...CANVAS,
+      marginNote: `The real editor refuses to let a top-level block sit closer than canvas.margin (${CANVAS.margin}px) to any canvas edge \u2014 add-block/update-block already account for this automatically (positions default to/clamp against the margin, not 0), so no manual math is needed. The one thing to know: a genuinely "full-width" block's usable --width is canvas.width - 2*canvas.margin (${CANVAS.width - 2 * CANVAS.margin}px), not the full canvas.width (${CANVAS.width}px) \u2014 a wider block still gets created, but its right side will be pushed past the margin by the real editor.`
+    },
+    blockTypes: BLOCK_TYPES,
+    blocks: BLOCK_TYPES.map((type) => ({
+      type,
+      defaultWidth: BLOCKS[type].defaultWidth,
+      defaultHeight: BLOCKS[type].defaultHeight,
+      baseClass: BLOCKS[type].baseClass,
+      requiresTextSpan: BLOCKS[type].requiresTextSpan
+    })),
+    enums: {
+      align: ALIGN_VALUES,
+      direction: DIRECTION_VALUES,
+      blockType: BLOCK_TYPES
+    },
+    exitCodes: { ok: 0, badInput: 2, auth: 3, notFound: 4, transient: 5 },
+    globalFlags: {
+      "--json": 'Emit {"schema":"1","data":...} on success or {"error":"...","fix":"..."} on failure, always one line on stdout.',
+      "--dry-run": "Compute and report the result without writing the page file.",
+      "--force": 'Overwrite guard escape hatch (currently used by "new").',
+      "--no-input": "Fail fast with a fix hint instead of prompting \u2014 pagectl never prompts, so this is always the effective behavior."
+    },
+    commands: [
+      {
+        name: "schema",
+        usage: "pagectl schema [--json]",
+        description: "Print this command tree."
+      },
+      {
+        name: "status",
+        usage: "pagectl status [--page <file>] [--json]",
+        description: 'Read-only self-orientation, same reflex as "git status": reports whether the (default or given) page file exists and its block count, and whether a "serve" session is currently running (and on what port/watching which file). Run this first in an unfamiliar directory instead of guessing.'
+      },
+      {
+        name: "list-blocks",
+        usage: "pagectl list-blocks [--json]",
+        description: "Print the block palette and defaults."
+      },
+      {
+        name: "new",
+        usage: "pagectl new <slug> [--out <path>] [--force] [--dry-run] [--json]",
+        description: 'Explicitly create an additional, separately named page (not needed for the common single-page case \u2014 add-block/etc. auto-create the default page on first use). Idempotent: same slug + same content -> no-op exit 0; different content -> exit 2 unless --force; new slug -> created exit 0. Output carries a "note" field (non-blocking) if other *.page.json files already exist in the directory.'
+      },
+      {
+        name: "add-block",
+        usage: "pagectl add-block [--page <file>] --type <type> --id <id> [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--width <n>] [--height <n>] [--below <id> | --right-of <id> | --x <n> --y <n>] [--align left|center|right] [--gap <n>] [--dry-run] [--json]",
+        description: 'Add a block to the default page (or --page if given), auto-creating that page file if it does not exist yet. Default placement is auto-flow (no coordinates needed); --align applies even without --below (left/center/right against the full canvas width). --src sets the image URL for --type image (that type takes no --content). Idempotent on identical retry ("already-exists", exit 0); different content on the same --id is a distinct error directing you to update-block, exit 2. Missing anchor id -> exit 4. Nesting inside a container is refused (out of scope).'
+      },
+      {
+        name: "update-block",
+        usage: "pagectl update-block [--page <file>] --id <id> [--left | --right | --up | --down] [--x <n> --y <n>] [--width <n>] [--height <n>] [--content <text>] [--src <url>] [--style k=v]... [--class <name>]... [--raw-content] [--dry-run] [--json]",
+        description: `Move one grid step in a direction (repeat the call for "a lot"; every call clamps to canvas bounds, snaps to grid, and echoes the new box \u2014 "clamped-no-change" if already at an edge), OR jump straight to an explicit --x/--y (escape hatch for a large move, instead of many repeated direction calls or deleting and re-adding the block) \u2014 not both in the same call. --width/--height resize the block in place (either alone or together, independent of any move in the same call; a resize with no move re-clamps the existing position against the new size if needed \u2014 status "resized" or "resized-clamped"). Any of the above can be combined with --content/--src/--style/--class. --src changes an existing image block's URL (image blocks only).`
+      },
+      {
+        name: "remove-block",
+        usage: "pagectl remove-block [--page <file>] --id <id> [--dry-run] [--json]",
+        description: "Remove a block. Missing id -> exit 4. Does not reflow other blocks."
+      },
+      {
+        name: "reorder-block",
+        usage: "pagectl reorder-block [--page <file>] --id <id> (--before <id> | --after <id>) [--dry-run] [--json]",
+        description: "Change array order only (affects auto-flow/z-order), not position. Missing id -> exit 4."
+      },
+      {
+        name: "inspect",
+        usage: "pagectl inspect [--page <file>] [--json]",
+        description: "Print the resolved page path, canvas info, next auto-flow y, and every block's box."
+      },
+      {
+        name: "validate",
+        usage: "pagectl validate [--page <file>] [--fix] [--json]",
+        description: "Schema validity + scope + overlap + out-of-bounds + stale-inlineStyle + possible-text-overflow checks, each with a fix hint. Exit 2 on any issue. possible-text-overflow is a heuristic (not exact browser measurement): every text/header block's actual content, width, and font-size are checked against its declared height, whether that height was auto-computed or set explicitly with --height \u2014 a custom --style font-size that makes the content wrap more than the box allows is exactly what this catches. --fix auto-repairs blocks whose inlineStyle drifted from position/dimensions/style, and grows any block flagged by possible-text-overflow to the estimated height it needs \u2014 other issue kinds (overlap, out-of-bounds, scope, schema) still need an explicit update-block/remove-block call."
+      },
+      {
+        name: "set-canvas",
+        usage: "pagectl set-canvas [--page <file>] --style k=v... [--dry-run] [--json]",
+        description: `Set style (e.g. background-color) on the page's canvas root itself, not a block \u2014 the only way to theme the page background (a subtle off-white/grey "newsprint" tone, etc.) without adding a full-bleed block that would overlap every other block and fail "validate". Merges into any existing canvas style; does not touch position/dimensions, which stay owned by canvas.width/height.`
+      },
+      {
+        name: "build",
+        usage: "pagectl build [--page <file>] [--out <dir>] [--dry-run] [--json]",
+        description: 'DO NOT use this to show the user their page \u2014 it is a rough static HTML/CSS export (template-based, no headless browser, real core CSS linked verbatim) for explicit shipping/download requests only. It is NOT a preview, is not pixel-accurate, and must not be described as one. Use "serve" to show the user anything.'
+      },
+      {
+        name: "serve",
+        usage: "pagectl serve [file] [--port <n>]",
+        description: `The correct way to show the user their page \u2014 serves the real page-builder editor UI backed by the default page file (or the given one), and watches it on disk so add-block/update-block/remove-block/reorder-block reflect live in the open browser tab. Run this by default after editing blocks, without waiting to be asked (see "workflow" above). POST /design also accepted. Tries --port (default 4321) and falls back to the next free port if it's taken \u2014 always tell the user the actual port from stderr or "status", never assume 4321. Refuses to start a second session in the same directory while one is already running (check "status" first).`
+      }
+    ]
+  };
+  emitResult(!!options.json, data, () => {
+    console.log(JSON.stringify(data, null, 2));
+  });
+}
+
+// src/commands/status.ts
+init_schema();
+import { existsSync as existsSync3, readFileSync as readFileSync3 } from "node:fs";
+
+// src/serveLock.ts
+init_schema();
+import { existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync2, rmSync, writeFileSync as writeFileSync2 } from "node:fs";
+import { resolve as resolve2 } from "node:path";
+function serveLockPath() {
+  return resolve2(DEFAULT_PAGE_DIR, "serve.json");
+}
+function isProcessAlive(pid) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+function readLiveServeLock() {
+  const lockPath = serveLockPath();
+  if (!existsSync2(lockPath))
+    return null;
+  let lock;
+  try {
+    lock = JSON.parse(readFileSync2(lockPath, "utf8"));
+  } catch {
+    return null;
+  }
+  return isProcessAlive(lock.pid) ? lock : null;
+}
+function writeServeLock(lock) {
+  const lockPath = serveLockPath();
+  mkdirSync2(resolve2(DEFAULT_PAGE_DIR), { recursive: true });
+  writeFileSync2(lockPath, JSON.stringify(lock, null, 2) + "\n", "utf8");
+}
+function removeServeLock() {
+  try {
+    rmSync(serveLockPath(), { force: true });
+  } catch {
+  }
+}
+
+// src/commands/status.ts
+function statusCommand(options) {
+  const { path } = resolvePagePath(options.page);
+  let exists = false;
+  let blockCount = null;
+  if (existsSync3(path)) {
+    exists = true;
+    try {
+      const parsed = pageSchema.safeParse(JSON.parse(readFileSync3(path, "utf8")));
+      if (parsed.success)
+        blockCount = getBlocks(parsed.data).length;
+    } catch {
+    }
+  }
+  const lock = readLiveServeLock();
+  const data = {
+    page: { path, exists, blockCount },
+    serve: lock ? { running: true, pid: lock.pid, port: lock.port, page: lock.page, startedAt: lock.startedAt } : { running: false }
+  };
+  emitResult(!!options.json, data, () => {
+    console.log(`Page: ${path}${exists ? ` (${blockCount ?? "?"} block(s))` : " (does not exist yet)"}`);
+    if (lock) {
+      console.log(`Serve: running at http://localhost:${lock.port} (pid ${lock.pid}), watching ${lock.page}`);
+    } else {
+      console.log("Serve: not running");
+    }
+  });
+}
+
+// src/commands/listBlocks.ts
+init_schema();
+function listBlocksCommand(options) {
+  const data = BLOCK_TYPES.map((type) => {
+    const def = BLOCKS[type];
+    return {
+      type: def.type,
+      label: def.label,
+      defaultWidth: def.defaultWidth,
+      defaultHeight: def.defaultHeight,
+      baseClass: def.baseClass,
+      requiresTextSpan: def.requiresTextSpan,
+      defaultText: def.defaultText ?? null
+    };
+  });
+  emitResult(!!options.json, data, () => {
+    for (const b of data) {
+      console.log(`${b.type.padEnd(10)} ${b.defaultWidth}x${b.defaultHeight}  class=${b.baseClass}`);
+    }
+  });
+}
+
+// src/commands/new.ts
+init_schema();
+import { existsSync as existsSync4, readFileSync as readFileSync4 } from "node:fs";
+import { resolve as resolve3 } from "node:path";
+function readExisting(filePath) {
+  if (!existsSync4(filePath))
+    return null;
+  try {
+    return JSON.parse(readFileSync4(filePath, "utf8"));
+  } catch (err) {
+    badInput(
+      `${filePath} already exists but is not valid JSON: ${err.message}`,
+      "Delete or fix the file by hand, or pass --force to overwrite it."
+    );
+  }
+}
+function newCommand(slug, options) {
+  const outPath = resolve3(options.out ?? `${slug}.page.json`);
+  const fresh = [makeCanvasRoot()];
+  const existing = readExisting(outPath);
+  const siblings = findSiblingPageFiles(outPath);
+  const note = siblings.length > 0 ? `Other page file(s) already exist in this directory: ${siblings.join(", ")}. If you meant to edit one of those, use "pagectl add-block --page <file> ..." instead of creating a new page.` : void 0;
+  if (existing) {
+    const sameParams = JSON.stringify(existing) === JSON.stringify(fresh);
+    if (sameParams) {
+      emitResult(!!options.json, { status: "no-op", slug, path: outPath, note }, () => {
+        console.log(`Page "${slug}" already exists with identical params -> ${outPath} (no-op)`);
+        if (note)
+          console.log(`Note: ${note}`);
+      });
+      return;
+    }
+    if (!options.force) {
+      badInput(
+        `Page file already exists with different content: ${outPath}`,
+        `It already has real content \u2014 if you meant to edit it, use "pagectl add-block --page ${outPath} ..." instead. To deliberately reset it to a blank canvas, pass --force.`
+      );
+    }
+  }
+  if (options.dryRun) {
+    emitResult(!!options.json, { status: "dry-run", slug, path: outPath, note }, () => {
+      console.log(`[dry-run] Would create page "${slug}" -> ${outPath}`);
+      if (note)
+        console.log(`Note: ${note}`);
+    });
+    return;
+  }
+  writePageFileAtomic(outPath, fresh);
+  emitResult(
+    !!options.json,
+    { status: existing ? "overwritten" : "created", slug, path: outPath, note },
+    () => {
+      console.log(`Created page "${slug}" -> ${outPath}`);
+      if (note)
+        console.log(`Note: ${note}`);
+    }
+  );
+}
+
+// src/commands/addBlock.ts
+init_schema();
+
+// src/layout.ts
+init_schema();
+function snap(value) {
+  return Math.round(value / CANVAS.grid) * CANVAS.grid;
+}
+function renderInlineStyle(box, extraStyle = {}) {
+  const declarations = [
+    "position: absolute",
+    `left: ${box.x}px`,
+    `top: ${box.y}px`,
+    `width: ${box.width}px`,
+    `height: ${box.height}px`,
+    ...Object.entries(extraStyle).map(([key, value]) => `${key}: ${value}`)
+  ];
+  return declarations.join("; ") + ";";
+}
+function clampX(x, width) {
+  const max = Math.max(CANVAS.margin, CANVAS.width - CANVAS.margin - width);
+  return Math.min(Math.max(x, CANVAS.margin), max);
+}
+function clampY(y) {
+  return Math.max(y, CANVAS.margin);
+}
+function clampAndSnap(x, y, width, height) {
+  const snappedX = snap(x);
+  const snappedY = snap(y);
+  const clampedX = clampX(snappedX, width);
+  const clampedY = clampY(snappedY);
+  return {
+    box: { x: clampedX, y: clampedY, width, height },
+    clamped: clampedX !== snappedX || clampedY !== snappedY
+  };
+}
+function nextAutoFlowY(page) {
+  const blocks = getBlocks(page);
+  if (blocks.length === 0)
+    return CANVAS.margin;
+  const maxBottom = Math.max(...blocks.map((b) => b.position.y + b.dimensions.height));
+  return maxBottom + CANVAS.gap;
+}
+function computeAutoFlowPosition(page, width, height, align = "left") {
+  const y = nextAutoFlowY(page);
+  let x;
+  switch (align) {
+    case "left":
+      x = CANVAS.margin;
+      break;
+    case "center":
+      x = CANVAS.width / 2 - width / 2;
+      break;
+    case "right":
+      x = CANVAS.width - CANVAS.margin - width;
+      break;
+  }
+  return clampAndSnap(x, y, width, height);
+}
+function findAnchor(page, anchorId) {
+  const anchor = getBlocks(page).find((b) => b.id === anchorId);
+  if (!anchor) {
+    notFoundErr(
+      `Anchor block "${anchorId}" not found on this page.`,
+      'Check the id with "pagectl inspect --page <file>" and retry.'
+    );
+  }
+  return anchor;
+}
+function alignX(anchor, width, align) {
+  switch (align) {
+    case "left":
+      return anchor.position.x;
+    case "center":
+      return anchor.position.x + anchor.dimensions.width / 2 - width / 2;
+    case "right":
+      return anchor.position.x + anchor.dimensions.width - width;
+  }
+}
+function computeBelowPosition(page, anchorId, width, height, align, gap) {
+  const anchor = findAnchor(page, anchorId);
+  const x = alignX(anchor, width, align);
+  const y = anchor.position.y + anchor.dimensions.height + gap;
+  return clampAndSnap(x, y, width, height);
+}
+function computeRightOfPosition(page, anchorId, width, height, gap) {
+  const anchor = findAnchor(page, anchorId);
+  const x = anchor.position.x + anchor.dimensions.width + gap;
+  const y = anchor.position.y;
+  return clampAndSnap(x, y, width, height);
+}
+function computeExplicitPosition(x, y, width, height) {
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    badInput("--x and --y must both be finite numbers.", "Pass both --x and --y as numbers, e.g. --x 40 --y 20.");
+  }
+  return clampAndSnap(x, y, width, height);
+}
+function nudge(box, direction) {
+  let rawX = box.x;
+  let rawY = box.y;
+  switch (direction) {
+    case "left":
+      rawX -= CANVAS.nudgeStep;
+      break;
+    case "right":
+      rawX += CANVAS.nudgeStep;
+      break;
+    case "up":
+      rawY -= CANVAS.nudgeStep;
+      break;
+    case "down":
+      rawY += CANVAS.nudgeStep;
+      break;
+  }
+  const { box: newBox } = clampAndSnap(rawX, rawY, box.width, box.height);
+  let status;
+  if (newBox.x === box.x && newBox.y === box.y) {
+    status = "clamped-no-change";
+  } else if (newBox.x !== snap(rawX) || newBox.y !== snap(rawY)) {
+    status = "clamped-to-edge";
+  } else {
+    status = "moved";
+  }
+  return { box: newBox, status };
+}
+function findOverlaps(blocks, tolerance = 2) {
+  const overlaps = [];
+  for (let i = 0; i < blocks.length; i++) {
+    for (let j = i + 1; j < blocks.length; j++) {
+      const a = blocks[i];
+      const b = blocks[j];
+      const ax1 = a.position.x + tolerance;
+      const ay1 = a.position.y + tolerance;
+      const ax2 = a.position.x + a.dimensions.width - tolerance;
+      const ay2 = a.position.y + a.dimensions.height - tolerance;
+      const bx1 = b.position.x + tolerance;
+      const by1 = b.position.y + tolerance;
+      const bx2 = b.position.x + b.dimensions.width - tolerance;
+      const by2 = b.position.y + b.dimensions.height - tolerance;
+      const intersects = ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1;
+      if (intersects)
+        overlaps.push({ a: a.id, b: b.id });
+    }
+  }
+  return overlaps;
+}
+function findOutOfBounds(blocks) {
+  const issues = [];
+  for (const b of blocks) {
+    if (b.position.x < CANVAS.margin) {
+      issues.push({ id: b.id, reason: `x (${b.position.x}) is inside the canvas margin (< ${CANVAS.margin}) \u2014 the real editor will silently push it to x=${CANVAS.margin}.` });
+    }
+    if (b.position.y < CANVAS.margin) {
+      issues.push({ id: b.id, reason: `y (${b.position.y}) is inside the canvas margin (< ${CANVAS.margin}) \u2014 the real editor will silently push it to y=${CANVAS.margin}.` });
+    }
+    if (b.position.x + b.dimensions.width > CANVAS.width - CANVAS.margin) {
+      issues.push({
+        id: b.id,
+        reason: `right edge (${b.position.x + b.dimensions.width}) is inside the canvas margin (> ${CANVAS.width - CANVAS.margin}) \u2014 the real editor will silently shrink its width to fit.`
+      });
+    }
+  }
+  return issues;
+}
+
+// src/commands/addBlock.ts
+init_schema();
+function addBlockCommand(options) {
+  if (!options.type)
+    badInput("--type is required.", `Pass --type <${BLOCK_TYPES.join("|")}>.`);
+  if (!options.id)
+    badInput("--id is required.", "Pass a unique --id for this block.");
+  if (options.parent) {
+    badInput(
+      "Nesting a block inside a container is out of scope for pagectl v1.",
+      "Add the block top-level instead; nested containers are not supported."
+    );
+  }
+  if (!isBlockType(options.type)) {
+    badInput(
+      `Unknown block type "${options.type}".`,
+      `Supported types in pagectl v1: ${BLOCK_TYPES.join(", ")}. Run "pagectl list-blocks" for details.`
+    );
+  }
+  if (options.src && options.type !== "image") {
+    badInput("--src is only valid for --type image.", "Drop --src, or use --type image.");
+  }
+  const def = BLOCKS[options.type];
+  const { page, path } = loadPageFile(options.page);
+  const blocks = getBlocks(page);
+  const width = options.width ? Number(options.width) : def.defaultWidth;
+  const style = parseKeyValueList(options.style, "--style");
+  const rawText = !options.rawContent ? options.content ?? def.defaultText ?? "" : "";
+  const height = options.height ? Number(options.height) : estimateWrappedHeight(options.type, rawText, width, def.defaultHeight, style);
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+    badInput("--width and --height must be positive numbers.", "Omit them to use the type default, or pass positive numbers.");
+  }
+  let content;
+  if (options.type === "container") {
+    if (options.content) {
+      badInput(
+        "container blocks take no --content in pagectl v1 (no children).",
+        "Drop --content for container blocks."
+      );
+    }
+    content = def.defaultContent();
+  } else if (options.type === "image") {
+    if (options.content || options.rawContent) {
+      badInput(
+        "image blocks take no --content in pagectl v1.",
+        "Use --src <url> to set the image URL instead of --content."
+      );
+    }
+    content = def.defaultContent();
+  } else if (options.rawContent) {
+    if (!options.content) {
+      badInput("--raw-content requires --content.", 'Pass --content "<markup>" alongside --raw-content.');
+    }
+    if (def.requiresTextSpan && !hasTextSpan(options.content)) {
+      badInput(
+        `--raw-content for type "${options.type}" is missing the required component-text-content span.`,
+        `Include <span class="component-text-content" contenteditable="true">...</span> in --content, or drop --raw-content to have pagectl wrap it for you.`
+      );
+    }
+    content = options.content;
+  } else {
+    content = def.defaultContent(options.content);
+  }
+  const existing = blocks.find((b) => b.id === options.id);
+  if (!("min-height" in style))
+    style["min-height"] = `${height}px`;
+  if (!("min-width" in style))
+    style["min-width"] = `${width}px`;
+  const classes = Array.from(/* @__PURE__ */ new Set([def.baseClass, ...options.class ?? []]));
+  const imageSrc = options.type === "image" ? options.src ?? null : void 0;
+  if (existing) {
+    const candidateSameShape = existing.type === options.type && existing.content === content && JSON.stringify(existing.style) === JSON.stringify({ ...existing.style, ...style }) && classes.every((c) => existing.classes.includes(c)) && (options.type !== "image" || (existing.imageSrc ?? null) === imageSrc);
+    if (candidateSameShape) {
+      emitResult(!!options.json, { status: "already-exists", id: options.id, path }, () => {
+        console.log(`Block "${options.id}" already exists with identical content (no-op).`);
+      });
+      return;
+    }
+    badInput(
+      `Block "${options.id}" already exists with different content.`,
+      `Use "pagectl update-block --page ${path} --id ${options.id} ..." to change it instead of add-block.`
+    );
+  }
+  if (options.below && options.rightOf) {
+    badInput("--below and --right-of cannot both be set.", "Pick exactly one anchor relationship.");
+  }
+  if (options.x && !options.y || options.y && !options.x) {
+    badInput("--x and --y must be passed together.", "Pass both --x and --y, or neither.");
+  }
+  const align = options.align ?? "left";
+  if (!ALIGN_VALUES.includes(align)) {
+    badInput(`Unknown --align "${options.align}".`, `Use one of: ${ALIGN_VALUES.join(", ")}.`);
+  }
+  const gap = options.gap ? Number(options.gap) : CANVAS.gap;
+  if (!Number.isFinite(gap) || gap < 0) {
+    badInput("--gap must be a non-negative number.", "Omit --gap to use the CLI default.");
+  }
+  let placement;
+  if (options.x && options.y) {
+    placement = computeExplicitPosition(Number(options.x), Number(options.y), width, height);
+  } else if (options.below) {
+    placement = computeBelowPosition(page, options.below, width, height, align, gap);
+  } else if (options.rightOf) {
+    placement = computeRightOfPosition(page, options.rightOf, width, height, gap);
+  } else {
+    placement = computeAutoFlowPosition(page, width, height, align);
+  }
+  const newBlock = {
+    id: options.id,
+    type: options.type,
+    content,
+    position: { x: placement.box.x, y: placement.box.y },
+    dimensions: { width: placement.box.width, height: placement.box.height },
+    style,
+    inlineStyle: renderInlineStyle(placement.box, style),
+    classes,
+    dataAttributes: {},
+    ...options.type === "image" ? { imageSrc } : {}
+  };
+  const nextPage = [...page, newBlock];
+  if (options.dryRun) {
+    emitResult(
+      !!options.json,
+      { status: "dry-run", id: options.id, path, box: placement.box, clamped: placement.clamped },
+      () => console.log(`[dry-run] Would add "${options.id}" at (${placement.box.x}, ${placement.box.y})`)
+    );
+    return;
+  }
+  writePageFileAtomic(path, nextPage);
+  emitResult(
+    !!options.json,
+    { status: "created", id: options.id, path, box: placement.box, clamped: placement.clamped },
+    () => {
+      console.log(
+        `Added "${options.id}" (${options.type}) at (${placement.box.x}, ${placement.box.y}) ${placement.box.width}x${placement.box.height}${placement.clamped ? " [clamped]" : ""} -> ${path}`
+      );
+    }
+  );
+}
+
+// src/commands/updateBlock.ts
+init_schema();
+function updateBlockCommand(options) {
+  if (!options.id)
+    badInput("--id is required.", "Pass --id <block id>.");
+  const directionFlags = {
+    left: options.left,
+    right: options.right,
+    up: options.up,
+    down: options.down
+  };
+  const directions = DIRECTION_VALUES.filter((d) => directionFlags[d]);
+  if (directions.length > 1) {
+    badInput("Only one of --left/--right/--up/--down may be set per call.", `Call update-block once per direction \u2014 "a lot" is repeated calls, not a bigger step.`);
+  }
+  if (options.x && !options.y || options.y && !options.x) {
+    badInput("--x and --y must be passed together.", "Pass both --x and --y, or neither.");
+  }
+  const hasExplicitMove = !!(options.x && options.y);
+  if (hasExplicitMove && directions.length > 0) {
+    badInput(
+      "Cannot combine --x/--y with a direction flag in the same call.",
+      "Use --x/--y to jump to an exact position, or --left/--right/--up/--down to nudge relatively \u2014 not both at once."
+    );
+  }
+  const hasContentEdit = options.content !== void 0;
+  const hasSrcEdit = options.src !== void 0;
+  const hasStyleEdit = (options.style ?? []).length > 0;
+  const hasClassEdit = (options.class ?? []).length > 0;
+  const hasResize = options.width !== void 0 || options.height !== void 0;
+  if (options.width !== void 0) {
+    const w = Number(options.width);
+    if (!Number.isFinite(w) || w <= 0)
+      badInput("--width must be a positive number.", "Pass a positive number of pixels.");
+  }
+  if (options.height !== void 0) {
+    const h = Number(options.height);
+    if (!Number.isFinite(h) || h <= 0)
+      badInput("--height must be a positive number.", "Pass a positive number of pixels.");
+  }
+  if (directions.length === 0 && !hasExplicitMove && !hasResize && !hasContentEdit && !hasSrcEdit && !hasStyleEdit && !hasClassEdit) {
+    badInput(
+      "Nothing to update.",
+      `Pass a direction (--left/--right/--up/--down), an explicit --x/--y, --width/--height, and/or --content/--src/--style/--class. Valid directions: ${DIRECTION_VALUES.join(", ")}.`
+    );
+  }
+  const { page, path } = loadPageFile(options.page);
+  const index = page.findIndex((b) => b.id === options.id && b.id !== "canvas");
+  if (index === -1) {
+    notFoundErr(
+      `Block "${options.id}" not found on this page.`,
+      'Check the id with "pagectl inspect --page <file>" and retry.'
+    );
+  }
+  const block = page[index];
+  if (!isBlockType(block.type)) {
+    badInput(
+      `Block "${options.id}" has type "${block.type}", which is outside pagectl v1's supported palette.`,
+      "This block was likely created outside pagectl; edit it in the page-builder UI instead."
+    );
+  }
+  const def = BLOCKS[block.type];
+  const updated = { ...block, style: { ...block.style }, classes: [...block.classes] };
+  let status = "updated";
+  const newWidth = options.width !== void 0 ? Number(options.width) : block.dimensions.width;
+  const newHeight = options.height !== void 0 ? Number(options.height) : block.dimensions.height;
+  if (hasResize) {
+    updated.dimensions = { width: newWidth, height: newHeight };
+  }
+  if (directions.length === 1) {
+    const box = { x: block.position.x, y: block.position.y, width: newWidth, height: newHeight };
+    const result = nudge(box, directions[0]);
+    updated.position = { x: result.box.x, y: result.box.y };
+    status = result.status;
+  } else if (hasExplicitMove) {
+    const placement = computeExplicitPosition(Number(options.x), Number(options.y), newWidth, newHeight);
+    updated.position = { x: placement.box.x, y: placement.box.y };
+    status = placement.clamped ? "clamped-to-edge" : "moved";
+  } else if (hasResize) {
+    const { box } = clampAndSnap(block.position.x, block.position.y, newWidth, newHeight);
+    updated.position = { x: box.x, y: box.y };
+    const positionChanged = box.x !== block.position.x || box.y !== block.position.y;
+    status = positionChanged ? "resized-clamped" : "resized";
+  }
+  if (hasContentEdit) {
+    if (block.type === "container") {
+      badInput("container blocks take no --content in pagectl v1 (no children).", "Drop --content for container blocks.");
+    }
+    if (options.rawContent) {
+      if (def.requiresTextSpan && !hasTextSpan(options.content)) {
+        badInput(
+          `--raw-content for type "${block.type}" is missing the required component-text-content span.`,
+          `Include <span class="component-text-content" contenteditable="true">...</span> in --content, or drop --raw-content to have pagectl wrap it for you.`
+        );
+      }
+      updated.content = options.content;
+    } else {
+      updated.content = def.defaultContent(options.content);
+    }
+  }
+  if (hasSrcEdit) {
+    if (block.type !== "image") {
+      badInput("--src is only valid for image blocks.", `Block "${options.id}" is type "${block.type}".`);
+    }
+    updated.imageSrc = options.src;
+  }
+  if (hasStyleEdit) {
+    Object.assign(updated.style, parseKeyValueList(options.style, "--style"));
+  }
+  if (hasResize) {
+    const styleOverride = hasStyleEdit ? parseKeyValueList(options.style, "--style") : {};
+    if (!("min-height" in styleOverride))
+      updated.style["min-height"] = `${newHeight}px`;
+    if (!("min-width" in styleOverride))
+      updated.style["min-width"] = `${newWidth}px`;
+  }
+  if (hasClassEdit) {
+    updated.classes = Array.from(/* @__PURE__ */ new Set([...updated.classes, ...options.class ?? []]));
+  }
+  const resultBox = { x: updated.position.x, y: updated.position.y, width: updated.dimensions.width, height: updated.dimensions.height };
+  updated.inlineStyle = renderInlineStyle(resultBox, updated.style);
+  const nextPage = [...page];
+  nextPage[index] = updated;
+  if (options.dryRun) {
+    emitResult(
+      !!options.json,
+      { status: "dry-run", id: options.id, path, box: resultBox },
+      () => console.log(`[dry-run] Would update "${options.id}"`)
+    );
+    return;
+  }
+  writePageFileAtomic(path, nextPage);
+  emitResult(!!options.json, { status, id: options.id, path, box: resultBox }, () => {
+    console.log(`Updated "${options.id}" -> ${status} @ (${resultBox.x}, ${resultBox.y}) -> ${path}`);
+  });
+}
+
+// src/commands/removeBlock.ts
+function removeBlockCommand(options) {
+  if (!options.id)
+    badInput("--id is required.", "Pass --id <block id>.");
+  const { page, path } = loadPageFile(options.page);
+  const index = page.findIndex((b) => b.id === options.id && b.id !== "canvas");
+  if (index === -1) {
+    notFoundErr(
+      `Block "${options.id}" not found on this page.`,
+      'Check the id with "pagectl inspect --page <file>" and retry.'
+    );
+  }
+  const nextPage = page.filter((_, i) => i !== index);
+  if (options.dryRun) {
+    emitResult(
+      !!options.json,
+      { status: "dry-run", id: options.id, path, remaining: nextPage.length - 1 },
+      () => console.log(`[dry-run] Would remove "${options.id}"`)
+    );
+    return;
+  }
+  writePageFileAtomic(path, nextPage);
+  emitResult(!!options.json, { status: "removed", id: options.id, path, remaining: nextPage.length - 1 }, () => {
+    console.log(`Removed "${options.id}" (${nextPage.length - 1} block(s) remaining) -> ${path}`);
+  });
+}
+
+// src/commands/reorderBlock.ts
+function reorderBlockCommand(options) {
+  if (!options.id)
+    badInput("--id is required.", "Pass --id <block id>.");
+  if (options.before && options.after || !options.before && !options.after) {
+    badInput("Pass exactly one of --before or --after.", "e.g. --before intro or --after intro.");
+  }
+  const referenceId = options.before ?? options.after;
+  const { page, path } = loadPageFile(options.page);
+  const sourceIndex = page.findIndex((b) => b.id === options.id && b.id !== "canvas");
+  if (sourceIndex === -1) {
+    notFoundErr(`Block "${options.id}" not found on this page.`, 'Check the id with "pagectl inspect --page <file>" and retry.');
+  }
+  const referenceIndex = page.findIndex((b) => b.id === referenceId && b.id !== "canvas");
+  if (referenceIndex === -1) {
+    notFoundErr(`Reference block "${referenceId}" not found on this page.`, 'Check the id with "pagectl inspect --page <file>" and retry.');
+  }
+  if (options.id === referenceId) {
+    badInput("--id and the reference id must differ.", "Pick a different reference block.");
+  }
+  const withoutSource = page.filter((_, i) => i !== sourceIndex);
+  const sourceBlock = page[sourceIndex];
+  const newReferenceIndex = withoutSource.findIndex((b) => b.id === referenceId);
+  const insertAt = options.before ? newReferenceIndex : newReferenceIndex + 1;
+  const nextPage = [...withoutSource.slice(0, insertAt), sourceBlock, ...withoutSource.slice(insertAt)];
+  const order = nextPage.filter((b) => b.id !== "canvas").map((b) => b.id);
+  if (options.dryRun) {
+    emitResult(!!options.json, { status: "dry-run", path, order }, () => console.log(`[dry-run] Would reorder -> ${order.join(", ")}`));
+    return;
+  }
+  writePageFileAtomic(path, nextPage);
+  emitResult(!!options.json, { status: "reordered", path, order }, () => {
+    console.log(`New order: ${order.join(", ")} -> ${path}`);
+  });
+}
+
+// src/commands/inspect.ts
+init_schema();
+function inspectCommand(options) {
+  const { page, path } = loadPageFile(options.page);
+  const blocks = getBlocks(page);
+  const data = {
+    path,
+    canvas: { width: CANVAS.width, height: CANVAS.height },
+    nextAutoFlowY: nextAutoFlowY(page),
+    blocks: blocks.map((b) => ({
+      id: b.id,
+      type: b.type,
+      x: b.position.x,
+      y: b.position.y,
+      width: b.dimensions.width,
+      height: b.dimensions.height
+    }))
+  };
+  emitResult(!!options.json, data, () => {
+    console.log(`Page: ${data.path}`);
+    console.log(`Canvas: ${data.canvas.width}x${data.canvas.height}  next auto-flow y: ${data.nextAutoFlowY}`);
+    for (const b of data.blocks) {
+      console.log(`  ${b.id.padEnd(20)} ${b.type.padEnd(10)} (${b.x}, ${b.y}) ${b.width}x${b.height}`);
+    }
+    if (data.blocks.length === 0)
+      console.log("  (no blocks)");
+  });
+}
+
+// src/commands/validate.ts
+init_schema();
+import { existsSync as existsSync5, readFileSync as readFileSync5 } from "node:fs";
+function validateCommand(options) {
+  const { path: filePath, isDefault } = resolvePagePath(options.page);
+  const issues = [];
+  if (!existsSync5(filePath)) {
+    if (isDefault) {
+      writePageFileAtomic(filePath, [makeCanvasRoot()]);
+    } else {
+      const slug = slugFromPageFilePath(filePath);
+      const createHint = slug ? `pagectl new ${slug}` : `pagectl new <slug> --out ${filePath}`;
+      const siblings = findSiblingPageFiles(filePath);
+      const fix = siblings.length > 0 ? `Found existing page file(s) in this directory: ${siblings.join(", ")}. Pass one of them as --page if that's what you meant, or create a new one with "${createHint}".` : `Create it first with "${createHint}", or omit --page to validate the default page.`;
+      badInput(`Page file not found: ${filePath}`, fix);
+    }
+  }
+  let raw;
+  try {
+    raw = readFileSync5(filePath, "utf8");
+  } catch (err) {
+    badInput(`Could not read ${filePath}: ${err.message}`, "Check file permissions and retry.");
+  }
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (err) {
+    issues.push({
+      kind: "schema",
+      message: `Invalid JSON: ${err.message}`,
+      fix: 'Fix the JSON syntax by hand, or regenerate the file with "pagectl new".'
+    });
+    report(options, filePath, issues, 0);
+    return;
+  }
+  const parsed = pageSchema.safeParse(data);
+  if (!parsed.success) {
+    for (const issue of parsed.error.issues) {
+      issues.push({
+        kind: "schema",
+        message: `${issue.path.join(".") || "(root)"}: ${issue.message}`,
+        fix: "Match the PageComponent shape (id, type, content, position, dimensions, style, inlineStyle, classes, dataAttributes)."
+      });
+    }
+    report(options, filePath, issues, 0);
+    return;
+  }
+  const violation = checkScope(parsed.data);
+  if (violation) {
+    issues.push({ kind: "scope", message: violation.reason, fix: violation.fix });
+  }
+  const canvasRoot = !violation ? getCanvasRoot(parsed.data) : void 0;
+  const missingCanvasClasses = canvasRoot ? ABSOLUTE_CANVAS_CLASSES.filter((cls) => !canvasRoot.classes.includes(cls)) : [];
+  if (missingCanvasClasses.length > 0) {
+    issues.push({
+      kind: "stale-canvas-classes",
+      message: `Canvas root is missing absolute-mode chrome class(es) (${missingCanvasClasses.join(", ")}) \u2014 the live "serve" preview will lose them on the next edit and appear to fall out of absolute layout.`,
+      fix: options.fix ? "Repairing automatically (--fix was passed)." : "Re-run with --fix to repair automatically."
+    });
+  }
+  const blocks = getBlocks(parsed.data);
+  const staleIds = /* @__PURE__ */ new Set();
+  for (const block of blocks) {
+    const expected = renderInlineStyle(
+      { x: block.position.x, y: block.position.y, width: block.dimensions.width, height: block.dimensions.height },
+      block.style
+    );
+    if (block.inlineStyle !== expected) {
+      staleIds.add(block.id);
+      issues.push({
+        kind: "stale-inline-style",
+        message: `"${block.id}"'s inlineStyle doesn't match its position/dimensions/style, so the real editor won't render it where the JSON says it is.`,
+        fix: options.fix ? "Repairing automatically (--fix was passed)." : `Re-run with --fix to repair automatically, or touch it once with "pagectl update-block --page ${filePath} --id ${block.id} --right --left" (net zero move, regenerates inlineStyle).`
+      });
+    }
+  }
+  for (const overlap of findOverlaps(blocks)) {
+    issues.push({
+      kind: "overlap",
+      message: `"${overlap.a}" and "${overlap.b}" overlap.`,
+      fix: `Move one of them apart with repeated "pagectl update-block --page ${filePath} --id ${overlap.b} --left/--right/--up/--down" calls.`
+    });
+  }
+  for (const oob of findOutOfBounds(blocks)) {
+    issues.push({
+      kind: "out-of-bounds",
+      message: `"${oob.id}": ${oob.reason}`,
+      fix: `Reposition it with "pagectl update-block --page ${filePath} --id ${oob.id} --left/--right/--up/--down" until it's back on canvas (${CANVAS.width}x${CANVAS.height}).`
+    });
+  }
+  const overflowEstimates = /* @__PURE__ */ new Map();
+  for (const block of blocks) {
+    if (!isBlockType(block.type))
+      continue;
+    if (block.type !== "text" && block.type !== "header")
+      continue;
+    const plainText = extractPlainText(block.content);
+    const estimated = Math.round(estimateWrappedHeight(block.type, plainText, block.dimensions.width, 0, block.style));
+    if (estimated > block.dimensions.height) {
+      overflowEstimates.set(block.id, estimated);
+      issues.push({
+        kind: "possible-text-overflow",
+        message: `"${block.id}"'s content likely wraps past its declared height (${block.dimensions.height}px) at its font-size \u2014 estimated ~${estimated}px needed.`,
+        fix: options.fix ? "Repairing automatically (--fix was passed): growing height to fit." : `Re-run with --fix to grow it automatically, or "pagectl update-block --page ${filePath} --id ${block.id} --height ${estimated}".`
+      });
+    }
+  }
+  const fixCanvasClasses = !!options.fix && missingCanvasClasses.length > 0;
+  const fixOverflow = !!options.fix && overflowEstimates.size > 0;
+  const didRepair = !!options.fix && staleIds.size > 0 || fixCanvasClasses || fixOverflow;
+  if (didRepair) {
+    const repairedPage = parsed.data.map((block) => {
+      if (fixCanvasClasses && block.id === "canvas" && block.type === "canvas") {
+        return { ...block, classes: Array.from(/* @__PURE__ */ new Set([...block.classes, ...ABSOLUTE_CANVAS_CLASSES])) };
+      }
+      let next = block;
+      if (overflowEstimates.has(block.id)) {
+        const estimatedHeight = overflowEstimates.get(block.id);
+        const nextStyle = { ...next.style };
+        if ("min-height" in nextStyle)
+          nextStyle["min-height"] = `${estimatedHeight}px`;
+        next = { ...next, dimensions: { ...next.dimensions, height: estimatedHeight }, style: nextStyle };
+      }
+      if (!staleIds.has(block.id) && !overflowEstimates.has(block.id))
+        return next;
+      return {
+        ...next,
+        inlineStyle: renderInlineStyle(
+          { x: next.position.x, y: next.position.y, width: next.dimensions.width, height: next.dimensions.height },
+          next.style
+        )
+      };
+    });
+    writePageFileAtomic(filePath, repairedPage);
+  }
+  const remainingIssues = didRepair ? issues.filter((i) => i.kind !== "stale-inline-style" && i.kind !== "stale-canvas-classes" && i.kind !== "possible-text-overflow") : issues;
+  const repairedCount = didRepair ? staleIds.size + (fixCanvasClasses ? 1 : 0) + (fixOverflow ? overflowEstimates.size : 0) : 0;
+  const repairSummary = [];
+  if (didRepair && staleIds.size > 0)
+    repairSummary.push(`stale inlineStyle on ${staleIds.size} block(s)`);
+  if (fixCanvasClasses)
+    repairSummary.push("canvas root chrome classes");
+  if (fixOverflow)
+    repairSummary.push(`possible text overflow on ${overflowEstimates.size} block(s)`);
+  report(options, filePath, remainingIssues, repairedCount, repairSummary);
+}
+function report(options, filePath, remainingIssues, repairedCount, repairSummary) {
+  const valid = remainingIssues.length === 0;
+  emitResult(!!options.json, { valid, path: filePath, repairedCount, repaired: repairSummary, issues: remainingIssues }, () => {
+    if (repairedCount > 0) {
+      console.log(`Repaired ${repairSummary.join(" and ")}: ${filePath}`);
+    }
+    if (valid) {
+      console.log(`Valid: ${filePath}`);
+      return;
+    }
+    console.error(`Invalid: ${filePath}`);
+    for (const issue of remainingIssues) {
+      console.error(`  [${issue.kind}] ${issue.message}`);
+      console.error(`    fix: ${issue.fix}`);
+    }
+  });
+  if (!valid)
+    process.exitCode = EXIT.BAD_INPUT;
+}
+
+// src/commands/build.ts
+init_schema();
+import { createRequire } from "node:module";
+import { dirname as dirname2, resolve as resolve4 } from "node:path";
+import { mkdirSync as mkdirSync3, readFileSync as readFileSync6, writeFileSync as writeFileSync3 } from "node:fs";
+var NOT_A_PREVIEW_NOTE = 'This is a rough static export (template-based, no headless browser) \u2014 not pixel parity with the real editor. For an accurate live view, use "pagectl serve" instead.';
+var require2 = createRequire(import.meta.url);
+function readCoreCss() {
+  try {
+    const corePkgJson = require2.resolve("@mindfiredigital/page-builder/package.json");
+    const cssPath = resolve4(dirname2(corePkgJson), "dist/styles/index.css");
+    return readFileSync6(cssPath, "utf8");
+  } catch (err) {
+    transientErr(
+      `Could not locate @mindfiredigital/page-builder's built CSS: ${err.message}`,
+      'Run the core package build first ("pnpm --filter @mindfiredigital/page-builder build"), then retry.'
+    );
+  }
+}
+function renderBlock(block) {
+  const style = block.inlineStyle || renderInlineStyle(
+    { x: block.position.x, y: block.position.y, width: block.dimensions.width, height: block.dimensions.height },
+    block.style
+  );
+  const classAttr = block.classes.join(" ");
+  switch (block.type) {
+    case "button":
+      return `<button id="${escapeHtml(block.id)}" class="${escapeHtml(classAttr)}" style="${escapeHtml(style)}">${block.content}</button>`;
+    case "image":
+      return `<div id="${escapeHtml(block.id)}" class="${escapeHtml(classAttr)}" style="${escapeHtml(style)}"><img src="${escapeHtml(block.imageSrc ?? "")}" alt="" style="width:100%;height:100%;object-fit:contain;border:none;" /></div>`;
+    case "text":
+    case "header":
+    case "container":
+    default:
+      return `<div id="${escapeHtml(block.id)}" class="${escapeHtml(classAttr)}" style="${escapeHtml(style)}">${block.content}</div>`;
+  }
+}
+function buildCommand(options) {
+  const { page } = loadPageFile(options.page);
+  const blocks = getBlocks(page);
+  const canvas = getCanvasRoot(page);
+  const canvasStyle = canvas?.inlineStyle ? escapeHtml(canvas.inlineStyle) : "";
+  const css = readCoreCss();
+  const bodyBlocks = blocks.map(renderBlock).join("\n  ");
+  const html = `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>pagectl build</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="page-builder-canvas" style="position:relative;width:${CANVAS.width}px;min-height:${CANVAS.height}px;${canvasStyle}">
+  ${bodyBlocks}
+</div>
+</body>
+</html>
+`;
+  const outDir = resolve4(options.out ?? "pagectl-output");
+  if (options.dryRun) {
+    emitResult(
+      !!options.json,
+      { status: "dry-run", outDir, blockCount: blocks.length, note: NOT_A_PREVIEW_NOTE },
+      () => console.error(`[dry-run] Would write ${outDir}/index.html and ${outDir}/styles.css`)
+    );
+    return;
+  }
+  mkdirSync3(outDir, { recursive: true });
+  writeFileSync3(resolve4(outDir, "index.html"), html, "utf8");
+  writeFileSync3(resolve4(outDir, "styles.css"), css, "utf8");
+  emitResult(!!options.json, { status: "built", outDir, blockCount: blocks.length, note: NOT_A_PREVIEW_NOTE }, () => {
+    console.log(`Wrote ${resolve4(outDir, "index.html")}`);
+    console.log(`Wrote ${resolve4(outDir, "styles.css")}`);
+    console.log(NOT_A_PREVIEW_NOTE);
+  });
+}
+
+// src/commands/serve.ts
+init_schema();
+import { createServer } from "node:http";
+import { existsSync as existsSync6, readFileSync as readFileSync7, watch } from "node:fs";
+function readDesignFile(filePath) {
+  if (!existsSync6(filePath)) {
+    const blank = [makeCanvasRoot()];
+    writePageFileAtomic(filePath, blank);
+    return blank;
+  }
+  return JSON.parse(readFileSync7(filePath, "utf8"));
+}
+function listenWithFallback(server, startPort, maxAttempts = 20) {
+  return new Promise((resolvePromise, reject) => {
+    let attempt = 0;
+    const tryPort = (port) => {
+      const onError = (err) => {
+        server.removeListener("listening", onListening);
+        if (err.code === "EADDRINUSE" && attempt < maxAttempts) {
+          attempt++;
+          tryPort(port + 1);
+          return;
+        }
+        reject(err);
+      };
+      const onListening = () => {
+        server.removeListener("error", onError);
+        resolvePromise(port);
+      };
+      server.once("error", onError);
+      server.once("listening", onListening);
+      server.listen(port);
+    };
+    tryPort(startPort);
+  });
+}
+function readJSONBody(req) {
+  return new Promise((resolvePromise, reject) => {
+    let data = "";
+    req.on("data", (chunk) => data += chunk);
+    req.on("end", () => {
+      try {
+        resolvePromise(JSON.parse(data));
+      } catch (err) {
+        reject(err);
+      }
+    });
+  });
+}
+async function serveCommand(designFile, options) {
+  const { path: filePath } = resolvePagePath(designFile);
+  const port = Number(options.port ?? 4321);
+  const existingLock = readLiveServeLock();
+  if (existingLock) {
+    console.error(
+      `A pagectl serve session is already running in this directory (pid ${existingLock.pid}, port ${existingLock.port}, page ${existingLock.page}).`
+    );
+    console.error(`Run "pagectl status" to check, or stop that process first.`);
+    process.exitCode = 2;
+    return;
+  }
+  let currentDesign = readDesignFile(filePath);
+  const sseClients = /* @__PURE__ */ new Set();
+  function broadcast(design) {
+    const payload = `data: ${JSON.stringify(design)}
+
+`;
+    for (const res of sseClients)
+      res.write(payload);
+  }
+  let watchTimer = null;
+  watch(filePath, () => {
+    if (watchTimer)
+      clearTimeout(watchTimer);
+    watchTimer = setTimeout(() => {
+      if (!existsSync6(filePath))
+        return;
+      let next;
+      try {
+        next = JSON.parse(readFileSync7(filePath, "utf8"));
+      } catch {
+        return;
+      }
+      const parsed = pageSchema.safeParse(next);
+      if (!parsed.success)
+        return;
+      currentDesign = parsed.data;
+      broadcast(currentDesign);
+      console.error(`[serve] ${filePath} changed on disk (${currentDesign.length} components), pushed to ${sseClients.size} open tab(s)`);
+    }, 50);
+  });
+  const { bundleLibrary: bundleLibrary2 } = await Promise.resolve().then(() => (init_bundleLibrary(), bundleLibrary_exports));
+  const { buildHarnessPage: buildHarnessPage2 } = await Promise.resolve().then(() => (init_harnessPage(), harnessPage_exports));
+  console.error("Bundling page-builder for the browser (one-time, no headless browser involved)...");
+  const { js, css } = await bundleLibrary2();
+  const harnessHTML = buildHarnessPage2();
+  const server = createServer(async (req, res) => {
+    if (req.url === "/") {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(harnessHTML);
+      return;
+    }
+    if (req.url === "/bundle.js") {
+      res.writeHead(200, { "Content-Type": "text/javascript" });
+      res.end(js);
+      return;
+    }
+    if (req.url === "/bundle.css") {
+      res.writeHead(200, { "Content-Type": "text/css" });
+      res.end(css);
+      return;
+    }
+    if (req.url === "/events") {
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive"
+      });
+      res.write("\n");
+      sseClients.add(res);
+      req.on("close", () => sseClients.delete(res));
+      return;
+    }
+    if (req.url === "/design" && req.method === "GET") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(currentDesign));
+      return;
+    }
+    if (req.url === "/design" && req.method === "POST") {
+      let body;
+      try {
+        body = await readJSONBody(req);
+      } catch {
+        res.writeHead(400);
+        res.end("Invalid JSON");
+        return;
+      }
+      const parsed = pageSchema.safeParse(body);
+      if (!parsed.success) {
+        res.writeHead(422, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ errors: parsed.error.issues }));
+        return;
+      }
+      currentDesign = parsed.data;
+      writePageFileAtomic(filePath, currentDesign);
+      broadcast(currentDesign);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: true, componentCount: currentDesign.length }));
+      console.error(`[serve] ${filePath} updated via POST /design (${currentDesign.length} components), pushed to ${sseClients.size} open tab(s)`);
+      return;
+    }
+    res.writeHead(404);
+    res.end("Not found");
+  });
+  let actualPort;
+  try {
+    actualPort = await listenWithFallback(server, port);
+  } catch (err) {
+    console.error(`Could not bind to port ${port} or any port after it: ${err.message}`);
+    process.exitCode = 5;
+    return;
+  }
+  writeServeLock({ pid: process.pid, port: actualPort, page: filePath, startedAt: (/* @__PURE__ */ new Date()).toISOString() });
+  if (actualPort !== port) {
+    console.error(`Port ${port} was already in use \u2014 serving on ${actualPort} instead.`);
+  }
+  console.error(`
+pagectl serve running at http://localhost:${actualPort}`);
+  console.error(`Persistent storage: ${filePath}`);
+  console.error(`File changes from add-block/update-block/remove-block/reorder-block are picked up live.`);
+  console.error(`Or push edits directly with:`);
+  console.error(`  curl -X POST http://localhost:${actualPort}/design -H "Content-Type: application/json" -d @your-design.json`);
+  console.error(`Restarting this command re-reads ${filePath} \u2014 state is not lost.
+`);
+  const shutdown = () => {
+    removeServeLock();
+    process.exit(0);
+  };
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+  process.on("exit", removeServeLock);
+}
+
+// src/commands/setCanvas.ts
+init_schema();
+function setCanvasCommand(options) {
+  const style = parseKeyValueList(options.style, "--style");
+  if (Object.keys(style).length === 0) {
+    badInput("--style is required (at least one key=value pair).", "Pass e.g. --style background-color=#f2ede4.");
+  }
+  const { page, path } = loadPageFile(options.page);
+  const canvas = getCanvasRoot(page);
+  if (!canvas) {
+    badInput('Page is missing its canvas root entry (id "canvas", type "canvas").', 'Recreate the page with "pagectl new <slug>".');
+  }
+  const nextStyle = { ...canvas.style, ...style };
+  const inlineStyle = Object.entries(nextStyle).map(([key, value]) => `${key}: ${value}`).join("; ") + (Object.keys(nextStyle).length ? ";" : "");
+  const nextCanvas = { ...canvas, style: nextStyle, inlineStyle };
+  const nextPage = page.map((block) => block.id === "canvas" && block.type === "canvas" ? nextCanvas : block);
+  if (options.dryRun) {
+    emitResult(
+      !!options.json,
+      { status: "dry-run", path, style: nextStyle, inlineStyle },
+      () => console.log(`[dry-run] Would set canvas style -> ${inlineStyle}`)
+    );
+    return;
+  }
+  writePageFileAtomic(path, nextPage);
+  emitResult(!!options.json, { status: "updated", path, style: nextStyle, inlineStyle }, () => {
+    console.log(`Updated canvas style -> ${inlineStyle} -> ${path}`);
+  });
+}
+
+// src/index.ts
+var program = new Command();
+function collect(value, previous) {
+  return [...previous, value];
+}
+program.name("pagectl").description(
+  'Scriptable, self-describing CLI for @mindfiredigital/page-builder pages. v1 covers flat, top-level, absolute-mode pages (text/header/button/container/image). Run "pagectl schema" for the full machine-readable command tree.'
+).version("1.0.0");
+program.command("schema").description("Print the machine-readable command tree, canvas info, block palette, and every flag enum.").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => schemaCommand(options)));
+program.command("status").description(`Report the default (or given) page file's existence/block count, and whether a "serve" session is already running.`).option("--page <file>", "page JSON file (default: .pagectl/page.json)").option("--json", "emit structured JSON").action((options) => runCommand(!!options.json, () => statusCommand(options)));
+program.command("list-blocks").description("Print the block palette and defaults.").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => listBlocksCommand(options)));
+program.command("new <slug>").description("Explicitly create an additional, separately named page (not needed for the common single-page case \u2014 add-block etc. auto-create the default page).").option("-o, --out <path>", "output file path (default: <slug>.page.json)").option("--force", "overwrite an existing page file with a blank canvas").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((slug, options) => runCommand(!!options.json, () => newCommand(slug, options)));
+program.command("add-block").description("Add a block to the default (or given) page, auto-creating it if needed. Default placement is auto-flow.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--type <type>", "block type: text|header|button|container|image").option("--id <id>", "unique block id").option("--content <text>", "block text content").option("--src <url>", "image URL (--type image only)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--width <n>", "override the type default width").option("--height <n>", "override the type default height").option("--below <id>", "anchor: place below this block id").option("--right-of <id>", "anchor: place to the right of this block id").option("--align <value>", "left|center|right, used with --below", "left").option("--gap <n>", "override the CLI default gap for anchor placement").option("--x <n>", "explicit x (escape hatch; requires --y)").option("--y <n>", "explicit y (escape hatch; requires --x)").option("--parent <id>", "not supported in v1 \u2014 always refused, out of scope").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => addBlockCommand(options)));
+program.command("update-block").description("Nudge a block one grid step, jump to an explicit --x/--y, resize it, and/or fix its content/style/class.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--left", "nudge left one grid step").option("--right", "nudge right one grid step").option("--up", "nudge up one grid step").option("--down", "nudge down one grid step").option("--x <n>", "explicit x (escape hatch for a large move; requires --y)").option("--y <n>", "explicit y (escape hatch for a large move; requires --x)").option("--width <n>", "resize: new width in px (independent of --height)").option("--height <n>", "resize: new height in px (independent of --width)").option("--content <text>", "new text content").option("--src <url>", "new image URL (image blocks only)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--class <name>", "extra CSS class (repeatable)", collect, []).option("--raw-content", "use --content verbatim instead of auto-wrapping it").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => updateBlockCommand(options)));
+program.command("remove-block").description("Remove a block from a page.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => removeBlockCommand(options)));
+program.command("reorder-block").description("Change a block's array order (auto-flow order / z-order), not its position.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--id <id>", "block id to move").option("--before <id>", "move before this block id").option("--after <id>", "move after this block id").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => reorderBlockCommand(options)));
+program.command("inspect").description("Print canvas info, next auto-flow y, and every block's box.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => inspectCommand(options)));
+program.command("validate").description("Schema + scope + overlap + out-of-bounds + stale-inlineStyle checks, each with a fix hint.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--fix", "auto-repair blocks whose inlineStyle has drifted from position/dimensions/style").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => validateCommand(options)));
+program.command("build").description('Rough static HTML/CSS export for shipping/inspection (NOT a preview of the real editor \u2014 use "serve" for that).').option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("-o, --out <dir>", "output directory (default: pagectl-output)").option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => buildCommand(options)));
+program.command("set-canvas").description("Set style on the page's canvas root (e.g. a page background color) without adding a block that would overlap everything else.").option("--page <file>", "page JSON file (default: .pagectl/page.json, auto-created on first use)").option("--style <kv>", "CSS style as key=value (repeatable)", collect, []).option("--dry-run", "compute and report without writing").option("--json", "emit structured JSON").option("--no-input", "fail fast instead of prompting (pagectl never prompts; this is always the effective behavior)").action((options) => runCommand(!!options.json, () => setCanvasCommand(options)));
+program.command("serve [file]").description("Serve the real page-builder editor backed by the default (or given) page file; watches it on disk for live updates. Refuses to double-start in the same directory.").option("-p, --port <port>", "port to try first; falls back to the next free port if taken", "4321").action(async (file, options) => {
+  await serveCommand(file, options);
+});
+var wantsJson = process.argv.includes("--json");
+program.exitOverride();
+try {
+  await program.parseAsync(process.argv);
+} catch (err) {
+  const message = err instanceof Error ? err.message : String(err);
+  const code = err.exitCode ?? 2;
+  if (code === 0)
+    process.exit(0);
+  if (wantsJson) {
+    process.stdout.write(
+      JSON.stringify({ error: message, fix: 'Run "pagectl schema" for the full command tree and flag list.' }) + "\n"
+    );
+  } else {
+    console.error(`Error: ${message}`);
+  }
+  process.exitCode = 2;
+}
+//# sourceMappingURL=index.js.map

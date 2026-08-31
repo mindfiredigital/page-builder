@@ -1,9 +1,9 @@
 /* Builds and returns the root modal DOM element with its static HTML shell */
 export function createModalElement() {
-  const modal = document.createElement('div');
-  modal.className = 'modal-overlay modal-hidden';
-  modal.id = 'modal';
-  modal.innerHTML = `
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay modal-hidden';
+    modal.id = 'modal';
+    modal.innerHTML = `
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-header-content">
@@ -31,5 +31,5 @@ export function createModalElement() {
       </div>
     </div>
   `;
-  return modal;
+    return modal;
 }

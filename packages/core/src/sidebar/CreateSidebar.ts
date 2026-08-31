@@ -13,6 +13,7 @@ const DEFAULT_DYNAMIC_COMPONENTS: DynamicComponents = {
     { name: 'threeCol' },
     { name: 'table' },
     { name: 'link' },
+    { name: 'richtext' },
   ],
   Extra: ['landingpage'],
   Custom: {},

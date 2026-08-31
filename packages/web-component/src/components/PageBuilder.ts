@@ -1,16 +1,15 @@
 import { PageBuilder } from '@mindfiredigital/page-builder/dist/PageBuilder.js';
+import type {
+  PageBuilderDesign,
+  ComponentAttribute,
+  BasicComponent,
+} from '@mindfiredigital/page-builder';
 
-export interface PageBuilderDesign {
-  pages?: Array<{
-    id: string;
-    components: Array<{
-      type: string;
-      id: string;
-      props: Record<string, any>;
-    }>;
-  }>;
-  [key: string]: any;
-}
+/* Re-exported so consumers (e.g. the react wrapper) can keep importing
+   these shared shapes from this package without reaching into core directly.
+   The canonical definitions live in core — see core/src/types/types.d.ts. */
+export type { PageBuilderDesign, ComponentAttribute, BasicComponent };
+
 export class PageBuilderComponent extends HTMLElement {
   private pageBuilder!: PageBuilder;
   private initialized = false;
@@ -145,12 +144,36 @@ export class PageBuilderComponent extends HTMLElement {
   set configData(value: any) {
     this.config = value;
     this.initialized = false;
+    if (!this.firstElementChild) {
+      this.innerHTML = this.template;
+    }
     this.initializePageBuilder();
   }
 
   get configData() {
     return this.config;
   }
+
+  /* Applies a new design to this already-mounted instance, live — used by a
+     live-sync client (e.g. a sidecar pushing an agent's edit over
+     WebSocket/SSE) to reflect the change without a full page reload. */
+  applyDesign(design: PageBuilderDesign): void {
+    if (!this.pageBuilder) {
+      throw new Error('PageBuilder is not initialized yet.');
+    }
+    this.pageBuilder.applyDesign(design);
+  }
+
+  /* Returns the current design as final HTML/CSS strings. Used by headless
+     callers (e.g. the CLI's `render` command) that don't have a click-driven
+     export button in the page. */
+  generateOutput(): { html: string; css: string } {
+    if (!this.pageBuilder) {
+      throw new Error('PageBuilder is not initialized yet.');
+    }
+    return this.pageBuilder.generateOutput();
+  }
+
   // Initializes the PageBuilder instance
   private initializePageBuilder() {
     if (this.initialized) {

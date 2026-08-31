@@ -190,3 +190,102 @@ export function createSelectControl(
 
   controlsContainer.appendChild(wrapper);
 }
+
+/* Builds a spacing control (margin / padding) with all-sides and custom-sides toggle */
+export function createSpacingControl(
+  label: string,
+  id: string,
+  mode: 'all' | 'custom',
+  allValue: number,
+  allUnit: string,
+  sides: {
+    top: { value: number; unit: string };
+    right: { value: number; unit: string };
+    bottom: { value: number; unit: string };
+    left: { value: number; unit: string };
+  },
+  controlsContainer: HTMLElement,
+  attributes: { min?: number; max?: number } = {}
+): void {
+  const { min = 0, max = 1000 } = attributes;
+
+  const unitOpts = (sel: string) =>
+    ['px', 'rem', 'vh', '%']
+      .map(
+        u => `<option value="${u}"${u === sel ? ' selected' : ''}>${u}</option>`
+      )
+      .join('');
+
+  /* All-sides icon: solid-border square */
+  const allIcon = `<svg width="14" height="14" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="1" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
+
+  /* Custom icon: four separate edge segments */
+  const customIcon = `<svg width="14" height="14" viewBox="0 0 14 14">
+    <line x1="3" y1="1" x2="11" y2="1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <line x1="3" y1="13" x2="11" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <line x1="1" y1="3" x2="1" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <line x1="13" y1="3" x2="13" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('control-wrapper', 'spacing-control');
+
+  wrapper.innerHTML = `
+    <div class="spacing-header">
+      <label>${label}:</label>
+      <div class="spacing-toggle">
+        <button type="button" class="spacing-mode-btn${mode === 'all' ? ' active' : ''}" data-mode="all" title="All sides">${allIcon}</button>
+        <button type="button" class="spacing-mode-btn${mode === 'custom' ? ' active' : ''}" data-mode="custom" title="Individual sides">${customIcon}</button>
+      </div>
+    </div>
+    <div class="spacing-all" style="display:${mode === 'all' ? 'flex' : 'none'}">
+      <input type="number" id="${id}" value="${allValue}" min="${min}" max="${max}">
+      <select id="${id}-unit">${unitOpts(allUnit)}</select>
+    </div>
+    <div class="spacing-custom" style="display:${mode === 'custom' ? 'flex' : 'none'}">
+      <div class="spacing-row">
+        <span class="spacing-side-label">Top</span>
+        <input type="number" id="${id}-top" value="${sides.top.value}" min="${min}" max="${max}">
+        <select id="${id}-top-unit">${unitOpts(sides.top.unit)}</select>
+      </div>
+      <div class="spacing-row">
+        <span class="spacing-side-label">Left</span>
+        <input type="number" id="${id}-left" value="${sides.left.value}" min="${min}" max="${max}">
+        <select id="${id}-left-unit">${unitOpts(sides.left.unit)}</select>
+      </div>
+      <div class="spacing-row">
+        <span class="spacing-side-label">Right</span>
+        <input type="number" id="${id}-right" value="${sides.right.value}" min="${min}" max="${max}">
+        <select id="${id}-right-unit">${unitOpts(sides.right.unit)}</select>
+      </div>
+      <div class="spacing-row">
+        <span class="spacing-side-label">Bottom</span>
+        <input type="number" id="${id}-bottom" value="${sides.bottom.value}" min="${min}" max="${max}">
+        <select id="${id}-bottom-unit">${unitOpts(sides.bottom.unit)}</select>
+      </div>
+    </div>
+  `;
+
+  controlsContainer.appendChild(wrapper);
+
+  const allBtn = wrapper.querySelector<HTMLButtonElement>('[data-mode="all"]')!;
+  const customBtn = wrapper.querySelector<HTMLButtonElement>(
+    '[data-mode="custom"]'
+  )!;
+  const allDiv = wrapper.querySelector<HTMLElement>('.spacing-all')!;
+  const customDiv = wrapper.querySelector<HTMLElement>('.spacing-custom')!;
+
+  allBtn.addEventListener('click', () => {
+    allBtn.classList.add('active');
+    customBtn.classList.remove('active');
+    allDiv.style.display = 'flex';
+    customDiv.style.display = 'none';
+  });
+
+  customBtn.addEventListener('click', () => {
+    customBtn.classList.add('active');
+    allBtn.classList.remove('active');
+    allDiv.style.display = 'none';
+    customDiv.style.display = 'flex';
+  });
+}

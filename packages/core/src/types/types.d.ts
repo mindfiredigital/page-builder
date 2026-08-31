@@ -87,6 +87,7 @@ declare global {
       targetComponentId: string;
     }>;
     settingsComponentTagName?: string;
+    customizeComponentTagName?: string;
     props?: ComponentProps;
     settings?: ComponentProps;
   }
@@ -140,12 +141,17 @@ declare global {
     lastCanvasWidth: number | null;
   }
 
+  /** Uploads a base64 image and resolves the hosted URL to use as `src`. */
+  type ImageAttributeConfigHandler = (
+    base64String: string
+  ) => Promise<{ url: string }> | { url: string };
+
   /* Attribute config types for component factories */
   interface ComponentFactoryConfig {
     tableAttributeConfig?: ComponentAttribute[];
     textAttributeConfig?: ComponentAttribute[];
     headerAttributeConfig?: ComponentAttribute[];
-    ImageAttributeConfig?: Function;
+    ImageAttributeConfig?: ImageAttributeConfigHandler;
   }
 
   /* Describes a single resizer handle — its CSS class and cursor style */
@@ -204,6 +210,48 @@ declare global {
     showAttributeTab?: boolean;
     onCustomizeTab: () => void;
     onAttributeTab: () => void;
+  }
+
+  // ── Rich Text Editor ────────────────────────────────────────
+
+  interface BlockTypeDef {
+    type: string;
+    label: string;
+    icon: string;
+  }
+
+  interface TuneItem {
+    label: string;
+    icon: string;
+    action?: () => void;
+    danger?: boolean;
+    active?: boolean;
+    submenu?: TuneItem[];
+  }
+
+  interface TuneItemCallbacks {
+    hidePopover: () => void;
+    showSubmenu: (items: TuneItem[], anchor: HTMLElement) => void;
+    scheduleHideSubmenu: () => void;
+    cancelHideSubmenu: () => void;
+  }
+
+  interface TuneActions {
+    applyAlignment: (block: HTMLElement, align: string) => void;
+    convertBlock: (block: HTMLElement, toType: string) => void;
+    changeHeadingLevel: (block: HTMLElement, level: number) => void;
+    toggleListStyle: (
+      block: HTMLElement,
+      style: 'unordered' | 'ordered'
+    ) => void;
+    toggleCodeTheme: (block: HTMLElement, theme: 'light' | 'dark') => void;
+    toggleImageOption: (
+      block: HTMLElement,
+      option: 'border' | 'stretch' | 'background'
+    ) => void;
+    moveBlockUp: (block: HTMLElement) => void;
+    deleteBlock: (block: HTMLElement) => void;
+    moveBlockDown: (block: HTMLElement) => void;
   }
 }
 

@@ -3,11 +3,26 @@ import { CanvasStateManager } from './CanvasStateManager';
 
 /* Handles all custom event dispatching originating from the canvas */
 export class CanvasEventDispatcher {
-  /* Fires 'design-change' with the current state and persists to JSONStorage */
+  private static _designChangeTimer: ReturnType<typeof setTimeout> | null =
+    null;
+
+  /* Fires 'design-change' with the current state and persists to JSONStorage.
+     Calls are debounced (300 ms) so that rapid sequences — e.g. every keystroke
+     while typing in a text component — collapse into a single serialisation and
+     localStorage write.  This is the main performance lever for large pages. */
   static dispatchDesignChange(): void {
     const { canvasElement, editable, jsonStorage } = CanvasSharedState;
+    if (!canvasElement || editable === false) return;
+    /* Never auto-save while restoreState is rebuilding the canvas —
+       a partial snapshot would overwrite the good persisted state */
+    if (CanvasStateManager.isRestoring) return;
 
-    if (canvasElement && editable !== false) {
+    if (CanvasEventDispatcher._designChangeTimer !== null) {
+      clearTimeout(CanvasEventDispatcher._designChangeTimer);
+    }
+
+    CanvasEventDispatcher._designChangeTimer = setTimeout(() => {
+      CanvasEventDispatcher._designChangeTimer = null;
       const currentDesign = CanvasStateManager.getState();
 
       /* Bubble the design change up through the shadow DOM if needed */
@@ -19,7 +34,7 @@ export class CanvasEventDispatcher {
 
       canvasElement.dispatchEvent(event);
       jsonStorage.save(currentDesign);
-    }
+    }, 300);
   }
 
   /* Attach the global table-design-change listener on the window */
@@ -56,14 +71,30 @@ export class CanvasEventDispatcher {
       }
     });
 
-    /* Show customisation sidebar for the clicked component */
+    /* Show customisation sidebar for the clicked component.
+       Walk up from the raw click target to the nearest editable component
+       so that clicks on child elements (e.g. <video> player, <img> after
+       upload) correctly resolve to the component container's id. */
     canvasElement.addEventListener('click', (event: MouseEvent) => {
-      const component = event.target as HTMLElement;
-      if (component) {
-        /* Lazy import avoids circular dep at module load time */
+      let target = event.target as HTMLElement | null;
+
+      while (
+        target &&
+        target !== canvasElement &&
+        !target.classList.contains('editable-component')
+      ) {
+        target = target.parentElement;
+      }
+
+      if (!target) return;
+
+      const componentId =
+        target === canvasElement ? canvasElement.id : target.id;
+
+      if (componentId) {
         import('../../sidebar/CustomizationSidebar').then(
           ({ CustomizationSidebar }) => {
-            CustomizationSidebar.showSidebar(component.id);
+            CustomizationSidebar.showSidebar(componentId);
           }
         );
       }

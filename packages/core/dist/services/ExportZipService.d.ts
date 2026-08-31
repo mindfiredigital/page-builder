@@ -1,4 +1,1 @@
-export declare function createExportToZipButton(
-  html: string,
-  css: string
-): HTMLButtonElement;
+export declare function createExportToZipButton(html: string, css: string): HTMLButtonElement;

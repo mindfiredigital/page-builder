@@ -12,6 +12,7 @@ const validScopes = [
   'angular',
   'release',
   'docs',
+  'cli',
 ];
 
 // Define regex patterns
@@ -66,6 +67,6 @@ ${description}
   fs.writeFileSync(`.changeset/auto-${Date.now()}.md`, changesetContent);
 } else {
   console.log(
-    '⚠️ No valid package scope found in commit message. Valid scopes are: core, react, web-component'
+    `⚠️ No valid package scope found in commit message. Valid scopes are: ${validScopes.join(', ')}`
   );
 }

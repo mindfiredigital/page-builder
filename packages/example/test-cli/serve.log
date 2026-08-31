@@ -1,0 +1,25 @@
+Bundling page-builder for the browser (one-time, no headless browser involved)...
+node:events:486
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::4321
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at serveCommand (file:///C:/Users/parasb/Desktop/Paras/LakinSirOpenSource/page-builder/packages/cli/dist/index.js:1234:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async Command.<anonymous> (file:///C:/Users/parasb/Desktop/Paras/LakinSirOpenSource/page-builder/packages/cli/dist/index.js:1265:3)
+    at async Command.parseAsync (C:\Users\parasb\Desktop\Paras\LakinSirOpenSource\page-builder\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1092:5)
+    at async file:///C:/Users/parasb/Desktop/Paras/LakinSirOpenSource/page-builder/packages/cli/dist/index.js:1270:3
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 4321
+}
+
+Node.js v24.11.1

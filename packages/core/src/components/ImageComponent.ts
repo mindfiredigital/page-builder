@@ -1,10 +1,14 @@
 import { Canvas } from '../canvas/Canvas';
+import { EDIT_PENCIL_ICON } from '../constants';
 
 export class ImageComponent {
-  private static imageAttributeConfig: Function | undefined | null;
+  private static imageAttributeConfig:
+    | ImageAttributeConfigHandler
+    | undefined
+    | null;
   create(
     src: string | null = null,
-    imageAttributeConfig?: Function | undefined | null
+    imageAttributeConfig?: ImageAttributeConfigHandler | undefined | null
   ): HTMLElement {
     ImageComponent.imageAttributeConfig = imageAttributeConfig;
     // Create a container for the image and label
@@ -41,7 +45,7 @@ export class ImageComponent {
     // Create the pencil icon button
     const pencilButton = document.createElement('button');
     pencilButton.classList.add('upload-btn');
-    pencilButton.innerHTML = '🖊️';
+    pencilButton.innerHTML = EDIT_PENCIL_ICON;
     pencilButton.style.position = 'absolute';
     pencilButton.style.padding = '8px';
     pencilButton.style.background = 'transparent';
@@ -59,6 +63,11 @@ export class ImageComponent {
     const element = document.createElement('img');
     const uniqueImageId = `${uniqueContainerId}-img`;
     element.id = uniqueImageId;
+    /* Never leave alt entirely absent — an explicit empty value marks the
+       image as decorative until the author sets real text via the Alt Text
+       sidebar control, which is still meaningfully better for screen readers
+       than a missing alt attribute. */
+    element.alt = '';
     element.style.width = '100%';
     element.style.height = '100%';
     element.style.objectFit = 'contain';

@@ -18,6 +18,10 @@ Click the button below to open the project on StackBlitz.
   <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz">
 </a>
 
+## Package Compatibility
+
+`@mindfiredigital/page-builder` (core), `-react`, `-web-component`, and `-cli` are developed and released together from this monorepo. They're tested against each other's current versions — upgrade them together rather than pinning one far behind the others.
+
 ## Screenshot
 
  <p align="center">

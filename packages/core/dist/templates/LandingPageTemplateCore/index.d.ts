@@ -1,6 +1,2 @@
 export { enableDragAndResize } from './LandingPageDragResize';
-export {
-  createHeaderSection,
-  createHeroSection,
-  createFooterSection,
-} from './LandingPageSections';
+export { createHeaderSection, createHeroSection, createFooterSection, } from './LandingPageSections';

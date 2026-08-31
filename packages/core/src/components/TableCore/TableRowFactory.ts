@@ -21,6 +21,14 @@ export function CreateTableRow(
     rowDiv.appendChild(cell);
   }
 
+  /* Small "+" button that appears on the bottom border when the row is selected */
+  const insertRowButton = document.createElement('button');
+  insertRowButton.className = 'insert-row-button';
+  insertRowButton.textContent = '+';
+  insertRowButton.contentEditable = 'false';
+  insertRowButton.title = 'Insert row below';
+  rowDiv.appendChild(insertRowButton);
+
   return rowDiv;
 }
 

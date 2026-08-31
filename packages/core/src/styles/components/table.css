@@ -1,0 +1,61 @@
+/* Components — Table component, cells, rows, and insert button */
+
+/*************************************TABLE COMPONENT************************************/
+
+.table-component {
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-component {
+  border-radius: 4px;
+  overflow: auto;
+}
+
+.table-cell {
+  box-sizing: border-box;
+}
+
+.table-row {
+  border-inline: 1px solid #2F3132;
+  padding: 0 0.7px;
+}
+
+.table-cell-content {
+  box-sizing: border-box;
+  padding: 8px 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.insert-row-button {
+  display: none;
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 20px;
+  height: 20px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.table-row.selected .insert-row-button {
+  display: flex;
+}
+
+.insert-row-button:hover {
+  background-color: #059669;
+}

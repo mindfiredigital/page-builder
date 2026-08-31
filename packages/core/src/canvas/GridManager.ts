@@ -1,54 +1,98 @@
 export class GridManager {
   private cellSize: number;
+  private currentLayoutMode: LayoutMode = 'absolute';
 
-  /**
-   * Constructor for GridManager.
-   * @param cellSize - The size of each grid cell, default is 20px.
-   * Used to define the snapping behavior for grid-based alignment.
-   */
   constructor(cellSize: number = 20) {
     this.cellSize = cellSize;
   }
 
-  /**
-   * Initializes the drop-preview element for the canvas.
-   * Ensures there is only one drop-preview element at a time.
-   * Sets up drag-and-drop event listeners for positioning previews.
-   * Updates the visual grid alignment for drag-over operations.
-   * Called during initialization or restoration of the canvas.
-   */
-  initializeDropPreview(canvasElement: HTMLElement) {
-    const existingDropPreview = canvasElement.querySelector('.drop-preview');
-    if (existingDropPreview) {
-      existingDropPreview.remove();
+  initializeDropPreview(
+    canvasElement: HTMLElement,
+    layoutMode: LayoutMode = 'absolute'
+  ): void {
+    this.currentLayoutMode = layoutMode;
+
+    canvasElement.querySelector('.drop-preview')?.remove();
+
+    if (layoutMode === 'absolute') {
+      canvasElement.addEventListener('dragover', (event: Event) => {
+        event.preventDefault();
+      });
+    } else {
+      /* Grid mode: show a horizontal insert-indicator line instead of the
+         grid-corner dot. Suppress the indicator when the cursor is inside a
+         container (containers manage their own drop UX). */
+      canvasElement.addEventListener('dragover', (event: Event) => {
+        event.preventDefault();
+        const target = (event as DragEvent).target as HTMLElement;
+        if (target.closest('.container-component')) {
+          canvasElement.querySelector('.drop-insert-indicator')?.remove();
+          return;
+        }
+        this.updateInsertIndicator(event as DragEvent, canvasElement);
+      });
+
+      canvasElement.addEventListener('dragleave', (event: Event) => {
+        if (
+          !canvasElement.contains((event as DragEvent).relatedTarget as Node)
+        ) {
+          canvasElement.querySelector('.drop-insert-indicator')?.remove();
+        }
+      });
     }
-
-    const dropPreview = document.createElement('div');
-    dropPreview.className = 'drop-preview';
-    canvasElement.appendChild(dropPreview);
-
-    canvasElement.addEventListener('dragover', event => {
-      event.preventDefault();
-      this.showGridCornerHighlight(event, dropPreview, canvasElement);
-    });
-
-    canvasElement.addEventListener('dragleave', () => {
-      dropPreview.classList.remove('visible');
-    });
   }
 
   /**
-   * Updates the position of the drop-preview to align with the grid.
-   * Calculates the nearest grid corner based on mouse position.
-   * Ensures the drop-preview element reflects the correct alignment.
-   * Enhances drag-and-drop UX by snapping the preview to the grid.
-   * Called on every drag-over event over the canvas element.
+   * Returns the first top-level canvas component whose vertical midpoint is
+   * BELOW the cursor — i.e. "insert before this element".  Returns null to
+   * mean "append at the end".
    */
+  findInsertionPoint(
+    event: DragEvent,
+    canvasElement: HTMLElement
+  ): HTMLElement | null {
+    const children = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(
+        ':scope > .editable-component'
+      )
+    );
+
+    for (const child of children) {
+      const rect = child.getBoundingClientRect();
+      if (event.clientY < rect.top + rect.height / 2) {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  private updateInsertIndicator(
+    event: DragEvent,
+    canvasElement: HTMLElement
+  ): void {
+    canvasElement.querySelector('.drop-insert-indicator')?.remove();
+    const insertBefore = this.findInsertionPoint(event, canvasElement);
+
+    const indicator = document.createElement('div');
+    indicator.className = 'drop-insert-indicator';
+
+    if (insertBefore) {
+      canvasElement.insertBefore(indicator, insertBefore);
+    } else {
+      const spacer = canvasElement.querySelector('#canvas-scroll-spacer');
+      if (spacer) {
+        canvasElement.insertBefore(indicator, spacer);
+      } else {
+        canvasElement.appendChild(indicator);
+      }
+    }
+  }
+
   showGridCornerHighlight(
     event: DragEvent,
     dropPreview: HTMLElement,
     canvasElement: HTMLElement
-  ) {
+  ): void {
     const gridCellSize = 20;
     const { gridX, gridY } = this.mousePositionAtGridCorner(
       event,
@@ -62,42 +106,20 @@ export class GridManager {
     dropPreview.classList.add('visible');
   }
 
-  /**
-   * Calculates the nearest grid corner position based on mouse coordinates.
-   * Determines the mouse position relative to the canvas element.
-   * Snaps the mouse position to the closest grid corner for alignment.
-   * Supports grid-based snapping behavior during drag-and-drop.
-   * Returns an object containing the grid-aligned X and Y coordinates.
-   */
-  mousePositionAtGridCorner(event: DragEvent, canvas: HTMLElement) {
+  mousePositionAtGridCorner(
+    event: DragEvent,
+    canvas: HTMLElement
+  ): { gridX: number; gridY: number } {
     const canvasRect = canvas.getBoundingClientRect();
-
-    const scrollLeft = canvas.scrollLeft;
-    const scrollTop = canvas.scrollTop;
-
-    const mouseX = event.clientX - canvasRect.left + scrollLeft;
-    const mouseY = event.clientY - canvasRect.top + scrollTop;
-
-    const gridSize = 10;
-
-    const gridX = Math.round(mouseX / gridSize) * gridSize;
-    const gridY = Math.round(mouseY / gridSize) * gridSize;
-
-    const padding = 20;
+    const mouseX = event.clientX - canvasRect.left + canvas.scrollLeft;
+    const mouseY = event.clientY - canvasRect.top + canvas.scrollTop;
 
     return {
-      gridX: Math.max(padding, gridX - padding),
-      gridY: Math.max(padding, gridY - padding),
+      gridX: Math.round(mouseX),
+      gridY: Math.round(mouseY),
     };
   }
 
-  /**
-   * Retrieves the size of each grid cell.
-   * Provides a way to access the configured grid size for alignment.
-   * Useful for other components needing grid cell dimensions.
-   * Returns the current cell size set during initialization.
-   * The default value is 20px unless overridden in the constructor.
-   */
   getCellSize(): number {
     return this.cellSize;
   }

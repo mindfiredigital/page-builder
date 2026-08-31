@@ -54,7 +54,11 @@ export class HistoryManager {
 
       /** Load existing layout from local storage and render, if any else empty the canvas */
       const savedState = Canvas.jsonStorage.load();
-      savedState ? Canvas.restoreState(savedState) : Canvas.restoreState([]);
+      if (savedState) {
+        Canvas.restoreState(savedState);
+      } else {
+        Canvas.restoreState([]);
+      }
     } else {
       console.warn('No more actions to undo.');
     }

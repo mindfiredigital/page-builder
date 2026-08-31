@@ -10,6 +10,7 @@ import { createExportModal } from './services/ExportModalService';
 import { setupExportPDFButton } from './services/ExportPdfService';
 import { createHeaderIfNeeded } from './utils/pageBuilderNavbarSetup';
 import { setupExportDropdown } from './utils/exportDropdownSetup';
+import { MobileResponsiveManager } from './utils/MobileResponsiveManager';
 import {
   setupSaveButton,
   setupResetButton,
@@ -21,7 +22,7 @@ import {
   syntaxHighlightHTML,
   syntaxHighlightCSS,
 } from './utils/utilityFunctions';
-import './styles/main.css';
+import './styles/index.css';
 
 export class PageBuilder {
   private canvas: Canvas;
@@ -107,6 +108,29 @@ export class PageBuilder {
 
     createHeaderIfNeeded(this.editable, this.brandTitle, this.showAttributeTab);
     PageBuilder.headerInitialized = true;
+
+    /* Mobile responsive setup — grid layout only, runs after all DOM is ready */
+    MobileResponsiveManager.init(this.layoutMode, this.editable);
+  }
+
+  /* Applies a new design to the already-mounted canvas, live — the same
+     mechanism undo/redo uses. This is the seam a live-sync client (e.g. a
+     sidecar push) calls to reflect an externally-made edit in an
+     already-open tab, without a full reload. */
+  public applyDesign(design: PageBuilderDesign): void {
+    Canvas.restoreState(design);
+  }
+
+  /* Returns the current design as final HTML/CSS strings, without any DOM
+     modal/button involved. Reuses the same generator the export button
+     uses — this is the seam headless callers (e.g. the CLI's `render`
+     command) call directly via a real (possibly headless) browser. */
+  public generateOutput(): { html: string; css: string } {
+    const htmlGenerator = new HTMLGenerator(new Canvas());
+    return {
+      html: htmlGenerator.generateHTML(),
+      css: htmlGenerator.generateCSS(),
+    };
   }
 
   /* Wires the Export HTML button — creates the export modal on click */

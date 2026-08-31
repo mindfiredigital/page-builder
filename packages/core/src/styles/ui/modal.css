@@ -1,0 +1,529 @@
+/* UI — Dialog, modals, export modal, and attribute seed modal */
+
+/* Dialog styling */
+.dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog.hidden {
+  display: none;
+}
+
+.dialog-content {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-btn {
+  margin: 8px 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+#dialog-yes {
+  background-color: #ef4444;
+  color: white;
+}
+
+#dialog-yes:hover {
+  background-color: #dc2626;
+}
+
+#dialog-no {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+#dialog-no:hover {
+  background-color: #e2e8f0;
+}
+
+/* Modal styles */
+#preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  z-index: 9999;
+  overflow: auto;
+}
+
+/*************************************EXPORT MODAL************************************/
+#close-modal-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10000;
+  transition: all 0.2s ease;
+}
+
+#close-modal-btn:hover {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+  transition: all 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+.modal.hide {
+  opacity: 0;
+}
+
+.export-modal-content {
+  position: relative;
+  background: white;
+  width: 90%;
+  height: 70%;
+  max-width: 1000px;
+  max-height: 600px;
+  display: flex;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+}
+
+.close-btn {
+  position: absolute;
+  right: 2px
+}
+
+.modal-section {
+  width: 50%;
+}
+
+.modal-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
+.code-block {
+  width: 95%;
+  height: 80%;
+  font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+  font-size: 12px;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  color: #e2e8f0;
+  background-color: #1e293b;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.tag {
+  color: #7dd3fc;
+}
+
+.attribute {
+  color: #fbbf24;
+}
+
+.string {
+  color: #34d399;
+}
+
+.property {
+  color: #a78bfa;
+}
+
+.value {
+  color: #fbbf24;
+}
+
+.bracket {
+  color: #f97316;
+}
+
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 8px;
+}
+
+.export-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.modal-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  right: 20px;
+  width: 18px;
+  height: 18px;
+  color: #999;
+}
+
+.modal-search-input {
+  padding-left: 32px;
+  width: 100%;
+  border-radius: 5px;
+  padding: 5px;
+  outline: none;
+}
+
+/***************************************************ATTRIBUT SEED MODAL*************************************/
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  position: relative;
+  z-index: 10001;
+  width: 100%;
+  max-width: 500px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: fadeInScale 0.2s ease-out;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translate3d(0, -10px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+}
+
+.modal-header {
+  background-color: #fafafa;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 20px 24px;
+}
+
+.modal-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.modal-close-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modal-body {
+  padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #fefefe;
+  overflow: hidden;
+}
+
+/* Expandable header styles */
+.form-field-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+}
+
+.form-field-header:hover {
+  background-color: #f1f5f9;
+}
+
+.expand-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: 12px;
+  cursor: pointer;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expand-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.title-key-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.form-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.form-key {
+  font-size: 12px;
+  color: #6b7280;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-weight: 500;
+}
+
+/* Value container styles */
+.form-value-container {
+  padding: 16px;
+  background-color: white;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.form-value-collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-right: 6px;
+}
+
+.form-input {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background-color: #fefefe;
+}
+
+.form-input:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.form-display-value {
+  color: #374151;
+  border-radius: 8px;
+  user-select: text;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.image-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.image-preview {
+  width: 100%;
+  max-width: 240px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+  max-height: 160px;
+  border: 1px solid #e5e7eb;
+}
+
+.image-input {
+  width: 100%;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.modal-footer {
+  background-color: #fafafa;
+  border-top: 1px solid #e5e5e5;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.save-button {
+  padding: 10px 20px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-width: 80px;
+}
+
+.save-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.save-button:active {
+  transform: translateY(0);
+}
+
+.save-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* Hide modal by default */
+.modal-hidden {
+  display: none !important;
+}
+
+/* In your CSS file */
+.form-field.selected {
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  transform: translateY(-2px);
+  transition: all 0.2s ease-in-out;
+}

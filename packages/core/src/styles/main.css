@@ -2,16 +2,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 /* General Styles */
-body,
 html {
   margin: 0;
   padding: 0;
+  height: 100%;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  display: flex;
-  flex-direction: column;
   background-color: #f8fafc;
   overflow: hidden;
   color: #334155;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8fafc;
+  overflow: hidden;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -48,6 +58,8 @@ html {
 /* App Container */
 #app {
   display: flex;
+  flex: 1;
+  min-height: 0;
   background-color: #f8fafc;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -58,6 +70,7 @@ html {
 #sidebar {
   width: 180px;
   flex-shrink: 0;
+  min-height: 0;
   background-color: #ffffff;
   padding: 16px 12px;
   overflow-y: auto;
@@ -74,25 +87,21 @@ html {
 
 /* Canvas Area */
 #canvas {
-  width: 100%;
   flex-grow: 1;
   min-width: 0;
+  min-height: 0;
   background-color: #ffffff;
   overflow: auto;
   box-sizing: border-box;
-  height: calc(100vh - 40px);
   background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px);
 }
 
 #canvas.grid-layout-active {
   display: block;
-  height: calc(100vh - 40px);
-
 }
 
 #canvas.preview-printable {
   max-width: 869px;
-  max-height: 1123px;
   margin-left: auto;
   margin-right: auto;
   background-color: #ffffff;
@@ -176,6 +185,8 @@ html {
   display: none;
   right: 0;
   width: 300px;
+  flex-shrink: 0;
+  min-height: 0;
   background-color: #ffffff;
   box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
   padding: 24px;
@@ -351,8 +362,11 @@ html {
   cursor: text;
   position: relative;
   pointer-events: auto;
-  background-color: #ffffff;
+  /* No default background-color — components are transparent so parent container
+     background colours are always visible through child components.
+     Users set background explicitly via the sidebar. */
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .component-text-content {
@@ -362,10 +376,8 @@ html {
   box-sizing: border-box;
 }
 
-.component-resizer {
-  overflow: hidden !important;
-  resize: both !important;
-}
+/* component-resizer is kept as a marker class for absolute-mode leaf components */
+.component-resizer { overflow: hidden; }
 
 /* Container Component */
 
@@ -379,19 +391,71 @@ html {
   min-width: 100px;
 }
 
-.container-component:hover {
-  border-color: #3b82f6;
+/* Depth-based default borders — each nesting level gets a distinct colour */
+.container-component[data-depth="0"] { border: 1px dashed #334155; }
+.container-component[data-depth="1"] { border: 1px dashed #3b82f6; }
+.container-component[data-depth="2"] { border: 1px dashed #10b981; }
+.container-component[data-depth="3"] { border: 1px dashed #f97316; }
+
+/*
+ * Hover / drag-highlight indicators use OUTLINE so they never conflict with
+ * the user's custom border (which is an inline style set via the sidebar).
+ * box-shadow no longer needs !important because it doesn't collide with border.
+ */
+.container-component[data-depth="0"]:hover,
+.container-component[data-depth="0"].container-highlight {
+  outline: 2px solid #0f172a !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.2);
+}
+.container-component[data-depth="1"]:hover,
+.container-component[data-depth="1"].container-highlight {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+.container-component[data-depth="2"]:hover,
+.container-component[data-depth="2"].container-highlight {
+  outline: 2px solid #059669 !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+.container-component[data-depth="3"]:hover,
+.container-component[data-depth="3"].container-highlight {
+  outline: 2px solid #ea580c !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+
+/* Fallback for containers that don't yet have a data-depth attribute */
+.container-component:not([data-depth]):hover {
+  outline: 1px solid #3b82f6;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+.container-highlight:not([data-depth]) {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .container-component.container-grid-active {
   display: block;
 }
 
-.container-highlight {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
-}
+/* Depth-based label badge colours match the container border */
+.container-component[data-depth="0"] > .component-label { background-color: #334155; }
+.container-component[data-depth="1"] > .component-label { background-color: #3b82f6; }
+.container-component[data-depth="2"] > .component-label { background-color: #10b981; }
+.container-component[data-depth="3"] > .component-label { background-color: #f97316; }
+
+/*
+ * Container labels are managed entirely by JS via the .label-visible class
+ * (added/removed in initContainerEventListeners on mouseover/leave).
+ * Override the generic CSS :hover rule so only the innermost hovered
+ * container shows its name — not every ancestor that is also :hover.
+ */
+.container-component > .component-label { display: none; }
+.container-component.label-visible > .component-label:first-of-type { display: block; }
 
 /* Draggable Icons */
 .component-icon {
@@ -613,6 +677,46 @@ html {
   transform: scale(1.1);
 }
 
+
+/* Default / Custom mode toggle inside Customize tab */
+.customize-mode-toggle {
+  display: flex;
+  margin: 10px 12px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+}
+
+.customize-mode-toggle .mode-btn {
+  flex: 1;
+  padding: 6px 10px;
+  background-color: transparent;
+  color: #64748b;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.customize-mode-toggle .mode-btn:first-child {
+  border-right: 1px solid #e2e8f0;
+}
+
+.customize-mode-toggle .mode-btn:hover:not(.active) {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.customize-mode-toggle .mode-btn.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.custom-settings-panel {
+  padding: 8px 4px;
+}
 
 /* Layers mode toggle styling */
 .layers-mode-toggle {
@@ -1473,6 +1577,50 @@ html {
   color: #374151;
 }
 
+/* Drag handle (grid mode) — shown inside .component-controls on hover */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  cursor: grab;
+  color: #94a3b8;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.drag-handle:hover {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Insert-position indicator shown during grid-mode drag */
+.drop-insert-indicator {
+  height: 3px;
+  background-color: #3b82f6;
+  border-radius: 2px;
+  pointer-events: none;
+  position: relative;
+  margin: 0;
+  width: 100%;
+}
+
+.drop-insert-indicator::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+}
+
 /* Drop preview styling */
 .drop-preview {
   border: 2px dashed #3b82f6;
@@ -2220,9 +2368,10 @@ html {
 .editable-component.selected,
 .table-cell-content.selected,
 .table-row.selected {
-  border: 2px solid #3b82f6 !important;
+  /* Use outline so the selection indicator never overrides the user's custom border */
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 1px;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-  outline: none;
   position: relative;
 }
 
@@ -2234,7 +2383,9 @@ html {
   display: block !important;
 }
 
-.editable-component:hover>.component-label:first-of-type {
+/* Containers use JS-controlled .label-visible — exclude them here to prevent
+   every ancestor container showing its label when cursor enters a child. */
+.editable-component:not(.container-component):hover>.component-label:first-of-type {
   display: block !important;
 }
 
@@ -2244,6 +2395,860 @@ html {
 }
 
 .editable-component:hover {
-  border-color: #3b82f6;
+  /* Use outline so hover indicator never conflicts with the user's border-color */
+  outline: 1px solid #3b82f6;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+/* ============================================================
+   Rich Text Editor Component
+   ============================================================ */
+.rich-text-component {
+  position: relative;
+  width: 100%;
+  padding: 8px 0;
+  box-sizing: border-box;
+  min-height: 60px;
+}
+
+.rt-block {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding: 2px 0;
+  min-height: 32px;
+}
+
+.rt-block-controls {
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.rich-text-component.editable-component .rt-block:hover .rt-block-controls {
+  opacity: 1;
+}
+
+.rt-add-btn,
+.rt-tune-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #94a3b8;
+  font-size: 16px;
+  padding: 0;
+  line-height: 1;
+}
+
+.rt-add-btn:hover,
+.rt-tune-btn:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.rt-block-content {
+  flex: 1;
+  outline: none;
+  min-height: 24px;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #334155;
+  word-break: break-word;
+  padding: 2px 4px;
+}
+
+.rt-block-content:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Heading block */
+.rt-heading-block {
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1e293b;
+  margin: 0;
+  padding: 2px 4px;
+}
+h1.rt-heading-block { font-size: 2em; }
+h2.rt-heading-block { font-size: 1.5em; }
+h3.rt-heading-block { font-size: 1.25em; }
+h4.rt-heading-block { font-size: 1.1em; }
+h5.rt-heading-block { font-size: 1em; }
+h6.rt-heading-block { font-size: 0.9em; }
+
+/* Image block */
+.rt-image-block {
+  flex: 1;
+  padding: 4px;
+  text-align: center;
+}
+
+.rt-image-select-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 14px;
+  cursor: pointer;
+  justify-content: center;
+}
+
+.rt-image-select-btn:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.rt-image-preview {
+  max-width: 100%;
+  border-radius: 4px;
+  display: block;
+}
+
+/* List block */
+.rt-list-block {
+  flex: 1;
+  margin: 0;
+  padding-left: 24px;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #334155;
+}
+
+.rt-list-block li {
+  padding: 2px 0;
+  outline: none;
+}
+
+.rt-list-block li:empty::before {
+  content: attr(data-placeholder, '');
+  color: #94a3b8;
+}
+
+/* Code block */
+.rt-code-block {
+  flex: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.rt-code-textarea {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  padding: 14px 16px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: #f8fafc;
+  color: #334155;
+  box-sizing: border-box;
+}
+
+.rt-code-block[data-theme='dark'] .rt-code-textarea {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+/* Quote block */
+.rt-quote-block {
+  flex: 1;
+  border-left: 3px solid #e2e8f0;
+  padding-left: 12px;
+}
+
+.rt-quote-text {
+  min-height: 60px;
+  outline: none;
+  font-size: 16px;
+  font-style: italic;
+  color: #475569;
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  line-height: 1.6;
+}
+
+.rt-quote-text:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  font-style: normal;
+}
+
+.rt-quote-caption {
+  margin-top: 6px;
+  outline: none;
+  font-size: 13px;
+  color: #94a3b8;
+  padding: 6px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.rt-quote-caption:empty::before {
+  content: attr(data-placeholder);
+  color: #cbd5e1;
+}
+
+/* Delimiter block */
+.rt-delimiter-block {
+  flex: 1;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 20px;
+  letter-spacing: 8px;
+  padding: 8px 0;
+  user-select: none;
+}
+
+/* Raw HTML block */
+.rt-rawhtml-block {
+  flex: 1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.rt-rawhtml-textarea {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  padding: 14px 16px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: #1e293b;
+  color: #e2e8f0;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+
+.rt-rawhtml-textarea::placeholder {
+  color: #64748b;
+}
+
+/* Warning block */
+.rt-warning-block {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+}
+
+.rt-warning-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #f59e0b;
+}
+
+.rt-warning-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rt-warning-title {
+  padding: 6px 10px;
+  border: 1px solid #fde68a;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  min-height: 32px;
+}
+
+.rt-warning-title:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+}
+
+.rt-warning-message {
+  padding: 6px 10px;
+  border: 1px solid #fde68a;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  min-height: 64px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  line-height: 1.5;
+}
+
+.rt-warning-message:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+}
+
+/* Checklist block */
+.rt-checklist-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px 4px;
+}
+
+.rt-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rt-checklist-checkbox {
+  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.rt-checklist-text {
+  flex: 1;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #334155;
+  min-height: 24px;
+}
+
+.rt-checklist-checkbox:checked ~ .rt-checklist-text {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+/* ── Add-block popover ──────────────────────────────────────── */
+.rt-add-popover {
+  position: absolute;
+  z-index: 9999;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  width: 220px;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.rt-popover-filter {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+  background: #f8fafc;
+  color: #334155;
+}
+
+.rt-popover-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.rt-popover-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #334155;
+  user-select: none;
+}
+
+.rt-popover-item:hover {
+  background: #f1f5f9;
+}
+
+.rt-popover-icon {
+  display: flex;
+  align-items: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.rt-popover-label {
+  flex: 1;
+}
+
+.rt-popover-item--danger {
+  color: #dc2626;
+}
+
+.rt-popover-item--danger .rt-popover-icon {
+  color: #dc2626;
+}
+
+.rt-popover-item--danger:hover {
+  background: #fff1f2;
+}
+
+.rt-popover-item--active {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.rt-popover-item--active .rt-popover-icon {
+  color: #3b82f6;
+}
+
+.rt-popover-item--active:hover {
+  background: #dbeafe;
+}
+
+/* Convert-to submenu trigger item */
+.rt-popover-item--submenu {
+  position: relative;
+}
+
+.rt-popover-arrow {
+  margin-left: auto;
+  color: #94a3b8;
+  font-size: 15px;
+  line-height: 1;
+}
+
+
+/* Separator between specific tunes and default tunes */
+.rt-popover-separator {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 4px 0;
+}
+
+/* ── Spacing control (margin / padding toggle) ──────────────────────────── */
+.spacing-control {
+  gap: 8px;
+}
+
+.spacing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spacing-header label {
+  margin-bottom: 0 !important;
+}
+
+.spacing-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.spacing-mode-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.spacing-mode-btn.active {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.spacing-mode-btn:hover:not(.active) {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+/* All-sides row: input grows, select stays compact */
+.spacing-all {
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Use .spacing-control parent to outrank .control-wrapper rules */
+.spacing-control .spacing-all input[type="number"],
+.spacing-control .spacing-custom input[type="number"] {
+  flex: 1;
+  width: 0;        /* overrides intrinsic browser width; flex: 1 fills the rest */
+  min-width: 0;
+  padding: 5px 6px;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  background-color: #ffffff;
+  color: #334155;
+  transition: none;
+}
+
+.spacing-control .spacing-all select,
+.spacing-control .spacing-custom select {
+  flex-shrink: 0;
+  width: 58px;
+  padding: 5px 2px 5px 4px;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  background-color: #ffffff;
+  color: #334155;
+  transition: none;
+}
+
+/* Custom-sides: vertical column of rows */
+.spacing-custom {
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.spacing-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.spacing-side-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  width: 46px;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.spacing-control input[type="number"]:focus,
+.spacing-control select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.insert-row-button {
+  display: none;
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 20px;
+  height: 20px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.table-row.selected .insert-row-button {
+  display: flex;
+}
+
+.insert-row-button:hover {
+  background-color: #059669;
+}
+
+/* ============================================================
+   Mobile Responsive — Grid Layout Only
+   Drawers slide in from the sides; FAB bar lives at the bottom.
+   ============================================================ */
+
+/* ── Backdrop ──────────────────────────────────────────────── */
+#mobile-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: backdropFadeIn 0.2s ease;
+}
+
+#mobile-drawer-backdrop.active {
+  display: block;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── FAB bar — always hidden on desktop ────────────────────── */
+#mobile-fab-bar {
+  display: none;
+}
+
+/* ── Drawer headers — hidden on desktop ────────────────────── */
+.mobile-drawer-header {
+  display: none;
+}
+
+/* ── Tap-to-add hint — hidden on desktop ───────────────────── */
+.mobile-tap-hint {
+  display: none;
+}
+
+/* ============================================================
+   Mobile breakpoint  ≤ 768 px
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* ── Body scroll lock when a drawer is open ────────────────── */
+  body.drawer-open {
+    overflow: hidden;
+  }
+
+  /* ── App layout: canvas takes full width ───────────────────── */
+  #app {
+    position: relative;
+  }
+
+  /* ── Left sidebar → slide-in drawer from left ──────────────── */
+  #sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1001;
+    width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.18);
+    display: block !important;   /* always in DOM, off-screen by default */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 0;              /* drawer header handles top spacing */
+  }
+
+  #sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* ── Right customization panel → slide-in drawer from right ─── */
+  #customization {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    width: 290px !important;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.18);
+    display: block !important;   /* always in DOM, off-screen by default */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #customization.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* ── Canvas: pad bottom so FAB bar never covers content ────── */
+  #canvas {
+    padding-bottom: 68px !important;
+  }
+
+  /* ── Drawer headers ─────────────────────────────────────────── */
+  .mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .mobile-drawer-header h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: 0.01em;
+  }
+
+  .mobile-drawer-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    color: #64748b;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-drawer-close:hover,
+  .mobile-drawer-close:active {
+    background: #e2e8f0;
+    color: #334155;
+  }
+
+  /* ── Tap-to-add hint ────────────────────────────────────────── */
+  .mobile-tap-hint {
+    display: block;
+    margin: 8px 12px 4px;
+    padding: 8px 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #3b82f6;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  /* ── FAB bar ────────────────────────────────────────────────── */
+  #mobile-fab-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 998;
+    height: 60px;
+    padding: 0 24px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+    /* Safe area for home indicator on iOS */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .mobile-fab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    padding: 6px 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    font-family: inherit;
+  }
+
+  .mobile-fab-btn:active {
+    background: #f1f5f9;
+  }
+
+  .mobile-fab-btn.active {
+    color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .mobile-fab-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  /* ── Hide redundant navbar sidebar toggles on mobile ───────── */
+  #sidebar-menu,
+  #menu-btn {
+    display: none !important;
+  }
+
+  /* ── Navbar adjustments on mobile ───────────────────────────── */
+  #preview-navbar {
+    padding: 0 8px;
+  }
+
+  .center-text {
+    font-size: 13px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+  }
+
+  /* ── Sidebar item grid: single column on mobile ─────────────── */
+  .draggable {
+    width: calc(50% - 8px) !important;
+    margin-right: 6px !important;
+    min-height: 64px !important;
+  }
+
+  /* Keep 2-column grid inside the drawer */
+  #sidebar {
+    padding: 0 !important;
+  }
+
+  #sidebar h3 {
+    padding: 0 16px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  .category {
+    padding: 0 12px;
+  }
 }

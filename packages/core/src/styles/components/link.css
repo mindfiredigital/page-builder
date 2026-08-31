@@ -1,0 +1,84 @@
+/* Components — Link component and edit link form */
+
+/************************************LINK COMPONENT************************************/
+
+.link-component {
+  border: none;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+
+.link-component-label {
+  text-decoration: none;
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0;
+  transition: all 0.2s ease;
+}
+
+.link-component-label:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.edit-link {
+  background-color: #f8fafc !important;
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+  display: none;
+  border: 1px solid #e2e8f0;
+  font-size: 10px;
+  border-radius: 3px;
+  color: #64748b;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.link-component:hover .edit-link {
+  display: block;
+}
+
+.edit-link:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.edit-link-form {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.edit-link-form input,
+.edit-link-form button {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2
+}
+
+.edit-link-form button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.edit-link-form button:hover {
+  background-color: #2563eb;
+}

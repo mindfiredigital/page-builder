@@ -6,10 +6,14 @@ export function handleContainerDrop(
   event: DragEvent
 ): void {
   event.preventDefault();
-  event.stopPropagation();
 
   const componentType = event.dataTransfer?.getData('component-type');
+  /* Only handle new-component drops from the sidebar.  Drag-handle reorders
+     set 'dragged-component-id' instead; don't swallow those — let them bubble
+     up to the canvas drop handler. */
   if (!componentType) return;
+
+  event.stopPropagation();
 
   const component = Canvas.createComponent(componentType);
   if (!component) return;
@@ -23,25 +27,44 @@ export function handleContainerDrop(
   );
 
   component.classList.add(uniqueClass);
-
-  /* Hover label — hidden by default, shown on mouseenter */
-  const label = document.createElement('span');
-  label.className = 'component-label';
-  label.textContent = uniqueClass;
-  label.setAttribute('contenteditable', 'false');
   component.id = uniqueClass;
-  label.style.display = 'none';
-  component.appendChild(label);
+
+  /*
+   * createComponent already appends a .component-label with the global name.
+   * Update that label's text to the container-scoped name instead of creating
+   * a second label (which caused the wrong name to show on hover).
+   */
+  const existingLabel = component.querySelector(
+    '.component-label'
+  ) as HTMLElement | null;
+  if (existingLabel) {
+    existingLabel.textContent = uniqueClass;
+  }
+
+  /* Propagate nesting depth so CSS can apply depth-specific border colors */
+  if (component.classList.contains('container-component')) {
+    const parentDepth = parseInt(element.getAttribute('data-depth') ?? '0');
+    component.setAttribute('data-depth', String(parentDepth + 1));
+  }
 
   if (Canvas.layoutMode === 'absolute') {
-    /* Position dropped component exactly where the cursor landed */
     component.style.position = 'absolute';
     component.style.left = `${event.offsetX}px`;
     component.style.top = `${event.offsetY}px`;
     Canvas.addDraggableListeners(component);
   } else if (Canvas.layoutMode === 'grid') {
-    /* Grid mode: activate the grid layout class on the parent */
     element.classList.add('container-grid-active');
+    /*
+     * Without an explicit width, block-display nested containers expand to
+     * 100% of their parent. Set a sensible default so the user can see the
+     * container boundary and resize from there.
+     */
+    if (
+      !component.style.width &&
+      component.classList.contains('container-component')
+    ) {
+      component.style.width = '50%';
+    }
   }
 
   element.appendChild(component);

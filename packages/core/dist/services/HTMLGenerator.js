@@ -1,9 +1,4 @@
-import {
-  EditorChromeSanitizer,
-  HtmlShellBuilder,
-  StyleCollector,
-  SvgStamper,
-} from './HtmlGeneratorService.js';
+import { EditorChromeSanitizer, HtmlShellBuilder, StyleCollector, SvgStamper, } from './HtmlGeneratorService/index.js';
 /* ─── HtmlGenerator ───────────────────────────────────────────────────────────
    Orchestrator for the full HTML export pipeline. Delegates each phase to a
    focused collaborator class and sequences them in the correct order:
@@ -31,59 +26,53 @@ import {
                Wrap everything in a complete <!DOCTYPE html> document.
    ─────────────────────────────────────────────────────────────────────────── */
 export class HTMLGenerator {
-  constructor(canvas) {
-    this.canvas = canvas;
-    /* Managed <style> element injected into <head> for live CSS previewing */
-    this.styleElement = document.createElement('style');
-    document.head.appendChild(this.styleElement);
-    this.styleCollector = new StyleCollector(this.styleElement);
-    this.svgStamper = new SvgStamper();
-    this.sanitizer = new EditorChromeSanitizer();
-    this.shellBuilder = new HtmlShellBuilder();
-  }
-  /* ─── GenerateHTML ──────────────────────────────────────────────────────────
+    constructor(canvas) {
+        this.canvas = canvas;
+        /* Managed <style> element injected into <head> for live CSS previewing */
+        this.styleElement = document.createElement('style');
+        document.head.appendChild(this.styleElement);
+        this.styleCollector = new StyleCollector(this.styleElement);
+        this.svgStamper = new SvgStamper();
+        this.sanitizer = new EditorChromeSanitizer();
+        this.shellBuilder = new HtmlShellBuilder();
+    }
+    /* ─── GenerateHTML ──────────────────────────────────────────────────────────
        Runs the full export pipeline and returns a complete HTML document string
        ready to be saved as a file or opened in a new browser tab.
        ─────────────────────────────────────────────────────────────────────────── */
-  generateHTML() {
-    const canvasElement = document.getElementById('canvas');
-    if (!canvasElement) {
-      console.warn(
-        '[HtmlGenerator] Canvas element not found — returning shell.'
-      );
-      return this.shellBuilder.build('', '', '');
+    generateHTML() {
+        const canvasElement = document.getElementById('canvas');
+        if (!canvasElement) {
+            console.warn('[HtmlGenerator] Canvas element not found — returning shell.');
+            return this.shellBuilder.build('', '', '');
+        }
+        /* Phase 1 — collect existing head styles before any DOM mutation */
+        const embeddedStyles = this.styleCollector.collectHeadStyles();
+        /* Phase 2 — stamp SVG dimensions onto the live DOM so the clone gets them */
+        const svgRecords = this.svgStamper.stampSVGDimensions(canvasElement);
+        /* Phase 3 — deep-clone the canvas (SVG stamps are now baked in) */
+        const clone = canvasElement.cloneNode(true);
+        /* Phase 4 — remove all editor chrome from the clone only */
+        this.sanitizer.sanitize(clone);
+        /* Phase 5 — restore the live DOM to its pre-stamp state */
+        this.svgStamper.restoreSVGStamps(svgRecords);
+        /* Phase 6 — generate the computed-style CSS from the live canvas */
+        const generatedCSS = this.styleCollector.generateCSS();
+        /* Phase 7 — assemble and return the full HTML document */
+        return this.shellBuilder.build(clone.innerHTML, embeddedStyles, generatedCSS);
     }
-    /* Phase 1 — collect existing head styles before any DOM mutation */
-    const embeddedStyles = this.styleCollector.collectHeadStyles();
-    /* Phase 2 — stamp SVG dimensions onto the live DOM so the clone gets them */
-    const svgRecords = this.svgStamper.stampSVGDimensions(canvasElement);
-    /* Phase 3 — deep-clone the canvas (SVG stamps are now baked in) */
-    const clone = canvasElement.cloneNode(true);
-    /* Phase 4 — remove all editor chrome from the clone only */
-    this.sanitizer.sanitize(clone);
-    /* Phase 5 — restore the live DOM to its pre-stamp state */
-    this.svgStamper.restoreSVGStamps(svgRecords);
-    /* Phase 6 — generate the computed-style CSS from the live canvas */
-    const generatedCSS = this.styleCollector.generateCSS();
-    /* Phase 7 — assemble and return the full HTML document */
-    return this.shellBuilder.build(
-      clone.innerHTML,
-      embeddedStyles,
-      generatedCSS
-    );
-  }
-  /* ─── GenerateCSS ───────────────────────────────────────────────────────────
+    /* ─── GenerateCSS ───────────────────────────────────────────────────────────
        Public passthrough kept for callers that need the CSS string independently
        (e.g. live-preview injection without a full HTML export).
        ─────────────────────────────────────────────────────────────────────────── */
-  generateCSS() {
-    return this.styleCollector.generateCSS();
-  }
-  /* ─── ApplyCSS ──────────────────────────────────────────────────────────────
+    generateCSS() {
+        return this.styleCollector.generateCSS();
+    }
+    /* ─── ApplyCSS ──────────────────────────────────────────────────────────────
        Writes a CSS string directly into the managed <style> element so changes
        are reflected on the live canvas immediately.
        ─────────────────────────────────────────────────────────────────────────── */
-  applyCSS(css) {
-    this.styleCollector.applyCSS(css);
-  }
+    applyCSS(css) {
+        this.styleCollector.applyCSS(css);
+    }
 }

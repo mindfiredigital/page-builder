@@ -1,5 +1,7 @@
 import { SidebarUtils } from '../../utils/customizationSidebarHelper';
 
+type AddListenersFn = (component: HTMLElement) => void;
+
 /* Parses an inline CSS value like "64rem" or "4.3165vh" into its number + unit parts */
 function parseStyleValue(
   cssVal: string,
@@ -12,18 +14,6 @@ function parseStyleValue(
   return { value: fallbackPx, unit: 'px' };
 }
 
-/*
- * Returns the reliable pixel width of an element to use as the % reference.
- *
- * Problem: the canvas has `width: 100%` in CSS, so its offsetWidth shrinks
- * when sidebars are open and expands when they close (preview). If we used
- * offsetWidth for the % reference, converting "1113px → %" with sidebars open
- * would produce a different visual result in preview (no sidebars, wider canvas).
- *
- * Fix: prefer the element's own inline pixel width (the user-configured value)
- * which is sidebar-independent. Fall back to offsetWidth only when no inline
- * pixel width has been set.
- */
 function getReliableWidth(el: HTMLElement | null): number {
   if (!el) return window.innerWidth;
   const inlineW = parseFloat(el.style.width);
@@ -41,7 +31,6 @@ export function disableControlWrapper(
   const el = document.getElementById(controlId);
   if (!el) return;
 
-  /* Walk up to the nearest .control-wrapper ancestor */
   const wrapper = el.closest('.control-wrapper') as HTMLElement | null;
   if (!wrapper) return;
 
@@ -50,7 +39,6 @@ export function disableControlWrapper(
   wrapper.style.cursor = 'not-allowed';
   wrapper.title = reason;
 
-  /* Append a ⊘ badge next to the label so the user knows why it's locked */
   const label = wrapper.querySelector('label');
   if (label && !label.querySelector('.inline-disabled-badge')) {
     const badge = document.createElement('span');
@@ -67,7 +55,6 @@ export function disableControlWrapper(
     label.appendChild(badge);
   }
 
-  /* Also disable every input/select so keyboard interaction is blocked */
   wrapper.querySelectorAll('input, select').forEach(input => {
     (input as HTMLInputElement | HTMLSelectElement).disabled = true;
     (input as HTMLElement).style.cursor = 'not-allowed';
@@ -76,45 +63,37 @@ export function disableControlWrapper(
   });
 }
 
-/* Rebuilds the entire CSS controls panel for the given component */
-export function populateCssControls(
+function renderDisplayControls(
   component: HTMLElement,
-  controlsContainer: HTMLElement,
-  addListenersFn: (component: HTMLElement) => void
-): void {
-  controlsContainer.innerHTML = '';
-  const styles = getComputedStyle(component);
-  const isCanvas = component.id.toLowerCase() === 'canvas';
-
-  /* Prefer inline style over computed — avoids browser-resolved values losing "inline" */
+  cssContainer: HTMLElement,
+  styles: CSSStyleDeclaration
+): string {
   const displayIntent = component.dataset.displayIntent;
   const displayValue =
     displayIntent || component.style.display || styles.display || 'block';
-  const isInline = displayValue === 'inline';
 
   SidebarUtils.createSelectControl(
     'Display',
     'display',
     displayValue,
     ['block', 'inline', 'inline-block', 'flex', 'grid', 'none'],
-    controlsContainer
+    cssContainer
   );
 
-  /* Show flex sub-controls only when the current display is flex */
   if (styles.display === 'flex' || component.style.display === 'flex') {
     SidebarUtils.createSelectControl(
       'Flex Direction',
       'flex-direction',
       styles.flexDirection || 'row',
       ['row', 'row-reverse', 'column', 'column-reverse'],
-      controlsContainer
+      cssContainer
     );
     SidebarUtils.createSelectControl(
       'Align Items',
       'align-items',
       styles.alignItems || 'stretch',
       ['stretch', 'flex-start', 'flex-end', 'center', 'baseline'],
-      controlsContainer
+      cssContainer
     );
     SidebarUtils.createSelectControl(
       'Justify Content',
@@ -128,162 +107,231 @@ export function populateCssControls(
         'space-around',
         'space-evenly',
       ],
-      controlsContainer
+      cssContainer
     );
   }
 
-  if (isCanvas) {
-    SidebarUtils.createPageSizeSelect(controlsContainer, component);
-    SidebarUtils.createControl(
-      'Width',
-      'width',
-      'number',
-      component.offsetWidth,
-      controlsContainer,
-      { min: 300, max: 2000, unit: 'px' }
-    );
-    SidebarUtils.createControl(
-      'Min Height',
-      'min-height',
-      'number',
-      parseInt(styles.minHeight) || 100,
-      controlsContainer,
-      { min: 0, max: 2000, unit: 'px' }
-    );
-    SidebarUtils.createControl(
-      'Margin',
-      'margin',
-      'number',
-      parseInt(styles.margin) || 0,
-      controlsContainer,
-      { min: 0, max: 100, unit: 'px' }
-    );
-  }
+  return displayValue;
+}
 
-  if (!isCanvas) {
-    const parentEl = component.parentElement;
-    const parentW = getReliableWidth(parentEl);
-    const parentH = parentEl?.offsetHeight ?? window.innerHeight;
-
-    /* Width — disabled for inline elements */
-    const wStyle = parseStyleValue(
-      component.style.width,
-      component.offsetWidth
-    );
-    SidebarUtils.createControl(
-      'Width',
-      'width',
-      'number',
-      wStyle.value,
-      controlsContainer,
-      { min: 0, unit: wStyle.unit, parentRef: parentW }
-    );
-    if (isInline)
-      disableControlWrapper(
-        'width',
-        'Width is not supported for inline display'
-      );
-
-    /* Height — disabled for inline elements */
-    const hStyle = parseStyleValue(
-      component.style.height,
-      component.offsetHeight
-    );
-    SidebarUtils.createControl(
-      'Height',
-      'height',
-      'number',
-      hStyle.value,
-      controlsContainer,
-      { min: 0, unit: hStyle.unit, parentRef: parentH }
-    );
-    if (isInline)
-      disableControlWrapper(
-        'height',
-        'Height is not supported for inline display'
-      );
-
-    /* Margin — disabled for inline elements (top/bottom ignored by browser) */
-    const mStyle = parseStyleValue(
-      component.style.margin,
-      parseInt(styles.margin) || 0
-    );
-    SidebarUtils.createControl(
-      'Margin',
-      'margin',
-      'number',
-      mStyle.value,
-      controlsContainer,
-      { min: 0, max: 1000, unit: mStyle.unit, parentRef: parentW }
-    );
-    if (isInline)
-      disableControlWrapper(
-        'margin',
-        'Top/bottom margin is not supported for inline display'
-      );
-
-    /* Padding — disabled for inline elements */
-    const pStyle = parseStyleValue(
-      component.style.padding,
-      parseInt(styles.padding) || 0
-    );
-    SidebarUtils.createControl(
-      'Padding',
-      'padding',
-      'number',
-      pStyle.value,
-      controlsContainer,
-      { min: 0, max: 1000, unit: pStyle.unit, parentRef: parentW }
-    );
-    if (isInline)
-      disableControlWrapper(
-        'padding',
-        'Top/bottom padding is not supported for inline display'
-      );
-  }
-
+function renderCanvasDimensionControls(
+  component: HTMLElement,
+  cssContainer: HTMLElement,
+  styles: CSSStyleDeclaration
+): void {
+  SidebarUtils.createPageSizeSelect(cssContainer, component);
   SidebarUtils.createControl(
-    'Background Color',
-    'background-color',
-    'color',
-    styles.backgroundColor,
-    controlsContainer
+    'Width',
+    'width',
+    'number',
+    component.offsetWidth,
+    cssContainer,
+    { min: 300, max: 2000, unit: 'px' }
   );
-  SidebarUtils.createSelectControl(
-    'Text Alignment',
-    'alignment',
-    styles.textAlign,
-    ['left', 'center', 'right'],
-    controlsContainer
+  SidebarUtils.createControl(
+    'Min Height',
+    'min-height',
+    'number',
+    parseInt(styles.minHeight) || 100,
+    cssContainer,
+    { min: 0, max: 2000, unit: 'px' }
   );
-  SidebarUtils.createSelectControl(
-    'Font Family',
-    'font-family',
-    styles.fontFamily,
-    [
-      'Arial',
-      'Verdana',
-      'Helvetica',
-      'Times New Roman',
-      'Georgia',
-      'Courier New',
-      'sans-serif',
-      'serif',
-    ],
-    controlsContainer
+  SidebarUtils.createControl(
+    'Margin',
+    'margin',
+    'number',
+    parseInt(styles.margin) || 0,
+    cssContainer,
+    { min: 0, max: 100, unit: 'px' }
   );
+}
+
+function renderComponentDimensionControls(
+  component: HTMLElement,
+  cssContainer: HTMLElement,
+  styles: CSSStyleDeclaration,
+  isInline: boolean
+): void {
+  const parentEl = component.parentElement;
+  const parentW = getReliableWidth(parentEl);
+  const parentH = parentEl?.offsetHeight ?? window.innerHeight;
+
+  const wStyle = parseStyleValue(component.style.width, component.offsetWidth);
+  SidebarUtils.createControl(
+    'Width',
+    'width',
+    'number',
+    wStyle.value,
+    cssContainer,
+    {
+      min: 0,
+      unit: wStyle.unit,
+      parentRef: parentW,
+    }
+  );
+  if (isInline)
+    disableControlWrapper('width', 'Width is not supported for inline display');
+
+  const hStyle = parseStyleValue(
+    component.style.height,
+    component.offsetHeight
+  );
+  SidebarUtils.createControl(
+    'Height',
+    'height',
+    'number',
+    hStyle.value,
+    cssContainer,
+    {
+      min: 0,
+      unit: hStyle.unit,
+      parentRef: parentH,
+    }
+  );
+  if (isInline)
+    disableControlWrapper(
+      'height',
+      'Height is not supported for inline display'
+    );
+
+  const hasCustomMargin = !!(
+    component.style.marginTop ||
+    component.style.marginRight ||
+    component.style.marginBottom ||
+    component.style.marginLeft
+  );
+  const mStyle = parseStyleValue(
+    component.style.margin,
+    parseInt(styles.margin) || 0
+  );
+  const mTop = parseStyleValue(component.style.marginTop, 0);
+  const mRight = parseStyleValue(component.style.marginRight, 0);
+  const mBottom = parseStyleValue(component.style.marginBottom, 0);
+  const mLeft = parseStyleValue(component.style.marginLeft, 0);
+  SidebarUtils.createSpacingControl(
+    'Margin',
+    'margin',
+    hasCustomMargin ? 'custom' : 'all',
+    mStyle.value,
+    mStyle.unit,
+    { top: mTop, right: mRight, bottom: mBottom, left: mLeft },
+    cssContainer,
+    { min: 0, max: 1000 }
+  );
+  if (isInline)
+    disableControlWrapper(
+      'margin',
+      'Top/bottom margin is not supported for inline display'
+    );
+
+  const hasCustomPadding = !!(
+    component.style.paddingTop ||
+    component.style.paddingRight ||
+    component.style.paddingBottom ||
+    component.style.paddingLeft
+  );
+  const pStyle = parseStyleValue(
+    component.style.padding,
+    parseInt(styles.padding) || 0
+  );
+  const pTop = parseStyleValue(component.style.paddingTop, 0);
+  const pRight = parseStyleValue(component.style.paddingRight, 0);
+  const pBottom = parseStyleValue(component.style.paddingBottom, 0);
+  const pLeft = parseStyleValue(component.style.paddingLeft, 0);
+  SidebarUtils.createSpacingControl(
+    'Padding',
+    'padding',
+    hasCustomPadding ? 'custom' : 'all',
+    pStyle.value,
+    pStyle.unit,
+    { top: pTop, right: pRight, bottom: pBottom, left: pLeft },
+    cssContainer,
+    { min: 0, max: 1000 }
+  );
+  if (isInline)
+    disableControlWrapper(
+      'padding',
+      'Top/bottom padding is not supported for inline display'
+    );
+}
+
+/* ── Font Size ─────────────────────────────────────────────────────────────
+ * Walk up from the cursor position to find if we're sitting inside a
+ * <span style="font-size: …">.  If so, display that span's value so the
+ * sidebar reflects per-selection font size, not just the component default.
+ * ─────────────────────────────────────────────────────────────────────────── */
+function renderFontSizeControl(
+  component: HTMLElement,
+  cssContainer: HTMLElement,
+  styles: CSSStyleDeclaration
+): void {
+  let displayFontSize = styles.fontSize;
+  let displayFontSizeUnit = 'px';
+
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0) {
+    let node: Node | null = sel.getRangeAt(0).startContainer;
+    while (node && node !== component) {
+      if (
+        node.nodeType === Node.ELEMENT_NODE &&
+        (node as HTMLElement).tagName === 'SPAN' &&
+        !!(node as HTMLElement).style.fontSize
+      ) {
+        displayFontSize = (node as HTMLElement).style.fontSize;
+        break;
+      }
+      node = node.parentNode;
+    }
+  }
+  /* Parse value and unit from whatever we ended up with */
+  const fsMatch = displayFontSize.match(/^(-?[\d.]+)(px|rem|vh|%|em)?$/);
+  if (fsMatch) {
+    displayFontSize = fsMatch[1];
+    displayFontSizeUnit = fsMatch[2] || 'px';
+  } else {
+    displayFontSize = String(parseInt(displayFontSize) || 16);
+  }
+
   SidebarUtils.createControl(
     'Font Size',
     'font-size',
     'number',
-    parseInt(styles.fontSize) || 16,
-    controlsContainer,
-    { min: 0, max: 100, unit: 'px' }
+    parseFloat(displayFontSize) || 16,
+    cssContainer,
+    { min: 0, max: 100, unit: displayFontSizeUnit }
   );
+}
+
+/* ── Font Weight ────────────────────────────────────────────────────────────
+ * Same cursor-position walk-up for font-weight spans.
+ * ─────────────────────────────────────────────────────────────────────────── */
+function renderFontWeightControl(
+  component: HTMLElement,
+  cssContainer: HTMLElement,
+  styles: CSSStyleDeclaration
+): void {
+  let displayFontWeight = styles.fontWeight;
+
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0) {
+    let node: Node | null = sel.getRangeAt(0).startContainer;
+    while (node && node !== component) {
+      if (
+        node.nodeType === Node.ELEMENT_NODE &&
+        (node as HTMLElement).tagName === 'SPAN' &&
+        !!(node as HTMLElement).style.fontWeight
+      ) {
+        displayFontWeight = (node as HTMLElement).style.fontWeight;
+        break;
+      }
+      node = node.parentNode;
+    }
+  }
+
   SidebarUtils.createSelectControl(
     'Font Weight',
     'font-weight',
-    styles.fontWeight,
+    displayFontWeight,
     [
       'normal',
       'bold',
@@ -299,21 +347,68 @@ export function populateCssControls(
       '800',
       '900',
     ],
-    controlsContainer
+    cssContainer
   );
+}
+
+function renderTypographyControls(
+  component: HTMLElement,
+  cssContainer: HTMLElement,
+  styles: CSSStyleDeclaration
+): void {
+  SidebarUtils.createControl(
+    'Background Color',
+    'background-color',
+    'color',
+    styles.backgroundColor,
+    cssContainer
+  );
+  SidebarUtils.createSelectControl(
+    'Text Alignment',
+    'alignment',
+    styles.textAlign,
+    ['left', 'center', 'right'],
+    cssContainer
+  );
+  SidebarUtils.createSelectControl(
+    'Font Family',
+    'font-family',
+    styles.fontFamily,
+    [
+      'Arial',
+      'Verdana',
+      'Helvetica',
+      'Times New Roman',
+      'Georgia',
+      'Courier New',
+      'sans-serif',
+      'serif',
+    ],
+    cssContainer
+  );
+
+  renderFontSizeControl(component, cssContainer, styles);
+  renderFontWeightControl(component, cssContainer, styles);
+
   SidebarUtils.createControl(
     'Text Color',
     'text-color',
     'color',
     styles.color || '#000000',
-    controlsContainer
+    cssContainer
   );
+}
+
+function renderBorderControls(
+  cssContainer: HTMLElement,
+  styles: CSSStyleDeclaration
+): void {
   SidebarUtils.createControl(
     'Border Width',
     'border-width',
     'number',
     parseInt(styles.borderWidth) || 0,
-    controlsContainer,
+    cssContainer,
     { min: 0, max: 20, unit: 'px' }
   );
   SidebarUtils.createSelectControl(
@@ -331,17 +426,48 @@ export function populateCssControls(
       'inset',
       'outset',
     ],
-    controlsContainer
+    cssContainer
   );
   SidebarUtils.createControl(
     'Border Color',
     'border-color',
     'color',
     styles.borderColor || '#000000',
-    controlsContainer
+    cssContainer
   );
+  SidebarUtils.createControl(
+    'Border Radius',
+    'border-radius',
+    'number',
+    parseInt(styles.borderRadius) || 0,
+    cssContainer,
+    { min: 0, max: 500, unit: 'px' }
+  );
+}
 
-  /* Sync hex color pickers to the computed RGB values */
+/* Alt text is only meaningful for image components — accessible name for
+   screen readers / when the image fails to load. Reads the live value off
+   the actual <img> child so it reflects whatever's already in the DOM
+   (including a value restored from a saved design). */
+function renderImageAltTextControl(
+  component: HTMLElement,
+  cssContainer: HTMLElement
+): void {
+  const img = component.querySelector('img');
+  SidebarUtils.createControl(
+    'Alt Text',
+    'image-alt-text',
+    'text',
+    img?.alt ?? '',
+    cssContainer
+  );
+}
+
+/* Sync hex color pickers to the computed RGB values */
+function syncColorPickers(
+  component: HTMLElement,
+  styles: CSSStyleDeclaration
+): void {
   const bgColorInput = document.getElementById(
     'background-color'
   ) as HTMLInputElement;
@@ -351,12 +477,100 @@ export function populateCssControls(
   const borderColorInput = document.getElementById(
     'border-color'
   ) as HTMLInputElement;
+
   if (bgColorInput)
     bgColorInput.value = SidebarUtils.rgbToHex(styles.backgroundColor);
-  if (textColorInput)
-    textColorInput.value = SidebarUtils.rgbToHex(styles.color);
+
+  if (textColorInput) {
+    /*
+     * Show the color of whichever span/rt-block-content the cursor is sitting inside.
+     * Walk up from the anchor node to find a colored element. Falls back to the
+     * component's own computed color when the cursor is not inside a colored node.
+     */
+    let displayColor = styles.color;
+
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      let node: Node | null = sel.getRangeAt(0).startContainer;
+      while (node && node !== component) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const el = node as HTMLElement;
+          if (
+            (el.tagName === 'SPAN' ||
+              el.classList.contains('rt-block-content')) &&
+            el.style.color
+          ) {
+            displayColor = el.style.color;
+            break;
+          }
+        }
+        node = node.parentNode;
+      }
+    }
+
+    /* If cursor is in a rich text component with no inline color yet,
+       fall back to the first block's computed color */
+    if (
+      displayColor === styles.color &&
+      component.classList.contains('rich-text-component')
+    ) {
+      const firstBlock =
+        component.querySelector<HTMLElement>('.rt-block-content');
+      if (firstBlock) displayColor = getComputedStyle(firstBlock).color;
+    }
+
+    const hexColor = SidebarUtils.rgbToHex(displayColor);
+    textColorInput.value = hexColor;
+    const textColorHexInput = document.getElementById(
+      'text-color-value'
+    ) as HTMLInputElement | null;
+    if (textColorHexInput) textColorHexInput.value = hexColor;
+  }
+
   if (borderColorInput)
     borderColorInput.value = SidebarUtils.rgbToHex(styles.borderColor);
+}
+
+/* Rebuilds the entire CSS controls panel for the given component */
+export function populateCssControls(
+  component: HTMLElement,
+  controlsContainer: HTMLElement,
+  addListenersFn: AddListenersFn,
+  customizeComponentTagName?: string
+): void {
+  controlsContainer.innerHTML = '';
+  const styles = getComputedStyle(component);
+  const isCanvas = component.id.toLowerCase() === 'canvas';
+
+  const cssContainer: HTMLElement = controlsContainer;
+
+  if (customizeComponentTagName) {
+    const customEl = document.createElement(customizeComponentTagName);
+    customEl.setAttribute(
+      'data-settings',
+      JSON.stringify({ targetComponentId: component.id })
+    );
+    controlsContainer.appendChild(customEl);
+    addListenersFn(component);
+    return;
+  }
+
+  const displayValue = renderDisplayControls(component, cssContainer, styles);
+  const isInline = displayValue === 'inline';
+
+  if (isCanvas) {
+    renderCanvasDimensionControls(component, cssContainer, styles);
+  } else {
+    renderComponentDimensionControls(component, cssContainer, styles, isInline);
+  }
+
+  if (component.classList.contains('image-component')) {
+    renderImageAltTextControl(component, cssContainer);
+  }
+
+  renderTypographyControls(component, cssContainer, styles);
+  renderBorderControls(cssContainer, styles);
+  syncColorPickers(component, styles);
 
   /* Attach all change/input listeners after controls are in the DOM */
   addListenersFn(component);

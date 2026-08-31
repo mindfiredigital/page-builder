@@ -1,43 +1,56 @@
 import { Canvas } from '../../canvas/Canvas.js';
 /* Handles a component being dropped from the sidebar into this container */
 export function handleContainerDrop(element, event) {
-  var _a;
-  event.preventDefault();
-  event.stopPropagation();
-  const componentType =
-    (_a = event.dataTransfer) === null || _a === void 0
-      ? void 0
-      : _a.getData('component-type');
-  if (!componentType) return;
-  const component = Canvas.createComponent(componentType);
-  if (!component) return;
-  /* Third class on the container element is its unique identifier */
-  const containerClass = element.classList[2];
-  const uniqueClass = Canvas.generateUniqueClass(
-    componentType,
-    true,
-    containerClass
-  );
-  component.classList.add(uniqueClass);
-  /* Hover label — hidden by default, shown on mouseenter */
-  const label = document.createElement('span');
-  label.className = 'component-label';
-  label.textContent = uniqueClass;
-  label.setAttribute('contenteditable', 'false');
-  component.id = uniqueClass;
-  label.style.display = 'none';
-  component.appendChild(label);
-  if (Canvas.layoutMode === 'absolute') {
-    /* Position dropped component exactly where the cursor landed */
-    component.style.position = 'absolute';
-    component.style.left = `${event.offsetX}px`;
-    component.style.top = `${event.offsetY}px`;
-    Canvas.addDraggableListeners(component);
-  } else if (Canvas.layoutMode === 'grid') {
-    /* Grid mode: activate the grid layout class on the parent */
-    element.classList.add('container-grid-active');
-  }
-  element.appendChild(component);
-  /* Capture state so the drop can be undone */
-  Canvas.historyManager.captureState();
+    var _a, _b;
+    event.preventDefault();
+    const componentType = (_a = event.dataTransfer) === null || _a === void 0 ? void 0 : _a.getData('component-type');
+    /* Only handle new-component drops from the sidebar.  Drag-handle reorders
+       set 'dragged-component-id' instead; don't swallow those — let them bubble
+       up to the canvas drop handler. */
+    if (!componentType)
+        return;
+    event.stopPropagation();
+    const component = Canvas.createComponent(componentType);
+    if (!component)
+        return;
+    /* Third class on the container element is its unique identifier */
+    const containerClass = element.classList[2];
+    const uniqueClass = Canvas.generateUniqueClass(componentType, true, containerClass);
+    component.classList.add(uniqueClass);
+    component.id = uniqueClass;
+    /*
+     * createComponent already appends a .component-label with the global name.
+     * Update that label's text to the container-scoped name instead of creating
+     * a second label (which caused the wrong name to show on hover).
+     */
+    const existingLabel = component.querySelector('.component-label');
+    if (existingLabel) {
+        existingLabel.textContent = uniqueClass;
+    }
+    /* Propagate nesting depth so CSS can apply depth-specific border colors */
+    if (component.classList.contains('container-component')) {
+        const parentDepth = parseInt((_b = element.getAttribute('data-depth')) !== null && _b !== void 0 ? _b : '0');
+        component.setAttribute('data-depth', String(parentDepth + 1));
+    }
+    if (Canvas.layoutMode === 'absolute') {
+        component.style.position = 'absolute';
+        component.style.left = `${event.offsetX}px`;
+        component.style.top = `${event.offsetY}px`;
+        Canvas.addDraggableListeners(component);
+    }
+    else if (Canvas.layoutMode === 'grid') {
+        element.classList.add('container-grid-active');
+        /*
+         * Without an explicit width, block-display nested containers expand to
+         * 100% of their parent. Set a sensible default so the user can see the
+         * container boundary and resize from there.
+         */
+        if (!component.style.width &&
+            component.classList.contains('container-component')) {
+            component.style.width = '50%';
+        }
+    }
+    element.appendChild(component);
+    /* Capture state so the drop can be undone */
+    Canvas.historyManager.captureState();
 }

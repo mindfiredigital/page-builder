@@ -1,7 +1,7 @@
 /* Injects resizer handle styles into document <head> */
 export function injectResizerStyles() {
-  const style = document.createElement('style');
-  style.textContent = `
+    const style = document.createElement('style');
+    style.textContent = `
     .resizer {
       width: 10px;
       height: 10px;
@@ -35,5 +35,5 @@ export function injectResizerStyles() {
       cursor: nwse-resize;
     }
   `;
-  document.head.appendChild(style);
+    document.head.appendChild(style);
 }

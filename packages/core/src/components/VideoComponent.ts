@@ -1,3 +1,5 @@
+import { EDIT_PENCIL_ICON } from '../constants';
+
 export class VideoComponent {
   private captureStateHandler: () => void;
   constructor(captureStateHandler: () => void) {
@@ -35,7 +37,7 @@ export class VideoComponent {
     }
 
     const pencilButton = document.createElement('button');
-    pencilButton.innerHTML = '🖊️';
+    pencilButton.innerHTML = EDIT_PENCIL_ICON;
     pencilButton.classList.add('pencil-button');
     pencilButton.classList.add('upload-btn');
     pencilButton.style.position = 'absolute';

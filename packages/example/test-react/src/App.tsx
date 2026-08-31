@@ -1,11 +1,22 @@
-import { PageBuilderReact, ComponentAttribute } from '@mindfiredigital/page-builder-react';
+import {
+  PageBuilderReact,
+  ComponentAttribute,
+} from '@mindfiredigital/page-builder-react';
 import ColorPicker from './components/ColorPicker';
 import CustomRating from './components/CustomRating';
 import CustomRatingSettings from './settings/CustomRatingSetting';
 import Image from './components/Image';
 import LandingPage from './components/LandingPage';
+import InvestorDeck from './components/InvestorDeck';
+import CustomVideo from './components/CustomVideo';
+import CustomImage from './components/CustomImage';
+import CustomText from './components/CustomText';
+import VideoSettings from './settings/VideoSettings';
+import ImageSettings from './settings/ImageSettings';
+import TextSettings from './settings/TextSettings';
+import InvestorDeckSettings from './settings/InvestorDeckSettings';
 import { localExecuteFunction } from './utils/executeFormula';
-import "./App.css";
+import './App.css';
 
 const App = () => {
   const dynamicAttributes: ComponentAttribute[] = [
@@ -56,14 +67,52 @@ const App = () => {
   const dynamicComponents = {
     Basic: [
       { name: 'button' },
-      { name: 'header', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
-      { name: 'text', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
-      { name: 'table', attributes: dynamicAttributes, globalExecuteFunction: localExecuteFunction },
+      {
+        name: 'header',
+        attributes: dynamicAttributes,
+        globalExecuteFunction: localExecuteFunction,
+      },
+      {
+        name: 'text',
+        attributes: dynamicAttributes,
+        globalExecuteFunction: localExecuteFunction,
+      },
+      {
+        name: 'table',
+        attributes: dynamicAttributes,
+        globalExecuteFunction: localExecuteFunction,
+      },
+      { name: 'video' },
+      { name: 'image' },
+      { name: 'richtext' },
+      { name: 'container' },
+      { name: 'twoCol' },
+      { name: 'threeCol' },
     ],
     Extra: [],
   };
 
   const customComponents = {
+    CustomVideo: {
+      component: CustomVideo,
+      svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+      title: 'Custom Video',
+      customizeComponent: VideoSettings,
+      defaultWidth: '300px',
+      defaultHeight: '300px',
+    },
+    CustomImage: {
+      component: CustomImage,
+      svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+      title: 'Custom Image',
+      customizeComponent: ImageSettings,
+      defaultWidth: '300px',
+      defaultHeight: '300px',
+    },
     ColorPicker: {
       component: ColorPicker,
       svg: `<svg width="800px" height="800px" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,14 +146,37 @@ const App = () => {
       </svg>`,
       title: 'Landing Page',
     },
+    CustomText: {
+      component: CustomText,
+      svg: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 6h16M4 12h16M4 18h10" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+      title: 'Custom Text',
+      customizeComponent: TextSettings,
+    },
+    InvestorDeck: {
+      component: InvestorDeck,
+      svg: `<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 17H15M9 13H15M9 9H10M4 4H20C20.5523 4 21 4.44772 21 5V19C21 19.5523 20.5523 20 20 20H4C3.44772 20 3 19.5523 3 19V5C3 4.44772 3.44772 4 4 4Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+      title: 'Investor Deck',
+      customizeComponent: InvestorDeckSettings,
+    },
   };
 
   return (
-    <div>
+    <div
+      style={{
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <PageBuilderReact
         config={dynamicComponents}
         customComponents={customComponents}
-        layoutMode='grid'
+        layoutMode="absolute"
       />
     </div>
   );

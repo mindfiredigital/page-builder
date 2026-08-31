@@ -283,7 +283,8 @@ describe('setupViewButton', () => {
     document.getElementById('view-btn')!.click();
     expect(createFullScreenPreviewModal).toHaveBeenCalledWith(
       '<html/>',
-      'absolute'
+      'absolute',
+      null
     );
   });
 
@@ -302,7 +303,7 @@ describe('setupViewButton', () => {
     const generator = { generateHTML: jest.fn().mockReturnValue('') } as any;
     setupViewButton(generator, 'grid');
     document.getElementById('view-btn')!.click();
-    expect(createFullScreenPreviewModal).toHaveBeenCalledWith('', 'grid');
+    expect(createFullScreenPreviewModal).toHaveBeenCalledWith('', 'grid', null);
   });
 });
 

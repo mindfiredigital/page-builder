@@ -1,0 +1,13 @@
+{
+  "name": "test-cli",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smoke test for pagectl (@mindfiredigital/page-builder-cli) covering the pagectl v1 contract's happy path and edge cases",
+  "type": "module",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "dependencies": {
+    "@mindfiredigital/page-builder-cli": "workspace:*"
+  }
+}

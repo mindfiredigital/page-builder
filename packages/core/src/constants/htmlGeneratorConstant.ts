@@ -9,11 +9,14 @@ export const EDITOR_CLASSES_TO_REMOVE = [
   'column-label',
   'resizers',
   'resizer',
+  'canvas-resizers',
+  'canvas-resizer',
   'upload-btn',
   'component-resizer',
   'drop-preview',
   'edit-link-form',
   'edit-link',
+  'selected',
 ] as const;
 
 /* ─── EditorNodesSelector ─────────────────────────────────────────────────────
@@ -27,16 +30,25 @@ export const EDITOR_NODES_SELECTOR = [
   '.column-label',
   '.resizers',
   '.resizer',
+  '.canvas-resizers',
+  '.canvas-resizer',
   '.drop-preview',
   '.upload-btn',
   '.edit-link',
   '.edit-link-form',
   '.cell-controls',
+  '.insert-row-button',
   '.add-row-button',
   '.add-multiple-rows-button',
   '.table-btn-container',
   '.drop-preview.visible',
-  'input:not([type="radio"])',
+  'input:not([type="radio"]):not(.rt-checklist-checkbox)',
+  // Rich text editor chrome — controls, popovers, file pickers
+  '.rt-block-controls',
+  '.rt-add-popover',
+  'input[type="file"]',
+  // Canvas scroll spacer (absolute-mode layout aid, not real content)
+  '#canvas-scroll-spacer',
 ].join(', ');
 
 /* ─── SvgAccessibilitySelector ────────────────────────────────────────────────
@@ -89,6 +101,8 @@ export const CSS_CLASSES_TO_EXCLUDE = [
   'component-label',
   'resizers',
   'resizer',
+  'canvas-resizers',
+  'canvas-resizer',
   'upload-btn',
   'edit-link-form',
   'edit-link',

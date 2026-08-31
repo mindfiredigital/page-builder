@@ -31,18 +31,54 @@ var PageBuilderReact = ({
         if (!customElements.get(tagName)) {
           class ReactComponentElement extends HTMLElement {
             connectedCallback() {
+              clearTimeout(this._unmountTimer);
+              this._unmountTimer = void 0;
+              if (this._pbMounted)
+                return;
+              this._pbMounted = true;
+              this.style.display = "block";
+              if (!this.style.width && componentConfig.defaultWidth)
+                this.style.width = componentConfig.defaultWidth;
+              if (!this.style.height && componentConfig.defaultHeight)
+                this.style.height = componentConfig.defaultHeight;
+              Array.from(this.children).forEach((child) => {
+                const el = child;
+                if (!el.classList.contains("component-controls") && !el.classList.contains("component-label")) {
+                  el.remove();
+                }
+              });
               const mountPoint = document.createElement("div");
+              mountPoint.style.cssText = "width:100%;height:100%;display:block;margin:0;padding:0;";
               this.appendChild(mountPoint);
               const componentId = this.id;
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                const root = ReactDOM.createRoot(mountPoint);
+                root.render(
                   React.createElement(componentConfig.component, {
                     componentId
                   })
                 );
+                this._pbRoot = root;
               } catch (error) {
                 console.error(`Error rendering ${key} component:`, error);
               }
+            }
+            disconnectedCallback() {
+              const root = this._pbRoot;
+              this._unmountTimer = setTimeout(() => {
+                this._unmountTimer = void 0;
+                if (this.isConnected)
+                  return;
+                document.dispatchEvent(
+                  new CustomEvent("pb:component-removed", {
+                    detail: { componentId: this.id }
+                  })
+                );
+                if (root)
+                  root.unmount();
+                this._pbRoot = null;
+                this._pbMounted = false;
+              }, 0);
             }
           }
           customElements.define(tagName, ReactComponentElement);
@@ -50,14 +86,16 @@ var PageBuilderReact = ({
         const settingsTagName = `react-settings-component-${key.toLowerCase()}`;
         if (componentConfig.settingsComponent && !customElements.get(settingsTagName)) {
           class ReactSettingsElement extends HTMLElement {
-            connectedCallback() {
-              this.innerHTML = "";
-              const mountPoint = document.createElement("div");
-              this.appendChild(mountPoint);
+            _renderSettings() {
+              if (!this._settingsRoot) {
+                const mountPoint = document.createElement("div");
+                this.appendChild(mountPoint);
+                this._settingsRoot = ReactDOM.createRoot(mountPoint);
+              }
               const settingsData = this.getAttribute("data-settings");
               const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
               try {
-                ReactDOM.createRoot(mountPoint).render(
+                this._settingsRoot.render(
                   React.createElement(
                     componentConfig.settingsComponent,
                     parsedSettings
@@ -67,33 +105,64 @@ var PageBuilderReact = ({
                 console.error(`Error rendering settings component:`, error);
               }
             }
+            connectedCallback() {
+              this._renderSettings();
+            }
             static get observedAttributes() {
               return ["data-settings"];
             }
             attributeChangedCallback(name, oldValue, newValue) {
               if (name === "data-settings" && newValue !== oldValue) {
-                this.innerHTML = "";
-                const mountPoint = document.createElement("div");
-                this.appendChild(mountPoint);
-                const settingsData = this.getAttribute("data-settings");
-                const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
-                ReactDOM.createRoot(mountPoint).render(
-                  React.createElement(
-                    componentConfig.settingsComponent,
-                    parsedSettings
-                  )
-                );
+                this._renderSettings();
               }
             }
           }
           customElements.define(settingsTagName, ReactSettingsElement);
+        }
+        const customizeTagName = `react-customize-component-${key.toLowerCase()}`;
+        if (componentConfig.customizeComponent && !customElements.get(customizeTagName)) {
+          const CustomizeCtor = componentConfig.customizeComponent;
+          class ReactCustomizeElement extends HTMLElement {
+            connectedCallback() {
+              this._mount();
+            }
+            static get observedAttributes() {
+              return ["data-settings"];
+            }
+            attributeChangedCallback(name, oldValue, newValue) {
+              if (name === "data-settings" && newValue !== oldValue) {
+                this._mount();
+              }
+            }
+            _mount() {
+              if (!this._customizeRoot) {
+                const mountPoint = document.createElement("div");
+                this.appendChild(mountPoint);
+                this._customizeRoot = ReactDOM.createRoot(mountPoint);
+              }
+              const settingsData = this.getAttribute("data-settings");
+              const parsedSettings = settingsData ? JSON.parse(settingsData) : {};
+              try {
+                this._customizeRoot.render(
+                  React.createElement(CustomizeCtor, parsedSettings)
+                );
+              } catch (error) {
+                console.error(
+                  `Error rendering customize component for ${key}:`,
+                  error
+                );
+              }
+            }
+          }
+          customElements.define(customizeTagName, ReactCustomizeElement);
         }
         modifiedConfig.Custom[key] = {
           component: tagName,
           svg: componentConfig.svg,
           title: componentConfig.title,
           settingsComponent: settingsTagName,
-          settingsComponentTagName: settingsTagName
+          settingsComponentTagName: settingsTagName,
+          customizeComponentTagName: componentConfig.customizeComponent ? customizeTagName : void 0
         };
       });
     }
@@ -118,7 +187,14 @@ var PageBuilderReact = ({
         }
       });
     }
-  }, [processedConfig, initialDesign, editable, brandTitle, showAttributeTab]);
+  }, [
+    processedConfig,
+    initialDesign,
+    editable,
+    brandTitle,
+    showAttributeTab,
+    layoutMode
+  ]);
   useEffect(() => {
     const webComponent = builderRef.current;
     const handleDesignChange = (event) => {

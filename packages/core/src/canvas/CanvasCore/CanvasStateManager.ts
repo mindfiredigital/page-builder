@@ -1,6 +1,7 @@
 import { CanvasSharedState } from './CanvasSharedState';
 import { CanvasComponentFactory } from './CanvasComponentFactory';
 import { CanvasDragHandler } from './CanvasDragHandler';
+import { CanvasResizeHandler } from './CanvasResizeHandler';
 
 import {
   ContainerComponent,
@@ -9,11 +10,16 @@ import {
   LinkComponent,
   HeaderComponent,
   TextComponent,
-} from '../../components';
+  RichTextComponent,
+} from '../../components/index';
 import { MultiColumnContainer } from '../../services/MultiColumnContainer';
 
 /** Serialises and deserialises the canvas DOM into/from PageBuilderDesign */
 export class CanvasStateManager {
+  /* True while restoreState is running — prevents auto-save from
+     overwriting the persisted state with a partially restored canvas */
+  static isRestoring = false;
+
   /** Capture a full snapshot of the canvas and every component on it */
   static getState(): PageBuilderDesign {
     const canvasElement = CanvasSharedState.canvasElement;
@@ -137,6 +143,8 @@ export class CanvasStateManager {
 
   /** Rehydrate the canvas DOM from a previously captured PageBuilderDesign */
   static restoreState(state: PageBuilderDesign): void {
+    CanvasStateManager.isRestoring = true;
+
     const { canvasElement, editable, controlsManager, gridManager } =
       CanvasSharedState;
 
@@ -144,6 +152,16 @@ export class CanvasStateManager {
     const canvasDataIndex = state.findIndex(
       data => data.id === 'canvas' && data.type === 'canvas'
     );
+
+    /** Everything except the canvas descriptor. Built as a fresh array
+        rather than state.splice()'d in place: `state` may be the same
+        array reference a caller reuses across more than one restoreState
+        call (e.g. the web-component wrapper's initialDesign and configData
+        setters each trigger their own full re-init off the same stored
+        design array within the same tick) — mutating the caller's array
+        here would silently strip the canvas descriptor before the second
+        call ever sees it, discarding its style/classes with no error. */
+    let components = state;
 
     if (canvasDataIndex !== -1) {
       const canvasData = state[canvasDataIndex];
@@ -157,14 +175,13 @@ export class CanvasStateManager {
         canvasElement.classList.add(cls)
       );
 
-      /** Remove the canvas descriptor so only component descriptors remain */
-      state.splice(canvasDataIndex, 1);
+      components = state.filter((_, index) => index !== canvasDataIndex);
     }
 
     canvasElement.innerHTML = '';
     CanvasSharedState.components = [];
 
-    state.forEach(componentData => {
+    components.forEach(componentData => {
       const customSettings =
         componentData.dataAttributes['data-custom-settings'] || null;
       const component = CanvasComponentFactory.createComponent(
@@ -195,9 +212,16 @@ export class CanvasStateManager {
       /** Never restore 'selected' highlight state */
       component.classList.remove('selected');
 
-      /** Remove resize handle in non-editable mode */
+      /** Restore the saved id; createComponent generates a provisional id via
+       *  generateUniqueClass which may differ from the saved one when earlier
+       *  components have been deleted.  Setting it here keeps id and classList
+       *  in sync with what was captured in getState(). */
+      component.id = componentData.id;
+
+      /** Remove resize handles in non-editable mode */
       if (editable === false) {
         component.classList.remove('component-resizer');
+        component.querySelector('.canvas-resizers')?.remove();
       }
 
       /** Restore video source and hide the upload placeholder */
@@ -238,7 +262,17 @@ export class CanvasStateManager {
 
       if (editable !== false) {
         controlsManager.addControlButtons(component);
-        CanvasDragHandler.addDraggableListeners(component);
+        if (CanvasSharedState.layoutMode === 'absolute') {
+          CanvasDragHandler.addDraggableListeners(component);
+          /* innerHTML was overwritten above — re-attach resize handle listeners */
+          try {
+            if (component.classList.contains('component-resizer')) {
+              CanvasResizeHandler.restore(component);
+            }
+          } catch {
+            /* non-fatal — component still usable without resize handles */
+          }
+        }
       }
 
       /** Component-specific post-restore hooks */
@@ -265,12 +299,22 @@ export class CanvasStateManager {
       if (componentData.type === 'link') LinkComponent.restore(component);
       if (componentData.type === 'header') HeaderComponent.restore(component);
       if (componentData.type === 'text') TextComponent.restore(component);
+      if (componentData.type === 'rich-text')
+        RichTextComponent.restore(component);
 
       canvasElement.appendChild(component);
       CanvasSharedState.components.push(component);
     });
 
     /** Re-initialise the grid drop-preview overlay after all components are placed */
-    gridManager.initializeDropPreview(canvasElement);
+    gridManager.initializeDropPreview(
+      canvasElement,
+      CanvasSharedState.layoutMode
+    );
+
+    /* Expand canvas min-height to cover all restored absolute-positioned components */
+    CanvasSharedState.updateCanvasScrollSpace();
+
+    CanvasStateManager.isRestoring = false;
   }
 }
