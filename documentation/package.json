@@ -30,7 +30,7 @@
   "devDependencies": {
     "@docusaurus/core": "3.7.0",
     "@docusaurus/module-type-aliases": "3.7.0",
-    "@docusaurus/preset-classic": "3.7.0",
+    "@docusaurus/preset-classic": "3.10.2",
     "@docusaurus/tsconfig": "3.7.0",
     "@docusaurus/types": "3.7.0",
     "@tailwindcss/postcss": "^4.1.13",
