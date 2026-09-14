@@ -23,7 +23,7 @@
   "dependencies": {
     "@mindfiredigital/page-builder": "workspace:*",
     "@mindfiredigital/page-builder-web-component": "workspace:*",
-    "commander": "^12.1.0",
+    "commander": "^15.0.0",
     "esbuild": "^0.24.0",
     "zod": "^3.23.8"
   },
